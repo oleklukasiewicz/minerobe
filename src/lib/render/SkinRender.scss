@@ -1,0 +1,10 @@
+.skin-render
+{
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    min-width: 100%;
+    max-height: min(calc(100vh - 50px), 100%);
+    max-width: min(calc(100vh - 50px), 100%);
+    aspect-ratio: 1/1;
+}

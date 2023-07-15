@@ -1,0 +1,97 @@
+<script lang="ts">
+  import { onMount } from "svelte";
+  import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+  import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+  import * as THREE from "three";
+  import mergeImages from "merge-images";
+  // Replace with the path to your 3D model and texture
+  export let model: any;
+  export let layers: any[];
+
+  let scene: any;
+  let camera: any;
+  let renderer: any;
+  let controls: any;
+
+  let texture: any;
+
+  let skinRenderNode: any;
+  onMount(async () => {
+    texture = await mergeImages(layers);
+
+    // Create a scene
+    scene = new THREE.Scene();
+    scene.position.y = -0.65;
+
+    // Create a camera
+    camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    camera.position.z = 3;
+
+    // Create a renderer
+    renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.domElement.style.width = "100%";
+    renderer.domElement.style.height = "100%";
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.physicallyCorrectLights = true;
+    renderer.shadowMap.enabled = true;
+    renderer.outputEncoding = 1;
+    skinRenderNode.appendChild(renderer.domElement);
+
+    // Load the model and texture
+    const loader = new GLTFLoader();
+    loader.load(model, (gltf: any) => {
+      const textureS = new THREE.TextureLoader().load(texture);
+      gltf.scene.traverse((child: any) => {
+        if (child.isMesh) {
+          // Set texture filtering and wrap mode to improve sharpness
+          textureS.magFilter = THREE.NearestFilter;
+          textureS.minFilter = THREE.LinearMipmapLinearFilter;
+          textureS.wrapS = THREE.RepeatWrapping;
+          textureS.wrapT = THREE.RepeatWrapping;
+          textureS.repeat.set(1, 1);
+
+          child.material.map = textureS;
+        }
+      });
+      scene.add(gltf.scene);
+    });
+
+    // Add a directional light
+    const light = new THREE.AmbientLight(0xffffff, 3);
+    scene.add(light);
+
+    // Set the floor color
+    scene.background = new THREE.Color(0x000000);
+
+    // Add orbit controls
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.maxDistance = 3.0;
+    controls.minDistance = 0.5;
+
+    // Render the scene
+    const animate = function () {
+      requestAnimationFrame(animate);
+      if (controls) controls.update();
+      const canvas = renderer.domElement;
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      const needResize = canvas.width !== width || canvas.height !== height;
+      if (needResize) {
+        renderer.setSize(width, height, false);
+      }
+      renderer.render(scene, camera);
+    };
+    animate();
+  });
+</script>
+
+<div class="skin-render" bind:this={skinRenderNode} />
+
+<style lang="scss">
+  @import "SkinRender.scss";
+</style>
