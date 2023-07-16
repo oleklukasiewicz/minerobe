@@ -1,0 +1,28 @@
+.item-page {
+  display: flex;
+  .render-data {
+    flex: 1;
+    max-width: 700px;
+  }
+  .item-data {
+    flex: 1;
+    margin: 60px auto;
+    max-width: 800px;
+    .item-model {
+      display: flex;
+    }
+    .item-actions {
+      display: flex;
+      #download-action
+      {
+        flex: 1;
+        font-size: larger
+      }
+    }
+  }
+}
+@media only screen and (max-width: 700px) {
+  .item-page {
+    flex-direction: column;
+  }
+}

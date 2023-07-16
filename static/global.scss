@@ -1,0 +1,193 @@
+@font-face{
+    font-family: minecraft;
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    font-size-adjust: 5;
+    src: url(/font/minecraft.eot);
+    src: url(/font/minecraft-ie.eot) format("embedded-opentype"),url(/font/minecraft.woff2) format("woff2"),url(/font/minecraft.woff) format("woff"),url(/font/minecraft.ttf) format("truetype"),url(/font/minecraft.svg) format("svg");
+}
+:root{
+    --color-theme-font: #222222;
+    --color-accent: #3b8526;
+    --color-accent-L2: #8be468;
+    --color-accent-L1: #6bc349;
+    --color-accent-D1: #2a631c;
+    --color-accent-D2: #214717;
+    --color-unique: #e79836;
+    --color-unique-A1: #ec620e;
+    --color-rare: #1de495;
+    --color-rare-A1: #0ebd77;
+    --color-common: #c6c6c6;
+    --color-common-A1: #888;
+    --color-accent-font: #FFF;
+    --color-active: #4a494b;
+    --color-active-L1: #8d8e92;
+    --color-active-D1: #000;
+    --color-hover: #3d3938;
+    --color-hover-L1: #8d8e92;
+    --color-hover-D1: #171615;
+    --time: 0.3s;
+    --time-A1: 0.6s;
+    --color-theme: #f2f2f2;
+    --color-theme-D1: #e2e2e2;
+    --color-theme-D2: #c2c2c2;
+    --color-theme-D3: #a2a2a2;
+    --color-theme-D4: #828282;
+    --color-theme-D5: #626262;
+    --color-theme-D6: #424242;
+    --size-font-icon: 13px;
+    --size-font-caption: 12px;
+    --size-font-base: 14px;
+    --size-font-subtitle: 20px;
+    --size-font-title: 24px;
+    --size-font-subheader: 34px;
+    --size-font-header: 46px;
+}
+@keyframes Blink{
+    0%{
+        opacity: .5;
+    }
+    50%{
+        opacity: 1;
+    }
+    100%{
+        opacity: .5;
+    }
+}
+::selection{
+    background-color: var(--color-accent);
+    color: var(--color-accent-font);
+}
+body{
+    font-family: Arial,Helvetica,sans-serif;
+    margin: 0;
+    background-color: var(--color-theme);
+}
+.disabled{
+    user-select: none;
+    pointer-events: none;
+    opacity: .5;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6{
+    font-family: minecraft;
+}
+br{
+    user-select: none;
+}
+.label{
+    box-sizing: border-box;
+    display: inline-table;
+    font-family: minecraft;
+    font-size: medium;
+    box-shadow: 2px 2px 1px rgba(0,0,0,.6);
+    padding: 2px 8px;
+    text-shadow: 0 1px rgba(255,255,255,.6);
+    user-select: none;
+    text-align: end;
+}
+.label.placeholder{
+    box-shadow: none;
+}
+.label.unique{
+    background: linear-gradient(var(--color-unique),var(--color-unique-A1));
+}
+.label.rare{
+    background: linear-gradient(var(--color-rare),var(--color-rare-A1));
+}
+.label.common{
+    background: linear-gradient(var(--color-common),var(--color-common-A1));
+}
+.caption{
+    font-size: small;
+    color: var(--color-theme-D6);
+    font-family: minecraft;
+    margin: 8px 0;
+    display: table;
+    user-select: none;
+}
+.font-caption{
+    font-size: var(--size-font-caption);
+    font-family: Arial,Helvetica,sans-serif;
+}
+.font-base{
+    font-size: var(--size-font-base);
+    font-family: Arial,Helvetica,sans-serif;
+}
+.font-subtitle{
+    font-size: var(--size-font-subtitle);
+    font-family: minecraft;
+}
+.font-title{
+    font-size: var(--size-font-title);
+    font-family: minecraft;
+}
+.font-subheader{
+    font-size: var(--size-font-subheader);
+    font-family: minecraft;
+}
+.font-header{
+    font-size: var(--size-font-header);
+    font-family: minecraft;
+}
+.list{
+    display: flex;
+    flex-direction: column;
+}
+.list.horizontal{
+    flex-direction: row;
+}
+.list.small > .item{
+    border: 1px solid red;
+    padding: 4px;
+    box-sizing: border-box;
+}
+button{
+    border: 0;
+    transition: background-color var(--time),border-color var(--time),color var(--time);
+    border-top: 2px solid var(--color-accent-L1);
+    background-color: var(--color-accent);
+    border-bottom: 2px solid var(--color-accent-D1);
+    color: var(--color-accent-font);
+    font-family: minecraft;
+    box-sizing: border-box;
+    padding: 7px 16px;
+}
+button.secondary{
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--color-accent);
+}
+button.secondary:hover,
+button:hover{
+    color: var(--color-accent-font);
+    background-color: var(--color-hover);
+    border-top-color: var(--color-hover-L1);
+    border-bottom-color: var(--color-hover-D1);
+}
+button.secondary:active,
+button:active{
+    color: var(--color-accent-font);
+    background-color: var(--color-active);
+    border-top-color: var(--color-active-L1);
+    border-bottom-color: var(--color-active-D1);
+}
+.placeholder{
+    background-color: var(--color-theme-D2)!important;
+    content: none;
+    pointer-events: none;
+    color: transparent!important;
+    text-shadow: none!important;
+    animation-name: Blink;
+    animation-iteration-count: infinite;
+    animation-duration: 1.2s;
+}
+.placeholder > *{
+    background-color: var(--color-theme-D2);
+    color: transparent!important;
+}

@@ -3,25 +3,51 @@
   import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
   import * as THREE from "three";
-  import mergeImages from "merge-images";
+  
   // Replace with the path to your 3D model and texture
   export let model: any;
-  export let layers: any[];
+  export let texture: any;
 
   let scene: any;
   let camera: any;
   let renderer: any;
   let controls: any;
 
-  let texture: any;
+  const loader = new GLTFLoader();
 
   let skinRenderNode: any;
+  let loadedRender:any; 
+
+  let updateRender =function(textureToLoad,modelToLoad)
+  {
+    loader.load(modelToLoad, (gltf: any) => {
+      const textureS = new THREE.TextureLoader().load(textureToLoad);
+      //removing ol render model
+      scene.remove(loadedRender);
+
+      loadedRender = gltf.scene;
+      gltf.scene.traverse((child: any) => {
+        if (child.isMesh) {
+          // Set texture filtering and wrap mode to improve sharpness
+          textureS.magFilter = THREE.NearestFilter;
+          textureS.minFilter = THREE.LinearMipmapLinearFilter;
+          textureS.wrapS = THREE.RepeatWrapping;
+          textureS.wrapT = THREE.RepeatWrapping;
+          textureS.repeat.set(1, 1);
+
+          child.material.map = textureS;
+        }
+      });
+      scene.add(gltf.scene);
+    });
+  };
+
   onMount(async () => {
-    texture = await mergeImages(layers);
+    texture
 
     // Create a scene
     scene = new THREE.Scene();
-    scene.position.y = -0.65;
+    scene.position.y = -1;
 
     // Create a camera
     camera = new THREE.PerspectiveCamera(
@@ -43,23 +69,7 @@
     skinRenderNode.appendChild(renderer.domElement);
 
     // Load the model and texture
-    const loader = new GLTFLoader();
-    loader.load(model, (gltf: any) => {
-      const textureS = new THREE.TextureLoader().load(texture);
-      gltf.scene.traverse((child: any) => {
-        if (child.isMesh) {
-          // Set texture filtering and wrap mode to improve sharpness
-          textureS.magFilter = THREE.NearestFilter;
-          textureS.minFilter = THREE.LinearMipmapLinearFilter;
-          textureS.wrapS = THREE.RepeatWrapping;
-          textureS.wrapT = THREE.RepeatWrapping;
-          textureS.repeat.set(1, 1);
-
-          child.material.map = textureS;
-        }
-      });
-      scene.add(gltf.scene);
-    });
+   updateRender(texture,model);
 
     // Add a directional light
     const light = new THREE.AmbientLight(0xffffff, 3);
@@ -87,7 +97,19 @@
       renderer.render(scene, camera);
     };
     animate();
+    function onWindowResize() {
+      const width = skinRenderNode.clientWidth;
+      const height = skinRenderNode.clientHeight;
+
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    }
+
+    window.addEventListener("resize", onWindowResize);
+    onWindowResize();
   });
+
+  $:updateRender(texture,model);
 </script>
 
 <div class="skin-render" bind:this={skinRenderNode} />
