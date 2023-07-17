@@ -3,10 +3,18 @@
   import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
   import * as THREE from "three";
-  
+
   // Replace with the path to your 3D model and texture
   export let model: any;
   export let texture: any;
+  export let sceneRotX = 0;
+  export let sceneRotY = Math.PI;
+  export let cameraPosZ = 3;
+  export let cameraPosY = 0;
+  export let cameraPosX = 0;
+  export let orbitControlsEnabled = true;
+  export let backgroundColor = "black";
+  export let backgroundColorOpacity = 1;
 
   let scene: any;
   let camera: any;
@@ -16,10 +24,9 @@
   const loader = new GLTFLoader();
 
   let skinRenderNode: any;
-  let loadedRender:any; 
+  let loadedRender: any;
 
-  let updateRender =function(textureToLoad,modelToLoad)
-  {
+  let updateRender = function (textureToLoad, modelToLoad) {
     loader.load(modelToLoad, (gltf: any) => {
       const textureS = new THREE.TextureLoader().load(textureToLoad);
       //removing ol render model
@@ -43,11 +50,14 @@
   };
 
   onMount(async () => {
-    texture
+    texture;
 
     // Create a scene
     scene = new THREE.Scene();
     scene.position.y = -1;
+    scene.rotation.y = sceneRotY;
+    scene.rotation.x = sceneRotX;
+    scene.position.y = -0.65;
 
     // Create a camera
     camera = new THREE.PerspectiveCamera(
@@ -56,7 +66,9 @@
       0.1,
       1000
     );
-    camera.position.z = 3;
+    camera.position.z = cameraPosZ;
+    camera.position.y = cameraPosY;
+    camera.position.x = cameraPosX;
 
     // Create a renderer
     renderer = new THREE.WebGLRenderer({ alpha: true });
@@ -69,19 +81,21 @@
     skinRenderNode.appendChild(renderer.domElement);
 
     // Load the model and texture
-   updateRender(texture,model);
+    updateRender(texture, model);
 
     // Add a directional light
     const light = new THREE.AmbientLight(0xffffff, 3);
     scene.add(light);
 
     // Set the floor color
-    scene.background = new THREE.Color(0x000000);
+    renderer.setClearColor(backgroundColor, backgroundColorOpacity);
 
     // Add orbit controls
-    controls = new OrbitControls(camera, renderer.domElement);
-    controls.maxDistance = 3.0;
-    controls.minDistance = 0.5;
+    if (orbitControlsEnabled) {
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.maxDistance = 3.0;
+      controls.minDistance = 0.5;
+    }
 
     // Render the scene
     const animate = function () {
@@ -109,7 +123,7 @@
     onWindowResize();
   });
 
-  $:updateRender(texture,model);
+  $: updateRender(texture, model);
 </script>
 
 <div class="skin-render" bind:this={skinRenderNode} />

@@ -7,9 +7,21 @@
   .item-data {
     flex: 1;
     margin: 60px auto;
+    padding: 10px;
+    box-sizing: border-box;
     max-width: 800px;
     .item-model {
       display: flex;
+    }
+    .item-layers
+    {
+      display: flex;
+      flex-direction: column;
+      #add-layer-action
+      {
+        flex: 1;
+        font-size: larger
+      }
     }
     .item-actions {
       display: flex;
