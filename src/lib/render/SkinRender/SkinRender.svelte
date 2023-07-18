@@ -27,7 +27,6 @@
   let loadedRender: any;
 
   let updateRender = function (textureToLoad, modelToLoad) {
-    try {
       loader.load(modelToLoad, (gltf: any) => {
         const textureS = new THREE.TextureLoader().load(textureToLoad);
         //removing ol render model
@@ -48,9 +47,6 @@
         });
         scene.add(gltf.scene);
       });
-    } catch (e) {
-      console.log(e);
-    }
   };
 
   onMount(async () => {
