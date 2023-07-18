@@ -191,12 +191,8 @@ button:active{
     background-color: var(--color-theme-D2);
     color: transparent!important;
 }
-.separator
-{
-    &.vertical
-    {
-        width: 1px;
-        border-left: solid 1px var(--color-theme-D2);
-        margin: 10px 4px;
-    }
+.separator.vertical{
+    width: 1px;
+    border-left: solid 1px var(--color-theme-D2);
+    margin: 10px 4px;
 }
