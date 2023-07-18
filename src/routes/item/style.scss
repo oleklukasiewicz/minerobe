@@ -3,11 +3,12 @@
   .render-data {
     flex: 1;
     max-width: 700px;
+    max-height: calc(100vh - 20px);
   }
   .item-data {
     flex: 1;
     margin: 60px auto;
-    padding: 10px;
+    padding: 24px;
     box-sizing: border-box;
     max-width: 800px;
     .item-model {

@@ -5,9 +5,10 @@
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import { onMount } from "svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
+  import { writable } from "svelte/store";
 
   let itemModelType = "alex";
-  let itemLayers = ["/texture/base-bomber.png","/texture/test.png"];
+  let itemLayers = writable(["/texture/base-bomber.png","/texture/test.png"]);
   let itemModel = "/player/alex.gltf";
   let itemTexture: string = null;
 
@@ -16,13 +17,47 @@
   let updateTexture = function (layers) {};
 
   $: itemModel = `/player/${itemModelType}.gltf`;
-  $: updateTexture(itemLayers);
+  itemLayers.subscribe((layers) => {
+    updateTexture(layers);
+  });
 
   onMount(async () => {
     updateTexture = async (layers) => {
-      itemTexture = await mergeImages(layers.reverse());
+      console.log(layers);
+      itemTexture = await mergeImages([...layers].reverse());
     };
+    updateTexture($itemLayers);
   });
+
+  let upLayer=async function (e) {
+    let index = $itemLayers.indexOf(e.detail.texture);
+    if (index > 0) {
+      itemLayers.update((layers) => {
+        let temp = layers[index - 1];
+        layers[index - 1] = layers[index];
+        layers[index] = temp;
+        return layers;
+      });
+    }
+  };
+  let downLayer= async function (e) {
+    let index = $itemLayers.indexOf(e.detail.texture);
+    if (index < $itemLayers.length - 1) {
+      itemLayers.update((layers) => {
+        let temp = layers[index + 1];
+        layers[index + 1] = layers[index];
+        layers[index] = temp;
+        return layers;
+      });
+    }
+  };
+  let removeLayer= async function (e) {
+    let index = $itemLayers.indexOf(e.detail.texture);
+      itemLayers.update((layers) => {
+        layers.splice(index, 1);
+        return layers;
+      });
+  };
 </script>
 
 <div class="item-page">
@@ -34,9 +69,9 @@
   <div class="item-data">
     <span class="caption">Layers</span>
     <div class="item-layers">
-      {#each itemLayers as layer}
+      {#each $itemLayers as layer,index (layer)}
         <div class="item-layer">
-          <ItemLayer texture={layer} model={itemModel} />
+          <ItemLayer texture={layer} model={itemModel} on:down={downLayer} on:up={upLayer} on:remove={removeLayer} canUp={index!=0} canDown={index!=$itemLayers.length-1}/>
         </div>
       {/each}
       <button id="add-layer-action" class="secondary">+ Add layer</button>

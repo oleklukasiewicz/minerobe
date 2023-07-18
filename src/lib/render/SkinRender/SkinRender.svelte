@@ -27,26 +27,30 @@
   let loadedRender: any;
 
   let updateRender = function (textureToLoad, modelToLoad) {
-    loader.load(modelToLoad, (gltf: any) => {
-      const textureS = new THREE.TextureLoader().load(textureToLoad);
-      //removing ol render model
-      scene.remove(loadedRender);
+    try {
+      loader.load(modelToLoad, (gltf: any) => {
+        const textureS = new THREE.TextureLoader().load(textureToLoad);
+        //removing ol render model
+        scene.remove(loadedRender);
 
-      loadedRender = gltf.scene;
-      gltf.scene.traverse((child: any) => {
-        if (child.isMesh) {
-          // Set texture filtering and wrap mode to improve sharpness
-          textureS.magFilter = THREE.NearestFilter;
-          textureS.minFilter = THREE.LinearMipmapLinearFilter;
-          textureS.wrapS = THREE.RepeatWrapping;
-          textureS.wrapT = THREE.RepeatWrapping;
-          textureS.repeat.set(1, 1);
+        loadedRender = gltf.scene;
+        gltf.scene.traverse((child: any) => {
+          if (child.isMesh) {
+            // Set texture filtering and wrap mode to improve sharpness
+            textureS.magFilter = THREE.NearestFilter;
+            textureS.minFilter = THREE.LinearMipmapLinearFilter;
+            textureS.wrapS = THREE.RepeatWrapping;
+            textureS.wrapT = THREE.RepeatWrapping;
+            textureS.repeat.set(1, 1);
 
-          child.material.map = textureS;
-        }
+            child.material.map = textureS;
+          }
+        });
+        scene.add(gltf.scene);
       });
-      scene.add(gltf.scene);
-    });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   onMount(async () => {
