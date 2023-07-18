@@ -5,14 +5,19 @@
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import { onMount } from "svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
-  import { writable } from "svelte/store";
+  import { writable, type Writable } from "svelte/store";
+  import { FileData } from "$src/data/common";
+  import DownloadImage from "$lib/DownloadImage/DownloadImage.svelte";
 
   let itemModelType = "alex";
-  let itemLayers = writable(["/texture/base-bomber.png", "/texture/test.png"]);
+  let itemLayers:Writable<FileData[]> = writable([]);
   let itemModel: any = "";
   let itemTexture: string = null;
   let alexModel;
   let steveModel;
+
+  let fileInput;
+  let file;
 
   const regex = /\/([\w\s()-]+)\.(png|PNG)$/;
 
@@ -32,7 +37,7 @@
       btoa(await fetch("/player/steve.gltf").then((res) => res.text()));
 
     updateTexture = async (layers) => {
-      itemTexture = await mergeImages([...layers].reverse());
+      itemTexture = await mergeImages(layers.map(x=>x.content).reverse());
     };
     updateTexture($itemLayers);
   });
@@ -66,6 +71,30 @@
       return layers;
     });
   };
+
+  function handleFileChange(event) {
+    let base64Data;
+    file = event.target.files[0];
+     const reader = new FileReader();
+
+     reader.onload = (event) => {
+        base64Data = event.target.result;
+        itemLayers.update((layers) => {
+          layers.unshift(new FileData(file.name.replace(/\.[^/.]+$/, ""), base64Data));
+          return layers;
+        });
+      };
+      reader.readAsDataURL(file)
+  }
+
+  const downloadImage = () => {
+      const link = document.createElement('a');
+      link.href = itemTexture;
+      link.download = 'image.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
 </script>
 
 <div class="item-page">
@@ -92,7 +121,10 @@
           </div>
         {/each}
       {/if}
-      <button id="add-layer-action" class="secondary">+ Add layer</button>
+      <form style="display:flex">
+        <input type="file" on:change={handleFileChange} style="display:none" bind:this={fileInput}/>
+        <button id="add-layer-action" type="submit" class="secondary" on:click={fileInput.click()}>+ Add layer</button>
+      </form>
     </div>
     <br />
     <span class="caption">Model</span>
@@ -103,7 +135,10 @@
     <br />
     <br />
     <div class="item-actions">
-      <button id="download-action">Download</button>
+      <!-- svelte-ignore a11y-img-redundant-alt -->
+      <!-- svelte-ignore a11y-missing-attribute -->
+      <img src={itemTexture} style="display:none"/>
+      <button id="download-action" on:click={downloadImage}>Download</button>
     </div>
   </div>
 </div>
