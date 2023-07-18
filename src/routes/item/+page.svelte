@@ -26,10 +26,10 @@
   onMount(async () => {
     alexModel =
       "data:model/gltf+json;base64," +
-      btoa(await fetch("src/player/alex.gltf").then((res) => res.text()));
+      btoa(await fetch("/player/alex.gltf").then((res) => res.text()));
     steveModel =
       "data:model/gltf+json;base64," +
-      btoa(await fetch("src/player/steve.gltf").then((res) => res.text()));
+      btoa(await fetch("/player/steve.gltf").then((res) => res.text()));
 
     updateTexture = async (layers) => {
       itemTexture = await mergeImages([...layers].reverse());
