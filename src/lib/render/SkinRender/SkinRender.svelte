@@ -5,7 +5,7 @@
   import * as THREE from "three";
 
   // Replace with the path to your 3D model and texture
-  export let model: any;
+  export let model: Object;
   export let texture: any;
   export let sceneRotX = 0;
   export let sceneRotY = Math.PI;

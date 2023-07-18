@@ -9,21 +9,25 @@
 
   let itemModelType = "alex";
   let itemLayers = writable(["/texture/base-bomber.png","/texture/test.png"]);
-  let itemModel = "/player/alex.gltf";
+  let itemModel:any = "";
   let itemTexture: string = null;
+  let alexModel;
+  let steveModel;
 
   const regex = /\/([\w\s()-]+)\.(png|PNG)$/;
 
   let updateTexture = function (layers) {};
-
-  $: itemModel = `/player/${itemModelType}.gltf`;
+  
+  $: itemModel = itemModelType == "alex" ? alexModel : steveModel;
   itemLayers.subscribe((layers) => {
     updateTexture(layers);
   });
 
   onMount(async () => {
+    alexModel='data:model/gltf+json;base64,'+ btoa(await fetch("src/player/alex.gltf").then((res) => res.text()));
+    steveModel='data:model/gltf+json;base64,'+ btoa(await fetch("src/player/steve.gltf").then((res) => res.text()));
+   
     updateTexture = async (layers) => {
-      console.log(layers);
       itemTexture = await mergeImages([...layers].reverse());
     };
     updateTexture($itemLayers);
