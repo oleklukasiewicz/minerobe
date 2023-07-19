@@ -99,9 +99,11 @@
 
 <div class="item-page">
   <div class="render-data">
-    {#if itemTexture && itemModel}
+    <div class="render">
+       {#if itemTexture && itemModel}
       <SkinRender texture={itemTexture} model={itemModel} />
     {/if}
+    </div>
   </div>
   <div class="item-data">
     <span class="caption">Layers</span>
