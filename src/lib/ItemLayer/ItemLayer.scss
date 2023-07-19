@@ -1,15 +1,29 @@
-.item-layer
-{
+.item-layer {
+  display: flex;
+  min-height: 56px;
+  background-color: var(--color-theme-D1);
+  margin: 2px 0px;
+  padding: 4px;
+  box-sizing: border-box;
+  max-width: 100%;
+  flex-wrap: wrap;
+  .actions
+  {
     display: flex;
-    height: 56px;
-    background-color: var(--color-theme-D1);
-    margin: 2px 0px;
-    padding: 4px;
-    box-sizing: border-box;
-    span
-    {
-        flex: 1;
-        margin: 14px;
-        font-family: minecraft;
+  }
+  .data {
+    flex: 1;
+    display: flex;
+    min-width: 300px;
+    .render {
+      height: 56px;
+      aspect-ratio: 1/1;
     }
+    span {
+      flex: 1;
+      margin: 14px;
+      font-family: minecraft;
+      white-space: nowrap;
+    }
+  }
 }

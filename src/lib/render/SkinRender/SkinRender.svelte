@@ -57,7 +57,7 @@
     scene.position.y = -1;
     scene.rotation.y = sceneRotY;
     scene.rotation.x = sceneRotX;
-    scene.position.y = -0.65;
+    scene.position.y = -0.85;
 
     // Create a camera
     camera = new THREE.PerspectiveCamera(

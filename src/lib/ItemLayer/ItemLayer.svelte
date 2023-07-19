@@ -31,12 +31,18 @@
 </script>
 
 <div class="item-layer">
-  <SkinSnapshot texture={texture.content} {model} />
-  <span>{ texture.fileName|| "Layer"}</span>
-  <button class="secondary" on:click={up} class:disabled={!canUp}>Up</button>
-  <button class="secondary" on:click={down} class:disabled={!canDown}>Down</button>
-  <div class="separator vertical"></div>
-  <button class="secondary" on:click={remove}>Remove</button>
+  <div class="data">
+    <div class="render"><SkinSnapshot texture={texture.content} {model} /></div>
+    <span>{texture.fileName || "Layer"}</span>
+  </div>
+  <div class='actions'>
+    <button class="secondary" on:click={up} class:disabled={!canUp}>Up</button>
+    <button class="secondary" on:click={down} class:disabled={!canDown}
+      >Down</button
+    >
+    <div class="separator vertical" />
+    <button class="secondary" on:click={remove}>Remove</button>
+  </div>
 </div>
 
 <style lang="scss">
