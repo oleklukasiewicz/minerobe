@@ -8,9 +8,9 @@
   <SkinRender
     {texture}
     {model}
-    sceneRotY={Math.PI * 0.8}
+    sceneRotY={Math.PI * 0.75}
     sceneRotX={Math.PI / 4}
-    cameraPosZ={1.6}
+    cameraPosZ={1.8}
     cameraPosY={0.1}
     orbitControlsEnabled={false}
     backgroundColorOpacity={0}
