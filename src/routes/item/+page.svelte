@@ -7,9 +7,11 @@
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
   import { writable, type Writable } from "svelte/store";
   import { FileData } from "$src/data/common";
+  import { dataset_dev } from "svelte/internal";
 
   let itemModelType = "alex";
   let baseLayer;
+  let itemName = "Item";
   let itemLayers: Writable<FileData[]> = writable([]);
   let itemModel: any = "";
   let itemTexture: string = null;
@@ -117,7 +119,7 @@
   const downloadImage = () => {
     const link = document.createElement("a");
     link.href = itemTexture;
-    link.download = "image.jpg";
+    link.download = itemName.toLowerCase() + ".png";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -133,52 +135,58 @@
     </div>
   </div>
   <div class="item-data">
-    <span class="caption">Layers</span>
-    <div class="item-layers">
-      {#if loaded}
-        {#each $itemLayers as layer, index (layer)}
-          <div class="item-layer">
-            <ItemLayer
-              texture={layer}
-              model={itemModel}
-              on:down={downLayer}
-              on:up={upLayer}
-              on:remove={removeLayer}
-              canUp={index != 0}
-              canDown={index != $itemLayers.length - 1}
-            />
-          </div>
-        {/each}
-      {/if}
-      <form style="display:flex">
-        <input
-          type="file"
-          on:change={handleFileChange}
-          style="display:none"
-          bind:this={fileInput}
-        />
-        <button
-          id="add-layer-action"
-          type="submit"
-          class="secondary"
-          on:click={fileInput.click()}>+ Add layer</button
-        >
-      </form>
-    </div>
-    <br />
-    <span class="caption">Model</span>
-    <div class="item-model">
-      <RatioButton label="STEVE" value="steve" bind:group={itemModelType} />
-      <RatioButton label="ALEX" value="alex" bind:group={itemModelType} />
-    </div>
-    <br />
-    <br />
-    <div class="item-actions">
-      <!-- svelte-ignore a11y-img-redundant-alt -->
-      <!-- svelte-ignore a11y-missing-attribute -->
-      <img src={itemTexture} style="display:none" />
-      <button id="download-action" on:click={downloadImage}>Download</button>
-    </div>
+   <div class="data">
+    <div class="item-name">
+      <span class="caption inline">Name</span><br>
+      <input id="item-title" class="title-input" bind:value={itemName}/>
+     </div>
+      <span class="caption">Layers</span>
+      <div class="item-layers">
+        {#if loaded}
+          {#each $itemLayers as layer, index (layer)}
+            <div class="item-layer">
+              <ItemLayer
+                texture={layer}
+                model={itemModel}
+                on:down={downLayer}
+                on:up={upLayer}
+                on:remove={removeLayer}
+                canUp={index != 0}
+                canDown={index != $itemLayers.length - 1}
+              />
+            </div>
+          {/each}
+        {/if}
+        <form style="display:flex">
+          <input
+            type="file"
+            on:change={handleFileChange}
+            style="display:none"
+            bind:this={fileInput}
+          />
+          <button
+            id="add-layer-action"
+            type="submit"
+            class="secondary"
+            on:click={fileInput.click()}>+ Add layer</button
+          >
+        </form>
+      </div>
+      <br />
+      <span class="caption">Model</span>
+      <div class="item-model">
+        <RatioButton label="STEVE" value="steve" bind:group={itemModelType} />
+        <RatioButton label="ALEX" value="alex" bind:group={itemModelType} />
+      </div>
+      <br />
+      <br />
+      <div class="item-actions">
+        <!-- svelte-ignore a11y-img-redundant-alt -->
+        <!-- svelte-ignore a11y-missing-attribute -->
+        <img src={itemTexture} style="display:none" />
+        <button id="download-action" on:click={downloadImage}>Download</button>
+      </div>
+   </div>
   </div>
 </div>
 

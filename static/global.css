@@ -158,6 +158,10 @@ button{
     box-sizing: border-box;
     padding: 7px 16px;
 }
+button.small
+{
+    padding: 3px 8px 2px;
+}
 button.secondary{
     background-color: transparent;
     border-color: transparent;
@@ -195,4 +199,28 @@ button:active{
     width: 1px;
     border-left: solid 1px var(--color-theme-D2);
     margin: 10px 4px;
+}
+.flex
+{
+    display: flex;
+}
+.inline-flex
+{
+    display: inline-flex;
+}
+.inline{
+    display: inline !important;
+}
+.title-input
+{
+    font-family: minecraft;
+    font-size:var(--size-font-subheader);
+    border: 0;
+    background-color: transparent;
+    outline: none;
+    border-bottom: 1px solid transparent;
+}
+.title-input:hover
+{
+   border-bottom: 1px solid var(--color-active-L1);
 }

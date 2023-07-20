@@ -1,11 +1,12 @@
 .item-page {
   display: flex;
+  margin: 30px;
   .render-data {
     flex: 1;
-    max-height: calc(100vh - 20px);
-    position:sticky;
-    top: 10px;
-    .render{
+    max-height: calc(100vh - 60px);
+    position: sticky;
+    top: 30px;
+    .render {
       max-height: 100%;
       width: 100%;
       aspect-ratio: 1/1;
@@ -13,45 +14,54 @@
   }
   .item-data {
     flex: 1;
-    margin: 60px auto;
+    margin: 40px auto;
     padding: 24px;
     box-sizing: border-box;
     max-width: 800px;
+    .data {
+      max-width: 500px;
+      margin: auto;
+    }
     .item-model {
       display: flex;
     }
-    .item-layers
-    {
+    .item-name {
+      #item-title {
+        margin: 4px 0px 10px;
+      }
+    }
+    .item-layers {
       display: flex;
       flex-direction: column;
-      #add-layer-action
-      {
+      #add-layer-action {
         flex: 1;
-        font-size: larger
+        font-size: larger;
       }
     }
     .item-actions {
       display: flex;
-      #download-action
-      {
+      #download-action {
         flex: 1;
-        font-size: larger
+        font-size: larger;
       }
     }
   }
 }
 @media only screen and (max-width: 700px) {
   .item-page {
+    margin: 0px;
+    min-width: none;
     flex-direction: column;
-    .render-data
-    {
+    .render-data {
       position: static;
     }
-    .item-data
-    {
-      margin: 10px auto;
+    .item-data {
+      margin: 10px 0px;
       width: 100%;
-      padding: 0px;
+      padding: 0px 10px;
+      .data {
+        max-width: 100%;
+      }
     }
   }
 }
