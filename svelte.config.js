@@ -16,6 +16,7 @@ const config = {
     $lib: "src/lib",
     $src: "src",
     $public : "static",
+    $locales: "src/locales",
   },
   },
 };

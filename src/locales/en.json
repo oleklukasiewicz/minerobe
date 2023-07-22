@@ -1,0 +1,20 @@
+{
+    "name":"Name",
+    "model":"Model",
+    "layer":"Layer",
+    "layers":"Layers",
+    "up":"Up",
+    "down":"Down",
+    "delete":"Delete",
+    "remove":"Remove",
+    "download":"Download",
+    "layersOpt":{
+        "addLayer":"Add Layer"
+    },
+    "modelOpt":
+    {
+        "steve":"Steve",
+        "alex":"Alex"
+    }
+
+}

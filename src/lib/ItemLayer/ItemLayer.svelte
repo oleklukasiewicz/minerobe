@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n";
   import SkinSnapshot from "$lib/render/SkinSnapshot/SkinSnapshot.svelte";
   import type { FileData } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
@@ -36,12 +37,12 @@
     <span>{texture.fileName || "Layer"}</span>
   </div>
   <div class='actions'>
-    <button class="secondary" on:click={up} class:disabled={!canUp}>Up</button>
+    <button class="secondary" on:click={up} class:disabled={!canUp}>{$_("up")}</button>
     <button class="secondary" on:click={down} class:disabled={!canDown}
-      >Down</button
+      >{$_("down")}</button
     >
     <div class="separator vertical" />
-    <button class="secondary" on:click={remove}>Remove</button>
+    <button class="secondary" on:click={remove}>{$_("remove")}</button>
   </div>
 </div>
 

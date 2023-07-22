@@ -1,4 +1,5 @@
 <script lang="ts">
+   import { _ } from 'svelte-i18n'
   import mergeImages from "merge-images";
 
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";
@@ -39,9 +40,9 @@
       "data:model/gltf+json;base64," +
       btoa(await fetch("/model/steve.gltf").then((res) => res.text()));
 
-     await fetchImage("texture/default_planks.png").then((res) => {
+    await fetchImage("texture/default_planks.png").then((res) => {
       baseLayer = res;
-     });
+    });
 
     updateTexture = async (layers) => {
       if (baseLayer)
@@ -50,7 +51,7 @@
         );
     };
     await updateTexture($itemLayers);
-    loaded=true;
+    loaded = true;
   });
 
   let upLayer = async function (e) {
@@ -100,21 +101,21 @@
     reader.readAsDataURL(file);
   }
   function fetchImage(url) {
-  return fetch(url)
-    .then(response => response.blob())
-    .then(blob => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          resolve(reader.result);
-        };
-        reader.onerror = () => {
-          reject('Error occurred while reading the image.');
-        };
-        reader.readAsDataURL(blob);
+    return fetch(url)
+      .then((response) => response.blob())
+      .then((blob) => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve(reader.result);
+          };
+          reader.onerror = () => {
+            reject("Error occurred while reading the image.");
+          };
+          reader.readAsDataURL(blob);
+        });
       });
-    });
-}
+  }
 
   const downloadImage = () => {
     const link = document.createElement("a");
@@ -135,12 +136,12 @@
     </div>
   </div>
   <div class="item-data">
-   <div class="data">
-    <div class="item-name">
-      <span class="caption inline">Name</span><br>
-      <input id="item-title" class="title-input" bind:value={itemName}/>
-     </div>
-      <span class="caption">Layers</span>
+    <div class="data">
+      <div class="item-name">
+        <span class="caption inline">{$_("name")}</span><br />
+        <input id="item-title" class="title-input" bind:value={itemName} />
+      </div>
+      <span class="caption">{$_("layers")}</span>
       <div class="item-layers">
         {#if loaded}
           {#each $itemLayers as layer, index (layer)}
@@ -168,15 +169,23 @@
             id="add-layer-action"
             type="submit"
             class="secondary"
-            on:click={fileInput.click()}>+ Add layer</button
+            on:click={fileInput.click()}>+ {$_("layersOpt.addLayer")}</button
           >
         </form>
       </div>
       <br />
-      <span class="caption">Model</span>
+      <span class="caption">{$_("model")}</span>
       <div class="item-model">
-        <RatioButton label="STEVE" value="steve" bind:group={itemModelType} />
-        <RatioButton label="ALEX" value="alex" bind:group={itemModelType} />
+        <RatioButton
+          label={$_("modelOpt.steve")}
+          value="steve"
+          bind:group={itemModelType}
+        />
+        <RatioButton
+          label={$_("modelOpt.alex")}
+          value="alex"
+          bind:group={itemModelType}
+        />
       </div>
       <br />
       <br />
@@ -184,9 +193,11 @@
         <!-- svelte-ignore a11y-img-redundant-alt -->
         <!-- svelte-ignore a11y-missing-attribute -->
         <img src={itemTexture} style="display:none" />
-        <button id="download-action" on:click={downloadImage}>Download</button>
+        <button id="download-action" on:click={downloadImage}
+          >{$_("download")}</button
+        >
       </div>
-   </div>
+    </div>
   </div>
 </div>
 

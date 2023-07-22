@@ -1,0 +1,10 @@
+{
+    "i18n-ally.localesPaths": [
+        "src/locales"
+    ],
+    "i18n-ally.useKeyStyle": "nested",
+    "i18n-ally.enabledParsers": [
+        "json"
+    ],
+    "i18n-ally.sourceLanguage": "en"
+}
