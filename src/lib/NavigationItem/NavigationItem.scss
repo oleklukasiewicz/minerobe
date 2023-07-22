@@ -1,0 +1,39 @@
+a {
+    font-family: minecraft;
+    text-decoration: none;
+    color: var(--color-theme);
+    box-sizing: border-box;
+    padding: 7px 16px;
+    display: inline-table;
+    cursor: pointer;
+    transition: background-color var(--time), border-color var(--time),
+        color var(--time);
+    user-select: none;
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    float: left;
+}
+a:hover {
+    color: var(--color-theme-D2);
+}
+a:active {
+    color: var(--color-theme-D4);
+}
+a.selected,:global(a.selected) {
+    border-top: 2px solid var(--color-accent-L1);
+    background-color: var(--color-accent);
+    border-bottom: 2px solid var(--color-accent-D1);
+    color: var(--color-accent-font);
+}
+a.selected:hover {
+    color: var(--color-accent-font);
+    background-color: var(--color-hover);
+    border-top-color: var(--color-hover-L1);
+    border-bottom-color: var(--color-hover-D1);
+}
+a.selected:active {
+    color: var(--color-accent-font);
+    background-color: var(--color-active);
+    border-top-color: var(--color-active-L1);
+    border-bottom-color: var(--color-active-D1);
+}

@@ -3,7 +3,7 @@
   margin: 30px;
   .render-data {
     flex: 1;
-    max-height: calc(100vh - 60px);
+    max-height: calc(100vh - 120px);
     position: sticky;
     top: 30px;
     .render {
@@ -17,9 +17,9 @@
     margin: 40px auto;
     padding: 24px;
     box-sizing: border-box;
-    max-width: 800px;
+    max-width: 50vw;
     .data {
-      max-width: 500px;
+      max-width: 600px;
       margin: auto;
     }
     .item-model {

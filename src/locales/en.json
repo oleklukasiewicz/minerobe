@@ -15,6 +15,11 @@
     {
         "steve":"Steve",
         "alex":"Alex"
+    },
+    "navigation":
+    {
+        "explore":"Explore",
+        "design":"Design",
+        "appname":"Minerobe"
     }
-
 }
