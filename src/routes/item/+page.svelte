@@ -12,7 +12,7 @@
 
   let itemModelType = "alex";
   let baseLayer;
-  let itemName = "Item";
+  let itemName = $_("defaultskinname");
   let itemLayers: Writable<FileData[]> = writable([]);
   let itemModel: any = "";
   let itemTexture: string = null;

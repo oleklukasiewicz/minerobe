@@ -219,6 +219,7 @@ button:active{
     background-color: transparent;
     outline: none;
     border-bottom: 1px solid transparent;
+    width: 100%;
 }
 .title-input:hover
 {
