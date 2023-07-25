@@ -14,5 +14,6 @@
     cameraPosY={0.1}
     orbitControlsEnabled={false}
     backgroundColorOpacity={0}
+    renderFloor={false}
   />
 </div>

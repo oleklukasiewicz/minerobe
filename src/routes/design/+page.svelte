@@ -1,5 +1,5 @@
 <script lang="ts">
-   import { _ } from 'svelte-i18n'
+  import { _ } from "svelte-i18n";
   import mergeImages from "merge-images";
 
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";
@@ -8,22 +8,19 @@
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
   import { writable, type Writable } from "svelte/store";
   import { FileData } from "$src/data/common";
-  import { dataset_dev } from "svelte/internal";
 
   let itemModelType = "alex";
   let baseLayer;
   let itemName = $_("defaultskinname");
   let itemLayers: Writable<FileData[]> = writable([]);
   let itemModel: any = "";
-  let itemTexture: string = null;
+  let modelTexture: string = null;
   let alexModel;
   let steveModel;
   let loaded = false;
 
   let fileInput;
   let file;
-
-  const regex = /\/([\w\s()-]+)\.(png|PNG)$/;
 
   let updateTexture = function (layers) {};
 
@@ -46,7 +43,7 @@
 
     updateTexture = async (layers) => {
       if (baseLayer)
-        itemTexture = await mergeImages(
+        modelTexture = await mergeImages(
           [...layers.map((x) => x.content), baseLayer].reverse()
         );
     };
@@ -117,9 +114,11 @@
       });
   }
 
-  const downloadImage = () => {
+  const downloadImage = async () => {
     const link = document.createElement("a");
-    link.href = itemTexture;
+    link.href = await mergeImages(
+      [...$itemLayers.map((x) => x.content)].reverse()
+    );
     link.download = itemName.toLowerCase() + ".png";
     document.body.appendChild(link);
     link.click();
@@ -131,7 +130,7 @@
   <div class="render-data">
     <div class="render">
       {#if loaded}
-        <SkinRender texture={itemTexture} model={itemModel} />
+        <SkinRender texture={modelTexture} model={itemModel} />
       {/if}
     </div>
   </div>
@@ -192,9 +191,11 @@
       <div class="item-actions">
         <!-- svelte-ignore a11y-img-redundant-alt -->
         <!-- svelte-ignore a11y-missing-attribute -->
-        <img src={itemTexture} style="display:none" />
-        <button id="download-action" on:click={downloadImage}
-          >{$_("download")}</button
+        <img style="display:none" />
+        <button
+          id="download-action"
+          on:click={downloadImage}
+          class:disabled={$itemLayers.length == 0}>{$_("download")}</button
         >
       </div>
     </div>

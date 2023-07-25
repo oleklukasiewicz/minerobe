@@ -15,12 +15,14 @@
   export let orbitControlsEnabled = true;
   export let backgroundColor = "black";
   export let backgroundColorOpacity = 1;
+  export let renderFloor = true;
 
   let scene: any;
   let camera: any;
   let renderer: any;
   let controls: any;
 
+  const textureLoader = new THREE.TextureLoader();
   const loader = new GLTFLoader();
 
   let skinRenderNode: any;
@@ -96,7 +98,18 @@
       controls.maxDistance = 3.0;
       controls.minDistance = 0.5;
     }
-
+    if (renderFloor) {
+      //add scene floor
+      const floorGeometry = new THREE.PlaneGeometry(10, 10, 10, 10);
+      const floorMaterial = new THREE.MeshBasicMaterial({
+        color: 0x5f5f5f,
+        side: THREE.DoubleSide,
+      });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.rotation.x = Math.PI / 2;
+      floor.position.y = 0;
+      scene.add(floor);
+    }
     // Render the scene
     const animate = function () {
       requestAnimationFrame(animate);
