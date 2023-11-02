@@ -218,10 +218,10 @@ button:active{
     border: 0;
     background-color: transparent;
     outline: none;
-    border-bottom: 1px solid transparent;
+    border-bottom: 3px solid transparent;
     width: 100%;
 }
 .title-input:hover
 {
-   border-bottom: 1px solid var(--color-active-L1);
+   border-bottom: 3px solid var(--color-active-L1);
 }

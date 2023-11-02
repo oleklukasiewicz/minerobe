@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import mergeImages from "merge-images";
+  import { mergeImages } from "$src/helpers/imageMerger";
 
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
@@ -44,7 +44,9 @@
     updateTexture = async (layers) => {
       if (baseLayer)
         modelTexture = await mergeImages(
-          [...layers.map((x) => x.content), baseLayer].reverse()
+          [...layers.map((x) => x.content), baseLayer].reverse(),
+          undefined,
+          itemModelType
         );
     };
     await updateTexture($itemLayers);
@@ -118,7 +120,7 @@
     const link = document.createElement("a");
     link.href = await mergeImages(
       [...$itemLayers.map((x) => x.content)].reverse()
-    );
+    ,undefined,itemModelType);
     link.download = itemName.toLowerCase() + ".png";
     document.body.appendChild(link);
     link.click();
