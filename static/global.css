@@ -159,8 +159,7 @@ button{
     box-sizing: border-box;
     padding: 7px 16px;
 }
-button>svg
-{
+button > svg{
     width: 24px;
     height: 24px;
     margin-right: 8px;
@@ -168,14 +167,17 @@ button>svg
     vertical-align: middle;
     transform: scale(1);
 }
-button.icon
-{
+button.tertiary{
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--color-theme-font);
+}
+button.icon{
     width: 42px;
     height: 42px;
     padding: 6px 8px;
 }
-button.small
-{
+button.small{
     padding: 3px 8px 2px;
 }
 button.secondary{
@@ -216,28 +218,24 @@ button:active{
     border-left: solid 1px var(--color-theme-D2);
     margin: 10px 4px;
 }
-.flex
-{
+.flex{
     display: flex;
 }
-.inline-flex
-{
+.inline-flex{
     display: inline-flex;
 }
 .inline{
-    display: inline !important;
+    display: inline!important;
 }
-.title-input
-{
+.title-input{
     font-family: minecraft;
-    font-size:var(--size-font-subheader);
+    font-size: var(--size-font-subheader);
     border: 0;
     background-color: transparent;
-    outline: none;
+    outline: 0;
     border-bottom: 3px solid transparent;
     width: 100%;
 }
-.title-input:hover
-{
-   border-bottom: 3px solid var(--color-active-L1);
+.title-input:hover{
+    border-bottom: 3px solid var(--color-active-L1);
 }

@@ -48,9 +48,9 @@ export let mergeImages = function (
     });
 
     // Get canvas context
-    var ctx = canvas.getContext("2d");
+    var ctx = canvas.getContext("2d",{ willReadFrequently: true });
     var tempCanvas = window.document.createElement("canvas");
-    var tempCtx = tempCanvas.getContext("2d");
+    var tempCtx = tempCanvas.getContext("2d",{ willReadFrequently: true });
 
     // When sources have loaded
     resolve(
