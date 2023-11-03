@@ -4,6 +4,10 @@
   import type { FileData } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
 
+  import UpIcon from "$src/icons/chevron-up.svg?raw";
+  import DownIcon from "$src/icons/chevron-down.svg?raw";
+  import DeleteIcon from "$src/icons/close.svg?raw";
+
   export let texture: FileData = null;
   export let model = null;
   export let canUp = true;
@@ -36,13 +40,25 @@
     <div class="render"><SkinSnapshot texture={texture.content} {model} /></div>
     <span>{texture.fileName || "Layer"}</span>
   </div>
-  <div class='actions'>
-    <button class="secondary" on:click={up} class:disabled={!canUp}>{$_("up")}</button>
-    <button class="secondary" on:click={down} class:disabled={!canDown}
-      >{$_("down")}</button
+  <div class="actions">
+    <button
+      class="secondary icon"
+      title={$_("up")}
+      on:click={up}
+      class:disabled={!canUp}
+    >
+      {@html UpIcon}</button
+    >
+    <button
+      class="secondary icon"
+      title={$_("down")}
+      on:click={down}
+      class:disabled={!canDown}>{@html DownIcon}</button
     >
     <div class="separator vertical" />
-    <button class="secondary" on:click={remove}>{$_("remove")}</button>
+    <button class="secondary icon" title={$_("remove")} on:click={remove}>
+      {@html DeleteIcon}</button
+    >
   </div>
 </div>
 

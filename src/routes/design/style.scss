@@ -32,17 +32,24 @@
     .item-layers {
       display: flex;
       flex-direction: column;
-      #add-layer-action {
-        flex: 1;
-        font-size: larger;
+      form {
+        margin-top: 8px;
+        gap: 8px;
+        button {
+          flex: 1;
+          font-size: larger;
+        }
       }
     }
     .item-actions {
       display: flex;
-      gap:8px;
+      gap: 8px;
       button {
         flex: 1;
         font-size: larger;
+      }
+      button.icon {
+        flex: 0;
       }
     }
   }

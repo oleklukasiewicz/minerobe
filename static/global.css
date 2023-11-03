@@ -159,6 +159,21 @@ button{
     box-sizing: border-box;
     padding: 7px 16px;
 }
+button>svg
+{
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    display: inline-table;
+    vertical-align: middle;
+    transform: scale(1);
+}
+button.icon
+{
+    width: 42px;
+    height: 42px;
+    padding: 6px 8px;
+}
 button.small
 {
     padding: 3px 8px 2px;

@@ -10,6 +10,11 @@
   import { writable, type Writable } from "svelte/store";
   import { FileData } from "$src/data/common";
 
+  import DownloadIcon from "$src/icons/download.svg?raw";
+  import ImportPackageIcon from "$src/icons/upload.svg?raw";
+  import DownloadPackageIcon from "$src/icons/flatten.svg?raw";
+  import AddIcon from "$src/icons/plus.svg?raw";
+
   let itemModelType = "alex";
   let baseLayer;
   let itemName = $_("defaultskinname");
@@ -255,8 +260,14 @@
             id="add-layer-action"
             type="submit"
             class="secondary"
-            on:click={fileInput.click()}>+ {$_("layersOpt.addLayer")}</button
+            on:click={fileInput.click()}>{@html AddIcon} {$_("layersOpt.addLayer")}</button
           >
+          <button
+          id="import-package-action"
+          title={$_("importPackage")}
+          on:click={importImagesFromPackage}
+          class="secondary">{@html ImportPackageIcon} {$_("importPackage")}</button
+        >
         </form>
       </div>
       <br />
@@ -274,28 +285,21 @@
         />
       </div>
       <br />
-      <span class="caption">{$_('package')}</span>
       <div class="item-actions">
         <input type="file" id="fileInput" style="display: none;" />
         <button
-          id="import-package-action"
-          on:click={importImagesFromPackage}
-          class="secondary">{$_('importPackage')}</button
+          id="download-action"
+          on:click={downloadImage}
+          class:disabled={$itemLayers.length == 0}
+          >{@html DownloadIcon}{$_("download")}</button
         >
         <button
           id="download-package-action"
           on:click={addImagesToZip}
+          title={$_("downloadPackage")}
           class:disabled={$itemLayers.length == 0}
-          >{$_("downloadPackage")}</button
-        >
-      </div>
-      <br />
-      <br />
-      <div class="item-actions">
-        <button
-          id="download-action"
-          on:click={downloadImage}
-          class:disabled={$itemLayers.length == 0}>{$_("download")}</button
+          class="icon"
+          >{@html DownloadPackageIcon}</button
         >
       </div>
     </div>
