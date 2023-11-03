@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { mergeImages } from "$src/helpers/imageMerger";
+  import JSZip from "jszip";
 
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
@@ -119,12 +120,75 @@
   const downloadImage = async () => {
     const link = document.createElement("a");
     link.href = await mergeImages(
-      [...$itemLayers.map((x) => x.content)].reverse()
-    ,undefined,itemModelType);
+      [...$itemLayers.map((x) => x.content)].reverse(),
+      undefined,
+      itemModelType
+    );
     link.download = itemName.toLowerCase() + ".png";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const addImagesToZip = function () {
+    let zip = new JSZip();
+    $itemLayers.forEach((layer, index) => {
+      zip.file(
+        index + "_" + layer.fileName + ".png",
+        layer.content.split(",")[1],
+        {
+          base64: true,
+        }
+      );
+    });
+    zip.generateAsync({ type: "base64" }).then((data) => {
+      const link = document.createElement("a");
+      link.href = "data:application/zip;base64," + data;
+      link.download = itemName.toLowerCase() + "_package.zip";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  };
+
+  const importImagesFromPackage = function () {
+    const fileInput = document.getElementById("fileInput") as any;
+    fileInput.click();
+    fileInput.addEventListener("change", function () {
+      const selectedFile = fileInput.files[0];
+
+      if (selectedFile) {
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+          const zip = new JSZip();
+          zip.loadAsync(event.target.result).then(function (contents) {
+            let promises = Object.keys(contents.files)
+              .filter((filename) => filename.endsWith(".png"))
+              .map((filename) =>
+                contents.files[filename]
+                  .async("base64")
+                  .then(
+                    (content) =>
+                      new FileData(
+                        filename.split("_")[1].split(".")[0],
+                        "data:image/png;base64," + content
+                      )
+                  )
+              );
+
+            Promise.all(promises).then((layers) => {
+              itemLayers.update((old) => {
+                old.unshift(...layers);
+                return old;
+              });
+            });
+          });
+        };
+
+        reader.readAsArrayBuffer(selectedFile);
+      }
+    });
   };
 </script>
 
@@ -191,13 +255,25 @@
       <br />
       <br />
       <div class="item-actions">
-        <!-- svelte-ignore a11y-img-redundant-alt -->
-        <!-- svelte-ignore a11y-missing-attribute -->
-        <img style="display:none" />
         <button
           id="download-action"
           on:click={downloadImage}
           class:disabled={$itemLayers.length == 0}>{$_("download")}</button
+        >
+      </div>
+      <br />
+      <div class="item-actions">
+        <input type="file" id="fileInput" style="display: none;" />
+        <button
+          id="import-package-action"
+          on:click={importImagesFromPackage}
+          class="secondary">Import package</button
+        >
+        <button
+          id="download-package-action"
+          on:click={addImagesToZip}
+          class:disabled={$itemLayers.length == 0}
+          >{$_("downloadPackage")}</button
         >
       </div>
     </div>

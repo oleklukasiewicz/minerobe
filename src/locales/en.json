@@ -8,6 +8,7 @@
     "delete":"Delete",
     "remove":"Remove",
     "download":"Download",
+    "downloadPackage":"Download Package",
     "defaultskinname":"New Skin",
     "layersOpt":{
         "addLayer":"Add Layer"

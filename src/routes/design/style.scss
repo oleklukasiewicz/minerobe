@@ -39,7 +39,8 @@
     }
     .item-actions {
       display: flex;
-      #download-action {
+      gap:8px;
+      button {
         flex: 1;
         font-size: larger;
       }

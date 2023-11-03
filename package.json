@@ -21,6 +21,7 @@
 	"type": "module",
 	"dependencies": {
 		"gltf-loader": "^1.0.0",
+		"jszip": "^3.10.1",
 		"path": "^0.12.7",
 		"sass": "^1.66.1",
 		"svelte-i18n": "^3.7.0",
