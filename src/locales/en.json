@@ -1,28 +1,28 @@
 {
-    "name":"Name",
-    "model":"Model",
-    "layer":"Layer",
-    "layers":"Layers",
-    "up":"Up",
-    "down":"Down",
-    "delete":"Delete",
-    "remove":"Remove",
-    "download":"Download",
-    "downloadPackage":"Download Package",
-    "defaultskinname":"New Skin",
-    "layersOpt":{
-        "addLayer":"Add Layer"
-    },
-    "modelOpt":
-    {
-        "steve":"Steve",
-        "alex":"Alex"
-    },
-    "navigation":
-    {
-        "explore":"Explore",
-        "design":"Design",
-        "appname":"Minerobe",
-        "home":"Home"
-    }
+  "name": "Name",
+  "model": "Model",
+  "layer": "Layer",
+  "layers": "Layers",
+  "up": "Up",
+  "down": "Down",
+  "delete": "Delete",
+  "remove": "Remove",
+  "download": "Download",
+  "downloadPackage": "Download Package",
+  "defaultskinname": "New Skin",
+  "layersOpt": {
+    "addLayer": "Add Layer"
+  },
+  "modelOpt": {
+    "steve": "Steve",
+    "alex": "Alex"
+  },
+  "navigation": {
+    "explore": "Explore",
+    "design": "Design",
+    "appname": "Minerobe",
+    "home": "Home"
+  },
+  "package": "Package",
+  "importPackage": "Import"
 }

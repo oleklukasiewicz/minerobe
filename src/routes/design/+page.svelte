@@ -274,27 +274,28 @@
         />
       </div>
       <br />
-      <br />
-      <div class="item-actions">
-        <button
-          id="download-action"
-          on:click={downloadImage}
-          class:disabled={$itemLayers.length == 0}>{$_("download")}</button
-        >
-      </div>
-      <br />
+      <span class="caption">{$_('package')}</span>
       <div class="item-actions">
         <input type="file" id="fileInput" style="display: none;" />
         <button
           id="import-package-action"
           on:click={importImagesFromPackage}
-          class="secondary">Import package</button
+          class="secondary">{$_('importPackage')}</button
         >
         <button
           id="download-package-action"
           on:click={addImagesToZip}
           class:disabled={$itemLayers.length == 0}
           >{$_("downloadPackage")}</button
+        >
+      </div>
+      <br />
+      <br />
+      <div class="item-actions">
+        <button
+          id="download-action"
+          on:click={downloadImage}
+          class:disabled={$itemLayers.length == 0}>{$_("download")}</button
         >
       </div>
     </div>
