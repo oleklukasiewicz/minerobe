@@ -19,7 +19,7 @@
     <NavigationItem label={$_("navigation.explore")} viewId="explore" />
     <NavigationItem label={$_("navigation.design")} viewId="design" />
   </div>
-  <div>
+  <div id="content">
     <slot />
   </div>
 {/if}

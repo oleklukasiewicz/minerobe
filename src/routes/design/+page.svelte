@@ -133,14 +133,18 @@
   const addImagesToZip = function () {
     let zip = new JSZip();
     $itemLayers.forEach((layer, index) => {
-      zip.file(
-        index + "_" + layer.fileName + ".png",
-        layer.content.split(",")[1],
-        {
-          base64: true,
-        }
-      );
+      zip.file(layer.fileName + ".png", layer.content.split(",")[1], {
+        base64: true,
+      });
     });
+    //generate json with data
+    const packageData = {
+      name: itemName,
+      model: itemModelType,
+      layers: $itemLayers.map((x) => x.fileName),
+    }; // replace with your actual data
+    zip.file("data.json", JSON.stringify(packageData));
+
     zip.generateAsync({ type: "base64" }).then((data) => {
       const link = document.createElement("a");
       link.href = "data:application/zip;base64," + data;
@@ -151,18 +155,18 @@
     });
   };
 
-  const importImagesFromPackage = function () {
+  const importImagesFromPackage = async function () {
     const fileInput = document.getElementById("fileInput") as any;
     fileInput.click();
-    fileInput.addEventListener("change", function () {
+    fileInput.addEventListener("change", async function () {
       const selectedFile = fileInput.files[0];
 
       if (selectedFile) {
         const reader = new FileReader();
 
-        reader.onload = function (event) {
+        reader.onload = async function (event) {
           const zip = new JSZip();
-          zip.loadAsync(event.target.result).then(function (contents) {
+          zip.loadAsync(event.target.result).then(async function (contents) {
             let promises = Object.keys(contents.files)
               .filter((filename) => filename.endsWith(".png"))
               .map((filename) =>
@@ -171,15 +175,32 @@
                   .then(
                     (content) =>
                       new FileData(
-                        filename.split("_")[1].split(".")[0],
+                        filename.split(".")[0],
                         "data:image/png;base64," + content
                       )
                   )
               );
+            let jsonData = null;
+            if (contents.files["data.json"]) {
+              await contents.files["data.json"]
+                .async("string")
+                .then(function (data) {
+                  jsonData = JSON.parse(data);
+                });
+            }
 
             Promise.all(promises).then((layers) => {
               itemLayers.update((old) => {
-                old.unshift(...layers);
+                if (jsonData) {
+                  itemName = jsonData.name;
+                  itemModelType = jsonData.model;
+                  let layerstoInsert = jsonData.layers
+                    .map((x) => layers.find((y) => y.fileName == x))
+                    .filter((x) => x);
+                  old.unshift(...layerstoInsert);
+                } else {
+                  old.unshift(...layers);
+                }
                 return old;
               });
             });

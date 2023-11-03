@@ -8,9 +8,20 @@
     box-sizing: border-box;
     display: flex;
     gap: 8px;
+    position: fixed;
+    top: 0  ;
+    width: 100vw;
+    z-index: 10;
     #nav-title
     {
         font-size: larger;
         padding: 6px 22px 6px 12px;
     }
+}
+#content
+{
+    margin-top: 60px;
+    display: table;
+    max-width: 100vw;
+    width: 100%;
 }
