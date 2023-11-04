@@ -2,6 +2,7 @@
   import { _ } from "svelte-i18n";
   import { mergeImages } from "$src/helpers/imageMerger";
   import JSZip from "jszip";
+  import * as THREE from "three";
 
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
@@ -15,11 +16,11 @@
   import DownloadPackageIcon from "$src/icons/flatten.svg?raw";
   import AddIcon from "$src/icons/plus.svg?raw";
 
-  let itemModelType = "alex";
+  let itemModelType: Writable<string> = writable("alex");
   let baseLayer;
   let itemName = $_("defaultskinname");
   let itemLayers: Writable<FileData[]> = writable([]);
-  let itemModel: any = "";
+  let itemModel: Writable<string> = writable("");
   let modelTexture: string = null;
   let alexModel;
   let steveModel;
@@ -28,14 +29,20 @@
   let fileInput;
   let file;
 
+  let layersRenderer;
+
   let updateTexture = function (layers) {};
 
-  $: itemModel = itemModelType == "alex" ? alexModel : steveModel;
   itemLayers.subscribe((layers) => {
     updateTexture(layers);
   });
 
   onMount(async () => {
+    layersRenderer = new THREE.WebGLRenderer({
+      alpha: true,
+      preserveDrawingBuffer: true,
+    });
+
     alexModel =
       "data:model/gltf+json;base64," +
       btoa(await fetch("/model/alex.gltf").then((res) => res.text()));
@@ -47,13 +54,18 @@
       baseLayer = res;
     });
 
+    itemModelType.subscribe((model) => {
+      $itemModel = model == "alex" ? alexModel : steveModel;
+    });
+
     updateTexture = async (layers) => {
-      if (baseLayer)
+      if (baseLayer) {
         modelTexture = await mergeImages(
           [...layers.map((x) => x.content), baseLayer].reverse(),
           undefined,
-          itemModelType
+          $itemModelType
         );
+      }
     };
     await updateTexture($itemLayers);
     loaded = true;
@@ -127,7 +139,7 @@
     link.href = await mergeImages(
       [...$itemLayers.map((x) => x.content)].reverse(),
       undefined,
-      itemModelType
+      $itemModelType
     );
     link.download = itemName.toLowerCase() + ".png";
     document.body.appendChild(link);
@@ -145,7 +157,7 @@
     //generate json with data
     const packageData = {
       name: itemName,
-      model: itemModelType,
+      model: $itemModelType,
       layers: $itemLayers.map((x) => x.fileName),
     }; // replace with your actual data
     zip.file("data.json", JSON.stringify(packageData));
@@ -165,6 +177,8 @@
     fileInput.click();
     fileInput.addEventListener("change", async function () {
       const selectedFile = fileInput.files[0];
+
+      fileInput.value = "";
 
       if (selectedFile) {
         const reader = new FileReader();
@@ -198,7 +212,7 @@
               itemLayers.update((old) => {
                 if (jsonData) {
                   itemName = jsonData.name;
-                  itemModelType = jsonData.model;
+                  $itemModelType = jsonData.model;
                   let layerstoInsert = jsonData.layers
                     .map((x) => layers.find((y) => y.fileName == x))
                     .filter((x) => x);
@@ -222,7 +236,7 @@
   <div class="render-data">
     <div class="render">
       {#if loaded}
-        <SkinRender texture={modelTexture} model={itemModel} />
+        <SkinRender texture={modelTexture} model={$itemModel} onlyRenderSnapshot={false} />
       {/if}
     </div>
   </div>
@@ -239,7 +253,8 @@
             <div class="item-layer">
               <ItemLayer
                 texture={layer}
-                model={itemModel}
+                model={$itemModel}
+                renderer={layersRenderer}
                 on:down={downLayer}
                 on:up={upLayer}
                 on:remove={removeLayer}
@@ -260,14 +275,16 @@
             id="add-layer-action"
             type="submit"
             class="secondary"
-            on:click={fileInput.click()}>{@html AddIcon} {$_("layersOpt.addLayer")}</button
+            on:click={fileInput.click()}
+            >{@html AddIcon} {$_("layersOpt.addLayer")}</button
           >
           <button
-          id="import-package-action"
-          title={$_("importPackage")}
-          on:click={importImagesFromPackage}
-          class="secondary">{@html ImportPackageIcon} {$_("importPackage")}</button
-        >
+            id="import-package-action"
+            title={$_("importPackage")}
+            on:click={importImagesFromPackage}
+            class="secondary"
+            >{@html ImportPackageIcon} {$_("importPackage")}</button
+          >
         </form>
       </div>
       <br />
@@ -276,14 +293,15 @@
         <RatioButton
           label={$_("modelOpt.steve")}
           value="steve"
-          bind:group={itemModelType}
+          bind:group={$itemModelType}
         />
         <RatioButton
           label={$_("modelOpt.alex")}
           value="alex"
-          bind:group={itemModelType}
+          bind:group={$itemModelType}
         />
       </div>
+      <br />
       <br />
       <div class="item-actions">
         <input type="file" id="fileInput" style="display: none;" />
@@ -298,8 +316,7 @@
           on:click={addImagesToZip}
           title={$_("downloadPackage")}
           class:disabled={$itemLayers.length == 0}
-          class="icon"
-          >{@html DownloadPackageIcon}</button
+          class="icon tertiary">{@html DownloadPackageIcon}</button
         >
       </div>
     </div>

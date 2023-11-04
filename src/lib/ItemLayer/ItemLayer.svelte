@@ -12,6 +12,8 @@
   export let model = null;
   export let canUp = true;
   export let canDown = true;
+  export let renderer = undefined;
+  export let refreshRender = undefined;
 
   let dispatch = createEventDispatcher();
 
@@ -37,12 +39,14 @@
 
 <div class="item-layer">
   <div class="data">
-    <div class="render"><SkinSnapshot texture={texture.content} {model} /></div>
+    <div class="render">
+      <SkinSnapshot texture={texture.content} {model} {renderer} bind:refreshRender />
+    </div>
     <span>{texture.fileName || "Layer"}</span>
   </div>
   <div class="actions">
     <button
-      class="secondary icon"
+      class="tertiary icon"
       title={$_("up")}
       on:click={up}
       class:disabled={!canUp}
@@ -50,13 +54,13 @@
       {@html UpIcon}</button
     >
     <button
-      class="secondary icon"
+      class="tertiary icon"
       title={$_("down")}
       on:click={down}
       class:disabled={!canDown}>{@html DownIcon}</button
     >
     <div class="separator vertical" />
-    <button class="secondary icon" title={$_("remove")} on:click={remove}>
+    <button class="tertiary icon" title={$_("remove")} on:click={remove}>
       {@html DeleteIcon}</button
     >
   </div>

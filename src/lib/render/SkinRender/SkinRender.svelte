@@ -6,6 +6,7 @@
 
   // Replace with the path to your 3D model and texture
   export let model: Object;
+  export let modelName: string = "";
   export let texture: any;
   export let sceneRotX = 0;
   export let sceneRotY = Math.PI;
@@ -16,11 +17,22 @@
   export let backgroundColor = "black";
   export let backgroundColorOpacity = 1;
   export let renderFloor = true;
+  export let renderer = new THREE.WebGLRenderer({
+    alpha: true,
+    preserveDrawingBuffer: true,
+  });
+
+  export const refreshRender = function () {
+    render();
+  };
+
+  export let onlyRenderSnapshot = false;
 
   let scene: any;
   let camera: any;
-  let renderer: any;
   let controls: any;
+  let imgNode: any;
+  let hiddenNode: any;
 
   const textureLoader = new THREE.TextureLoader();
   const loader = new GLTFLoader();
@@ -28,13 +40,60 @@
   let skinRenderNode: any;
   let loadedRender: any;
 
+  const render = function () {
+    if (skinRenderNode != null) {
+      const canvas = skinRenderNode;
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      if (!onlyRenderSnapshot) requestAnimationFrame(render);
+      if (controls) controls.update();
+      renderer.setSize(width, height, false);
+      renderer.render(scene, camera);
+      if (!onlyRenderSnapshot) {
+        skinRenderNode.appendChild(renderer.domElement);
+      } else {
+        if (hiddenNode) hiddenNode.appendChild(renderer.domElement);
+        imgNode.src = renderer.domElement.toDataURL();
+      }
+    }
+  };
+  const onWindowResize = function () {
+    let width;
+    let height;
+    if (skinRenderNode) {
+      width = skinRenderNode.clientWidth;
+      height = skinRenderNode.clientHeight;
+    }
+
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    render();
+  };
+
+  let isLoading = false;
+
   let updateRender = function (textureToLoad, modelToLoad) {
-    loader.load(modelToLoad, (gltf: any) => {
-      const textureS = new THREE.TextureLoader().load(textureToLoad);
-      //removing ol render model
+    const modelPromise = new Promise((resolve) => {
+      loader.load(modelToLoad, (gltf) => {
+        resolve(gltf);
+      });
+    });
+
+    // Create a new promise that resolves when the texture has loaded
+    const texturePromise = new Promise((resolve) => {
+      textureLoader.load(textureToLoad, (texture) => {
+        resolve(texture);
+      });
+    });
+
+    // Wait for both promises to resolve
+    Promise.all([modelPromise, texturePromise]).then(([gltfP, textureSP]) => {
       scene.remove(loadedRender);
+      let gltf: any = gltfP;
+      let textureS: any = textureSP;
 
       loadedRender = gltf.scene;
+
       gltf.scene.traverse((child: any) => {
         if (child.isMesh) {
           // Set texture filtering and wrap mode to improve sharpness
@@ -48,12 +107,12 @@
         }
       });
       scene.add(gltf.scene);
+
+      if (onlyRenderSnapshot) render();
     });
   };
 
   onMount(async () => {
-    texture;
-
     // Create a scene
     scene = new THREE.Scene();
     scene.position.y = -1;
@@ -73,24 +132,17 @@
     camera.position.x = cameraPosX;
 
     // Create a renderer
-    renderer = new THREE.WebGLRenderer({ alpha: true });
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.physicallyCorrectLights = true;
+    //renderer.useLegacyLights = false;
     renderer.shadowMap.enabled = true;
     renderer.outputEncoding = 1;
-    skinRenderNode.appendChild(renderer.domElement);
-
-    // Load the model and texture
-    updateRender(texture, model);
+    renderer.setClearColor(backgroundColor, backgroundColorOpacity);
 
     // Add a directional light
     const light = new THREE.AmbientLight(0xffffff, 3);
     scene.add(light);
-
-    // Set the floor color
-    renderer.setClearColor(backgroundColor, backgroundColorOpacity);
 
     // Add orbit controls
     if (orbitControlsEnabled) {
@@ -110,40 +162,20 @@
       floor.position.y = 0;
       scene.add(floor);
     }
-    // Render the scene
-    const animate = function () {
-      requestAnimationFrame(animate);
-      if (controls) controls.update();
-      const canvas = renderer.domElement;
-      const width = canvas.clientWidth;
-      const height = canvas.clientHeight;
-      const needResize = canvas.width !== width || canvas.height !== height;
-      if (needResize) {
-        renderer.setSize(width, height, false);
-      }
-      renderer.render(scene, camera);
-    };
-    animate();
-    function onWindowResize() {
-      let width;
-      let height;
-      if (skinRenderNode) {
-        width = skinRenderNode.clientWidth;
-        height = skinRenderNode.clientHeight;
-      }
-
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-    }
-
     window.addEventListener("resize", onWindowResize);
     onWindowResize();
+    render();
   });
 
   $: updateRender(texture, model);
 </script>
 
-<div class="skin-render" bind:this={skinRenderNode} />
+<div class="skin-render" bind:this={skinRenderNode}>
+  {#if onlyRenderSnapshot}
+    <img bind:this={imgNode} />
+    <div class="hidden" bind:this={hiddenNode} />
+  {/if}
+</div>
 
 <style lang="scss">
   @import "SkinRender.scss";
