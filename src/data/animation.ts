@@ -1,14 +1,22 @@
 export class RenderAnimation {
   prepare: Function;
   render: Function;
-  constructor(prepare: Function, render: Function) {
+  stop: Function;
+  constructor(prepare: Function, render: Function, stop: Function) {
     this.prepare = prepare;
     this.render = render;
+    this.stop = stop;
   }
+}
+function lerp(start, end, factor) {
+  return (1 - factor) * start + factor * end;
+}
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
 }
 
 export const DefaultAnimation = new RenderAnimation(
-  function (scene, keepData = false) {
+  function (scene, keepData = false, modelName) {
     let data = {
       angle: 0,
       speed: 1,
@@ -19,15 +27,12 @@ export const DefaultAnimation = new RenderAnimation(
       head: scene.getObjectByName("Head"),
       body: scene.getObjectByName("Body"),
       nextRotationTime: Math.random() * 5,
-      headRotation: ((Math.random() * 120 - 60) * Math.PI) / 180,
+      headRotation: 0,
       currentRotation: 0,
-      rotationSpeed: Math.random() * 0.02 + 0.01,
+      rotationSpeed: 0,
       bodyRotationDelay: 0,
       bodyRotationTarget: 0,
     };
-    data.head.rotation.x = -0.001;
-    data.leftarm.rotation.x = -0.001;
-    data.rightarm.rotation.x = -0.001;
 
     const armDistanceX = 0.3; // Adjust this value to change the distance of the arms from the body in the x direction
     const armDistanceZ = 0.0; // Adjust this value to change the distance of the arms from the body in the z direction
@@ -36,13 +41,17 @@ export const DefaultAnimation = new RenderAnimation(
       data.leftarm.parent.remove(data.leftarm);
       data.rightarm.parent.remove(data.rightarm);
 
-      // Add the arms to the body, making the body their parent
       data.body.add(data.leftarm);
       data.body.add(data.rightarm);
 
       // Set the position of the arms relative to the body
-      data.leftarm.position.set(-armDistanceX, -0.12, -armDistanceZ);
-      data.rightarm.position.set(armDistanceX, -0.12, armDistanceZ);
+      if (modelName === "steve") {
+        data.leftarm.position.set(-armDistanceX, -0.12, -armDistanceZ);
+        data.rightarm.position.set(armDistanceX, -0.12, armDistanceZ);
+      } else {
+        data.leftarm.position.set(-armDistanceX, -0.15, -armDistanceZ);
+        data.rightarm.position.set(armDistanceX, -0.15, armDistanceZ);
+      }
     }
 
     if (keepData) {
@@ -57,7 +66,7 @@ export const DefaultAnimation = new RenderAnimation(
     }
     return data;
   },
-  function (data, scene, clock) {
+  function (data, scene, clock, modelName) {
     const elapsedTime = clock.getDelta();
     const amplitude = 0.025;
     //console.log(data);
@@ -73,7 +82,7 @@ export const DefaultAnimation = new RenderAnimation(
         // Time for a new rotation
         data.headRotation = ((Math.random() * 120 - 60) * Math.PI) / 180; // New random rotation
         data.nextRotationTime = clock.elapsedTime + Math.random() * 5; // New random time for the next rotation
-        data.rotationSpeed = Math.random() * 0.02 + 0.01; // New random speed for the head rotation
+        data.rotationSpeed = Math.random() * 0.01 + 0.005; // New random speed for the head rotation
       }
       // Interpolate between the current rotation and the target rotation using an easing function
       data.currentRotation +=
@@ -99,9 +108,112 @@ export const DefaultAnimation = new RenderAnimation(
       data.head.position.y = 1.47 + amplitude * cSin;
       data.head.rotation.x = -0.001 + 0.07 * cSin;
       data.rightleg.rotation.x = -0.2 + 0.06 * cSin;
-      data.rightleg.position.z = 0 + 0.06 * cSin;
-      data.leftleg.rotation.x = 0.05 + 0.04 * cSin;
-      data.leftleg.position.z = 0 + 0.04 * cSin;
+      data.rightleg.position.z = -0.02 + 0.04 * cSin;
+      const delay = 0.5; // Adjust this value to change the delay
+
+      data.leftleg.rotation.x =
+        0.05 + 0.03 * Math.sin(clock.elapsedTime + delay);
+      data.leftleg.position.z = 0 + 0.03 * Math.sin(clock.elapsedTime + delay);
+    }
+  },
+  function (data, scene, clock, modelName) {
+    const resetSpeed = 0.05; // Adjust this value to change the speed of the reset
+    if (data.body) {
+      // Interpolate between the current values and the target values
+      data.body.rotation.y = lerp(
+        data.body.rotation.y,
+        0,
+        easeOutCubic(resetSpeed)
+      );
+      data.body.position.y = lerp(
+        data.body.position.y,
+        1.47,
+        easeOutCubic(resetSpeed)
+      );
+
+      data.head.position.y = lerp(
+        data.head.position.y,
+        1.47,
+        easeOutCubic(resetSpeed)
+      );
+      data.head.rotation.x = lerp(
+        data.head.rotation.x,
+        0,
+        easeOutCubic(resetSpeed)
+      );
+      data.head.rotation.y = lerp(
+        data.head.rotation.y,
+        0,
+        easeOutCubic(resetSpeed)
+      );
+
+      data.rightleg.rotation.x = lerp(
+        data.rightleg.rotation.x,
+        -0.2,
+        easeOutCubic(resetSpeed)
+      );
+      data.rightleg.position.z = lerp(
+        data.rightleg.position.z,
+        0,
+        easeOutCubic(resetSpeed)
+      );
+
+      data.leftleg.rotation.x = lerp(
+        data.leftleg.rotation.x,
+        0.04,
+        easeOutCubic(resetSpeed)
+      );
+      data.leftleg.position.z = lerp(
+        data.leftleg.position.z,
+        0,
+        easeOutCubic(resetSpeed)
+      );
+
+      // Add the arms
+      data.rightarm.rotation.z = lerp(
+        data.rightarm.rotation.z,
+        0.05,
+        easeOutCubic(resetSpeed)
+      );
+      data.rightarm.position.z = lerp(
+        data.rightarm.position.z,
+        0,
+        easeOutCubic(resetSpeed)
+      );
+
+      data.leftarm.rotation.z = lerp(
+        data.leftarm.rotation.z,
+        -0.05,
+        easeOutCubic(resetSpeed)
+      );
+      data.leftarm.position.z = lerp(
+        data.leftarm.position.z,
+        0,
+        easeOutCubic(resetSpeed)
+      );
+      const isFinished =
+        Math.abs(data.body.rotation.y) < 0.01 &&
+        Math.abs(data.body.position.y - 1.47) < 0.01 &&
+        Math.abs(data.head.position.y - 1.47) < 0.01 &&
+        Math.abs(data.head.rotation.x) < 0.01 &&
+        Math.abs(data.rightleg.rotation.x+0.2) < 0.01 &&
+        Math.abs(data.rightleg.position.z) < 0.01 &&
+        Math.abs(data.leftleg.rotation.x-0.04) < 0.01 &&
+        Math.abs(data.leftleg.position.z) < 0.01 &&
+        // Check the arms
+        Math.abs(data.rightarm.rotation.z-0.05) < 0.01 &&
+        Math.abs(data.rightarm.position.z) < 0.01 &&
+        Math.abs(data.leftarm.rotation.z+0.05) < 0.01 &&
+        Math.abs(data.leftarm.position.z) < 0.01;
+      return isFinished;
+    } else {
+      return true;
     }
   }
+);
+
+export const NewOutfitBottom = new RenderAnimation(
+  function (scene, keepData = false, modelName) {},
+  function (data, scene, clock, modelName) {},
+  function () {}
 );

@@ -11,6 +11,7 @@
 
   export let texture: FileData = null;
   export let model = null;
+  export let modelName = "";
   export let canUp = true;
   export let canDown = true;
   export let renderer = undefined;
@@ -45,6 +46,7 @@
         texture={texture.content}
         {model}
         {renderer}
+        {modelName}
         type={texture.type}
       />
     </div>

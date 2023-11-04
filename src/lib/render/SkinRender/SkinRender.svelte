@@ -11,7 +11,7 @@
   export let texture: any;
   export let sceneRotX = 0;
   export let sceneRotY = Math.PI;
-  export let cameraPosZ = 3;
+  export let cameraPosZ = 2.2;
   export let cameraPosY = 0;
   export let cameraPosX = 0;
   export let orbitControlsEnabled = true;
@@ -45,6 +45,7 @@
 
   let animationData: any;
   let animationPrepared = false;
+  let animationQuiting = false;
 
   const render = function () {
     if (skinRenderNode != null) {
@@ -54,12 +55,27 @@
       if (!onlyRenderSnapshot) requestAnimationFrame(render);
       if (controls) controls.update();
       renderer.setSize(width, height, false);
-      renderer.render(scene, camera);
       if (animation) {
         if (animationPrepared == false) prepareAnimation(animation, false);
-        if (animationData != null)
-          animation.render(animationData, loadedRender, clock);
+        if (animationData != null) {
+          if (animationQuiting) {
+            var finished = animation.stop(
+              animationData,
+              loadedRender,
+              clock,
+              modelName
+            );
+            if (finished) {
+              animationQuiting = false;
+              animationPrepared = false;
+              animationData = null;
+              clock.start();
+            }
+          } else
+            animation.render(animationData, loadedRender, clock, modelName);
+        }
       }
+      renderer.render(scene, camera);
       if (!onlyRenderSnapshot) {
         skinRenderNode.appendChild(renderer.domElement);
       } else {
@@ -118,6 +134,7 @@
       scene.add(gltf.scene);
 
       if (onlyRenderSnapshot) render();
+      animationQuiting = true;
       if (animation) prepareAnimation(animation, true);
     });
   };
@@ -129,10 +146,10 @@
     if (anim) {
       let data;
       if (keepData && animationPrepared) {
-        data = anim.prepare(loadedRender, true);
+        data = anim.prepare(loadedRender, true, modelName);
         if (animationData != null) Object.assign(animationData, data);
       } else {
-        data = anim.prepare(loadedRender, false);
+        data = anim.prepare(loadedRender, false, modelName);
         animationData = data;
       }
       animationPrepared = true;
@@ -170,9 +187,17 @@
     renderer.outputEncoding = 1;
     renderer.setClearColor(backgroundColor, backgroundColorOpacity);
 
+    const brightness = 1.2;
     // Add a directional light
-    const light = new THREE.AmbientLight(0xffffff, 3);
+    const light = new THREE.AmbientLight(0xffffff, brightness * 1.8, 10);
     scene.add(light);
+    const pointLight = new THREE.DirectionalLight(
+      0xffffff,
+      brightness * 0.65,
+      10
+    );
+    pointLight.position.set(0, 50, -50);
+    scene.add(pointLight);
 
     // Add orbit controls
     if (orbitControlsEnabled) {

@@ -255,6 +255,7 @@
         <SkinRender
           texture={modelTexture}
           model={$itemModel}
+          modelName={$itemModelType}
           onlyRenderSnapshot={false}
           animation={DefaultAnimation}
         />
@@ -275,6 +276,7 @@
               <ItemLayer
                 texture={layer}
                 model={$itemModel}
+                modelName={$itemModelType}
                 renderer={layersRenderer}
                 on:down={downLayer}
                 on:up={upLayer}

@@ -4,6 +4,7 @@
 
   export let texture = null;
   export let model = null;
+  export let modelName = "";
   export let type = OUTFIT_TYPE.DEFAULT;
   export let renderer = undefined;
   export let refreshRender = undefined;
@@ -44,11 +45,12 @@
   <SkinRender
     {texture}
     {model}
-    bind:refreshRender={refreshRender}
+    bind:refreshRender
     sceneRotY={Math.PI * 0.75}
     sceneRotX={Math.PI / 4}
     cameraPosZ={camPozZ}
     cameraPosY={camPozY}
+    {modelName}
     cameraPosX={0.1}
     orbitControlsEnabled={false}
     backgroundColorOpacity={0}
