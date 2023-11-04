@@ -21,7 +21,7 @@
   import DownloadPackageIcon from "$src/icons/flatten.svg?raw";
   import AddIcon from "$src/icons/plus.svg?raw";
 
-  import { TweenAnimation } from "$src/data/animation";
+  import { DefaultAnimation } from "$src/data/animation";
 
   let itemModelType: Writable<string> = writable("alex");
   let baseLayer;
@@ -256,7 +256,7 @@
           texture={modelTexture}
           model={$itemModel}
           onlyRenderSnapshot={false}
-          animation={TweenAnimation}
+          animation={DefaultAnimation}
         />
       {/if}
     </div>
