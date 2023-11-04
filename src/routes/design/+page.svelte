@@ -9,7 +9,12 @@
   import { onMount } from "svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
   import { writable, type Writable } from "svelte/store";
-  import { FileData } from "$src/data/common";
+  import {
+    FileData,
+    OUTFIT_TYPE,
+    GetContextFromBase64,
+    GetOutfitType,
+  } from "$src/data/common";
 
   import DownloadIcon from "$src/icons/download.svg?raw";
   import ImportPackageIcon from "$src/icons/upload.svg?raw";
@@ -106,12 +111,18 @@
     file = event.target.files[0];
     const reader = new FileReader();
 
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       base64Data = event.target.result;
+      var context = await GetContextFromBase64(
+        base64Data
+      );
+      var newLayer = new FileData(
+        file.name.replace(/\.[^/.]+$/, ""),
+        base64Data,
+        GetOutfitType(context)
+      );
       itemLayers.update((layers) => {
-        layers.unshift(
-          new FileData(file.name.replace(/\.[^/.]+$/, ""), base64Data)
-        );
+        layers.unshift(newLayer);
         return layers;
       });
     };
@@ -191,13 +202,16 @@
               .map((filename) =>
                 contents.files[filename]
                   .async("base64")
-                  .then(
-                    (content) =>
-                      new FileData(
-                        filename.split(".")[0],
-                        "data:image/png;base64," + content
-                      )
-                  )
+                  .then(async (content) => {
+                    var context = await GetContextFromBase64(
+                      "data:image/png;base64," + content
+                    );
+                    return new FileData(
+                      filename.split(".")[0],
+                      "data:image/png;base64," + content,
+                      GetOutfitType(context)
+                    );
+                  })
               );
             let jsonData = null;
             if (contents.files["data.json"]) {
@@ -236,7 +250,11 @@
   <div class="render-data">
     <div class="render">
       {#if loaded}
-        <SkinRender texture={modelTexture} model={$itemModel} onlyRenderSnapshot={false} />
+        <SkinRender
+          texture={modelTexture}
+          model={$itemModel}
+          onlyRenderSnapshot={false}
+        />
       {/if}
     </div>
   </div>
@@ -271,6 +289,7 @@
             style="display:none"
             bind:this={fileInput}
           />
+          <input type="file" id="fileInput" style="display: none;" />
           <button
             id="add-layer-action"
             type="submit"
@@ -304,7 +323,6 @@
       <br />
       <br />
       <div class="item-actions">
-        <input type="file" id="fileInput" style="display: none;" />
         <button
           id="download-action"
           on:click={downloadImage}

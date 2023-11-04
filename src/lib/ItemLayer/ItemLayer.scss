@@ -9,7 +9,7 @@
   gap: 4px;
   .actions {
     display: flex;
-    padding:12px;
+    padding: 12px;
     gap: 8px;
   }
   .data {
@@ -27,6 +27,11 @@
       margin: 14px;
       font-family: minecraft;
       white-space: nowrap;
+      .label {
+        margin: 0px 14px;
+        padding: 3px 8px;
+        transform: translateY(-2px);
+      }
     }
   }
 }

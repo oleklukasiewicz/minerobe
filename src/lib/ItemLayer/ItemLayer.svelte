@@ -7,6 +7,7 @@
   import UpIcon from "$src/icons/chevron-up.svg?raw";
   import DownIcon from "$src/icons/chevron-down.svg?raw";
   import DeleteIcon from "$src/icons/close.svg?raw";
+  import { text } from "@sveltejs/kit";
 
   export let texture: FileData = null;
   export let model = null;
@@ -40,9 +41,17 @@
 <div class="item-layer">
   <div class="data">
     <div class="render">
-      <SkinSnapshot texture={texture.content} {model} {renderer} bind:refreshRender />
+      <SkinSnapshot
+        texture={texture.content}
+        {model}
+        {renderer}
+        type={texture.type}
+      />
     </div>
-    <span>{texture.fileName || "Layer"}</span>
+    <span
+      >{texture.fileName || "Layer"}<span class="label common">{texture.type}</span
+      ></span
+    >
   </div>
   <div class="actions">
     <button

@@ -215,7 +215,7 @@ button:active{
 }
 .separator.vertical{
     width: 1px;
-    border-left: solid 1px var(--color-theme-D2);
+    border-left: solid 2px var(--color-theme-D2);
     margin: 10px 4px;
 }
 .flex{
