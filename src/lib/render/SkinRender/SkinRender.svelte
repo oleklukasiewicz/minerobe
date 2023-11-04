@@ -3,6 +3,7 @@
   import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
   import * as THREE from "three";
+  import type { RenderAnimation } from "$src/data/animation";
 
   // Replace with the path to your 3D model and texture
   export let model: Object;
@@ -21,6 +22,7 @@
     alpha: true,
     preserveDrawingBuffer: true,
   });
+  export let animation: RenderAnimation = null;
 
   export const refreshRender = function () {
     render();
@@ -36,9 +38,13 @@
 
   const textureLoader = new THREE.TextureLoader();
   const loader = new GLTFLoader();
+  const clock = new THREE.Clock();
 
   let skinRenderNode: any;
   let loadedRender: any;
+
+  let animationData: any;
+  let animationPrepared = false;
 
   const render = function () {
     if (skinRenderNode != null) {
@@ -49,6 +55,11 @@
       if (controls) controls.update();
       renderer.setSize(width, height, false);
       renderer.render(scene, camera);
+      if (animation) {
+        if (animationPrepared == false) prepareAnimation(animation, false);
+        if (animationData != null)
+          animation.render(animationData, loadedRender, clock);
+      }
       if (!onlyRenderSnapshot) {
         skinRenderNode.appendChild(renderer.domElement);
       } else {
@@ -70,9 +81,7 @@
     render();
   };
 
-  let isLoading = false;
-
-  let updateRender = function (textureToLoad, modelToLoad) {
+  const updateRender = function (textureToLoad, modelToLoad) {
     const modelPromise = new Promise((resolve) => {
       loader.load(modelToLoad, (gltf) => {
         resolve(gltf);
@@ -109,9 +118,30 @@
       scene.add(gltf.scene);
 
       if (onlyRenderSnapshot) render();
+      if (animation) prepareAnimation(animation, true);
     });
   };
 
+  const prepareAnimation = function (anim, keepData = false) {
+    if (!loadedRender) {
+      return;
+    }
+    if (anim) {
+      let data;
+      if (keepData && animationPrepared) {
+        data = anim.prepare(loadedRender, true);
+        if (animationData != null) Object.assign(animationData, data);
+      } else {
+        data = anim.prepare(loadedRender, false);
+        animationData = data;
+      }
+      animationPrepared = true;
+    }
+  };
+  const updateAnimation = function (anim) {
+    animationPrepared = false;
+    prepareAnimation(anim, false);
+  };
   onMount(async () => {
     // Create a scene
     scene = new THREE.Scene();
@@ -167,6 +197,7 @@
     render();
   });
 
+  $: updateAnimation(animation);
   $: updateRender(texture, model);
 </script>
 

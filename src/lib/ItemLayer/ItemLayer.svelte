@@ -49,7 +49,8 @@
       />
     </div>
     <span
-      >{texture.fileName || "Layer"}<span class="label common">{texture.type}</span
+      >{texture.fileName || "Layer"}<br /><span class="label common"
+        >{texture.type}</span
       ></span
     >
   </div>
