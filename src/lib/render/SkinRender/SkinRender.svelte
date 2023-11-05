@@ -27,7 +27,11 @@
   export const refreshRender = function () {
     render();
   };
-
+  export const changeAnimation: Function = async function (
+    anim: RenderAnimation
+  ) {
+    nextAnimation.push(anim);
+  };
   export let onlyRenderSnapshot = false;
 
   let scene: any;
@@ -38,7 +42,7 @@
 
   const textureLoader = new THREE.TextureLoader();
   const loader = new GLTFLoader();
-  const clock = new THREE.Clock();
+  let clock = new THREE.Clock();
 
   let skinRenderNode: any;
   let loadedRender: any;
@@ -46,6 +50,8 @@
   let animationData: any;
   let animationPrepared = false;
   let animationQuiting = false;
+
+  let nextAnimation: RenderAnimation[] = [];
 
   const render = function () {
     if (skinRenderNode != null) {
@@ -55,24 +61,39 @@
       if (!onlyRenderSnapshot) requestAnimationFrame(render);
       if (controls) controls.update();
       renderer.setSize(width, height, false);
+      if (nextAnimation.length > 0 && animation != null && animationPrepared) {
+        animationQuiting = true;
+      }
       if (animation) {
-        if (animationPrepared == false) prepareAnimation(animation, false);
-        if (animationData != null) {
-          if (animationQuiting) {
-            var finished = animation.stop(
-              animationData,
-              loadedRender,
-              clock,
-              modelName
-            );
-            if (finished) {
-              animationQuiting = false;
-              animationPrepared = false;
-              animationData = null;
-              clock.start();
-            }
-          } else
-            animation.render(animationData, loadedRender, clock, modelName);
+        if (animationPrepared == false) {
+          prepareAnimation(animation, false);
+        } else {
+          if (animationData != null) {
+            if (animationQuiting) {
+              var finished = animation.stop(
+                animationData,
+                loadedRender,
+                clock,
+                modelName
+              );
+              if (finished) {
+                animationQuiting = false;
+                animationPrepared = false;
+                animationData = null;
+                animation = nextAnimation[0];
+                nextAnimation.splice(0, 1);
+              }
+            } else
+              animation.render(animationData, loadedRender, clock, modelName);
+          }
+        }
+      } else {
+        if (nextAnimation.length > 0) {
+          animationQuiting = false;
+          animationPrepared = false;
+          animationData = null;
+          animation = nextAnimation[0];
+          nextAnimation.splice(0, 1);
         }
       }
       renderer.render(scene, camera);
@@ -134,7 +155,6 @@
       scene.add(gltf.scene);
 
       if (onlyRenderSnapshot) render();
-      animationQuiting = true;
       if (animation) prepareAnimation(animation, true);
     });
   };
@@ -152,11 +172,13 @@
         data = anim.prepare(loadedRender, false, modelName);
         animationData = data;
       }
+      clock.start();
       animationPrepared = true;
     }
   };
   const updateAnimation = function (anim) {
     animationPrepared = false;
+
     prepareAnimation(anim, false);
   };
   onMount(async () => {

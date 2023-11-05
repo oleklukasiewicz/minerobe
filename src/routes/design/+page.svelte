@@ -21,7 +21,12 @@
   import DownloadPackageIcon from "$src/icons/flatten.svg?raw";
   import AddIcon from "$src/icons/plus.svg?raw";
 
-  import { DefaultAnimation } from "$src/data/animation";
+  import {
+    DefaultAnimation,
+    NewOutfitBottomAnimation,
+    NewOutfitShoesAnimation,
+    NewOutfitClapAnimation,
+  } from "$src/data/animation";
 
   let itemModelType: Writable<string> = writable("alex");
   let baseLayer;
@@ -37,7 +42,9 @@
   let file;
 
   let layersRenderer;
+  let updatedLayer: FileData = null;
 
+  let updateAnimation = function (anim) {};
   let updateTexture = function (layers) {};
 
   itemLayers.subscribe((layers) => {
@@ -72,6 +79,16 @@
           undefined,
           $itemModelType
         );
+        if (
+          updatedLayer?.type == OUTFIT_TYPE.TOP ||
+          updatedLayer?.type == OUTFIT_TYPE.HOODIE
+        ) {
+          await updateAnimation(NewOutfitBottomAnimation);
+        }
+        if (updatedLayer?.type == OUTFIT_TYPE.SHOES) {
+          await updateAnimation(NewOutfitShoesAnimation);
+        }
+        await updateAnimation(DefaultAnimation);
       }
     };
     await updateTexture($itemLayers);
@@ -85,6 +102,7 @@
         let temp = layers[index - 1];
         layers[index - 1] = layers[index];
         layers[index] = temp;
+        updatedLayer = layers[index - 1];
         return layers;
       });
     }
@@ -96,6 +114,7 @@
         let temp = layers[index + 1];
         layers[index + 1] = layers[index];
         layers[index] = temp;
+        updatedLayer = layers[index + 1];
         return layers;
       });
     }
@@ -104,6 +123,7 @@
     let index = $itemLayers.indexOf(e.detail.texture);
     itemLayers.update((layers) => {
       layers.splice(index, 1);
+      updatedLayer = null;
       return layers;
     });
   };
@@ -115,9 +135,7 @@
 
     reader.onload = async (event) => {
       base64Data = event.target.result;
-      var context = await GetContextFromBase64(
-        base64Data
-      );
+      var context = await GetContextFromBase64(base64Data);
       var newLayer = new FileData(
         file.name.replace(/\.[^/.]+$/, ""),
         base64Data,
@@ -238,6 +256,8 @@
                 }
                 return old;
               });
+              updateAnimation(NewOutfitClapAnimation);
+              updateAnimation(DefaultAnimation);
             });
           });
         };
@@ -258,6 +278,7 @@
           modelName={$itemModelType}
           onlyRenderSnapshot={false}
           animation={DefaultAnimation}
+          bind:changeAnimation={updateAnimation}
         />
       {/if}
     </div>

@@ -34,7 +34,7 @@ export const DefaultAnimation = new RenderAnimation(
       bodyRotationTarget: 0,
     };
 
-    const armDistanceX = 0.3; // Adjust this value to change the distance of the arms from the body in the x direction
+    const armDistanceX = 0.31; // Adjust this value to change the distance of the arms from the body in the x direction
     const armDistanceZ = 0.0; // Adjust this value to change the distance of the arms from the body in the z direction
 
     if (data.leftarm && data.rightarm) {
@@ -43,6 +43,11 @@ export const DefaultAnimation = new RenderAnimation(
 
       data.body.add(data.leftarm);
       data.body.add(data.rightarm);
+
+      data.head.parent.remove(data.head);
+
+      data.body.add(data.head);
+      data.head.position.set(0, 0, 0);
 
       // Set the position of the arms relative to the body
       if (modelName === "steve") {
@@ -82,7 +87,7 @@ export const DefaultAnimation = new RenderAnimation(
         // Time for a new rotation
         data.headRotation = ((Math.random() * 120 - 60) * Math.PI) / 180; // New random rotation
         data.nextRotationTime = clock.elapsedTime + Math.random() * 5; // New random time for the next rotation
-        data.rotationSpeed = Math.random() * 0.01 + 0.005; // New random speed for the head rotation
+        data.rotationSpeed = Math.random() * 0.03 + 0.02; // New random speed for the head rotation
       }
       // Interpolate between the current rotation and the target rotation using an easing function
       data.currentRotation +=
@@ -105,7 +110,6 @@ export const DefaultAnimation = new RenderAnimation(
       const cSin = data.speed * Math.sin(clock.elapsedTime);
       data.body.position.y = 1.47 + amplitude * cSin;
 
-      data.head.position.y = 1.47 + amplitude * cSin;
       data.head.rotation.x = -0.001 + 0.07 * cSin;
       data.rightleg.rotation.x = -0.2 + 0.06 * cSin;
       data.rightleg.position.z = -0.02 + 0.04 * cSin;
@@ -131,11 +135,6 @@ export const DefaultAnimation = new RenderAnimation(
         easeOutCubic(resetSpeed)
       );
 
-      data.head.position.y = lerp(
-        data.head.position.y,
-        1.47,
-        easeOutCubic(resetSpeed)
-      );
       data.head.rotation.x = lerp(
         data.head.rotation.x,
         0,
@@ -194,16 +193,15 @@ export const DefaultAnimation = new RenderAnimation(
       const isFinished =
         Math.abs(data.body.rotation.y) < 0.01 &&
         Math.abs(data.body.position.y - 1.47) < 0.01 &&
-        Math.abs(data.head.position.y - 1.47) < 0.01 &&
         Math.abs(data.head.rotation.x) < 0.01 &&
-        Math.abs(data.rightleg.rotation.x+0.2) < 0.01 &&
+        Math.abs(data.rightleg.rotation.x + 0.2) < 0.01 &&
         Math.abs(data.rightleg.position.z) < 0.01 &&
-        Math.abs(data.leftleg.rotation.x-0.04) < 0.01 &&
+        Math.abs(data.leftleg.rotation.x - 0.04) < 0.01 &&
         Math.abs(data.leftleg.position.z) < 0.01 &&
         // Check the arms
-        Math.abs(data.rightarm.rotation.z-0.05) < 0.01 &&
+        Math.abs(data.rightarm.rotation.z - 0.05) < 0.01 &&
         Math.abs(data.rightarm.position.z) < 0.01 &&
-        Math.abs(data.leftarm.rotation.z+0.05) < 0.01 &&
+        Math.abs(data.leftarm.rotation.z + 0.05) < 0.01 &&
         Math.abs(data.leftarm.position.z) < 0.01;
       return isFinished;
     } else {
@@ -212,8 +210,590 @@ export const DefaultAnimation = new RenderAnimation(
   }
 );
 
-export const NewOutfitBottom = new RenderAnimation(
-  function (scene, keepData = false, modelName) {},
-  function (data, scene, clock, modelName) {},
-  function () {}
+export const NewOutfitBottomAnimation = new RenderAnimation(
+  function (scene, keepData = false, modelName) {
+    let data: any = {
+      head: scene.getObjectByName("Head"),
+      body: scene.getObjectByName("Body"),
+      leftarm: scene.getObjectByName("LeftArm"),
+      rightarm: scene.getObjectByName("RightArm"),
+      leftleg: scene.getObjectByName("LeftLeg"),
+      rightleg: scene.getObjectByName("RightLeg"),
+    };
+    data.head.parent.remove(data.head);
+
+    data.body.add(data.head);
+    data.head.position.set(0, 0, 0);
+
+    data.leftarm.parent.remove(data.leftarm);
+    data.rightarm.parent.remove(data.rightarm);
+
+    data.body.add(data.leftarm);
+    data.body.add(data.rightarm);
+
+    const armDistanceX = 0.31; // Adjust this value to change the distance of the arms from the body in the x direction
+    const armDistanceZ = 0.0; // Adjust this value to change the distance of
+    // Set the position of the arms relative to the body
+    if (modelName === "steve") {
+      data.leftarm.position.set(-armDistanceX, -0.12, -armDistanceZ);
+      data.rightarm.position.set(armDistanceX, -0.12, armDistanceZ);
+    } else {
+      data.leftarm.position.set(-armDistanceX, -0.15, -armDistanceZ);
+      data.rightarm.position.set(armDistanceX, -0.15, armDistanceZ);
+    }
+
+    if (keepData) {
+      return data;
+    } else {
+      data.isRotatingDown = true;
+      data.downRotation = -30 * (Math.PI / 180);
+      data.bodyDownRotation = 10 * (Math.PI / 180);
+      data.isLookingLeft = false;
+      data.isLookingRight = false;
+      data.leftRotation = 30 * (Math.PI / 180);
+      data.rightRotation = -30 * (Math.PI / 180);
+      data.armRot = (Math.random() * 10 + 5) * (Math.PI / 180);
+      data.speed = 1;
+      data.angle = 0;
+    }
+    return data;
+  },
+  function () {
+    return true;
+  },
+  function (data, scene, clock, modelName) {
+    const resetSpeed = 0.01; // Adjust this value to change the speed of the reset
+    const epsilon = 0.01; // Adjust this value to change the precision of the equality check
+    const amplitude = 0.025;
+    const elapsedTime = clock.getDelta();
+
+    const cSin = 1 * Math.sin(clock.elapsedTime);
+    if (data.head) {
+      data.body.position.y = 1.47 + amplitude * cSin;
+      data.rightleg.rotation.x = -0.2 + 0.06 * cSin;
+      data.rightleg.position.z = -0.02 + 0.04 * cSin;
+      const delay = 0.5; // Adjust this value to change the delay
+
+      data.leftleg.rotation.x =
+        0.05 + 0.03 * Math.sin(clock.elapsedTime + delay);
+      data.leftleg.position.z = 0 + 0.03 * Math.sin(clock.elapsedTime + delay);
+
+      if (data.isRotatingDown) {
+        data.isLookingLeft = true;
+        // Interpolate between the current rotation and the down rotation
+        data.head.rotation.x = lerp(
+          data.head.rotation.x,
+          data.downRotation,
+          easeOutCubic(resetSpeed)
+        );
+        data.body.rotation.x = lerp(
+          data.body.rotation.x,
+          data.bodyDownRotation,
+          easeOutCubic(resetSpeed)
+        );
+        data.body.position.z = lerp(
+          data.body.position.z,
+          data.bodyDownRotation,
+          easeOutCubic(resetSpeed)
+        );
+
+        data.leftarm.rotation.z = lerp(
+          data.leftarm.rotation.z,
+          data.armRot * -1,
+          easeOutCubic(resetSpeed)
+        );
+
+        data.rightarm.rotation.z = lerp(
+          data.rightarm.rotation.z,
+          data.armRot,
+          easeOutCubic(resetSpeed)
+        );
+
+        // If the head is close enough to the down rotation, set the rotation to the down rotation
+        if (Math.abs(data.head.rotation.x - data.downRotation) < epsilon) {
+          data.head.rotation.x = data.downRotation;
+          data.isRotatingDown = false;
+        }
+      }
+      if (data.isLookingLeft) {
+        // Interpolate between the current rotation and the left rotation
+        data.head.rotation.y = lerp(
+          data.head.rotation.y,
+          data.leftRotation,
+          easeOutCubic(resetSpeed)
+        );
+
+        // If the head is close enough to the left rotation, set the rotation to the left rotation
+        if (Math.abs(data.head.rotation.y - data.leftRotation) < epsilon) {
+          data.head.rotation.y = data.leftRotation;
+          data.isLookingLeft = false;
+          data.isLookingRight = true;
+        }
+      } else if (data.isLookingRight) {
+        // Interpolate between the current rotation and the right rotation
+        data.head.rotation.y = lerp(
+          data.head.rotation.y,
+          data.rightRotation,
+          easeOutCubic(resetSpeed)
+        );
+
+        // If the head is close enough to the right rotation, set the rotation to the right rotation
+        if (Math.abs(data.head.rotation.y - data.rightRotation) < epsilon) {
+          data.head.rotation.y = data.rightRotation;
+          data.isLookingRight = false;
+        }
+      } else {
+        // Interpolate between the current rotation and 0
+        data.head.rotation.x = lerp(
+          data.head.rotation.x,
+          0,
+          easeOutCubic(resetSpeed)
+        );
+        data.body.rotation.x = lerp(
+          data.body.rotation.x,
+          0,
+          easeOutCubic(resetSpeed)
+        );
+        data.body.position.z = lerp(
+          data.body.position.z,
+          0,
+          easeOutCubic(resetSpeed)
+        );
+        data.head.rotation.y = lerp(
+          data.head.rotation.y,
+          0,
+          easeOutCubic(resetSpeed)
+        );
+
+        data.leftarm.rotation.z = lerp(
+          data.leftarm.rotation.z,
+          -0.05,
+          easeOutCubic(resetSpeed)
+        );
+
+        data.rightarm.rotation.z = lerp(
+          data.rightarm.rotation.z,
+          0.05,
+          easeOutCubic(resetSpeed)
+        );
+
+        // If the head is close enough to 0, set the rotation to 0
+        if (
+          Math.abs(data.head.rotation.x) < epsilon &&
+          Math.abs(data.head.rotation.y) < epsilon &&
+          Math.abs(data.body.rotation.x) < epsilon &&
+          Math.abs(data.body.position.z) < epsilon &&
+          Math.abs(data.rightarm.rotation.z - 0.05) < epsilon &&
+          Math.abs(data.leftarm.rotation.z + 0.05) < epsilon
+        ) {
+          data.head.rotation.x = 0;
+          data.body.rotation.x = 0;
+          data.body.position.z = 0;
+          data.head.rotation.y = 0;
+          data.leftarm.rotation.z = 0;
+          data.rightarm.rotation.z = 0;
+          data.isRotatingDown = true;
+          return true;
+        }
+        return false;
+      }
+    }
+  }
+);
+export const NewOutfitShoesAnimation = new RenderAnimation(
+  function (scene, keepData = false, modelName) {
+    let data: any = {
+      head: scene.getObjectByName("Head"),
+      body: scene.getObjectByName("Body"),
+      leftarm: scene.getObjectByName("LeftArm"),
+      rightarm: scene.getObjectByName("RightArm"),
+      leftleg: scene.getObjectByName("LeftLeg"),
+      rightleg: scene.getObjectByName("RightLeg"),
+    };
+    data.head.parent.remove(data.head);
+
+    data.body.add(data.head);
+    data.head.position.set(0, 0, 0);
+
+    data.leftarm.parent.remove(data.leftarm);
+    data.rightarm.parent.remove(data.rightarm);
+
+    data.body.add(data.leftarm);
+    data.body.add(data.rightarm);
+
+    const armDistanceX = 0.31; // Adjust this value to change the distance of the arms from the body in the x direction
+    const armDistanceZ = 0.0; // Adjust this value to change the distance of
+    // Set the position of the arms relative to the body
+    if (modelName === "steve") {
+      data.leftarm.position.set(-armDistanceX, -0.12, -armDistanceZ);
+      data.rightarm.position.set(armDistanceX, -0.12, armDistanceZ);
+    } else {
+      data.leftarm.position.set(-armDistanceX, -0.15, -armDistanceZ);
+      data.rightarm.position.set(armDistanceX, -0.15, armDistanceZ);
+    }
+
+    if (keepData) {
+      return data;
+    } else {
+      data.isRotatingDown = true;
+      data.downRotation = -30 * (Math.PI / 180);
+      data.bodyDownRotation = 10 * (Math.PI / 180);
+      data.isLookingLeft = false;
+      data.isLookingRight = false;
+      data.leftRotation = 30 * (Math.PI / 180);
+      data.rightRotation = -30 * (Math.PI / 180);
+      data.armRot = (Math.random() * 10 + 5) * (Math.PI / 180);
+      data.legRot = (Math.random() * 10 + 5) * (Math.PI / 180);
+      data.speed = 4;
+      data.angle = 0;
+    }
+    return data;
+  },
+  function () {
+    return true;
+  },
+  function (data, scene, clock, modelName) {
+    const resetSpeed = 0.01; // Adjust this value to change the speed of the reset
+    const epsilon = 0.01; // Adjust this value to change the precision of the equality check
+    const amplitude = 0.025;
+    const elapsedTime = clock.getDelta();
+
+    const cSin = 1 * Math.sin(clock.elapsedTime);
+
+    if (data.head) {
+      data.body.position.y = 1.47 + amplitude * cSin;
+      data.rightleg.rotation.x = -0.2 + 0.06 * cSin;
+      data.rightleg.position.z = -0.02 + 0.04 * cSin;
+      const delay = 0.5; // Adjust this value to change the delay
+
+      data.leftleg.rotation.x =
+        0.05 + 0.03 * Math.sin(clock.elapsedTime + delay);
+      data.leftleg.position.z = 0 + 0.03 * Math.sin(clock.elapsedTime + delay);
+
+      if (data.isRotatingDown) {
+        data.isLookingLeft = true;
+        // Interpolate between the current rotation and the down rotation
+        data.head.rotation.x = lerp(
+          data.head.rotation.x,
+          data.downRotation,
+          easeOutCubic(resetSpeed)
+        );
+        // data.body.rotation.x = lerp(
+        //   data.body.rotation.x,
+        //   data.bodyDownRotation,
+        //   easeOutCubic(resetSpeed)
+        // );
+        // data.body.position.z = lerp(
+        //   data.body.position.z,
+        //   data.bodyDownRotation,
+        //   easeOutCubic(resetSpeed)
+        // );
+
+        data.leftarm.rotation.z = lerp(
+          data.leftarm.rotation.z,
+          data.armRot * -1,
+          easeOutCubic(resetSpeed)
+        );
+
+        data.rightarm.rotation.z = lerp(
+          data.rightarm.rotation.z,
+          data.armRot,
+          easeOutCubic(resetSpeed)
+        );
+
+        // If the head is close enough to the down rotation, set the rotation to the down rotation
+        if (Math.abs(data.head.rotation.x - data.downRotation) < epsilon) {
+          data.head.rotation.x = data.downRotation;
+          data.isRotatingDown = false;
+        }
+      }
+      if (data.isLookingLeft) {
+        // Interpolate between the current rotation and the left rotation
+        data.head.rotation.y = lerp(
+          data.head.rotation.y,
+          data.leftRotation,
+          easeOutCubic(resetSpeed)
+        );
+        data.rightleg.rotation.x = lerp(
+          data.rightleg.rotation.x,
+          0,
+          easeOutCubic(resetSpeed)
+        );
+
+        data.leftleg.rotation.x = lerp(
+          data.leftleg.rotation.x,
+          data.legRot,
+          easeOutCubic(resetSpeed)
+        );
+
+        // If the head is close enough to the left rotation, set the rotation to the left rotation
+        if (Math.abs(data.head.rotation.y - data.leftRotation) < epsilon) {
+          data.head.rotation.y = data.leftRotation;
+          data.isLookingLeft = false;
+          data.isLookingRight = true;
+        }
+      } else if (data.isLookingRight) {
+        // Interpolate between the current rotation and the right rotation
+        data.head.rotation.y = lerp(
+          data.head.rotation.y,
+          data.rightRotation,
+          easeOutCubic(resetSpeed)
+        );
+
+        data.rightleg.rotation.x = lerp(
+          data.rightleg.rotation.x,
+          data.legRot,
+          easeOutCubic(resetSpeed)
+        );
+
+        data.leftleg.rotation.x = lerp(
+          data.leftleg.rotation.x,
+          0,
+          easeOutCubic(resetSpeed)
+        );
+
+        // If the head is close enough to the right rotation, set the rotation to the right rotation
+        if (Math.abs(data.head.rotation.y - data.rightRotation) < epsilon) {
+          data.head.rotation.y = data.rightRotation;
+          data.isLookingRight = false;
+        }
+      } else {
+        // Interpolate between the current rotation and 0
+        data.head.rotation.x = lerp(
+          data.head.rotation.x,
+          0,
+          easeOutCubic(resetSpeed)
+        );
+        // data.body.rotation.x = lerp(
+        //   data.body.rotation.x,
+        //   0,
+        //   easeOutCubic(resetSpeed)
+        // );
+        // data.body.position.z = lerp(
+        //   data.body.position.z,
+        //   0,
+        //   easeOutCubic(resetSpeed)
+        // );
+        data.head.rotation.y = lerp(
+          data.head.rotation.y,
+          0,
+          easeOutCubic(resetSpeed)
+        );
+
+        data.leftarm.rotation.z = lerp(
+          data.leftarm.rotation.z,
+          -0.05,
+          easeOutCubic(resetSpeed)
+        );
+
+        data.rightarm.rotation.z = lerp(
+          data.rightarm.rotation.z,
+          0.05,
+          easeOutCubic(resetSpeed)
+        );
+
+        data.rightleg.rotation.x = lerp(
+          data.rightleg.rotation.x,
+          0,
+          easeOutCubic(resetSpeed)
+        );
+
+        // If the head is close enough to 0, set the rotation to 0
+        if (
+          Math.abs(data.head.rotation.x) < epsilon &&
+          Math.abs(data.head.rotation.y) < epsilon &&
+          // Math.abs(data.body.rotation.x) < epsilon &&
+          // Math.abs(data.body.position.z) < epsilon &&
+          Math.abs(data.rightarm.rotation.z - 0.05) < epsilon &&
+          Math.abs(data.leftarm.rotation.z + 0.05) < epsilon
+        ) {
+          data.head.rotation.x = 0;
+          // data.body.rotation.x = 0;
+          // data.body.position.z = 0;
+          data.head.rotation.y = 0;
+          data.leftarm.rotation.z = 0;
+          data.rightarm.rotation.z = 0;
+          data.isRotatingDown = true;
+          return true;
+        }
+        return false;
+      }
+    }
+  }
+);
+
+export const NewOutfitClapAnimation = new RenderAnimation(
+  function (scene, keepData = false, modelName) {
+    let data: any = {
+      head: scene.getObjectByName("Head"),
+      body: scene.getObjectByName("Body"),
+      leftarm: scene.getObjectByName("LeftArm"),
+      rightarm: scene.getObjectByName("RightArm"),
+      leftleg: scene.getObjectByName("LeftLeg"),
+      rightleg: scene.getObjectByName("RightLeg"),
+    };
+    data.head.parent.remove(data.head);
+
+    data.body.add(data.head);
+    data.head.position.set(0, 0, 0);
+
+    data.leftarm.parent.remove(data.leftarm);
+    data.rightarm.parent.remove(data.rightarm);
+
+    data.body.add(data.leftarm);
+    data.body.add(data.rightarm);
+
+    const armDistanceX = 0.31; // Adjust this value to change the distance of the arms from the body in the x direction
+    const armDistanceZ = 0.0; // Adjust this value to change the distance of
+    // Set the position of the arms relative to the body
+    if (modelName === "steve") {
+      data.leftarm.position.set(-armDistanceX, -0.12, -armDistanceZ);
+      data.rightarm.position.set(armDistanceX, -0.12, armDistanceZ);
+    } else {
+      data.leftarm.position.set(-armDistanceX, -0.15, -armDistanceZ);
+      data.rightarm.position.set(armDistanceX, -0.15, armDistanceZ);
+    }
+
+    if (keepData) {
+      return data;
+    } else {
+      data.clapsCount = 0;
+      data.clapIncoming = false;
+      data.speed = 1;
+    }
+    return data;
+  },
+  function () {
+    return true;
+  },
+  function (data, scene, clock, modelName) {
+    const elapsedTime = clock.getDelta();
+    const clapSpeed = 0.05; // Adjust this value to change the speed of the clap
+    const positionSpeed = 0.01; // Adjust this value to change the speed of the position reset
+    const epsilon = 0.01; // Adjust this value to change the precision of the equality check
+    const clapRotation = 25 * (Math.PI / 180); // 45 degrees in radians
+    const clapRotationEnd = 15 * (Math.PI / 180); // 45 degrees in radians
+    const initialRotation = 100 * (Math.PI / 180); // 90 degrees in radians
+    const amplitude = 0.025;
+
+    const cSin = data.speed * Math.sin(clock.elapsedTime);
+
+    if (data.leftarm && data.rightarm) {
+      data.head.rotation.x = -0.001 + 0.07 * cSin;
+      data.body.position.y = 1.47 + amplitude * cSin;
+      data.rightleg.rotation.x = -0.2 + 0.06 * cSin;
+      data.rightleg.position.z = -0.02 + 0.04 * cSin;
+      const delay = 0.5; // Adjust this value to change the delay
+
+      data.leftleg.rotation.x =
+        0.05 + 0.03 * Math.sin(clock.elapsedTime + delay);
+      data.leftleg.position.z = 0 + 0.03 * Math.sin(clock.elapsedTime + delay);
+
+      if (!data.isInitialRotationSet) {
+        // Interpolate between the current rotation and the initial rotation
+        data.leftarm.rotation.x = lerp(
+          data.leftarm.rotation.x,
+          initialRotation,
+          easeOutCubic(positionSpeed)
+        );
+        data.leftarm.rotation.z = lerp(
+          data.leftarm.rotation.z,
+          clapRotation,
+          easeOutCubic(clapSpeed)
+        );
+        data.rightarm.rotation.x = lerp(
+          data.rightarm.rotation.x,
+          initialRotation,
+          easeOutCubic(positionSpeed)
+        );
+        data.rightarm.rotation.z = lerp(
+          data.rightarm.rotation.z,
+          -clapRotation,
+          easeOutCubic(clapSpeed)
+        );
+
+        // If the arms are close enough to the initial rotation, set the rotation to the initial rotation
+        if (
+          Math.abs(data.leftarm.rotation.x - initialRotation) < epsilon &&
+          Math.abs(data.rightarm.rotation.x - initialRotation) < epsilon &&
+          Math.abs(data.leftarm.rotation.z - clapRotation) < epsilon &&
+          Math.abs(data.rightarm.rotation.z + clapRotation) < epsilon
+        ) {
+          data.leftarm.rotation.x = initialRotation;
+          data.rightarm.rotation.x = initialRotation;
+          data.isInitialRotationSet = true;
+        }
+      }
+      if (data.isInitialRotationSet && data.clapsCount < 5) {
+        if (data.clapIncoming) {
+          data.leftarm.rotation.z = lerp(
+            data.leftarm.rotation.z,
+            clapRotation,
+            easeOutCubic(clapSpeed)
+          );
+          data.rightarm.rotation.z = lerp(
+            data.rightarm.rotation.z,
+            -clapRotation,
+            easeOutCubic(clapSpeed)
+          );
+          if (
+            Math.abs(data.leftarm.rotation.z - clapRotation) < epsilon &&
+            Math.abs(data.rightarm.rotation.z + clapRotation) < epsilon
+          ) {
+            data.clapIncoming = false;
+          }
+        } else {
+          data.leftarm.rotation.z = lerp(
+            data.leftarm.rotation.z,
+            clapRotationEnd,
+            easeOutCubic(clapSpeed)
+          );
+          data.rightarm.rotation.z = lerp(
+            data.rightarm.rotation.z,
+            -clapRotationEnd,
+            easeOutCubic(clapSpeed)
+          );
+          if (
+            Math.abs(data.leftarm.rotation.z - clapRotationEnd) < epsilon &&
+            Math.abs(data.rightarm.rotation.z + clapRotationEnd) < epsilon
+          ) {
+            data.clapIncoming = true;
+            data.clapsCount++;
+          }
+        }
+      }
+      if (data.clapsCount === 5) {
+        data.leftarm.rotation.x = lerp(
+          data.leftarm.rotation.x,
+          0,
+          easeOutCubic(positionSpeed)
+        );
+        data.rightarm.rotation.x = lerp(
+          data.rightarm.rotation.x,
+          0,
+          easeOutCubic(positionSpeed)
+        );
+        data.leftarm.rotation.z = lerp(
+          data.leftarm.rotation.z,
+          -0.05,
+          easeOutCubic(clapSpeed)
+        );
+        data.rightarm.rotation.z = lerp(
+          data.rightarm.rotation.z,
+          0.05,
+          easeOutCubic(clapSpeed)
+        );
+        if (
+          Math.abs(data.leftarm.rotation.x) < epsilon &&
+          Math.abs(data.rightarm.rotation.x) < epsilon &&
+          Math.abs(data.leftarm.rotation.z + 0.05) < epsilon &&
+          Math.abs(data.rightarm.rotation.z - 0.05) < epsilon
+        ) {
+          data.clapsCount = 0;
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 );
