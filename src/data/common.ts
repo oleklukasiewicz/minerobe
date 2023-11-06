@@ -12,6 +12,24 @@ export class FileData {
     this.type = type;
   }
 }
+export class OutfitLayer {
+  name: string;
+  steve: FileData;
+  alex: FileData;
+  constructor(name: string, steve: FileData, alex: FileData) {
+    this.name = name;
+    if (!steve && alex) {
+      this.steve = alex;
+      this.alex = alex;
+    } else if (!alex && steve) {
+      this.steve = steve;
+      this.alex = steve;
+    } else {
+      this.steve = steve;
+      this.alex = alex;
+    }
+  }
+}
 export const OUTFIT_TYPE = {
   TOP: "top",
   HOODIE: "hoodie",
@@ -49,26 +67,26 @@ export const GetOutfitType = function (imageContext: any) {
   const shoesPercentage = shoesArea / 256;
 
   //hat / hoodie
-    if(hatPercentage > 0) {
-        if(bodyPercentage>0.3) {
-            return OUTFIT_TYPE.HOODIE;
-        } else {
-            return OUTFIT_TYPE.HAT;
-        }
+  if (hatPercentage > 0) {
+    if (bodyPercentage > 0.3) {
+      return OUTFIT_TYPE.HOODIE;
+    } else {
+      return OUTFIT_TYPE.HAT;
     }
-    //body
-    if(bodyPercentage>0.3) {
-        return OUTFIT_TYPE.TOP;
+  }
+  //body
+  if (bodyPercentage > 0.3) {
+    return OUTFIT_TYPE.TOP;
+  }
+  //shoes / bottom
+  if (shoesPercentage > 0.2) {
+    if (legsPercentage > 0.5) {
+      return OUTFIT_TYPE.BOTTOM;
+    } else {
+      return OUTFIT_TYPE.SHOES;
     }
-    //shoes / bottom
-    if(shoesPercentage>0.2) {
-        if(legsPercentage>0.5) {
-            return OUTFIT_TYPE.BOTTOM;
-        } else {
-            return OUTFIT_TYPE.SHOES;
-        }
-    }
-    return OUTFIT_TYPE.DEFAULT;
+  }
+  return OUTFIT_TYPE.DEFAULT;
 };
 export const GetPixelCountInArea = function (
   imageContext: any,

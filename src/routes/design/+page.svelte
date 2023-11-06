@@ -14,6 +14,7 @@
     OUTFIT_TYPE,
     GetContextFromBase64,
     GetOutfitType,
+    OutfitLayer,
   } from "$src/data/common";
 
   import DownloadIcon from "$src/icons/download.svg?raw";
@@ -27,11 +28,12 @@
     NewOutfitShoesAnimation,
     NewOutfitClapAnimation,
   } from "$src/data/animation";
+  import { json } from "@sveltejs/kit";
 
   let itemModelType: Writable<string> = writable("alex");
   let baseLayer;
   let itemName = $_("defaultskinname");
-  let itemLayers: Writable<FileData[]> = writable([]);
+  let itemLayers: Writable<OutfitLayer[]> = writable([]);
   let itemModel: Writable<string> = writable("");
   let modelTexture: string = null;
   let alexModel;
@@ -42,13 +44,14 @@
   let file;
 
   let layersRenderer;
-  let updatedLayer: FileData = null;
+  let updatedLayer: OutfitLayer = null;
+  let newVariantData: any = null;
 
   let updateAnimation = function (anim) {};
   let updateTexture = function (layers) {};
 
   itemLayers.subscribe((layers) => {
-    updateTexture(layers);
+    updateTexture(layers.map((x) => x[$itemModelType]));
   });
 
   onMount(async () => {
@@ -70,6 +73,7 @@
 
     itemModelType.subscribe((model) => {
       $itemModel = model == "alex" ? alexModel : steveModel;
+      updateTexture($itemLayers.map((x) => x[$itemModelType]));
     });
 
     updateTexture = async (layers) => {
@@ -79,19 +83,21 @@
           undefined,
           $itemModelType
         );
-        if (
-          updatedLayer?.type == OUTFIT_TYPE.TOP ||
-          updatedLayer?.type == OUTFIT_TYPE.HOODIE
-        ) {
-          await updateAnimation(NewOutfitBottomAnimation);
+        if (updatedLayer) {
+          if (
+            updatedLayer[$itemModelType]?.type == OUTFIT_TYPE.TOP ||
+            updatedLayer[$itemModelType]?.type == OUTFIT_TYPE.HOODIE
+          ) {
+            await updateAnimation(NewOutfitBottomAnimation);
+          }
+          if (updatedLayer[$itemModelType]?.type == OUTFIT_TYPE.SHOES) {
+            await updateAnimation(NewOutfitShoesAnimation);
+          }
+          await updateAnimation(DefaultAnimation);
         }
-        if (updatedLayer?.type == OUTFIT_TYPE.SHOES) {
-          await updateAnimation(NewOutfitShoesAnimation);
-        }
-        await updateAnimation(DefaultAnimation);
       }
     };
-    await updateTexture($itemLayers);
+    await updateTexture($itemLayers.map((x) => x[$itemModelType]));
     loaded = true;
   });
 
@@ -142,7 +148,11 @@
         GetOutfitType(context)
       );
       itemLayers.update((layers) => {
-        layers.unshift(newLayer);
+        let newOutfit;
+        if ($itemModelType == "alex")
+          newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer);
+        else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null);
+        layers.unshift(newOutfit);
         return layers;
       });
     };
@@ -168,7 +178,7 @@
   const downloadImage = async () => {
     const link = document.createElement("a");
     link.href = await mergeImages(
-      [...$itemLayers.map((x) => x.content)].reverse(),
+      [...$itemLayers.map((x) => x[$itemModelType].content)].reverse(),
       undefined,
       $itemModelType
     );
@@ -180,16 +190,34 @@
 
   const addImagesToZip = function () {
     let zip = new JSZip();
+    let layerData: any[] = [];
     $itemLayers.forEach((layer, index) => {
-      zip.file(layer.fileName + ".png", layer.content.split(",")[1], {
-        base64: true,
+      zip.file(
+        "textures/" + index + "/" + layer.steve.fileName,
+        layer.steve.content.split(",")[1],
+        {
+          base64: true,
+        }
+      );
+      zip.file(
+        "textures/" + index + "/" + layer.alex.fileName,
+        layer.alex.content.split(",")[1],
+        {
+          base64: true,
+        }
+      );
+      layerData.push({
+        name: layer.name,
+        folder: index,
+        steve: layer.steve.fileName,
+        alex: layer.alex.fileName,
       });
     });
     //generate json with data
     const packageData = {
       name: itemName,
       model: $itemModelType,
-      layers: $itemLayers.map((x) => x.fileName),
+      layers: layerData,
     }; // replace with your actual data
     zip.file("data.json", JSON.stringify(packageData));
 
@@ -203,68 +231,123 @@
     });
   };
 
+  const addImageVariant = function (event) {
+    const layer = newVariantData.detail.texture;
+    const selectedFile = event.target.files[0];
+
+    if (selectedFile) {
+      const reader = new FileReader();
+
+      reader.onload = async (event) => {
+        let base64Data: string = event.target.result as string;
+        var context = await GetContextFromBase64(base64Data);
+        var newLayer = new FileData(
+          selectedFile.name.replace(/\.[^/.]+$/, ""),
+          base64Data,
+          GetOutfitType(context)
+        );
+        itemLayers.update((layers) => {
+          const index = layers.indexOf(layer);
+          if ($itemModelType == "alex") {
+            layers[index].alex = newLayer;
+          } else {
+            layers[index].steve = newLayer;
+          }
+          return layers;
+        });
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
+  const importPackage = async function (eventE) {
+    const selectedFile = eventE.target.files[0];
+
+    eventE.target.value = "";
+
+    if (selectedFile) {
+      const reader = new FileReader();
+
+      reader.onload = async function (event) {
+        const zip = new JSZip();
+        zip.loadAsync(event.target.result).then(async function (contents) {
+          let jsonData = null;
+          if (contents.files["data.json"]) {
+            await contents.files["data.json"]
+              .async("string")
+              .then(function (data) {
+                jsonData = JSON.parse(data);
+              });
+          } else {
+            return;
+          }
+          itemName = jsonData.name;
+          $itemModelType = jsonData.model;
+          const texturesFolder = "textures/";
+          let layersToLoad = jsonData.layers.map(async (x) => {
+            const layerFolder = x.folder + "/";
+            //load content of file async with await
+            let steve;
+            if (x.steve)
+              steve = await contents.files[
+                texturesFolder + layerFolder + x.steve
+              ].async("base64");
+            let alex;
+            if (x.alex)
+              alex = await contents.files[
+                texturesFolder + layerFolder + x.alex
+              ].async("base64");
+            if (steve == null) steve = alex;
+            if (alex == null) alex = steve;
+
+            var steveContext = await GetContextFromBase64(
+              "data:image/png;base64," + steve
+            );
+            var alexContext = await GetContextFromBase64(
+              "data:image/png;base64," + alex
+            );
+            const steveFileData = new FileData(
+              x.steve,
+              "data:image/png;base64," + steve,
+              GetOutfitType(steveContext)
+            );
+            const alexFileData = new FileData(
+              x.alex,
+              "data:image/png;base64," + alex,
+              GetOutfitType(alexContext)
+            );
+            return new OutfitLayer(x.name, steveFileData, alexFileData);
+          });
+
+          let l = await Promise.all(layersToLoad).then((layers) => {
+            let newLayers = [];
+            jsonData.layers.forEach((x) => {
+              const layerToInsert = layers.find((y) => y.name == x.name);
+              if (layerToInsert) {
+                newLayers.push(layerToInsert);
+              }
+            });
+            itemLayers.update((old) => {
+              old.unshift(...newLayers);
+              return old;
+            });
+            updateAnimation(NewOutfitClapAnimation);
+            updateAnimation(DefaultAnimation);
+          });
+        });
+      };
+
+      reader.readAsArrayBuffer(selectedFile);
+    }
+  };
   const importImagesFromPackage = async function () {
     const fileInput = document.getElementById("fileInput") as any;
     fileInput.click();
-    fileInput.addEventListener("change", async function () {
-      const selectedFile = fileInput.files[0];
-
-      fileInput.value = "";
-
-      if (selectedFile) {
-        const reader = new FileReader();
-
-        reader.onload = async function (event) {
-          const zip = new JSZip();
-          zip.loadAsync(event.target.result).then(async function (contents) {
-            let promises = Object.keys(contents.files)
-              .filter((filename) => filename.endsWith(".png"))
-              .map((filename) =>
-                contents.files[filename]
-                  .async("base64")
-                  .then(async (content) => {
-                    var context = await GetContextFromBase64(
-                      "data:image/png;base64," + content
-                    );
-                    return new FileData(
-                      filename.split(".")[0],
-                      "data:image/png;base64," + content,
-                      GetOutfitType(context)
-                    );
-                  })
-              );
-            let jsonData = null;
-            if (contents.files["data.json"]) {
-              await contents.files["data.json"]
-                .async("string")
-                .then(function (data) {
-                  jsonData = JSON.parse(data);
-                });
-            }
-
-            Promise.all(promises).then((layers) => {
-              itemLayers.update((old) => {
-                if (jsonData) {
-                  itemName = jsonData.name;
-                  $itemModelType = jsonData.model;
-                  let layerstoInsert = jsonData.layers
-                    .map((x) => layers.find((y) => y.fileName == x))
-                    .filter((x) => x);
-                  old.unshift(...layerstoInsert);
-                } else {
-                  old.unshift(...layers);
-                }
-                return old;
-              });
-              updateAnimation(NewOutfitClapAnimation);
-              updateAnimation(DefaultAnimation);
-            });
-          });
-        };
-
-        reader.readAsArrayBuffer(selectedFile);
-      }
-    });
+  };
+  const addVariant = async function (data) {
+    newVariantData = data;
+    const fileInput = document.getElementById("fileInputVariant") as any;
+    fileInput.click();
   };
 </script>
 
@@ -299,6 +382,7 @@
                 model={$itemModel}
                 modelName={$itemModelType}
                 renderer={layersRenderer}
+                on:addvariant={addVariant}
                 on:down={downLayer}
                 on:up={upLayer}
                 on:remove={removeLayer}
@@ -315,7 +399,18 @@
             style="display:none"
             bind:this={fileInput}
           />
-          <input type="file" id="fileInput" style="display: none;" />
+          <input
+            type="file"
+            id="fileInput"
+            style="display: none;"
+            on:change={importPackage}
+          />
+          <input
+            type="file"
+            id="fileInputVariant"
+            style="display: none;"
+            on:change={addImageVariant}
+          />
           <button
             id="add-layer-action"
             type="submit"

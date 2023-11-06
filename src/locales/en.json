@@ -1,8 +1,8 @@
 {
   "name": "Name",
   "model": "Model",
-  "layer": "Layer",
-  "layers": "Layers",
+  "layer": "Outfit",
+  "layers": "Outfits",
   "up": "Up",
   "down": "Down",
   "delete": "Delete",
@@ -11,7 +11,7 @@
   "downloadPackage": "Download Package",
   "defaultskinname": "New Skin",
   "layersOpt": {
-    "addLayer": "Add Layer"
+    "addLayer": "Add Outfit"
   },
   "modelOpt": {
     "steve": "Steve",
@@ -24,5 +24,6 @@
     "home": "Home"
   },
   "package": "Package",
-  "importPackage": "Import package"
+  "importPackage": "Import package",
+  "newLayerVariant": "Add new layer variant"
 }

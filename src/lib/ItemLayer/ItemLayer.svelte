@@ -1,15 +1,15 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import SkinSnapshot from "$lib/render/SkinSnapshot/SkinSnapshot.svelte";
-  import type { FileData } from "$src/data/common";
+  import type { FileData, OutfitLayer } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
 
   import UpIcon from "$src/icons/chevron-up.svg?raw";
   import DownIcon from "$src/icons/chevron-down.svg?raw";
   import DeleteIcon from "$src/icons/close.svg?raw";
-  import { text } from "@sveltejs/kit";
+  import UserPlusIcon from "$src/icons/user-plus.svg?raw";
 
-  export let texture: FileData = null;
+  export let texture: OutfitLayer = null;
   export let model = null;
   export let modelName = "";
   export let canUp = true;
@@ -21,6 +21,12 @@
 
   let up = function () {
     dispatch("up", {
+      texture: texture,
+      model: model,
+    });
+  };
+  let addVariant = function () {
+    dispatch("addvariant", {
       texture: texture,
       model: model,
     });
@@ -43,20 +49,28 @@
   <div class="data">
     <div class="render">
       <SkinSnapshot
-        texture={texture.content}
+        texture={texture[modelName].content}
         {model}
         {renderer}
         {modelName}
-        type={texture.type}
+        type={texture[modelName].type}
       />
     </div>
     <span
-      >{texture.fileName || "Layer"}<br /><span class="label common"
-        >{texture.type}</span
+      >{texture.name || "Layer"}<br /><span class="label common"
+        >{texture[modelName].type}</span
       ></span
     >
   </div>
   <div class="actions">
+    <button
+      class="secondary icon"
+      title={$_("newLayerVariant")}
+      on:click={addVariant}
+    >
+      {@html UserPlusIcon}</button
+    >
+    <div class="separator vertical" />
     <button
       class="tertiary icon"
       title={$_("up")}

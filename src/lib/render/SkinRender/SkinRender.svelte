@@ -25,7 +25,7 @@
   export let animation: RenderAnimation = null;
 
   export const refreshRender = function () {
-    render();
+    if (onlyRenderSnapshot) render();
   };
   export const changeAnimation: Function = async function (
     anim: RenderAnimation
@@ -115,7 +115,9 @@
 
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    render();
+    if (onlyRenderSnapshot) {
+      render();
+    }
   };
 
   const updateRender = function (textureToLoad, modelToLoad) {
