@@ -14,8 +14,8 @@
     "addLayer": "Add Outfit"
   },
   "modelOpt": {
-    "steve": "Steve",
-    "alex": "Alex"
+    "steve": "Classic",
+    "alex": "Slim"
   },
   "navigation": {
     "explore": "Explore",
