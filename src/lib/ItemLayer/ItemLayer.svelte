@@ -57,7 +57,7 @@
       />
     </div>
     <span
-      >{texture[modelName].fileName || "Layer"}<br /><span class="label common"
+      >{texture.name || texture[modelName].fileName}<br /><span class="label common"
         >{texture[modelName].type}</span
       ></span
     >

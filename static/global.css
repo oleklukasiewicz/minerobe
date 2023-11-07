@@ -233,9 +233,9 @@ button:active{
     border: 0;
     background-color: transparent;
     outline: 0;
-    border-bottom: 3px solid transparent;
+    border-bottom: 2px solid transparent;
     width: 100%;
 }
 .title-input:hover{
-    border-bottom: 3px solid var(--color-active-L1);
+    border-bottom: 2px solid var(--color-active-L1);
 }
