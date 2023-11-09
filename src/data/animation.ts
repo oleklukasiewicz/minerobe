@@ -70,6 +70,7 @@ export const DefaultAnimation = new RenderAnimation(
       data.bodyRotationTarget = 0;
       data.angle = 0;
       data.speed = 1;
+      data.returnSpeed = 0.01;
       data.armAngle = (5 * Math.PI) / 180;
     }
     return data;
@@ -82,12 +83,12 @@ export const DefaultAnimation = new RenderAnimation(
       data.leftarm.rotation.z = lerpOutCubic(
         data.leftarm.rotation.z,
         (Math.sin(data.angle) * 0.5 + 0.5) * -1 * data.armAngle,
-        0.02
+        data.returnSpeed
       );
       data.rightarm.rotation.z = lerpOutCubic(
         data.rightarm.rotation.z,
         (Math.sin(data.angle) * 0.5 + 0.5) * data.armAngle,
-        0.02
+        data.returnSpeed
       );
     }
     if (data.head) {
@@ -95,7 +96,7 @@ export const DefaultAnimation = new RenderAnimation(
         // Time for a new rotation
         data.headRotation = ((Math.random() * 120 - 60) * Math.PI) / 180; // New random rotation
         data.nextRotationTime = clock.elapsedTime + Math.random() * 5; // New random time for the next rotation
-        data.rotationSpeed = Math.random() * 0.03 + 0.02; // New random speed for the head rotation
+        data.rotationSpeed = Math.random() * 0.03 + data.returnSpeed; // New random speed for the head rotation
       }
       // Interpolate between the current rotation and the target rotation using an easing function
       data.currentRotation +=
@@ -113,7 +114,7 @@ export const DefaultAnimation = new RenderAnimation(
       data.body.rotation.y = lerpOutCubic(
         data.body.rotation.y,
         data.bodyRotationTarget - data.body.rotation.y,
-        0.02
+        data.returnSpeed
       );
 
       const cSin = Math.sin(clock.elapsedTime);
@@ -121,43 +122,49 @@ export const DefaultAnimation = new RenderAnimation(
       data.head.rotation.x = lerpOutCubic(
         data.head.rotation.x,
         0.07 * cSin,
-        0.02
+        data.returnSpeed
       );
 
       data.body.position.y = lerpOutCubic(
         data.body.position.y,
         1.47 + amplitude * Math.sin(clock.elapsedTime),
-        0.02
+        data.returnSpeed
       );
 
       data.rightleg.rotation.x = lerpOutCubic(
         data.rightleg.rotation.x,
         -0.2 + 0.06 * cSin,
-        0.02
+        data.returnSpeed
       );
       data.rightleg.position.z = lerpOutCubic(
         data.rightleg.position.z,
         -0.02 + 0.04 * cSin,
-        0.02
+        data.returnSpeed
       );
       const delay = 0.5; // Adjust this value to change the delay
 
       data.leftleg.rotation.x = lerpOutCubic(
         data.leftleg.rotation.x,
-        (data.leftleg.position.z =
-          0 + 0.03 * Math.sin(clock.elapsedTime + delay)),
-        0.02
+        0 + 0.03 * Math.sin(clock.elapsedTime + delay),
+        data.returnSpeed
+      );
+      data.leftleg.position.z = lerpOutCubic(
+        data.leftleg.position.z,
+        0 + 0.03 * Math.sin(clock.elapsedTime + delay),
+        data.returnSpeed
       );
     }
   },
   function (data, scene, clock, modelName) {
     data.head.rotation.y = lerpOutCubic(data.head.rotation.y, 0, 0.04);
     data.leftleg.rotation.x = lerpOutCubic(data.leftleg.rotation.x, 0, 0.04);
+    data.leftleg.position.z = lerpOutCubic(data.leftleg.position.z, 0, 0.04);
     if (
       isPoseReady(
         [
           { value: data.head.rotation.y, target: 0 },
           { value: data.leftleg.rotation.x, target: 0 },
+          { value: data.leftleg.position.z, target: 0 },
         ],
         0.01
       )
@@ -959,6 +966,7 @@ export const HandsUpAnimation = new RenderAnimation(
       data.deg90 = 160 * (Math.PI / 180);
       data.speed = 0.02;
       data.speedDef = 1;
+      data.bodyPosition = 1.47;
     }
     return data;
   },
@@ -966,20 +974,22 @@ export const HandsUpAnimation = new RenderAnimation(
     return true;
   },
   function (data, scene, clock, modelName) {
-    const elapsedTime = clock.getDelta();
-    const amplitude = 0.025;
-    const cSin = data.speedDef * Math.sin(clock.elapsedTime);
-
-    data.body.position.y = 1.47 + amplitude * cSin;
-    data.head.rotation.x = -0.001 + 0.07 * cSin;
-    data.rightleg.rotation.x = -0.2 + 0.06 * cSin;
-    data.rightleg.position.z = -0.02 + 0.04 * cSin;
-    const delay = 0.5; // Adjust this value to change the delay
-
-    data.leftleg.rotation.x = 0.05 + 0.03 * Math.sin(clock.elapsedTime + delay);
-    data.leftleg.position.z = 0 + 0.03 * Math.sin(clock.elapsedTime + delay);
-
     if (data.ishandGoUp) {
+      data.body.rotation.x = lerpOutCubic(
+        data.body.rotation.x,
+        0.2,
+        data.speed
+      );
+      data.body.position.z = lerpOutCubic(
+        data.body.position.z,
+        0.17,
+        data.speed
+      );
+      data.body.position.y = lerpOutCubic(
+        data.body.position.y,
+        1.43,
+        data.speed
+      );
       data.leftarm.rotation.x = lerpOutCubic(
         data.leftarm.rotation.x,
         data.deg90,
@@ -987,7 +997,7 @@ export const HandsUpAnimation = new RenderAnimation(
       );
       data.leftarm.rotation.z = lerpOutCubic(
         data.leftarm.rotation.z,
-        -0.1,
+        -0.2,
         data.speed
       );
       data.rightarm.rotation.x = lerpOutCubic(
@@ -997,7 +1007,7 @@ export const HandsUpAnimation = new RenderAnimation(
       );
       data.rightarm.rotation.z = lerpOutCubic(
         data.rightarm.rotation.z,
-        0.1,
+        0.2,
         data.speed
       );
       if (
@@ -1013,6 +1023,13 @@ export const HandsUpAnimation = new RenderAnimation(
         }, 500);
       }
     } else {
+      data.body.rotation.x = lerpOutCubic(data.body.rotation.x, 0, data.speed);
+      data.body.position.z = lerpOutCubic(data.body.position.z, 0, data.speed);
+      data.body.position.y = lerpOutCubic(
+        data.body.position.y,
+        1.47,
+        data.speed
+      );
       data.leftarm.rotation.x = lerpOutCubic(
         data.leftarm.rotation.x,
         0,
@@ -1044,6 +1061,7 @@ export const HandsUpAnimation = new RenderAnimation(
         return true;
       }
     }
+    data.bodyPosition = data.body.position.y;
   }
 );
 export const BowAnimation = new RenderAnimation(
@@ -1576,7 +1594,7 @@ export const JumpAnimation = new RenderAnimation(
           { value: data.leftleg.position.y, target: 1.24 },
         ])
       ) {
-       setTimeout(() => {
+        setTimeout(() => {
           data.goingUp = false;
         }, 100);
       }
@@ -1601,8 +1619,16 @@ export const JumpAnimation = new RenderAnimation(
         0,
         data.speedOut
       );
-      data.body.rotation.z = lerpOutCubic(data.body.rotation.z, 0, data.speedOut);
-      data.body.position.x = lerpOutCubic(data.body.position.x, 0, data.speedOut);
+      data.body.rotation.z = lerpOutCubic(
+        data.body.rotation.z,
+        0,
+        data.speedOut
+      );
+      data.body.position.x = lerpOutCubic(
+        data.body.position.x,
+        0,
+        data.speedOut
+      );
       data.leftarm.rotation.z = lerpOutCubic(
         data.leftarm.rotation.z,
         0,
@@ -1623,8 +1649,16 @@ export const JumpAnimation = new RenderAnimation(
         0,
         data.speedOut
       );
-      data.head.rotation.x = lerpOutCubic(data.head.rotation.x, 0, data.speedOut);
-      data.head.rotation.y = lerpOutCubic(data.head.rotation.y, 0, data.speedOut);
+      data.head.rotation.x = lerpOutCubic(
+        data.head.rotation.x,
+        0,
+        data.speedOut
+      );
+      data.head.rotation.y = lerpOutCubic(
+        data.head.rotation.y,
+        0,
+        data.speedOut
+      );
 
       if (
         isPoseReady([
