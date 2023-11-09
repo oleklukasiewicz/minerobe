@@ -119,30 +119,40 @@
       render();
     }
   };
-
-  const updateRender = function (textureToLoad, modelToLoad) {
-    const modelPromise = new Promise((resolve) => {
+  const updateModel = function (modelToLoad) {
+    return new Promise((resolve) => {
       loader.load(modelToLoad, (gltf) => {
+        scene.remove(loadedRender);
+        loadedRender = gltf.scene;
+        scene.add(gltf.scene);
         resolve(gltf);
       });
     });
-
-    // Create a new promise that resolves when the texture has loaded
-    const texturePromise = new Promise((resolve) => {
+  };
+  const updateTexture = function (textureToLoad) {
+    return new Promise((resolve) => {
       textureLoader.load(textureToLoad, (texture) => {
         resolve(texture);
       });
     });
+  };
+  const updateRenderModel = function (modelToLoad) {
+    const modelPromise = updateModel(modelToLoad);
+
+    Promise.all([modelPromise]).then(([modelSP]) => {
+      updateRender(texture);
+    });
+  };
+  const updateRender = function (textureToLoad) {
+    if(loadedRender == null) return;
+    // Create a new promise that resolves when the texture has loaded
+    const texturePromise = updateTexture(textureToLoad);
 
     // Wait for both promises to resolve
-    Promise.all([modelPromise, texturePromise]).then(([gltfP, textureSP]) => {
-      scene.remove(loadedRender);
-      let gltf: any = gltfP;
+    Promise.all([texturePromise]).then(([textureSP]) => {
       let textureS: any = textureSP;
 
-      loadedRender = gltf.scene;
-
-      gltf.scene.traverse((child: any) => {
+      loadedRender.traverse((child: any) => {
         if (child.isMesh) {
           // Set texture filtering and wrap mode to improve sharpness
           textureS.magFilter = THREE.NearestFilter;
@@ -154,7 +164,6 @@
           child.material.map = textureS;
         }
       });
-      scene.add(gltf.scene);
 
       if (onlyRenderSnapshot) render();
       if (animation) prepareAnimation(animation, true);
@@ -247,7 +256,8 @@
   });
 
   $: updateAnimation(animation);
-  $: updateRender(texture, model);
+  $: updateRender(texture);
+  $: updateRenderModel(model);
 </script>
 
 <div class="skin-render" bind:this={skinRenderNode}>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
+  import { cubicOut } from 'svelte/easing';
   import SkinSnapshot from "$lib/render/SkinSnapshot/SkinSnapshot.svelte";
   import type { FileData, OutfitLayer } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
@@ -43,9 +44,16 @@
       model: model,
     });
   };
+  function fadeInScale(node, { duration }) {
+    return {
+      duration,
+      easing: cubicOut,
+      css: (t) => `opacity: ${t}; transform: scale(${0.9 + t * 0.1})`
+    };
+  }
 </script>
 
-<div class="item-layer">
+<div class="item-layer" in:fadeInScale={{ duration: 300 }} out:fadeInScale={{ duration: 300 }}>
   <div class="data">
     <div class="render">
       <SkinSnapshot

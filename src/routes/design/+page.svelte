@@ -27,14 +27,14 @@
     NewOutfitBottomAnimation,
     NewOutfitShoesAnimation,
     NewOutfitClapAnimation,
+    FrendshipAnimation,
+    HandsUpAnimation,
   } from "$src/data/animation";
-  import { json } from "@sveltejs/kit";
-
   let itemModelType: Writable<string> = writable("alex");
   let baseLayer;
   let itemName = $_("defaultskinname");
   let itemLayers: Writable<OutfitLayer[]> = writable([]);
-  let itemModel: Writable<string> = writable("");
+  let itemModel: any = null;
   let modelTexture: string = null;
   let alexModel;
   let steveModel;
@@ -72,7 +72,7 @@
     });
 
     itemModelType.subscribe((model) => {
-      $itemModel = model == "alex" ? alexModel : steveModel;
+      itemModel = (model == "alex") ? alexModel : steveModel;
       updateTexture($itemLayers.map((x) => x[$itemModelType]));
     });
 
@@ -127,9 +127,11 @@
   };
   let removeLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
+    if (index != -1 && index != $itemLayers.length - 1) {
+      updatedLayer = $itemLayers[index + 1];
+    }
     itemLayers.update((layers) => {
       layers.splice(index, 1);
-      updatedLayer = null;
       return layers;
     });
   };
@@ -137,22 +139,26 @@
   function handleFileChange(event) {
     let base64Data;
     file = event.target.files[0];
+    event.target.value = null;
     const reader = new FileReader();
 
     reader.onload = async (event) => {
       base64Data = event.target.result;
       var context = await GetContextFromBase64(base64Data);
+      const outfitType = GetOutfitType(context);
       var newLayer = new FileData(
         file.name.replace(/\.[^/.]+$/, ""),
         base64Data,
-        GetOutfitType(context)
+        outfitType
       );
       itemLayers.update((layers) => {
         let newOutfit;
         if ($itemModelType == "alex")
           newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer);
         else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null);
+        updatedLayer = newOutfit;
         layers.unshift(newOutfit);
+
         return layers;
       });
     };
@@ -186,6 +192,8 @@
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    await updateAnimation(HandsUpAnimation);
+    await updateAnimation(DefaultAnimation);
   };
 
   const addImagesToZip = function () {
@@ -228,6 +236,8 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      updateAnimation(NewOutfitClapAnimation);
+      updateAnimation(DefaultAnimation);
     });
   };
 
@@ -331,7 +341,13 @@
               old.unshift(...newLayers);
               return old;
             });
-            updateAnimation(NewOutfitClapAnimation);
+            const random = Math.random();
+
+            if (random < 0) {
+              updateAnimation(HandsUpAnimation);
+            } else {
+              updateAnimation(NewOutfitClapAnimation);
+            }
             updateAnimation(DefaultAnimation);
           });
         });
@@ -357,7 +373,7 @@
       {#if loaded}
         <SkinRender
           texture={modelTexture}
-          model={$itemModel}
+          model={itemModel}
           modelName={$itemModelType}
           onlyRenderSnapshot={false}
           animation={DefaultAnimation}
@@ -379,7 +395,7 @@
             <div class="item-layer">
               <ItemLayer
                 texture={layer}
-                model={$itemModel}
+                model={itemModel}
                 modelName={$itemModelType}
                 renderer={layersRenderer}
                 on:addvariant={addVariant}
