@@ -3,6 +3,7 @@
   import NavigationItem from "$lib/NavigationItem/NavigationItem.svelte";
   import "$locales/locales"; // Import to initialize. Important :)
   import { locale, waitLocale, isLoading, _ } from "svelte-i18n";
+  import HomeIcon from "$src/icons/home.svg?raw";
 
   export const load = async () => {
     if (browser) {

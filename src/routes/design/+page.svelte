@@ -27,8 +27,10 @@
     NewOutfitBottomAnimation,
     NewOutfitShoesAnimation,
     NewOutfitClapAnimation,
-    FrendshipAnimation,
+    BowAnimation,
     HandsUpAnimation,
+    WavingAnimation,
+    JumpAnimation,
   } from "$src/data/animation";
   let itemModelType: Writable<string> = writable("alex");
   let baseLayer;
@@ -72,7 +74,14 @@
     });
 
     itemModelType.subscribe((model) => {
-      itemModel = (model == "alex") ? alexModel : steveModel;
+      itemModel = model == "alex" ? alexModel : steveModel;
+      if (updatedLayer) {
+        updatedLayer = new OutfitLayer(
+          "null",
+          new FileData("null", null, OUTFIT_TYPE.TOP),
+          new FileData("null", null, OUTFIT_TYPE.TOP)
+        );
+      }
       updateTexture($itemLayers.map((x) => x[$itemModelType]));
     });
 
@@ -84,17 +93,20 @@
           $itemModelType
         );
         if (updatedLayer) {
-          if (
-            updatedLayer[$itemModelType]?.type == OUTFIT_TYPE.TOP ||
-            updatedLayer[$itemModelType]?.type == OUTFIT_TYPE.HOODIE
-          ) {
-            await updateAnimation(NewOutfitBottomAnimation);
+          switch (updatedLayer[$itemModelType]?.type) {
+            case OUTFIT_TYPE.TOP:
+            case OUTFIT_TYPE.HOODIE:
+              await updateAnimation(NewOutfitBottomAnimation);
+              break;
+            case OUTFIT_TYPE.SHOES:
+              await updateAnimation(WavingAnimation);
+              break;
+            default:
+              await updateAnimation(DefaultAnimation);
+              break;
           }
-          if (updatedLayer[$itemModelType]?.type == OUTFIT_TYPE.SHOES) {
-            await updateAnimation(NewOutfitShoesAnimation);
-          }
-          await updateAnimation(DefaultAnimation);
         }
+        await updateAnimation(DefaultAnimation);
       }
     };
     await updateTexture($itemLayers.map((x) => x[$itemModelType]));
@@ -265,6 +277,7 @@
           }
           return layers;
         });
+        updateAnimation(NewOutfitBottomAnimation);
       };
       reader.readAsDataURL(selectedFile);
     }
@@ -343,10 +356,12 @@
             });
             const random = Math.random();
 
-            if (random < 0) {
+            if (random < 0.2) {
               updateAnimation(HandsUpAnimation);
             } else {
-              updateAnimation(NewOutfitClapAnimation);
+              if (random < 0.4) updateAnimation(BowAnimation);
+              else if (random < 0.6) updateAnimation(WavingAnimation);
+              else updateAnimation(JumpAnimation);
             }
             updateAnimation(DefaultAnimation);
           });

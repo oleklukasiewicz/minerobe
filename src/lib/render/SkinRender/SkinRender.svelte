@@ -262,6 +262,7 @@
 
 <div class="skin-render" bind:this={skinRenderNode}>
   {#if onlyRenderSnapshot}
+    <!-- svelte-ignore a11y-missing-attribute -->
     <img bind:this={imgNode} />
     <div class="hidden" bind:this={hiddenNode} />
   {/if}

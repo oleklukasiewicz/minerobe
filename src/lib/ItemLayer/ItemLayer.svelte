@@ -16,7 +16,6 @@
   export let canUp = true;
   export let canDown = true;
   export let renderer = undefined;
-  export let refreshRender = undefined;
 
   let dispatch = createEventDispatcher();
 
