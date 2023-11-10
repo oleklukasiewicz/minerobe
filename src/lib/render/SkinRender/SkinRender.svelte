@@ -25,7 +25,7 @@
   export let animation: RenderAnimation = null;
 
   export const refreshRender = function () {
-    if (onlyRenderSnapshot) render();
+    if (onlyRenderSnapshot) render(0);
   };
   export const changeAnimation: Function = async function (
     anim: RenderAnimation
@@ -51,9 +51,12 @@
   let animationPrepared = false;
   let animationQuiting = false;
 
+  let lastTime = 0;
+const interval = 1000 / 60; // Interval for 60 FPS
+
   let nextAnimation: RenderAnimation[] = [];
 
-  const render = function () {
+  const render = function (time) {
     if (skinRenderNode != null) {
       const canvas = skinRenderNode;
       const width = canvas.clientWidth;
@@ -64,7 +67,8 @@
       if (nextAnimation.length > 0 && animation != null && animationPrepared) {
         animationQuiting = true;
       }
-      if (animation) {
+      const deltaTime = time - lastTime;
+      if (animation && deltaTime > interval) {
         if (animationPrepared == false) {
           prepareAnimation(animation, false);
         } else {
@@ -116,7 +120,7 @@
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     if (onlyRenderSnapshot) {
-      render();
+      render(0);
     }
   };
   const updateModel = function (modelToLoad) {
@@ -165,7 +169,7 @@
         }
       });
 
-      if (onlyRenderSnapshot) render();
+      if (onlyRenderSnapshot) render(0);
       if (animation) prepareAnimation(animation, true);
     });
   };
@@ -252,7 +256,7 @@
     }
     window.addEventListener("resize", onWindowResize);
     onWindowResize();
-    render();
+    render(0);
   });
 
   $: updateAnimation(animation);

@@ -967,6 +967,7 @@ export const HandsUpAnimation = new RenderAnimation(
       data.speed = 0.02;
       data.speedDef = 1;
       data.bodyPosition = 1.47;
+      data.delay = 1.5;
     }
     return data;
   },
@@ -1013,14 +1014,14 @@ export const HandsUpAnimation = new RenderAnimation(
       if (
         isPoseReady([
           { value: data.leftarm.rotation.x, target: data.deg90 },
-          { value: data.leftarm.rotation.z, target: -0.1 },
+          { value: data.leftarm.rotation.z, target: -0.2 },
           { value: data.rightarm.rotation.x, target: data.deg90 },
-          { value: data.rightarm.rotation.z, target: 0.1 },
+          { value: data.rightarm.rotation.z, target: 0.2 },
         ])
       ) {
-        setTimeout(() => {
+        if (clock.getElapsedTime() > data.delay) {
           data.ishandGoUp = false;
-        }, 500);
+        }
       }
     } else {
       data.body.rotation.x = lerpOutCubic(data.body.rotation.x, 0, data.speed);
@@ -1176,9 +1177,9 @@ export const BowAnimation = new RenderAnimation(
           { value: data.rightarm.rotation.z, target: -0.5 },
         ])
       ) {
-        setTimeout(() => {
+        if (clock.getElapsedTime() > 0.2) {
           data.isBowing = false;
-        }, 200);
+        }
       }
     } else {
       data.body.rotation.x = lerpOutCubic(data.body.rotation.x, 0, speedOut);
@@ -1594,9 +1595,9 @@ export const JumpAnimation = new RenderAnimation(
           { value: data.leftleg.position.y, target: 1.24 },
         ])
       ) {
-        setTimeout(() => {
+        if (clock.getElapsedTime() > 0.1) {
           data.goingUp = false;
-        }, 100);
+        }
       }
     } else {
       data.leftleg.rotation.x = lerpOutCubic(
