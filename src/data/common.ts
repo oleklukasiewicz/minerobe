@@ -30,6 +30,18 @@ export class OutfitLayer {
     }
   }
 }
+
+export class OutfitPackage
+{
+  name: string;
+  model: string;
+  layers: OutfitLayer[];
+  constructor(name: string,model:string, layers: OutfitLayer[]){
+    this.name = name;
+    this.model = model;
+    this.layers = layers;
+  }
+}
 export const OUTFIT_TYPE = {
   TOP: "top",
   HOODIE: "hoodie",

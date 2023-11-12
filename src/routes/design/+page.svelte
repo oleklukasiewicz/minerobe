@@ -12,8 +12,6 @@
   import {
     FileData,
     OUTFIT_TYPE,
-    GetContextFromBase64,
-    GetOutfitType,
     OutfitLayer,
   } from "$src/data/common";
 
@@ -25,36 +23,33 @@
   import {
     DefaultAnimation,
     NewOutfitBottomAnimation,
-    NewOutfitShoesAnimation,
     NewOutfitClapAnimation,
     BowAnimation,
     HandsUpAnimation,
     WavingAnimation,
     JumpAnimation,
   } from "$src/data/animation";
+  import {
+    ExportImage,
+    ExportImagePackage,
+    ImportImage,
+    ImportImageFromUrl,
+    ImportImagePackage,
+  } from "$src/helpers/imageOperations";
   let itemModelType: Writable<string> = writable("alex");
   let baseLayer;
   let itemName = $_("defaultskinname");
   let itemLayers: Writable<OutfitLayer[]> = writable([]);
   let itemModel: any = null;
   let modelTexture: string = null;
-  let alexModel;
-  let steveModel;
+  let alexModel = null;
+  let steveModel = null;
   let loaded = false;
-
-  let fileInput;
-  let file;
 
   let layersRenderer;
   let updatedLayer: OutfitLayer = null;
-  let newVariantData: any = null;
 
   let updateAnimation = function (anim) {};
-  let updateTexture = function (layers) {};
-
-  itemLayers.subscribe((layers) => {
-    updateTexture(layers.map((x) => x[$itemModelType]));
-  });
 
   onMount(async () => {
     layersRenderer = new THREE.WebGLRenderer({
@@ -72,7 +67,6 @@
     await fetchImage("texture/default_planks.png").then((res) => {
       baseLayer = res;
     });
-
     itemModelType.subscribe((model) => {
       itemModel = model == "alex" ? alexModel : steveModel;
       if (updatedLayer) {
@@ -84,36 +78,10 @@
       }
       updateTexture($itemLayers.map((x) => x[$itemModelType]));
     });
-
-    updateTexture = async (layers) => {
-      if (baseLayer) {
-        modelTexture = await mergeImages(
-          [...layers.map((x) => x.content), baseLayer].reverse(),
-          undefined,
-          $itemModelType
-        );
-        if (updatedLayer) {
-          switch (updatedLayer[$itemModelType]?.type) {
-            case OUTFIT_TYPE.TOP:
-            case OUTFIT_TYPE.HOODIE:
-              await updateAnimation(NewOutfitBottomAnimation);
-              break;
-            case OUTFIT_TYPE.SHOES:
-              await updateAnimation(WavingAnimation);
-              break;
-            default:
-              await updateAnimation(DefaultAnimation);
-              break;
-          }
-        }
-        await updateAnimation(DefaultAnimation);
-      }
-    };
-    await updateTexture($itemLayers.map((x) => x[$itemModelType]));
     loaded = true;
   });
 
-  let upLayer = async function (e) {
+  const upLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
     if (index > 0) {
       itemLayers.update((layers) => {
@@ -125,7 +93,7 @@
       });
     }
   };
-  let downLayer = async function (e) {
+  const downLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
     if (index < $itemLayers.length - 1) {
       itemLayers.update((layers) => {
@@ -137,7 +105,7 @@
       });
     }
   };
-  let removeLayer = async function (e) {
+  const removeLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
     if (index != -1 && index != $itemLayers.length - 1) {
       updatedLayer = $itemLayers[index + 1];
@@ -148,238 +116,98 @@
     });
   };
 
-  function handleFileChange(event) {
-    let base64Data;
-    file = event.target.files[0];
-    event.target.value = null;
-    const reader = new FileReader();
+  const importLayer = async function () {
+    const newLayer = await ImportImage();
+    itemLayers.update((layers) => {
+      let newOutfit;
+      if ($itemModelType == "alex")
+        newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer);
+      else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null);
+      updatedLayer = newOutfit;
+      layers.unshift(newOutfit);
 
-    reader.onload = async (event) => {
-      base64Data = event.target.result;
-      var context = await GetContextFromBase64(base64Data);
-      const outfitType = GetOutfitType(context);
-      var newLayer = new FileData(
-        file.name.replace(/\.[^/.]+$/, ""),
-        base64Data,
-        outfitType
-      );
-      itemLayers.update((layers) => {
-        let newOutfit;
-        if ($itemModelType == "alex")
-          newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer);
-        else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null);
-        updatedLayer = newOutfit;
-        layers.unshift(newOutfit);
-
-        return layers;
-      });
-    };
-    reader.readAsDataURL(file);
-  }
-  function fetchImage(url) {
-    return fetch(url)
-      .then((response) => response.blob())
-      .then((blob) => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            resolve(reader.result);
-          };
-          reader.onerror = () => {
-            reject("Error occurred while reading the image.");
-          };
-          reader.readAsDataURL(blob);
-        });
-      });
-  }
+      return layers;
+    });
+  };
+  const fetchImage = async function (url) {
+    return await ImportImageFromUrl(url);
+  };
 
   const downloadImage = async () => {
-    const link = document.createElement("a");
-    link.href = await mergeImages(
-      [...$itemLayers.map((x) => x[$itemModelType].content)].reverse(),
-      undefined,
-      $itemModelType
-    );
-    link.download = itemName.toLowerCase() + ".png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    await ExportImage($itemLayers, $itemModelType, itemName);
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
   };
 
-  const addImagesToZip = function () {
-    let zip = new JSZip();
-    let layerData: any[] = [];
-    $itemLayers.forEach((layer, index) => {
-      zip.file(
-        "textures/" + index + "/" + layer.steve.fileName,
-        layer.steve.content.split(",")[1],
-        {
-          base64: true,
-        }
-      );
-      zip.file(
-        "textures/" + index + "/" + layer.alex.fileName,
-        layer.alex.content.split(",")[1],
-        {
-          base64: true,
-        }
-      );
-      layerData.push({
-        name: layer.name,
-        folder: index,
-        steve: layer.steve.fileName,
-        alex: layer.alex.fileName,
-      });
-    });
-    //generate json with data
-    const packageData = {
-      name: itemName,
-      model: $itemModelType,
-      layers: layerData,
-    }; // replace with your actual data
-    zip.file("data.json", JSON.stringify(packageData));
-
-    zip.generateAsync({ type: "base64" }).then((data) => {
-      const link = document.createElement("a");
-      link.href = "data:application/zip;base64," + data;
-      link.download = itemName.toLowerCase() + "_package.zip";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      updateAnimation(NewOutfitClapAnimation);
-      updateAnimation(DefaultAnimation);
-    });
+  const exportPackage = async function () {
+    await ExportImagePackage($itemLayers, $itemModelType, itemName);
+    await updateAnimation(NewOutfitClapAnimation);
+    await updateAnimation(DefaultAnimation);
   };
 
-  const addImageVariant = function (event) {
-    const layer = newVariantData.detail.texture;
-    const selectedFile = event.target.files[0];
+  const addImageVariant = async function (data) {
+    const layer = data.detail.texture;
+    const newLayer = await ImportImage();
+    itemLayers.update((layers) => {
+      const index = layers.indexOf(layer);
+      if ($itemModelType == "alex") {
+        layers[index].alex = newLayer;
+      } else {
+        layers[index].steve = newLayer;
+      }
+      return layers;
+    });
+    updateAnimation(NewOutfitBottomAnimation);
+  };
 
-    if (selectedFile) {
-      const reader = new FileReader();
+  const importPackage = async function () {
+    const newPackage = await ImportImagePackage();
+    itemName = newPackage.name;
+    $itemModelType = newPackage.model;
+    itemLayers.update((old) => {
+      old.unshift(...newPackage.layers);
+      return old;
+    });
+    const random = Math.random();
 
-      reader.onload = async (event) => {
-        let base64Data: string = event.target.result as string;
-        var context = await GetContextFromBase64(base64Data);
-        var newLayer = new FileData(
-          selectedFile.name.replace(/\.[^/.]+$/, ""),
-          base64Data,
-          GetOutfitType(context)
-        );
-        itemLayers.update((layers) => {
-          const index = layers.indexOf(layer);
-          if ($itemModelType == "alex") {
-            layers[index].alex = newLayer;
-          } else {
-            layers[index].steve = newLayer;
-          }
-          return layers;
-        });
-        updateAnimation(NewOutfitBottomAnimation);
-      };
-      reader.readAsDataURL(selectedFile);
+    if (random < 0.2) {
+      updateAnimation(HandsUpAnimation);
+    } else {
+      if (random < 0.4) updateAnimation(BowAnimation);
+      else if (random < 0.6) updateAnimation(WavingAnimation);
+      else updateAnimation(JumpAnimation);
+    }
+    updateAnimation(DefaultAnimation);
+  };
+
+  const updateTexture = async (layers) => {
+    if (baseLayer) {
+      modelTexture = await mergeImages(
+        [...layers.map((x) => x.content), baseLayer].reverse(),
+        undefined,
+        $itemModelType
+      );
+      if (updatedLayer) {
+        switch (updatedLayer[$itemModelType]?.type) {
+          case OUTFIT_TYPE.TOP:
+          case OUTFIT_TYPE.HOODIE:
+            await updateAnimation(NewOutfitBottomAnimation);
+            break;
+          case OUTFIT_TYPE.SHOES:
+            await updateAnimation(WavingAnimation);
+            break;
+          default:
+            await updateAnimation(DefaultAnimation);
+            break;
+        }
+      }
+      await updateAnimation(DefaultAnimation);
     }
   };
 
-  const importPackage = async function (eventE) {
-    const selectedFile = eventE.target.files[0];
-
-    eventE.target.value = "";
-
-    if (selectedFile) {
-      const reader = new FileReader();
-
-      reader.onload = async function (event) {
-        const zip = new JSZip();
-        zip.loadAsync(event.target.result).then(async function (contents) {
-          let jsonData = null;
-          if (contents.files["data.json"]) {
-            await contents.files["data.json"]
-              .async("string")
-              .then(function (data) {
-                jsonData = JSON.parse(data);
-              });
-          } else {
-            return;
-          }
-          itemName = jsonData.name;
-          $itemModelType = jsonData.model;
-          const texturesFolder = "textures/";
-          let layersToLoad = jsonData.layers.map(async (x) => {
-            const layerFolder = x.folder + "/";
-            //load content of file async with await
-            let steve;
-            if (x.steve)
-              steve = await contents.files[
-                texturesFolder + layerFolder + x.steve
-              ].async("base64");
-            let alex;
-            if (x.alex)
-              alex = await contents.files[
-                texturesFolder + layerFolder + x.alex
-              ].async("base64");
-            if (steve == null) steve = alex;
-            if (alex == null) alex = steve;
-
-            var steveContext = await GetContextFromBase64(
-              "data:image/png;base64," + steve
-            );
-            var alexContext = await GetContextFromBase64(
-              "data:image/png;base64," + alex
-            );
-            const steveFileData = new FileData(
-              x.steve,
-              "data:image/png;base64," + steve,
-              GetOutfitType(steveContext)
-            );
-            const alexFileData = new FileData(
-              x.alex,
-              "data:image/png;base64," + alex,
-              GetOutfitType(alexContext)
-            );
-            return new OutfitLayer(x.name, steveFileData, alexFileData);
-          });
-
-          let l = await Promise.all(layersToLoad).then((layers) => {
-            let newLayers = [];
-            jsonData.layers.forEach((x) => {
-              const layerToInsert = layers.find((y) => y.name == x.name);
-              if (layerToInsert) {
-                newLayers.push(layerToInsert);
-              }
-            });
-            itemLayers.update((old) => {
-              old.unshift(...newLayers);
-              return old;
-            });
-            const random = Math.random();
-
-            if (random < 0.2) {
-              updateAnimation(HandsUpAnimation);
-            } else {
-              if (random < 0.4) updateAnimation(BowAnimation);
-              else if (random < 0.6) updateAnimation(WavingAnimation);
-              else updateAnimation(JumpAnimation);
-            }
-            updateAnimation(DefaultAnimation);
-          });
-        });
-      };
-
-      reader.readAsArrayBuffer(selectedFile);
-    }
-  };
-  const importImagesFromPackage = async function () {
-    const fileInput = document.getElementById("fileInput") as any;
-    fileInput.click();
-  };
-  const addVariant = async function (data) {
-    newVariantData = data;
-    const fileInput = document.getElementById("fileInputVariant") as any;
-    fileInput.click();
-  };
+  itemLayers.subscribe((layers) => {
+    updateTexture(layers.map((x) => x[$itemModelType]));
+  });
 </script>
 
 <div class="item-page">
@@ -413,7 +241,7 @@
                 model={itemModel}
                 modelName={$itemModelType}
                 renderer={layersRenderer}
-                on:addvariant={addVariant}
+                on:addvariant={addImageVariant}
                 on:down={downLayer}
                 on:up={upLayer}
                 on:remove={removeLayer}
@@ -423,19 +251,7 @@
             </div>
           {/each}
         {/if}
-        <form style="display:flex">
-          <input
-            type="file"
-            on:change={handleFileChange}
-            style="display:none"
-            bind:this={fileInput}
-          />
-          <input
-            type="file"
-            id="fileInput"
-            style="display: none;"
-            on:change={importPackage}
-          />
+        <form style="display: flex;">
           <input
             type="file"
             id="fileInputVariant"
@@ -446,13 +262,13 @@
             id="add-layer-action"
             type="submit"
             class="secondary"
-            on:click={fileInput.click()}
+            on:click={importLayer}
             >{@html AddIcon} {$_("layersOpt.addLayer")}</button
           >
           <button
             id="import-package-action"
             title={$_("importPackage")}
-            on:click={importImagesFromPackage}
+            on:click={importPackage}
             class="secondary"
             >{@html ImportPackageIcon} {$_("importPackage")}</button
           >
@@ -483,7 +299,7 @@
         >
         <button
           id="download-package-action"
-          on:click={addImagesToZip}
+          on:click={exportPackage}
           title={$_("downloadPackage")}
           class:disabled={$itemLayers.length == 0}
           class="icon tertiary">{@html DownloadPackageIcon}</button
