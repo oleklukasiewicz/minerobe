@@ -32,6 +32,7 @@
     ImportImageFromUrl,
     ImportImagePackage,
     ImportLayerFromFile,
+    ImportPackageFromFile,
   } from "$src/helpers/imageOperations";
   let itemModelType: Writable<string> = writable("alex");
   let baseLayer;
@@ -201,32 +202,54 @@
       await updateAnimation(DefaultAnimation);
     }
   };
-  
-  const handleRenderDrop=async function(event) {
+
+  let isDragging = false;
+
+  const handleRenderDrop = async function (event) {
     event.preventDefault();
 
     if (event.dataTransfer.items) {
       for (var i = 0; i < event.dataTransfer.items.length; i++) {
         if (event.dataTransfer.items[i].kind === "file") {
           var file = event.dataTransfer.items[i].getAsFile();
-          let newLayer = await ImportLayerFromFile(file);
-          itemLayers.update((layers) => {
-            let newOutfit;
-            if ($itemModelType == "alex")
-              newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer);
-            else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null);
-            updatedLayer = newOutfit;
-            layers.unshift(newOutfit);
+          if (file.type.startsWith("image/")) {
+            let newLayer = await ImportLayerFromFile(file);
+            itemLayers.update((layers) => {
+              let newOutfit;
+              if ($itemModelType == "alex")
+                newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer);
+              else
+                newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null);
+              updatedLayer = newOutfit;
+              layers.unshift(newOutfit);
 
-            return layers;
-          });
+              return layers;
+            });
+          }else
+          {
+            let newPackage = await ImportPackageFromFile(file);
+            itemName = newPackage.name;
+            $itemModelType = newPackage.model;
+            itemLayers.update((old) => {
+              old.unshift(...newPackage.layers);
+              return old;
+            });
+          }
         }
       }
     }
-  }
-  const handleRenderDragOver=function(event) {
+    isDragging = false;
+  };
+  const handleRenderDragOver = function (event) {
     event.preventDefault();
-  }
+  };
+  const handleRenderDragEnter = function (event) {
+    isDragging = true;
+  };
+
+  const handleRenderDragLeave = function (event) {
+    isDragging = false;
+  };
 
   itemLayers.subscribe((layers) => {
     updateTexture(layers.map((x) => x[$itemModelType]));
@@ -236,7 +259,14 @@
 <div class="item-page">
   <div class="render-data">
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="render" on:drop={handleRenderDrop} on:dragover={handleRenderDragOver}>
+    <div
+      class="render"
+      class:drop-hover={isDragging}
+      on:drop={handleRenderDrop}
+      on:dragover={handleRenderDragOver}
+      on:dragenter={handleRenderDragEnter}
+      on:dragleave={handleRenderDragLeave}
+    >
       {#if loaded}
         <SkinRender
           texture={modelTexture}

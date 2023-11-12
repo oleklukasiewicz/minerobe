@@ -51,9 +51,6 @@
   let animationPrepared = false;
   let animationQuiting = false;
 
-  let lastTime = 0;
-const interval = 1000 / 60; // Interval for 60 FPS
-
   let nextAnimation: RenderAnimation[] = [];
 
   const render = function (time) {
@@ -67,8 +64,7 @@ const interval = 1000 / 60; // Interval for 60 FPS
       if (nextAnimation.length > 0 && animation != null && animationPrepared) {
         animationQuiting = true;
       }
-      const deltaTime = time - lastTime;
-      if (animation && deltaTime > interval) {
+      if (animation) {
         if (animationPrepared == false) {
           prepareAnimation(animation, false);
         } else {

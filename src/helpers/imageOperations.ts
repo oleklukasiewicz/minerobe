@@ -79,84 +79,11 @@ export const ImportImagePackage = async function () {
     input.onchange = (event: any) => {
       let file = event.target.files[0];
       event.target.value = null;
-      if (file) {
-        const reader = new FileReader();
-
-        reader.onload = async function (event) {
-          const zip = new JSZip();
-          zip.loadAsync(event.target.result).then(async function (contents) {
-            let jsonData = null;
-            let importedPackage = new OutfitPackage("", "", []);
-            if (contents.files["data.json"]) {
-              await contents.files["data.json"]
-                .async("string")
-                .then(function (data) {
-                  jsonData = JSON.parse(data);
-                });
-
-              importedPackage.name = jsonData.name;
-              importedPackage.model = jsonData.model;
-
-              const texturesFolder = "textures/";
-
-              let layersToLoad = jsonData.layers.map(async (x: any) => {
-                const layerFolder = x.folder + "/";
-                //load content of file async with await
-                let steve;
-                if (x.steve)
-                  steve = await contents.files[
-                    texturesFolder + layerFolder + x.steve
-                  ].async("base64");
-                let alex;
-                if (x.alex)
-                  alex = await contents.files[
-                    texturesFolder + layerFolder + x.alex
-                  ].async("base64");
-                if (steve == null) steve = alex;
-                if (alex == null) alex = steve;
-
-                var steveContext = await GetContextFromBase64(
-                  "data:image/png;base64," + steve
-                );
-                var alexContext = await GetContextFromBase64(
-                  "data:image/png;base64," + alex
-                );
-                const steveFileData = new FileData(
-                  x.steve,
-                  "data:image/png;base64," + steve,
-                  GetOutfitType(steveContext)
-                );
-                const alexFileData = new FileData(
-                  x.alex,
-                  "data:image/png;base64," + alex,
-                  GetOutfitType(alexContext)
-                );
-                return new OutfitLayer(x.name, steveFileData, alexFileData);
-              });
-
-              let newLayers = [];
-              let l = await Promise.all(layersToLoad).then((layers) => {
-                jsonData.layers.forEach((x) => {
-                  const layerToInsert = layers.find((y) => y.name == x.name);
-                  if (layerToInsert) {
-                    newLayers.push(layerToInsert);
-                  }
-                });
-              });
-              importedPackage.layers = newLayers;
-              resolve(importedPackage);
-            } else {
-              return;
-            }
-          });
-        };
-        reader.readAsArrayBuffer(file);
-      }
+      resolve(ImportPackageFromFile(file));
     };
   });
 };
 export const ImportImage = async function () {
-  let base64Data;
   //create node for fle download
   const input = document.createElement("input");
   input.type = "file";
@@ -167,19 +94,7 @@ export const ImportImage = async function () {
     input.onchange = (event: any) => {
       let file = event.target.files[0];
       event.target.value = null;
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        base64Data = event.target.result;
-        var context = await GetContextFromBase64(base64Data);
-        const outfitType = GetOutfitType(context);
-        var newLayer = new FileData(
-          file.name.replace(/\.[^/.]+$/, ""),
-          base64Data,
-          outfitType
-        );
-        resolve(newLayer);
-      };
-      reader.readAsDataURL(file);
+      resolve(ImportLayerFromFile(file));
     };
   });
 };
@@ -203,11 +118,9 @@ export const ImportImageFromUrl = async function (url: string) {
 export const ImportLayerFromFile = async function (file: File) {
   //convert to base64
   const reader = new FileReader();
-  reader.readAsDataURL(file);
-  //create new layer 
   return new Promise<FileData>((resolve) => {
     reader.onload = async (event) => {
-      const base64Data:any = event.target.result;
+      const base64Data: any = event.target.result;
       var context = await GetContextFromBase64(base64Data);
       const outfitType = GetOutfitType(context);
       var newLayer = new FileData(
@@ -217,5 +130,81 @@ export const ImportLayerFromFile = async function (file: File) {
       );
       resolve(newLayer);
     };
+    reader.readAsDataURL(file);
+  });
+};
+export const ImportPackageFromFile = async function (file: File) {
+  return new Promise<OutfitPackage>((resolve) => {
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const base64Data: any = event.target.result;
+      const zip = new JSZip();
+      zip.loadAsync(base64Data).then(async function (contents) {
+        let jsonData = null;
+        let importedPackage = new OutfitPackage("", "", []);
+        if (contents.files["data.json"]) {
+          await contents.files["data.json"]
+            .async("string")
+            .then(function (data) {
+              jsonData = JSON.parse(data);
+            });
+
+          importedPackage.name = jsonData.name;
+          importedPackage.model = jsonData.model;
+
+          const texturesFolder = "textures/";
+
+          let layersToLoad = jsonData.layers.map(async (x: any) => {
+            const layerFolder = x.folder + "/";
+            //load content of file async with await
+            let steve;
+            if (x.steve)
+              steve = await contents.files[
+                texturesFolder + layerFolder + x.steve
+              ].async("base64");
+            let alex;
+            if (x.alex)
+              alex = await contents.files[
+                texturesFolder + layerFolder + x.alex
+              ].async("base64");
+            if (steve == null) steve = alex;
+            if (alex == null) alex = steve;
+
+            var steveContext = await GetContextFromBase64(
+              "data:image/png;base64," + steve
+            );
+            var alexContext = await GetContextFromBase64(
+              "data:image/png;base64," + alex
+            );
+            const steveFileData = new FileData(
+              x.steve,
+              "data:image/png;base64," + steve,
+              GetOutfitType(steveContext)
+            );
+            const alexFileData = new FileData(
+              x.alex,
+              "data:image/png;base64," + alex,
+              GetOutfitType(alexContext)
+            );
+            return new OutfitLayer(x.name, steveFileData, alexFileData);
+          });
+
+          let newLayers = [];
+          let l = await Promise.all(layersToLoad).then((layers) => {
+            jsonData.layers.forEach((x) => {
+              const layerToInsert = layers.find((y) => y.name == x.name);
+              if (layerToInsert) {
+                newLayers.push(layerToInsert);
+              }
+            });
+          });
+          importedPackage.layers = newLayers;
+          resolve(importedPackage);
+        } else {
+          return;
+        }
+      });
+    };
+    reader.readAsArrayBuffer(file);
   });
 };
