@@ -200,3 +200,22 @@ export const ImportImageFromUrl = async function (url: string) {
       });
     });
 };
+export const ImportLayerFromFile = async function (file: File) {
+  //convert to base64
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  //create new layer 
+  return new Promise<FileData>((resolve) => {
+    reader.onload = async (event) => {
+      const base64Data:any = event.target.result;
+      var context = await GetContextFromBase64(base64Data);
+      const outfitType = GetOutfitType(context);
+      var newLayer = new FileData(
+        file.name.replace(/\.[^/.]+$/, ""),
+        base64Data,
+        outfitType
+      );
+      resolve(newLayer);
+    };
+  });
+};

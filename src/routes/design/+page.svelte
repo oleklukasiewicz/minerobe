@@ -9,11 +9,7 @@
   import { onMount } from "svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
   import { writable, type Writable } from "svelte/store";
-  import {
-    FileData,
-    OUTFIT_TYPE,
-    OutfitLayer,
-  } from "$src/data/common";
+  import { FileData, OUTFIT_TYPE, OutfitLayer } from "$src/data/common";
 
   import DownloadIcon from "$src/icons/download.svg?raw";
   import ImportPackageIcon from "$src/icons/upload.svg?raw";
@@ -35,6 +31,7 @@
     ImportImage,
     ImportImageFromUrl,
     ImportImagePackage,
+    ImportLayerFromFile,
   } from "$src/helpers/imageOperations";
   let itemModelType: Writable<string> = writable("alex");
   let baseLayer;
@@ -204,6 +201,32 @@
       await updateAnimation(DefaultAnimation);
     }
   };
+  
+  const handleRenderDrop=async function(event) {
+    event.preventDefault();
+
+    if (event.dataTransfer.items) {
+      for (var i = 0; i < event.dataTransfer.items.length; i++) {
+        if (event.dataTransfer.items[i].kind === "file") {
+          var file = event.dataTransfer.items[i].getAsFile();
+          let newLayer = await ImportLayerFromFile(file);
+          itemLayers.update((layers) => {
+            let newOutfit;
+            if ($itemModelType == "alex")
+              newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer);
+            else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null);
+            updatedLayer = newOutfit;
+            layers.unshift(newOutfit);
+
+            return layers;
+          });
+        }
+      }
+    }
+  }
+  const handleRenderDragOver=function(event) {
+    event.preventDefault();
+  }
 
   itemLayers.subscribe((layers) => {
     updateTexture(layers.map((x) => x[$itemModelType]));
@@ -212,7 +235,8 @@
 
 <div class="item-page">
   <div class="render-data">
-    <div class="render">
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="render" on:drop={handleRenderDrop} on:dragover={handleRenderDragOver}>
       {#if loaded}
         <SkinRender
           texture={modelTexture}
@@ -252,12 +276,6 @@
           {/each}
         {/if}
         <form style="display: flex;">
-          <input
-            type="file"
-            id="fileInputVariant"
-            style="display: none;"
-            on:change={addImageVariant}
-          />
           <button
             id="add-layer-action"
             type="submit"
