@@ -290,6 +290,7 @@
                 model={itemModel}
                 modelName={$itemModelType}
                 renderer={layersRenderer}
+                bind:label={layer.name}
                 on:addvariant={addImageVariant}
                 on:down={downLayer}
                 on:up={upLayer}

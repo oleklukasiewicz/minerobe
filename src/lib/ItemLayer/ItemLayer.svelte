@@ -1,6 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { cubicOut } from 'svelte/easing';
+  import { cubicOut } from "svelte/easing";
   import SkinSnapshot from "$lib/render/SkinSnapshot/SkinSnapshot.svelte";
   import type { FileData, OutfitLayer } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
@@ -16,6 +16,8 @@
   export let canUp = true;
   export let canDown = true;
   export let renderer = undefined;
+  export let label =
+    texture?.name || texture[modelName]?.fileName || "New layer";
 
   let dispatch = createEventDispatcher();
 
@@ -47,12 +49,16 @@
     return {
       duration,
       easing: cubicOut,
-      css: (t) => `opacity: ${t}; transform: scale(${0.9 + t * 0.1})`
+      css: (t) => `opacity: ${t}; transform: scale(${0.9 + t * 0.1})`,
     };
   }
 </script>
 
-<div class="item-layer" in:fadeInScale={{ duration: 300 }} out:fadeInScale={{ duration: 300 }}>
+<div
+  class="item-layer"
+  in:fadeInScale={{ duration: 300 }}
+  out:fadeInScale={{ duration: 300 }}
+>
   <div class="data">
     <div class="render">
       <SkinSnapshot
@@ -64,9 +70,8 @@
       />
     </div>
     <span
-      >{texture.name || texture[modelName].fileName}<br /><span class="label common"
-        >{texture[modelName].type}</span
-      ></span
+      ><input bind:value={label} />
+      <br /><span class="label common">{texture[modelName].type}</span></span
     >
   </div>
   <div class="actions">

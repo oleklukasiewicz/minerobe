@@ -88,12 +88,13 @@ export let mergeImages = function (
           replaceLowerLayer(tempCtx, ctx, 0, 16, 0, 32, 16, 16);
           replaceLowerLayer(tempCtx, ctx, 16, 48, 0, 48, 16, 16);
           //arms
+          console.log(skinType);
           if (skinType == "alex") {
             replaceLowerLayer(tempCtx, ctx, 40, 16, 40, 32, 14, 16);
             replaceLowerLayer(tempCtx, ctx, 32, 48, 48, 48, 14, 16);
           } else {
-            replaceLowerLayer(tempCtx, ctx, 40, 16, 40, 32, 16, 16);
-            replaceLowerLayer(tempCtx, ctx, 32, 48, 48, 48, 16, 16);
+            replaceLowerLayer(tempCtx, ctx, 40, 16, 40, 34, 16, 16);
+            replaceLowerLayer(tempCtx, ctx, 32, 48, 48, 52, 16, 16);
           }
           tempCtx.clearRect(0, 0, canvas.width, canvas.height);
 
