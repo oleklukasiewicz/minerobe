@@ -58,6 +58,9 @@
       const canvas = skinRenderNode;
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
+      const timeDelta = clock.getDelta();
+      const elapsedTime = clock.elapsedTime;
+      const renderClock = elapsedTime*timeDelta;
       if (!onlyRenderSnapshot) requestAnimationFrame(render);
       if (controls) controls.update();
       renderer.setSize(width, height, false);
@@ -73,8 +76,10 @@
               var finished = animation.stop(
                 animationData,
                 loadedRender,
-                clock,
-                modelName
+                elapsedTime,
+                modelName,
+                timeDelta,
+                elapsedTime
               );
               if (finished) {
                 animationQuiting = false;
@@ -84,7 +89,14 @@
                 nextAnimation.splice(0, 1);
               }
             } else
-              animation.render(animationData, loadedRender, clock, modelName);
+              animation.render(
+                animationData,
+                loadedRender,
+                elapsedTime,
+                modelName,
+                timeDelta,
+                elapsedTime
+              );
           }
         }
       } else {
@@ -144,7 +156,7 @@
     });
   };
   const updateRender = function (textureToLoad) {
-    if(loadedRender == null) return;
+    if (loadedRender == null) return;
     // Create a new promise that resolves when the texture has loaded
     const texturePromise = updateTexture(textureToLoad);
 
@@ -183,7 +195,6 @@
         data = anim.prepare(loadedRender, false, modelName);
         animationData = data;
       }
-      clock.start();
       animationPrepared = true;
     }
   };

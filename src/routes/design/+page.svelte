@@ -1,7 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { mergeImages } from "$src/helpers/imageMerger";
-  import JSZip from "jszip";
   import * as THREE from "three";
 
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";

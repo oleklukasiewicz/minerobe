@@ -68,7 +68,7 @@ export const DefaultAnimation = new RenderAnimation(
       data.rotationSpeed = 0;
       data.bodyRotationDelay = 0;
       data.bodyRotationTarget = 0;
-      data.angle = 0;
+      data.angle = 5;
       data.speed = 1;
       data.returnSpeed = 0.01;
       data.armAngle = (5 * Math.PI) / 180;
@@ -76,26 +76,26 @@ export const DefaultAnimation = new RenderAnimation(
     return data;
   },
   function (data, scene, clock, modelName) {
-    const elapsedTime = clock.getDelta();
+    const elapsedTime = clock;
     const amplitude = 0.025;
+    const cSin = Math.sin(clock);
     if (data.leftarm) {
-      data.angle += data.speed * elapsedTime;
       data.leftarm.rotation.z = lerpOutCubic(
         data.leftarm.rotation.z,
-        (Math.sin(data.angle) * 0.5 + 0.5) * -1 * data.armAngle,
+        -0.06 + -0.06 * cSin,
         data.returnSpeed
       );
       data.rightarm.rotation.z = lerpOutCubic(
         data.rightarm.rotation.z,
-        (Math.sin(data.angle) * 0.5 + 0.5) * data.armAngle,
+        0.06 + 0.06 * cSin,
         data.returnSpeed
       );
     }
     if (data.head) {
-      if (clock.elapsedTime > data.nextRotationTime) {
+      if (clock > data.nextRotationTime) {
         // Time for a new rotation
         data.headRotation = ((Math.random() * 120 - 60) * Math.PI) / 180; // New random rotation
-        data.nextRotationTime = clock.elapsedTime + Math.random() * 5; // New random time for the next rotation
+        data.nextRotationTime = clock + Math.random() * 5; // New random time for the next rotation
         data.rotationSpeed = Math.random() * 0.03 + data.returnSpeed; // New random speed for the head rotation
       }
       // Interpolate between the current rotation and the target rotation using an easing function
@@ -117,8 +117,6 @@ export const DefaultAnimation = new RenderAnimation(
         data.returnSpeed
       );
 
-      const cSin = Math.sin(clock.elapsedTime);
-
       data.head.rotation.x = lerpOutCubic(
         data.head.rotation.x,
         0.07 * cSin,
@@ -127,7 +125,7 @@ export const DefaultAnimation = new RenderAnimation(
 
       data.body.position.y = lerpOutCubic(
         data.body.position.y,
-        1.47 + amplitude * Math.sin(clock.elapsedTime),
+        1.47 + amplitude * Math.sin(clock),
         data.returnSpeed
       );
 
@@ -145,12 +143,12 @@ export const DefaultAnimation = new RenderAnimation(
 
       data.leftleg.rotation.x = lerpOutCubic(
         data.leftleg.rotation.x,
-        0 + 0.03 * Math.sin(clock.elapsedTime + delay),
+        0 + 0.03 * Math.sin(clock + delay),
         data.returnSpeed
       );
       data.leftleg.position.z = lerpOutCubic(
         data.leftleg.position.z,
-        0 + 0.03 * Math.sin(clock.elapsedTime + delay),
+        0 + 0.03 * Math.sin(clock + delay),
         data.returnSpeed
       );
     }
@@ -230,9 +228,9 @@ export const NewOutfitBottomAnimation = new RenderAnimation(
     const resetSpeed = 0.02; // Adjust this value to change the speed of the reset
     const epsilon = 0.01; // Adjust this value to change the precision of the equality check
     const amplitude = 0.025;
-    const elapsedTime = clock.getDelta();
+    const elapsedTime = clock;
 
-    const cSin = 1 * Math.sin(clock.elapsedTime);
+    const cSin = 1 * Math.sin(clock);
     if (data.head) {
       if (data.isRotatingDown || data.isLookingLeft || data.isLookingRight) {
         data.body.position.y = 1.47 + amplitude * cSin;
@@ -427,9 +425,9 @@ export const NewOutfitShoesAnimation = new RenderAnimation(
     const resetSpeed = 0.01; // Adjust this value to change the speed of the reset
     const epsilon = 0.01; // Adjust this value to change the precision of the equality check
     const amplitude = 0.025;
-    const elapsedTime = clock.getDelta();
+    const elapsedTime = clock;
 
-    const cSin = 1 * Math.sin(clock.elapsedTime);
+    const cSin = 1 * Math.sin(clock);
 
     if (data.head) {
       data.body.position.y = 1.47 + amplitude * cSin;
@@ -438,8 +436,8 @@ export const NewOutfitShoesAnimation = new RenderAnimation(
       const delay = 0.5; // Adjust this value to change the delay
 
       data.leftleg.rotation.x =
-        0.05 + 0.03 * Math.sin(clock.elapsedTime + delay);
-      data.leftleg.position.z = 0 + 0.03 * Math.sin(clock.elapsedTime + delay);
+        0.05 + 0.03 * Math.sin(clock + delay);
+      data.leftleg.position.z = 0 + 0.03 * Math.sin(clock + delay);
 
       if (data.isRotatingDown) {
         data.isLookingLeft = true;
@@ -639,7 +637,7 @@ export const NewOutfitClapAnimation = new RenderAnimation(
     return true;
   },
   function (data, scene, clock, modelName) {
-    const elapsedTime = clock.getDelta();
+    const elapsedTime = clock;
     const clapSpeed = 0.08; // Adjust this value to change the speed of the clap
     const positionSpeed = 0.015; // Adjust this value to change the speed of the position reset
     const epsilon = 0.01; // Adjust this value to change the precision of the equality check
@@ -648,7 +646,7 @@ export const NewOutfitClapAnimation = new RenderAnimation(
     const initialRotation = 100 * (Math.PI / 180); // 90 degrees in radians
     const amplitude = 0.025;
 
-    const cSin = data.speed * Math.sin(clock.elapsedTime);
+    const cSin = data.speed * Math.sin(clock);
 
     if (data.leftarm && data.rightarm) {
       data.head.rotation.x = -0.001 + 0.07 * cSin;
@@ -659,8 +657,8 @@ export const NewOutfitClapAnimation = new RenderAnimation(
       const delay = 0.5; // Adjust this value to change the delay
 
       data.leftleg.rotation.x =
-        0.05 + 0.03 * Math.sin(clock.elapsedTime + delay);
-      data.leftleg.position.z = 0 + 0.03 * Math.sin(clock.elapsedTime + delay);
+        0.05 + 0.03 * Math.sin(clock + delay);
+      data.leftleg.position.z = 0 + 0.03 * Math.sin(clock + delay);
 
       if (!data.isInitialRotationSet == true) {
         // Interpolate between the current rotation and the initial rotation
@@ -1019,7 +1017,7 @@ export const HandsUpAnimation = new RenderAnimation(
           { value: data.rightarm.rotation.z, target: 0.2 },
         ])
       ) {
-        if (clock.getElapsedTime() > data.delay) {
+        if (clock > data.delay) {
           data.ishandGoUp = false;
         }
       }
@@ -1109,15 +1107,15 @@ export const BowAnimation = new RenderAnimation(
     return true;
   },
   function (data, scene, clock, modelName) {
-    const elapsedTime = clock.getDelta();
+    const elapsedTime = clock;
     const speed = 0.03;
     const speedOut = 0.02;
-    const cSin = Math.sin(clock.elapsedTime);
+    const cSin = Math.sin(clock);
     const amplitude = 0.025;
 
     data.body.position.y = lerpOutCubic(
       data.body.position.y,
-      data.bodyPosition + amplitude * Math.sin(clock.elapsedTime),
+      data.bodyPosition + amplitude * Math.sin(clock),
       0.02
     );
 
@@ -1136,7 +1134,7 @@ export const BowAnimation = new RenderAnimation(
     data.leftleg.rotation.x = lerpOutCubic(
       data.leftleg.rotation.x,
       (data.leftleg.position.z =
-        0 + 0.03 * Math.sin(clock.elapsedTime + delay)),
+        0 + 0.03 * Math.sin(clock + delay)),
       0.02
     );
 
@@ -1177,7 +1175,7 @@ export const BowAnimation = new RenderAnimation(
           { value: data.rightarm.rotation.z, target: -0.5 },
         ])
       ) {
-        if (clock.getElapsedTime() > 0.2) {
+        if (clock > 0.2) {
           data.isBowing = false;
         }
       }
@@ -1273,15 +1271,15 @@ export const WavingAnimation = new RenderAnimation(
     return true;
   },
   function (data, scene, clock, modelName) {
-    const elapsedTime = clock.getDelta();
+    const elapsedTime = clock;
     const speed = 0.03;
     const speedOut = 0.02;
-    const cSin = Math.sin(clock.elapsedTime);
+    const cSin = Math.sin(clock);
     const amplitude = 0.025;
 
     data.body.position.y = lerpOutCubic(
       data.body.position.y,
-      data.bodyPosition + amplitude * Math.sin(clock.elapsedTime),
+      data.bodyPosition + amplitude * Math.sin(clock),
       0.02
     );
     data.head.rotation.y = lerpOutCubic(data.head.rotation.y, 0, 0.02);
@@ -1301,7 +1299,7 @@ export const WavingAnimation = new RenderAnimation(
     data.leftleg.rotation.x = lerpOutCubic(
       data.leftleg.rotation.x,
       (data.leftleg.position.z =
-        0 + 0.03 * Math.sin(clock.elapsedTime + delay)),
+        0 + 0.03 * Math.sin(clock + delay)),
       0.02
     );
     if (data.waveCount >= data.waveCountMax) {
@@ -1595,7 +1593,7 @@ export const JumpAnimation = new RenderAnimation(
           { value: data.leftleg.position.y, target: 1.24 },
         ])
       ) {
-        if (clock.getElapsedTime() > 0.1) {
+        if (clock > 0.1) {
           data.goingUp = false;
         }
       }
