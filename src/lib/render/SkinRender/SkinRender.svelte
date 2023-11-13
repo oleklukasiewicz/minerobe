@@ -60,7 +60,6 @@
       const height = canvas.clientHeight;
       const timeDelta = clock.getDelta();
       const elapsedTime = clock.elapsedTime;
-      const renderClock = elapsedTime*timeDelta;
       if (!onlyRenderSnapshot) requestAnimationFrame(render);
       if (controls) controls.update();
       renderer.setSize(width, height, false);
@@ -76,9 +75,8 @@
               var finished = animation.stop(
                 animationData,
                 loadedRender,
-                elapsedTime,
-                modelName,
                 timeDelta,
+                modelName,
                 elapsedTime
               );
               if (finished) {
@@ -92,9 +90,8 @@
               animation.render(
                 animationData,
                 loadedRender,
-                elapsedTime,
-                modelName,
                 timeDelta,
+                modelName,
                 elapsedTime
               );
           }
