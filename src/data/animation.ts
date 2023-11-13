@@ -92,10 +92,10 @@ export const DefaultAnimation = new RenderAnimation(
       );
     }
     if (data.head) {
-      if (clock > data.nextRotationTime) {
+      if (elapsedRenderTime > data.nextRotationTime) {
         // Time for a new rotation
         data.headRotation = ((Math.random() * 120 - 60) * Math.PI) / 180; // New random rotation
-        data.nextRotationTime = clock + Math.random() * 5; // New random time for the next rotation
+        data.nextRotationTime = elapsedRenderTime + Math.random() * 5; // New random time for the next rotation
         data.rotationSpeed = Math.random() * 0.03 + data.returnSpeed; // New random speed for the head rotation
       }
       // Interpolate between the current rotation and the target rotation using an easing function
@@ -1110,7 +1110,6 @@ export const BowAnimation = new RenderAnimation(
     return true;
   },
   function (data, scene, clock, modelName) {
-    const elapsedTime = clock;
     const speed = 0.03;
     const speedOut = 0.02;
     const cSin = Math.sin(clock);
