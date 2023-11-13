@@ -1266,7 +1266,7 @@ export const WavingAnimation = new RenderAnimation(
       data.waveCount = 0;
       data.waveCountMax = 5;
       data.speed = 0.04;
-      data.speedOut = 0.025;
+      data.speedOut = 0.017;
       data.bodyPosition = 1.47;
     }
     return data;

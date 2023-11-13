@@ -192,9 +192,6 @@
           case OUTFIT_TYPE.SHOES:
             await updateAnimation(WavingAnimation);
             break;
-          default:
-            await updateAnimation(DefaultAnimation);
-            break;
         }
       }
       await updateAnimation(DefaultAnimation);
