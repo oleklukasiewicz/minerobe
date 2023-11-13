@@ -32,15 +32,25 @@ export const ExportImagePackage = async function (
   let zip = new JSZip();
   let layerData: any[] = [];
   layers.forEach((layer, index) => {
+    let steveFileName = layer.steve.fileName;
+    let alexFileName = layer.alex.fileName;
+
+    if (!/\.[0-9a-z]+$/i.test(steveFileName)) {
+      steveFileName += ".png"; // Add default extension if none exists
+    }
+
+    if (!/\.[0-9a-z]+$/i.test(alexFileName)) {
+      alexFileName += ".png"; // Add default extension if none exists
+    }
     zip.file(
-      "textures/" + index + "/" + layer.steve.fileName,
+      "textures/" + index + "/" + steveFileName,
       layer.steve.content.split(",")[1],
       {
         base64: true,
       }
     );
     zip.file(
-      "textures/" + index + "/" + layer.alex.fileName,
+      "textures/" + index + "/" + alexFileName,
       layer.alex.content.split(",")[1],
       {
         base64: true,
@@ -160,12 +170,12 @@ export const ImportPackageFromFile = async function (file: File) {
             let steve;
             if (x.steve)
               steve = await contents.files[
-                texturesFolder + layerFolder + x.steve
+                texturesFolder + layerFolder + x.steve+".png"
               ].async("base64");
             let alex;
             if (x.alex)
               alex = await contents.files[
-                texturesFolder + layerFolder + x.alex
+                texturesFolder + layerFolder + x.alex+".png"
               ].async("base64");
             if (steve == null) steve = alex;
             if (alex == null) alex = steve;
