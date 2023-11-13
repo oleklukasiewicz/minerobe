@@ -170,8 +170,7 @@
     if (random < 0.2) {
       updateAnimation(HandsUpAnimation);
     } else {
-      if (random < 0.4) updateAnimation(BowAnimation);
-      else if (random < 0.6) updateAnimation(WavingAnimation);
+      if (random < 0.4) updateAnimation(WavingAnimation);
       else updateAnimation(JumpAnimation);
     }
     updateAnimation(DefaultAnimation);
