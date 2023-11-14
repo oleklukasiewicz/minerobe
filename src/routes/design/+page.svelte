@@ -1,14 +1,21 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import * as THREE from "three";
-  import { onMount } from "svelte";
+  import type { Writable } from "svelte/store";
+  import writableDerived, { propertyStore } from "svelte-writable-derived";
+  import { onDestroy, onMount } from "svelte";
 
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
 
-  import { itemLayers, itemModelType, itemName } from "$data/cache";
-  import { FileData, OUTFIT_TYPE, OutfitLayer } from "$data/common";
+  import {
+    FileData,
+    OUTFIT_TYPE,
+    OutfitLayer,
+    OutfitPackage,
+  } from "$data/common";
+  import { itemPackage } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
@@ -25,14 +32,23 @@
   import {
     ExportImage,
     ExportImagePackage,
+    ExportImagePackageJson,
     ImportImage,
     ImportImageFromUrl,
     ImportImagePackage,
+    ImportImagePackageJson,
+    ImportImagePackageJsonFromFile,
     ImportLayerFromFile,
     ImportPackageFromFile,
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
 
+  let itemLayers: Writable<OutfitLayer[]> = propertyStore(
+    itemPackage,
+    "layers"
+  );
+  let itemModelType: Writable<string> = propertyStore(itemPackage, "model");
+  let itemName: Writable<string> = propertyStore(itemPackage, "name");
   let baseLayer;
   let itemModel: any = null;
   let modelTexture: string = null;
@@ -62,22 +78,11 @@
       baseLayer = res;
     });
     if (localStorage != null && $itemLayers.length == 0) {
-      const layersJson = localStorage.getItem("itemLayers");
+      console.log("loading from local storage");
+      const layersJson = localStorage.getItem("package");
       if (layersJson != null) {
         const localStorageData = JSON.parse(layersJson);
-        const layers = localStorageData?.layers;
-        $itemName = localStorageData?.name;
-        $itemModelType = localStorageData?.model;
-        try {
-          itemLayers.update((old) => {
-            layers.forEach((layer) => {
-              if (layer && layer.alex && layer.steve) old.push(layer);
-            });
-            return old;
-          });
-        } catch (e) {
-          itemLayers.set([]);
-        }
+       $itemPackage =localStorageData;
       }
     }
     loaded = true;
@@ -144,7 +149,7 @@
   };
 
   const exportPackage = async function () {
-    await ExportImagePackage($itemLayers, $itemModelType, $itemName);
+    await ExportImagePackageJson($itemLayers, $itemModelType, $itemName);
     await updateAnimation(ClapAnimation);
     await updateAnimation(DefaultAnimation);
   };
@@ -165,7 +170,7 @@
   };
 
   const importPackage = async function () {
-    const newPackage = await ImportImagePackage();
+    const newPackage = await ImportImagePackageJson();
     $itemName = newPackage.name;
     $itemModelType = newPackage.model;
     itemLayers.update((old) => {
@@ -229,7 +234,7 @@
               return layers;
             });
           } else {
-            let newPackage = await ImportPackageFromFile(file);
+            let newPackage = await ImportImagePackageJsonFromFile(file);
             $itemName = newPackage.name;
             $itemModelType = newPackage.model;
             itemLayers.update((old) => {
@@ -264,21 +269,16 @@
 
   const cacheToLocalStorage = function () {
     if (loaded) {
-      const localStorageData = {
-        name: $itemName,
-        model: $itemModelType,
-        layers: $itemLayers,
-      };
+      console.log("caching to local storage");
+      const localStorageData = $itemPackage;
       const layersJson = JSON.stringify(localStorageData);
-      localStorage.setItem("itemLayers", layersJson);
+      localStorage.setItem("package", layersJson);
     }
   };
+  let packageSub=itemPackage.subscribe(cacheToLocalStorage);
+
   itemLayers.subscribe((layers) => {
     updateTexture(layers.map((x) => x[$itemModelType]));
-    cacheToLocalStorage();
-  });
-  itemName.subscribe((name) => {
-    cacheToLocalStorage();
   });
   itemModelType.subscribe((model) => {
     if ($itemLayers?.length != null) {
@@ -292,7 +292,10 @@
       }
       updateTexture($itemLayers.map((x) => x[$itemModelType]));
     }
-    cacheToLocalStorage();
+  });
+  
+  onDestroy(() => {
+    packageSub();
   });
 </script>
 
@@ -311,7 +314,7 @@
         <SkinRender
           texture={modelTexture}
           model={itemModel}
-          modelName={$itemModelType}
+          modelName={$itemPackage.model}
           onlyRenderSnapshot={false}
           animation={DefaultAnimation}
           bind:changeAnimation={updateAnimation}
@@ -323,7 +326,11 @@
     <div class="data">
       <div class="item-name">
         <span class="caption inline">{$_("name")}</span><br />
-        <input id="item-title" class="title-input" bind:value={$itemName} />
+        <input
+          id="item-title"
+          class="title-input"
+          bind:value={$itemPackage.name}
+        />
       </div>
       <span class="caption">{$_("layers")}</span>
       <div class="item-layers">
@@ -333,7 +340,7 @@
               <ItemLayer
                 texture={layer}
                 model={itemModel}
-                modelName={$itemModelType}
+                modelName={$itemPackage.model}
                 renderer={layersRenderer}
                 bind:label={layer.name}
                 on:addvariant={addImageVariant}
@@ -369,12 +376,12 @@
         <RatioButton
           label={$_("modelOpt.steve")}
           value="steve"
-          bind:group={$itemModelType}
+          bind:group={$itemPackage.model}
         />
         <RatioButton
           label={$_("modelOpt.alex")}
           value="alex"
-          bind:group={$itemModelType}
+          bind:group={$itemPackage.model}
         />
       </div>
       <br />

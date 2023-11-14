@@ -80,6 +80,66 @@ export const ExportImagePackage = async function (
     document.body.removeChild(link);
   });
 };
+export const ExportImagePackageJson = async function (
+  layers: OutfitLayer[],
+  modelType: string,
+  itemName: string
+) {
+  const pack=new OutfitPackage(itemName, modelType, layers);
+  const json = JSON.stringify(pack);
+
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = itemName.toLowerCase() + '_package.json';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+export const ImportImagePackageJson = async function () {
+  //create node for fle download
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json";
+  input.click();
+
+  return new Promise<OutfitPackage>((resolve) => {
+    input.onchange = (event: any) => {
+      let file = event.target.files[0];
+      event.target.value = null;
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const base64Data: any = event.target.result;
+        const jsonData = JSON.parse(base64Data);
+        const importedPackage = new OutfitPackage(
+          jsonData.name,
+          jsonData.model,
+          jsonData.layers
+        );
+        resolve(importedPackage);
+      };
+      reader.readAsText(file);
+    };
+  });
+}
+export const ImportImagePackageJsonFromFile = async function (file: File) {
+  return new Promise<OutfitPackage>((resolve) => {
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const base64Data: any = event.target.result;
+      const jsonData = JSON.parse(base64Data);
+      const importedPackage = new OutfitPackage(
+        jsonData.name,
+        jsonData.model,
+        jsonData.layers
+      );
+      resolve(importedPackage);
+    };
+    reader.readAsText(file);
+  });
+}
 export const ImportImagePackage = async function () {
   const input = document.createElement("input");
   input.type = "file";
@@ -170,12 +230,12 @@ export const ImportPackageFromFile = async function (file: File) {
             let steve;
             if (x.steve)
               steve = await contents.files[
-                texturesFolder + layerFolder + x.steve+".png"
+                texturesFolder + layerFolder + x.steve + ".png"
               ].async("base64");
             let alex;
             if (x.alex)
               alex = await contents.files[
-                texturesFolder + layerFolder + x.alex+".png"
+                texturesFolder + layerFolder + x.alex + ".png"
               ].async("base64");
             if (steve == null) steve = alex;
             if (alex == null) alex = steve;
