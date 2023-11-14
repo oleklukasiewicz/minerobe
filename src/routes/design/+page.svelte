@@ -67,19 +67,21 @@
     $itemModelType = "alex";
     if (localStorage != null && $itemLayers.length == 0) {
       const layersJson = localStorage.getItem("itemLayers");
-      const localStorageData = JSON.parse(layersJson);
-      const layers = localStorageData?.layers;
-      itemName = localStorageData?.name;
-      $itemModelType = localStorageData?.model;
-      try {
-        itemLayers.update((old) => {
-          layers.forEach((layer) => {
-            if (layer && layer.alex && layer.steve) old.push(layer);
+      if (layersJson != null) {
+        const localStorageData = JSON.parse(layersJson);
+        const layers = localStorageData?.layers;
+        itemName = localStorageData?.name;
+        $itemModelType = localStorageData?.model;
+        try {
+          itemLayers.update((old) => {
+            layers.forEach((layer) => {
+              if (layer && layer.alex && layer.steve) old.push(layer);
+            });
+            return old;
           });
-          return old;
-        });
-      } catch (e) {
-        itemLayers.set([]);
+        } catch (e) {
+          itemLayers.set([]);
+        }
       }
     }
     loaded = true;
