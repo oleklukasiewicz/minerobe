@@ -7,8 +7,7 @@
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
 
-  import { writable, type Writable } from "svelte/store";
-  import { itemLayers } from "$data/cache";
+  import { itemLayers, itemModelType, itemName } from "$data/cache";
   import { FileData, OUTFIT_TYPE, OutfitLayer } from "$data/common";
 
   import DownloadIcon from "$icons/download.svg?raw";
@@ -34,9 +33,7 @@
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
 
-  let itemModelType: Writable<string> = writable("def");
   let baseLayer;
-  let itemName = $_("defaultskinname");
   let itemModel: any = null;
   let modelTexture: string = null;
   let alexModel = null;
@@ -64,13 +61,12 @@
     await fetchImage("texture/default_planks.png").then((res) => {
       baseLayer = res;
     });
-    $itemModelType = "alex";
     if (localStorage != null && $itemLayers.length == 0) {
       const layersJson = localStorage.getItem("itemLayers");
       if (layersJson != null) {
         const localStorageData = JSON.parse(layersJson);
         const layers = localStorageData?.layers;
-        itemName = localStorageData?.name;
+        $itemName = localStorageData?.name;
         $itemModelType = localStorageData?.model;
         try {
           itemLayers.update((old) => {
@@ -85,6 +81,8 @@
       }
     }
     loaded = true;
+    itemModel = $itemModelType == "alex" ? alexModel : steveModel;
+    updateTexture($itemLayers.map((x) => x[$itemModelType]));
   });
 
   const upLayer = async function (e) {
@@ -140,13 +138,13 @@
   };
 
   const downloadImage = async () => {
-    await ExportImage($itemLayers, $itemModelType, itemName);
+    await ExportImage($itemLayers, $itemModelType, $itemName);
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
   };
 
   const exportPackage = async function () {
-    await ExportImagePackage($itemLayers, $itemModelType, itemName);
+    await ExportImagePackage($itemLayers, $itemModelType, $itemName);
     await updateAnimation(ClapAnimation);
     await updateAnimation(DefaultAnimation);
   };
@@ -168,7 +166,7 @@
 
   const importPackage = async function () {
     const newPackage = await ImportImagePackage();
-    itemName = newPackage.name;
+    $itemName = newPackage.name;
     $itemModelType = newPackage.model;
     itemLayers.update((old) => {
       old.unshift(...newPackage.layers);
@@ -232,7 +230,7 @@
             });
           } else {
             let newPackage = await ImportPackageFromFile(file);
-            itemName = newPackage.name;
+            $itemName = newPackage.name;
             $itemModelType = newPackage.model;
             itemLayers.update((old) => {
               old.unshift(...newPackage.layers);
@@ -264,19 +262,24 @@
     isDragging = false;
   };
 
-  itemLayers.subscribe((layers) => {
-    updateTexture(layers.map((x) => x[$itemModelType]));
+  const cacheToLocalStorage = function () {
     if (loaded) {
       const localStorageData = {
-        name: itemName,
+        name: $itemName,
         model: $itemModelType,
-        layers: layers,
+        layers: $itemLayers,
       };
       const layersJson = JSON.stringify(localStorageData);
       localStorage.setItem("itemLayers", layersJson);
     }
+  };
+  itemLayers.subscribe((layers) => {
+    updateTexture(layers.map((x) => x[$itemModelType]));
+    cacheToLocalStorage();
   });
-
+  itemName.subscribe((name) => {
+    cacheToLocalStorage();
+  });
   itemModelType.subscribe((model) => {
     if ($itemLayers?.length != null) {
       itemModel = model == "alex" ? alexModel : steveModel;
@@ -289,6 +292,7 @@
       }
       updateTexture($itemLayers.map((x) => x[$itemModelType]));
     }
+    cacheToLocalStorage();
   });
 </script>
 
@@ -319,7 +323,7 @@
     <div class="data">
       <div class="item-name">
         <span class="caption inline">{$_("name")}</span><br />
-        <input id="item-title" class="title-input" bind:value={itemName} />
+        <input id="item-title" class="title-input" bind:value={$itemName} />
       </div>
       <span class="caption">{$_("layers")}</span>
       <div class="item-layers">
