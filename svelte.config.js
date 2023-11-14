@@ -16,7 +16,11 @@ const config = {
     $lib: "src/lib",
     $src: "src",
     $public : "static",
+    $data: "src/data",
+    $animation: "src/animation",
     $locales: "src/locales",
+    $icons: "src/icons",
+    $helpers: "src/helpers",
   },
   },
 };

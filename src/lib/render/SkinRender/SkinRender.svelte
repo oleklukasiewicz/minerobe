@@ -129,6 +129,10 @@
     }
   };
   const updateModel = function (modelToLoad) {
+    if (!modelToLoad)
+      return new Promise((resolve) => {
+        resolve(null);
+      });
     return new Promise((resolve) => {
       loader.load(modelToLoad, (gltf) => {
         scene.remove(loadedRender);
@@ -139,6 +143,10 @@
     });
   };
   const updateTexture = function (textureToLoad) {
+    if (!textureToLoad)
+      return new Promise((resolve) => {
+        resolve(null);
+      });
     return new Promise((resolve) => {
       textureLoader.load(textureToLoad, (texture) => {
         resolve(texture);

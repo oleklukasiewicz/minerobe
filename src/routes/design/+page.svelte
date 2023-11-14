@@ -1,29 +1,27 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { mergeImages } from "$src/helpers/imageMerger";
   import * as THREE from "three";
+  import { onMount } from "svelte";
 
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
-  import { onMount } from "svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
+
   import { writable, type Writable } from "svelte/store";
-  import { FileData, OUTFIT_TYPE, OutfitLayer } from "$src/data/common";
+  import { FileData, OUTFIT_TYPE, OutfitLayer } from "$data/common";
 
-  import DownloadIcon from "$src/icons/download.svg?raw";
-  import ImportPackageIcon from "$src/icons/upload.svg?raw";
-  import DownloadPackageIcon from "$src/icons/flatten.svg?raw";
-  import AddIcon from "$src/icons/plus.svg?raw";
+  import DownloadIcon from "$icons/download.svg?raw";
+  import ImportPackageIcon from "$icons/upload.svg?raw";
+  import DownloadPackageIcon from "$icons/flatten.svg?raw";
+  import AddIcon from "$icons/plus.svg?raw";
 
-  import {
-    DefaultAnimation,
-    NewOutfitBottomAnimation,
-    NewOutfitClapAnimation,
-    BowAnimation,
-    HandsUpAnimation,
-    WavingAnimation,
-    JumpAnimation,
-  } from "$src/data/animation";
+  import DefaultAnimation from "$animation/default";
+  import NewOutfitBottomAnimation from "$animation/bottom";
+  import ClapAnimation from "$animation/clap";
+  import HandsUpAnimation from "$animation/handsup";
+  import WavingAnimation from "$animation/waving";
+  import JumpAnimation from "$animation/jump";
+
   import {
     ExportImage,
     ExportImagePackage,
@@ -32,8 +30,10 @@
     ImportImagePackage,
     ImportLayerFromFile,
     ImportPackageFromFile,
-  } from "$src/helpers/imageOperations";
-  let itemModelType: Writable<string> = writable("alex");
+  } from "$helpers/imageOperations";
+  import { mergeImages } from "$helpers/imageMerger";
+
+  let itemModelType: Writable<string> = writable("def");
   let baseLayer;
   let itemName = $_("defaultskinname");
   let itemLayers: Writable<OutfitLayer[]> = writable([]);
@@ -43,8 +43,9 @@
   let steveModel = null;
   let loaded = false;
 
-  let layersRenderer;
   let updatedLayer: OutfitLayer = null;
+  let layersRenderer;
+  let isDragging = false;
 
   let updateAnimation = function (anim) {};
 
@@ -53,7 +54,6 @@
       alpha: true,
       preserveDrawingBuffer: true,
     });
-
     alexModel =
       "data:model/gltf+json;base64," +
       btoa(await fetch("/model/alex.gltf").then((res) => res.text()));
@@ -64,17 +64,7 @@
     await fetchImage("texture/default_planks.png").then((res) => {
       baseLayer = res;
     });
-    itemModelType.subscribe((model) => {
-      itemModel = model == "alex" ? alexModel : steveModel;
-      if (updatedLayer) {
-        updatedLayer = new OutfitLayer(
-          "null",
-          new FileData("null", null, OUTFIT_TYPE.TOP),
-          new FileData("null", null, OUTFIT_TYPE.TOP)
-        );
-      }
-      updateTexture($itemLayers.map((x) => x[$itemModelType]));
-    });
+    $itemModelType = "alex";
     loaded = true;
   });
 
@@ -138,7 +128,7 @@
 
   const exportPackage = async function () {
     await ExportImagePackage($itemLayers, $itemModelType, itemName);
-    await updateAnimation(NewOutfitClapAnimation);
+    await updateAnimation(ClapAnimation);
     await updateAnimation(DefaultAnimation);
   };
 
@@ -198,8 +188,6 @@
     }
   };
 
-  let isDragging = false;
-
   const handleRenderDrop = async function (event) {
     event.preventDefault();
 
@@ -220,8 +208,7 @@
 
               return layers;
             });
-          }else
-          {
+          } else {
             let newPackage = await ImportPackageFromFile(file);
             itemName = newPackage.name;
             $itemModelType = newPackage.model;
@@ -248,6 +235,20 @@
 
   itemLayers.subscribe((layers) => {
     updateTexture(layers.map((x) => x[$itemModelType]));
+  });
+
+  itemModelType.subscribe((model) => {
+    if ($itemLayers?.length !=null) {
+      itemModel = model == "alex" ? alexModel : steveModel;
+      if (updatedLayer) {
+        updatedLayer = new OutfitLayer(
+          "null",
+          new FileData("null", null, OUTFIT_TYPE.TOP),
+          new FileData("null", null, OUTFIT_TYPE.TOP)
+        );
+      }
+      updateTexture($itemLayers.map((x) => x[$itemModelType]));
+    }
   });
 </script>
 
