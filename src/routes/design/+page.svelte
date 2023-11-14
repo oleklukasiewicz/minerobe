@@ -65,6 +65,23 @@
       baseLayer = res;
     });
     $itemModelType = "alex";
+    if (localStorage != null && $itemLayers.length == 0) {
+      const layersJson = localStorage.getItem("itemLayers");
+      const localStorageData = JSON.parse(layersJson);
+      const layers = localStorageData?.layers;
+      itemName = localStorageData?.name;
+      $itemModelType = localStorageData?.model;
+      try {
+        itemLayers.update((old) => {
+          layers.forEach((layer) => {
+            if (layer && layer.alex && layer.steve) old.push(layer);
+          });
+          return old;
+        });
+      } catch (e) {
+        itemLayers.set([]);
+      }
+    }
     loaded = true;
   });
 
@@ -247,6 +264,15 @@
 
   itemLayers.subscribe((layers) => {
     updateTexture(layers.map((x) => x[$itemModelType]));
+    if (loaded) {
+      const localStorageData = {
+        name: itemName,
+        model: $itemModelType,
+        layers: layers,
+      };
+      const layersJson = JSON.stringify(localStorageData);
+      localStorage.setItem("itemLayers", layersJson);
+    }
   });
 
   itemModelType.subscribe((model) => {
