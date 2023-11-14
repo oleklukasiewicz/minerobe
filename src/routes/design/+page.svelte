@@ -8,6 +8,7 @@
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
 
   import { writable, type Writable } from "svelte/store";
+  import { itemLayers } from "$data/cache";
   import { FileData, OUTFIT_TYPE, OutfitLayer } from "$data/common";
 
   import DownloadIcon from "$icons/download.svg?raw";
@@ -20,7 +21,6 @@
   import ClapAnimation from "$animation/clap";
   import HandsUpAnimation from "$animation/handsup";
   import WavingAnimation from "$animation/waving";
-  import JumpAnimation from "$animation/jump";
   import HatAnimation from "$src/animation/hat";
 
   import {
@@ -37,7 +37,6 @@
   let itemModelType: Writable<string> = writable("def");
   let baseLayer;
   let itemName = $_("defaultskinname");
-  let itemLayers: Writable<OutfitLayer[]> = writable([]);
   let itemModel: any = null;
   let modelTexture: string = null;
   let alexModel = null;

@@ -3,4 +3,8 @@
     
     export let data: PageData;
 </script>
-Explore page
+<h1 id="view-title">Explore new outfits</h1>
+<style lang="scss">
+    @import "style.scss";
+  </style>
+  
