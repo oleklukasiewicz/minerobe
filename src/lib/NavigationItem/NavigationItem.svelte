@@ -6,7 +6,7 @@
   export let viewId = "";
 </script>
 
-<a href={"/" + viewId} class:selected={$page.route.id == "/" + viewId}>
+<a href={"/" + viewId} class:selected={$page.route.id == "/" + viewId} on:click>
   <span class="nav-icon">{@html icon}</span>
   <span>{label}</span>
 </a>

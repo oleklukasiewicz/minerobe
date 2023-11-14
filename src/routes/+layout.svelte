@@ -4,6 +4,7 @@
   import "$locales/locales"; // Import to initialize. Important :)
   import { locale, waitLocale, isLoading, _ } from "svelte-i18n";
   import HomeIcon from "$src/icons/home.svg?raw";
+  import MenuIcon from "$src/icons/menu.svg?raw";
 
   export const load = async () => {
     if (browser) {
@@ -11,14 +12,39 @@
     }
     await waitLocale();
   };
+
+  let isMenuOpened = false;
 </script>
 
 {#if !$isLoading}
-  <div id="nav">
-    <div id="nav-title">{$_("navigation.appname")}</div>
-    <NavigationItem label={$_("navigation.home")} viewId="" />
-    <NavigationItem label={$_("navigation.explore")} viewId="explore" />
-    <NavigationItem label={$_("navigation.design")} viewId="design" />
+  <div id="nav" class:opened={isMenuOpened} class:closed={!isMenuOpened}>
+    <button
+      class="icon menu-button"
+      on:click={() => (isMenuOpened = !isMenuOpened)}
+    >
+      {@html MenuIcon}
+    </button>
+    <div class="items">
+      <div id="nav-title">
+        {$_("navigation.appname")}
+      </div>
+      <NavigationItem
+        label={$_("navigation.home")}
+        viewId=""
+        on:click={() => (isMenuOpened = false)}
+      />
+      <NavigationItem
+        label={$_("navigation.explore")}
+        viewId="explore"
+        on:click={() => (isMenuOpened = false)}
+      />
+      <NavigationItem
+        label={$_("navigation.design")}
+        viewId="design"
+        on:click={() => (isMenuOpened = false)}
+      />
+    </div>
+    <div class="nav-filler" on:click={() => (isMenuOpened = false)}/>
   </div>
   <div id="content">
     <slot />

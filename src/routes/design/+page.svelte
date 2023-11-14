@@ -21,6 +21,7 @@
   import HandsUpAnimation from "$animation/handsup";
   import WavingAnimation from "$animation/waving";
   import JumpAnimation from "$animation/jump";
+  import HatAnimation from "$src/animation/hat";
 
   import {
     ExportImage,
@@ -161,7 +162,7 @@
       updateAnimation(HandsUpAnimation);
     } else {
       if (random < 0.4) updateAnimation(WavingAnimation);
-      else updateAnimation(JumpAnimation);
+      else updateAnimation(ClapAnimation);
     }
     updateAnimation(DefaultAnimation);
   };
@@ -175,6 +176,9 @@
       );
       if (updatedLayer) {
         switch (updatedLayer[$itemModelType]?.type) {
+          case OUTFIT_TYPE.HAT:
+            await updateAnimation(HatAnimation);
+            break;
           case OUTFIT_TYPE.TOP:
           case OUTFIT_TYPE.HOODIE:
             await updateAnimation(NewOutfitBottomAnimation);
