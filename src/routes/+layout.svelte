@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import { browser } from "$app/environment";
   import NavigationItem from "$lib/NavigationItem/NavigationItem.svelte";
   import "$locales/locales"; // Import to initialize. Important :)
@@ -23,9 +24,9 @@
     >
       {@html MenuIcon}
     </button>
-    <div id="nav-title">
+    <a id="nav-title" href={"/"}>
       <img src="/texture/logo.png" alt="Logo" />
-    </div>
+    </a>
     <div class="items">
       <NavigationItem
         label={$_("navigation.home")}
@@ -45,7 +46,7 @@
     </div>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="nav-filler" on:click={() => (isMenuOpened = false)}/>
+    <div class="nav-filler" on:click={() => (isMenuOpened = false)} />
   </div>
   <div id="content">
     <slot />

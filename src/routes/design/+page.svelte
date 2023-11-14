@@ -220,6 +220,15 @@
               old.unshift(...newPackage.layers);
               return old;
             });
+            const random = Math.random();
+
+            if (random < 0.2) {
+              updateAnimation(HandsUpAnimation);
+            } else {
+              if (random < 0.4) updateAnimation(WavingAnimation);
+              else updateAnimation(ClapAnimation);
+            }
+            updateAnimation(DefaultAnimation);
           }
         }
       }
@@ -242,7 +251,7 @@
   });
 
   itemModelType.subscribe((model) => {
-    if ($itemLayers?.length !=null) {
+    if ($itemLayers?.length != null) {
       itemModel = model == "alex" ? alexModel : steveModel;
       if (updatedLayer) {
         updatedLayer = new OutfitLayer(
