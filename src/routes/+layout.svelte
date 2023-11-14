@@ -3,7 +3,6 @@
   import NavigationItem from "$lib/NavigationItem/NavigationItem.svelte";
   import "$locales/locales"; // Import to initialize. Important :)
   import { locale, waitLocale, isLoading, _ } from "svelte-i18n";
-  import HomeIcon from "$src/icons/home.svg?raw";
   import MenuIcon from "$src/icons/menu.svg?raw";
 
   export const load = async () => {
@@ -25,7 +24,7 @@
       {@html MenuIcon}
     </button>
     <div id="nav-title">
-      {$_("navigation.appname")}
+      <img src="/texture/logo.png" alt="Logo" />
     </div>
     <div class="items">
       <NavigationItem
