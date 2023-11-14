@@ -28,9 +28,6 @@
       {$_("navigation.appname")}
     </div>
     <div class="items">
-      <div id="nav-title">
-        {$_("navigation.appname")}
-      </div>
       <NavigationItem
         label={$_("navigation.home")}
         viewId=""
