@@ -2,7 +2,6 @@
   import { page } from "$app/stores";
   export let label = "";
   export let icon = "";
-  export let isSelected = false;
   export let viewId = "";
 </script>
 

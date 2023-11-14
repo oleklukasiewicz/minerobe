@@ -13,9 +13,10 @@
       max-height: 100%;
       transition: 0.3s;
       aspect-ratio: 1/1;
-      border: 3px solid transparent;
+      outline: 3px solid transparent;
+      box-sizing: border-box;
       &.drop-hover {
-        border-color: var(--color-accent);
+        outline-color: var(--color-accent);
       }
     }
   }

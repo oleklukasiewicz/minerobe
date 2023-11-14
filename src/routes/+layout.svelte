@@ -24,6 +24,9 @@
     >
       {@html MenuIcon}
     </button>
+    <div id="nav-title">
+      {$_("navigation.appname")}
+    </div>
     <div class="items">
       <div id="nav-title">
         {$_("navigation.appname")}
@@ -44,6 +47,8 @@
         on:click={() => (isMenuOpened = false)}
       />
     </div>
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="nav-filler" on:click={() => (isMenuOpened = false)}/>
   </div>
   <div id="content">
