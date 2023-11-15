@@ -15,7 +15,7 @@
     OutfitLayer,
     OutfitPackage,
   } from "$data/common";
-  import { itemPackage } from "$data/cache";
+  import { itemPackage,alexModel,steveModel } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
@@ -52,8 +52,6 @@
   let baseLayer;
   let itemModel: any = null;
   let modelTexture: string = null;
-  let alexModel = null;
-  let steveModel = null;
   let loaded = false;
 
   let updatedLayer: OutfitLayer = null;
@@ -67,13 +65,6 @@
       alpha: true,
       preserveDrawingBuffer: true,
     });
-    alexModel =
-      "data:model/gltf+json;base64," +
-      btoa(await fetch("/model/alex.gltf").then((res) => res.text()));
-    steveModel =
-      "data:model/gltf+json;base64," +
-      btoa(await fetch("/model/steve.gltf").then((res) => res.text()));
-
     await fetchImage("texture/default_planks.png").then((res) => {
       baseLayer = res;
     });
@@ -86,7 +77,7 @@
       }
     }
     loaded = true;
-    itemModel = $itemModelType == "alex" ? alexModel : steveModel;
+    itemModel = $itemModelType == "alex" ? $alexModel : $steveModel;
     updateTexture($itemLayers.map((x) => x[$itemModelType]));
   });
 
@@ -282,7 +273,7 @@
   });
   itemModelType.subscribe((model) => {
     if ($itemLayers?.length != null) {
-      itemModel = model == "alex" ? alexModel : steveModel;
+      itemModel = model == "alex" ? $alexModel : $steveModel;
       if (updatedLayer) {
         updatedLayer = new OutfitLayer(
           "null",
