@@ -14,9 +14,8 @@
     FileData,
     OUTFIT_TYPE,
     OutfitLayer,
-    OutfitPackage,
   } from "$data/common";
-  import { itemPackage,alexModel,steveModel } from "$data/cache";
+  import { itemPackage,alexModel,steveModel, planksTexture } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
@@ -32,15 +31,11 @@
 
   import {
     ExportImage,
-    ExportImagePackage,
     ExportImagePackageJson,
     ImportImage,
-    ImportImageFromUrl,
-    ImportImagePackage,
     ImportImagePackageJson,
     ImportImagePackageJsonFromFile,
     ImportLayerFromFile,
-    ImportPackageFromFile,
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
 
@@ -66,9 +61,7 @@
       alpha: true,
       preserveDrawingBuffer: true,
     });
-    await fetchImage("texture/default_planks.png").then((res) => {
-      baseLayer = res;
-    });
+    baseLayer=$planksTexture;
     if (localStorage != null && $itemLayers.length == 0) {
       console.log("loading from local storage");
       const layersJson = localStorage.getItem("package");
@@ -129,9 +122,6 @@
 
       return layers;
     });
-  };
-  const fetchImage = async function (url) {
-    return await ImportImageFromUrl(url);
   };
 
   const downloadImage = async () => {

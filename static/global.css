@@ -227,6 +227,15 @@ button:active{
 .inline{
     display: inline!important;
 }
+.title{
+    font-family: minecraft;
+    font-size: var(--size-font-subheader);
+    border: 0;
+    background-color: transparent;
+    outline: 0;
+    border-bottom: 2px solid transparent;
+    width: 100%;
+}
 .title-input{
     font-family: minecraft;
     font-size: var(--size-font-subheader);

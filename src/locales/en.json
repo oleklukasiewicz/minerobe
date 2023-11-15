@@ -25,5 +25,6 @@
   },
   "package": "Package",
   "importPackage": "Import package",
-  "newLayerVariant": "Add new layer variant"
+  "newLayerVariant": "Add new layer variant",
+  "variant": "Variant"
 }
