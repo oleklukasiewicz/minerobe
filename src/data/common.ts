@@ -63,6 +63,11 @@ export const OUTFIT_TYPE = {
   DEFAULT: "default",
 };
 
+export const MODEL_TYPE = {
+  ALEX: "alex",
+  STEVE: "steve",
+};
+
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =
     GetPixelCountInArea(imageContext, 0, 0, 32, 16) +

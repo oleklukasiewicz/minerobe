@@ -7,8 +7,9 @@
 
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
+  import ItemVariant from "$lib/ItemVariant/ItemVariant.svelte";
 
-  import { FileData, OUTFIT_TYPE, OutfitLayer } from "$data/common";
+  import { FileData, MODEL_TYPE, OUTFIT_TYPE, OutfitLayer, OutfitPackage } from "$data/common";
   import {
     alexModel,
     steveModel,
@@ -30,11 +31,11 @@
     ExportImagePackageJson,
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
-  import ItemVariant from "$lib/ItemVariant/ItemVariant.svelte";
 
-  let itemLayers: Writable<OutfitLayer[]> = writable([]);
-  let itemModelType: Writable<string> = writable("steve");
-  let itemName: Writable<string> = writable("new Skin");
+  let localPackage:Writable<OutfitPackage> = writable(new OutfitPackage("New skin", MODEL_TYPE.ALEX, []));
+  let itemLayers: Writable<OutfitLayer[]> = propertyStore(localPackage, "layers");
+  let itemModelType: Writable<string> = propertyStore(localPackage, "model");
+  let itemName: Writable<string> = propertyStore(localPackage, "name");
   let baseLayer;
   let itemModel: any = null;
   let modelTexture: string = null;
@@ -58,24 +59,24 @@
       const layersJson = localStorage.getItem("package");
       if (layersJson != null) {
         const localStorageData = JSON.parse(layersJson);
-        $itemLayers= localStorageData.layers;
-        $itemModelType = localStorageData.model;
-        $itemName = localStorageData.name;
+        if (localStorageData != null) {
+          localPackage.set(localStorageData);
+        }
       }
     }
     loaded = true;
-    itemModel = $itemModelType == "alex" ? $alexModel : $steveModel;
+    itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
     updateTexture();
   });
 
   const downloadImage = async () => {
-    await ExportImage($itemLayers, $itemModelType, $itemName);
+    await ExportImage([$selectedVariant], $itemModelType, $itemName);
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
   };
 
   const exportPackage = async function () {
-    await ExportImagePackageJson($itemLayers, $itemModelType, $itemName);
+    await ExportImagePackageJson([$selectedVariant], $itemModelType, $itemName);
     await updateAnimation(ClapAnimation);
     await updateAnimation(DefaultAnimation);
   };
@@ -110,7 +111,7 @@
 
   itemModelType.subscribe((model) => {
     if ($itemLayers?.length != null) {
-      itemModel = model == "alex" ? $alexModel : $steveModel;
+      itemModel = model == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
       if (updatedLayer) {
         updatedLayer = new OutfitLayer(
           "null",
@@ -147,7 +148,9 @@
       <div class="item-name">
         <span class="caption inline">{$_("name")}</span><br />
         <div id="item-title" class="title">{$itemName}</div>
+        <span class="label unique">Test</span>
       </div>
+      <br/>
       <span class="caption">{$_("variant")}</span>
       <div class="item-variants">
         {#if loaded}
@@ -157,6 +160,7 @@
               model={itemModel}
               modelName={$itemModelType}
               renderer={layersRenderer}
+              label={layer.name}
               on:click={() => ($selectedVariant = layer)}
               selected={$selectedVariant == layer}
             />
@@ -168,12 +172,12 @@
       <div class="item-model">
         <RatioButton
           label={$_("modelOpt.steve")}
-          value="steve"
+          value={MODEL_TYPE.STEVE}
           bind:group={$itemModelType}
         />
         <RatioButton
           label={$_("modelOpt.alex")}
-          value="alex"
+          value={MODEL_TYPE.ALEX}
           bind:group={$itemModelType}
         />
       </div>
@@ -183,14 +187,14 @@
         <button
           id="download-action"
           on:click={downloadImage}
-          class:disabled={$itemLayers.length == 0}
+          class:disabled={$selectedVariant == null}
           >{@html DownloadIcon}{$_("download")}</button
         >
         <button
           id="download-package-action"
           on:click={exportPackage}
           title={$_("downloadPackage")}
-          class:disabled={$itemLayers.length == 0}
+          class:disabled={$selectedVariant == null}
           class="icon tertiary">{@html DownloadPackageIcon}</button
         >
       </div>

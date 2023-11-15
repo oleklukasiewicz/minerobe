@@ -12,6 +12,7 @@
 
   import {
     FileData,
+    MODEL_TYPE,
     OUTFIT_TYPE,
     OutfitLayer,
   } from "$data/common";
@@ -71,7 +72,7 @@
       }
     }
     loaded = true;
-    itemModel = $itemModelType == "alex" ? $alexModel : $steveModel;
+    itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
     updateTexture($itemLayers.map((x) => x[$itemModelType]));
   });
 
@@ -114,7 +115,7 @@
     const newLayer = await ImportImage();
     itemLayers.update((layers) => {
       let newOutfit;
-      if ($itemModelType == "alex")
+      if ($itemModelType == MODEL_TYPE.ALEX)
         newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer);
       else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null);
       updatedLayer = newOutfit;
@@ -141,7 +142,7 @@
     const newLayer = await ImportImage();
     itemLayers.update((layers) => {
       const index = layers.indexOf(layer);
-      if ($itemModelType == "alex") {
+      if ($itemModelType == MODEL_TYPE.ALEX) {
         layers[index].alex = newLayer;
       } else {
         layers[index].steve = newLayer;
@@ -206,7 +207,7 @@
             let newLayer = await ImportLayerFromFile(file);
             itemLayers.update((layers) => {
               let newOutfit;
-              if ($itemModelType == "alex")
+              if ($itemModelType == MODEL_TYPE.ALEX)
                 newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer);
               else
                 newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null);
@@ -254,7 +255,7 @@
   });
   itemModelType.subscribe((model) => {
     if ($itemLayers?.length != null) {
-      itemModel = model == "alex" ? $alexModel : $steveModel;
+      itemModel = model == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
       if (updatedLayer) {
         updatedLayer = new OutfitLayer(
           "null",
@@ -348,12 +349,12 @@
       <div class="item-model">
         <RatioButton
           label={$_("modelOpt.steve")}
-          value="steve"
+          value={MODEL_TYPE.STEVE}
           bind:group={$itemPackage.model}
         />
         <RatioButton
           label={$_("modelOpt.alex")}
-          value="alex"
+          value=MODEL_TYPE.ALEX
           bind:group={$itemPackage.model}
         />
       </div>

@@ -1,3 +1,5 @@
+import { MODEL_TYPE } from "$src/data/common";
+
 // Defaults
 const defaultOptions = {
   format: "image/png",
@@ -88,7 +90,7 @@ export let mergeImages = function (
           replaceLowerLayer(tempCtx, ctx, 0, 16, 0, 32, 16, 16);
           replaceLowerLayer(tempCtx, ctx, 16, 48, 0, 48, 16, 16);
           //arms
-          if (skinType == "alex") {
+          if (skinType == MODEL_TYPE.ALEX) {
             replaceLowerLayer(tempCtx, ctx, 40, 16, 40, 32, 14, 16);
             replaceLowerLayer(tempCtx, ctx, 32, 48, 48, 48, 14, 16);
           } else {

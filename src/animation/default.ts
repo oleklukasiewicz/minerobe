@@ -1,4 +1,5 @@
 import { RenderAnimation,lerp,lerpOutCubic,isPoseReady } from "$data/animation";
+import { MODEL_TYPE } from "$src/data/common";
  const DefaultAnimation = new RenderAnimation(
     function (scene, keepData = false, modelName) {
       let data: any = {
@@ -25,7 +26,7 @@ import { RenderAnimation,lerp,lerpOutCubic,isPoseReady } from "$data/animation";
         data.body.add(data.leftarm);
         data.body.add(data.rightarm);
   
-        if (modelName === "steve") {
+        if (modelName ==MODEL_TYPE.STEVE) {
           data.leftarm.position.set(-armDistanceX, -0.12, -armDistanceZ);
           data.rightarm.position.set(armDistanceX, -0.12, armDistanceZ);
         } else {

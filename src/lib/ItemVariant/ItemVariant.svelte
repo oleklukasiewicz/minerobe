@@ -7,12 +7,13 @@
   export let model = null;
   export let renderer = undefined;
   export let selected = false;
+  export let label = null;
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="item-variant" class:selected on:click>
-  <div class="render">
+  <div class="render" title={label}>
     <SkinSnapshot
       texture={texture.content}
       {model}

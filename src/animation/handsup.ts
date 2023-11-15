@@ -1,4 +1,5 @@
 import { RenderAnimation,lerp,lerpOutCubic,isPoseReady } from "$data/animation";
+import { MODEL_TYPE } from "$src/data/common";
 const HandsUpAnimation = new RenderAnimation(
     function (scene, keepData = false, modelName) {
       let data: any = {
@@ -23,7 +24,7 @@ const HandsUpAnimation = new RenderAnimation(
       const armDistanceX = 0.31; // Adjust this value to change the distance of the arms from the body in the x direction
       const armDistanceZ = 0.0; // Adjust this value to change the distance of
       // Set the position of the arms relative to the body
-      if (modelName === "steve") {
+      if (modelName ==MODEL_TYPE.STEVE) {
         data.leftarm.position.set(-armDistanceX, -0.125, -armDistanceZ);
         data.rightarm.position.set(armDistanceX, -0.125, armDistanceZ);
       } else {
