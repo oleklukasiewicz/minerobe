@@ -28,7 +28,7 @@ const cacheToLocalStorage = function () {
     get(itemPackage) == defaultOutfitPackage
   )
     return;
-  console.log("caching to local storage");
+    console.log("caching to local storage");
   const localStorageData = get(itemPackage);
   const layersJson = JSON.stringify(localStorageData);
   localStorage.setItem("package", layersJson);

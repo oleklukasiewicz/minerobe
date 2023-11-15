@@ -7,6 +7,7 @@
   import MenuIcon from "$src/icons/menu.svg?raw";
   import { onMount } from "svelte";
   import { itemPackage } from "$src/data/cache";
+  import { OutfitPackage } from "$src/data/common";
 
   export const load = async () => {
     if (browser) {
@@ -20,7 +21,7 @@
       const layersJson = localStorage.getItem("package");
       if (layersJson != null) {
         const localStorageData = JSON.parse(layersJson);
-        $itemPackage = localStorageData;
+        $itemPackage = new OutfitPackage(localStorageData.name,localStorageData.model,localStorageData.layers);
       }
     }
   });

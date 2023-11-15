@@ -8,7 +8,6 @@
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
-  import SortableList from "svelte-sortable-list";
 
   import {
     FileData,
@@ -154,12 +153,7 @@
 
   const importPackage = async function () {
     const newPackage = await ImportImagePackageJson();
-    $itemName = newPackage.name;
-    $itemModelType = newPackage.model;
-    itemLayers.update((old) => {
-      old.unshift(...newPackage.layers);
-      return old;
-    });
+    $itemPackage = newPackage;
     const random = Math.random();
 
     if (random < 0.2) {
@@ -218,12 +212,7 @@
             });
           } else {
             let newPackage = await ImportImagePackageJsonFromFile(file);
-            $itemName = newPackage.name;
-            $itemModelType = newPackage.model;
-            itemLayers.update((old) => {
-              old.unshift(...newPackage.layers);
-              return old;
-            });
+            $itemPackage = newPackage;
             const random = Math.random();
 
             if (random < 0.2) {
@@ -266,7 +255,6 @@
       updateTexture($itemLayers.map((x) => x[$itemModelType]));
     }
   });
-  const sortList = ev => {$itemLayers = ev.detail};
 </script>
 
 <div class="item-page">
@@ -305,11 +293,7 @@
       <span class="caption">{$_("layers")}</span>
       <div class="item-layers">
         {#if loaded}
-        <SortableList 
-        on:sort={sortList}
-        list={$itemLayers}
-        let:item
-        let:index>
+       {#each $itemLayers as item, index}
             <div class="item-layer">
               <ItemLayer
                 texture={item}
@@ -325,7 +309,7 @@
                 canDown={index != $itemLayers.length - 1}
               />
             </div>
-          </SortableList>
+          {/each}
         {/if}
         <form style="display: flex;">
           <button
@@ -354,7 +338,7 @@
         />
         <RatioButton
           label={$_("modelOpt.alex")}
-          value=MODEL_TYPE.ALEX
+          value={MODEL_TYPE.ALEX}
           bind:group={$itemPackage.model}
         />
       </div>
