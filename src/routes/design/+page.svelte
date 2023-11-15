@@ -8,6 +8,7 @@
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
+  import SortableList from "svelte-sortable-list";
 
   import {
     FileData,
@@ -258,16 +259,6 @@
     isDragging = false;
   };
 
-  const cacheToLocalStorage = function () {
-    if (loaded) {
-      console.log("caching to local storage");
-      const localStorageData = $itemPackage;
-      const layersJson = JSON.stringify(localStorageData);
-      localStorage.setItem("package", layersJson);
-    }
-  };
-  let packageSub=itemPackage.subscribe(cacheToLocalStorage);
-
   itemLayers.subscribe((layers) => {
     updateTexture(layers.map((x) => x[$itemModelType]));
   });
@@ -284,10 +275,7 @@
       updateTexture($itemLayers.map((x) => x[$itemModelType]));
     }
   });
-  
-  onDestroy(() => {
-    packageSub();
-  });
+  const sortList = ev => {$itemLayers = ev.detail};
 </script>
 
 <div class="item-page">
@@ -326,14 +314,18 @@
       <span class="caption">{$_("layers")}</span>
       <div class="item-layers">
         {#if loaded}
-          {#each $itemLayers as layer, index (layer)}
+        <SortableList 
+        on:sort={sortList}
+        list={$itemLayers}
+        let:item
+        let:index>
             <div class="item-layer">
               <ItemLayer
-                texture={layer}
+                texture={item}
                 model={itemModel}
                 modelName={$itemPackage.model}
                 renderer={layersRenderer}
-                bind:label={layer.name}
+                label={item.name}
                 on:addvariant={addImageVariant}
                 on:down={downLayer}
                 on:up={upLayer}
@@ -342,7 +334,7 @@
                 canDown={index != $itemLayers.length - 1}
               />
             </div>
-          {/each}
+          </SortableList>
         {/if}
         <form style="display: flex;">
           <button
