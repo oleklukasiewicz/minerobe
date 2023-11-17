@@ -3,18 +3,18 @@
   color: var(--color-theme);
   font-family: minecraft;
   height: 60px;
-  padding: 10px;
+  padding: 10px 5px 10px 10px;
   box-sizing: border-box;
   display: flex;
   gap: 8px;
   position: fixed;
   top: 0;
-  width: 100vw;
-  z-index: 10;
+  width: 100%;
   .menu-button {
     display: none;
   }
   @media (max-width: 768px) {
+    padding: 10px 10px 10px 10px;
     .menu-button {
       display: block;
       position: absolute;
@@ -37,8 +37,6 @@
     @media (max-width: 768px) {
       .items {
         transform: translateX(0);
-        display: flex;
-        z-index: 3;
       }
       .nav-filler {
         opacity: 1;
@@ -59,15 +57,19 @@
       }
       .nav-filler {
         opacity: 0;
+        position: absolute;
       }
     }
   }
   .items {
+    flex: 1;
     transition: 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
     background-color: var(--color-theme-font);
     display: flex;
     gap: 8px;
     @media (max-width: 768px) {
+      display: flex;
+      z-index: 3;
       flex-direction: column;
       position: absolute;
       height: 100vh;

@@ -4,7 +4,11 @@
   import NavigationItem from "$lib/NavigationItem/NavigationItem.svelte";
   import "$locales/locales"; // Import to initialize. Important :)
   import { locale, waitLocale, isLoading, _ } from "svelte-i18n";
+
   import MenuIcon from "$src/icons/menu.svg?raw";
+  import SubscriptionIcon from "$src/icons/subscriptions.svg?raw";
+  import AvatarIcon from "$src/icons/avatar.svg?raw";
+
   import { onMount } from "svelte";
   import { itemPackage } from "$src/data/cache";
   import { OutfitPackage } from "$src/data/common";
@@ -21,7 +25,11 @@
       const layersJson = localStorage.getItem("package");
       if (layersJson != null) {
         const localStorageData = JSON.parse(layersJson);
-        $itemPackage = new OutfitPackage(localStorageData.name,localStorageData.model,localStorageData.layers);
+        $itemPackage = new OutfitPackage(
+          localStorageData.name,
+          localStorageData.model,
+          localStorageData.layers
+        );
       }
     }
   });
@@ -57,6 +65,15 @@
         on:click={() => (isMenuOpened = false)}
       />
     </div>
+    <div class="spacer"  style="flex:1;"/>
+    <a href="/wardrobe">
+      <button class="icon subscribtion-button dark" class:selected={$page.route.id == "/wardrobe"}>
+        {@html SubscriptionIcon}
+      </button>
+    </a>
+    <button class="icon avatar-button dark">
+      {@html AvatarIcon}
+    </button>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="nav-filler" on:click={() => (isMenuOpened = false)} />

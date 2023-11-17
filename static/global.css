@@ -165,7 +165,6 @@ button > svg{
     margin-right: 8px;
     display: inline-table;
     vertical-align: middle;
-    transform: scale(1);
 }
 button.tertiary{
     background-color: transparent;
@@ -198,6 +197,33 @@ button:active{
     background-color: var(--color-active);
     border-top-color: var(--color-active-L1);
     border-bottom-color: var(--color-active-D1);
+}
+button.dark
+{
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--color-accent-font);
+}
+button.dark:hover,
+button:hover{
+    color: var(--color-accent-font);
+    background-color: var(--color-hover);
+    border-top-color: var(--color-hover-L1);
+    border-bottom-color: var(--color-hover-D1);
+}
+button.dark:active,
+button:active{
+    color: var(--color-accent-font);
+    background-color: var(--color-active);
+    border-top-color: var(--color-active-L1);
+    border-bottom-color: var(--color-active-D1);
+}
+button.selected
+{
+    border-top: 2px solid var(--color-accent-L1);
+    background-color: var(--color-accent);
+    border-bottom: 2px solid var(--color-accent-D1);
+    color: var(--color-accent-font);
 }
 .placeholder{
     background-color: var(--color-theme-D2)!important;

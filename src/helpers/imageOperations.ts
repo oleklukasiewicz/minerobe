@@ -1,10 +1,9 @@
 import {
   FileData,
-  GetContextFromBase64,
-  GetOutfitType,
   OutfitPackage,
   OutfitLayer,
 } from "$src/data/common";
+import { GetContextFromBase64, GetOutfitType } from "./imageDataHelpers";
 import JSZip from "jszip";
 import { mergeImages } from "./imageMerger";
 
