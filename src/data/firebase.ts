@@ -17,27 +17,11 @@ const db: any = getFirestore(app);
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
 
+let currentUser = null;
 export const login = async () => {
-  signInWithPopup(auth, provider)
-  .then((result) => {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
-    // The signed-in user info.
-    const user = result.user;
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
-  })
-  .catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error);
-    // ...
-  });
+  if (currentUser) {
+    return currentUser;
+  }
 await signInWithPopup(auth, provider)
   .then((result) => {
     // This gives you a Google Access Token. You can use it to access the Google API.
@@ -47,7 +31,7 @@ await signInWithPopup(auth, provider)
     const user = result.user;
     // IdP data available using getAdditionalUserInfo(result)
     // ...
-    console.log(user);
+    currentUser = user;
   })
   .catch((error) => {
     // Handle Errors here.
@@ -59,6 +43,18 @@ await signInWithPopup(auth, provider)
     const credential = GoogleAuthProvider.credentialFromError(error);
     // ...
   });
+};
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    console.log("logged in");
+  } else {
+    currentUser = null;
+    logout();
+  }
+});
+
+export const logout = async () => {
+  await auth.signOut();
 };
 
 export const GetCollection = async (collection: string) => {
