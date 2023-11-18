@@ -6,5 +6,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export default defineConfig({
-	plugins: [sveltekit()]
+	plugins: [sveltekit()],
+	define: {
+		'process.env': import.meta.env
+	  }
 });
