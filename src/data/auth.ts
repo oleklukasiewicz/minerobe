@@ -1,3 +1,4 @@
+import { get } from "svelte/store";
 import { currentUser } from "./cache";
 import { login,logout } from "./firebase"
 
