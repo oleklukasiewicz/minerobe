@@ -38,7 +38,18 @@ auth.onAuthStateChanged((user) => {
     cUser = null;
   }
 });
+
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = auth.onAuthStateChanged( user => {
+      unsubscribe();
+      resolve(user);
+    }, reject);
+  })
+};
+
 export const login = async () => {
+  await getCurrentUser();
   if (cUser) {
     return cUser;
   }
