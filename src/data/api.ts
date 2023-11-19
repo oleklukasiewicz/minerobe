@@ -1,11 +1,11 @@
 import { get, writable, type Writable } from "svelte/store";
 import { OutfitPackage } from "./common";
 import { currentUser } from "./cache";
-import { db, GetDocument, SetDocument } from "./firebase";
+import { db, GenerateIdForCollection, GetDocument, SetDocument } from "./firebase";
 
 //helper
 const GenerateId = function (collection): string {
-  return db.collection(collection).doc().id;
+  return GenerateIdForCollection(collection);
 };
 
 //outfit
@@ -39,4 +39,7 @@ export const SetWardrobe = async function (data) {
       JSON.parse(json)
     );
   }
+};
+export const GenerateIdForWardrobeItem = function () {
+  return GenerateId(WARDROBE_PATH);
 };

@@ -50,7 +50,7 @@ export class OutfitPackage {
   name: string;
   model: string;
   layers: OutfitLayer[];
-  metdata: OutfitPackageMetadata;
+  metadata: OutfitPackageMetadata;
   id: string;
   constructor(
     name: string,
@@ -62,7 +62,7 @@ export class OutfitPackage {
     this.name = name;
     this.model = model;
     this.layers = layers;
-    this.metdata = metadata;
+    this.metadata = metadata;
     this.id = id;
   }
 }
@@ -84,6 +84,7 @@ export const MODEL_TYPE = {
 
 export class OutfitPackageMetadata {
   publisher: OutfitPublisher;
+  wardrobeItemId: string;
 }
 export class OutfitLayerMetadata {}
 export class OutfitPublisher {

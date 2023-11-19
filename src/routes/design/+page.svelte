@@ -40,6 +40,7 @@
     ImportLayerFromFile,
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
+  import { AddToWardrobe } from "$src/helpers/wardrobeHelper";
 
   let itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
@@ -241,11 +242,8 @@
     isDragging = false;
   };
 
-  const addToWardrobe = function () {
-    wardrobe.update((wardrobe) => {
-      wardrobe.outfits.push($itemPackage);
-      return wardrobe;
-    });
+  const addToWardrobe = async function () {
+    await AddToWardrobe($itemPackage);
   };
 
   itemLayers.subscribe((layers) => {

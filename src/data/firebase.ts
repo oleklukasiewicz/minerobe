@@ -41,11 +41,11 @@ auth.onAuthStateChanged((user) => {
 
 export const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
-    const unsubscribe = auth.onAuthStateChanged( user => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       unsubscribe();
       resolve(user);
     }, reject);
-  })
+  });
 };
 
 export const login = async () => {
@@ -96,5 +96,11 @@ export const SetDocument = async function (
     const dataRef = doc(db, path, documentName);
     await setDoc(dataRef, { ...data });
     return data;
+  }
+};
+export const GenerateIdForCollection = function (collectionName: string) {
+  if (cUser) {
+    const dataRef: any = collection(db, collectionName);
+    return doc(dataRef).id;
   }
 };
