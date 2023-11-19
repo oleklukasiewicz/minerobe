@@ -1,11 +1,12 @@
-import { writable, type Writable } from "svelte/store";
+import { get, writable, type Writable } from "svelte/store";
 import { OutfitPackage } from "./common";
-
+import { currentUser } from "./cache";
+import { db, GetDocument, SetDocument } from "./firebase";
 
 //helper
-const GenerateId = function (): string {
-return "";
-}
+const GenerateId = function (collection): string {
+  return db.collection(collection).doc().id;
+};
 
 //outfit
 export const GetOutfit = async function (id: string): Promise<OutfitPackage> {
@@ -14,16 +15,21 @@ export const GetOutfit = async function (id: string): Promise<OutfitPackage> {
 };
 
 //variant
-export const GetOutfitVariant = async function (id: string,variantId: string): Promise<OutfitPackage> {
+export const GetOutfitVariant = async function (
+  id: string,
+  variantId: string
+): Promise<OutfitPackage> {
   //fetch outfit variant from db
   return await new OutfitPackage("", "", []);
 };
 
-//wandrobe
-export const GetWardrobe = async function (): Promise<any> {
-
-}
-export const AddToWardrobe = async function (outfitId: string): Promise<any> {
-}
-export const RemoveFromWardrobe = async function (outfitId: string): Promise<any> {
-}
+//wardrobe
+const WARDROBE_PATH = "wardrobes";
+export const GetWardrobe = async function () {
+  if (get(currentUser))
+    return await GetDocument(WARDROBE_PATH, get(currentUser).uid);
+};
+export const SetWardrobe = async function (data) {
+  if (get(currentUser)&& data!=null)
+    return await SetDocument(WARDROBE_PATH, get(currentUser).uid, data);
+};

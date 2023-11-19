@@ -10,9 +10,9 @@
   import AvatarIcon from "$src/icons/avatar.svg?raw";
 
   import { onMount } from "svelte";
-  import { currentUser, itemPackage } from "$src/data/cache";
+  import { currentUser, itemPackage, wardrobe } from "$src/data/cache";
   import { OutfitPackage } from "$src/data/common";
-  import { loginUser, logoutUser } from "$src/data/auth";
+  import { loadUserToCache, loginUser, logoutUser } from "$src/data/auth";
 
   export const load = async () => {
     if (browser) {
@@ -33,15 +33,17 @@
         );
       }
     }
+    await loginUser();
+    loadUserToCache();
   });
 
-  const toggleLogin=async ()=>{
-    if($currentUser!=null){
+  const toggleLogin = async () => {
+    if ($currentUser != null) {
       await logoutUser();
-    }else{
-      await loginUser()
+    } else {
+      await loginUser();
     }
-  }
+  };
   let isMenuOpened = false;
 </script>
 
@@ -73,14 +75,16 @@
         on:click={() => (isMenuOpened = false)}
       />
     </div>
-    <div class="spacer"  style="flex:1;"/>
+    <div class="spacer" style="flex:1;" />
     <a href="/wardrobe">
-      <button class="icon subscribtion-button dark" class:selected={$page.route.id == "/wardrobe"}>
+      <button
+        class="icon subscribtion-button dark"
+        class:selected={$page.route.id == "/wardrobe"}
+      >
         {@html SubscriptionIcon}
       </button>
     </a>
     <button class="icon avatar-button dark" on:click={toggleLogin}>
-      
       {#if $currentUser != null}
         <img src={$currentUser.photoURL} alt="Avatar" />
       {:else}

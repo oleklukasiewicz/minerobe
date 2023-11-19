@@ -1,14 +1,21 @@
 import { initializeApp, getApps } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+} from "firebase/firestore";
 import {
   GoogleAuthProvider,
   getAuth,
   signInWithPopup,
   setPersistence,
-  browserSessionPersistence
+  browserSessionPersistence,
 } from "firebase/auth";
 import { get, writable } from "svelte/store";
 import { currentUser } from "$data/cache";
+import { WardrobePackage } from "./wardrobe";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
@@ -20,7 +27,7 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
 const app = initializeApp(firebaseConfig);
-const db: any = getFirestore(app);
+export const db: any = getFirestore(app);
 
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
@@ -44,42 +51,40 @@ export const login = async () => {
   });
   return res.user;
 };
+
+let cUser;
 auth.onAuthStateChanged((user) => {
   if (user) {
-    currentUser.set(user);
+    cUser=user;
   } else {
-    currentUser.set(null); 
+    cUser=null;
   }
 });
+export const GetUser=function()
+{
+  return cUser;
+}
 export const logout = async () => {
   await auth.signOut();
 };
-
-export const GetCollection = async (collection: string) => {
-  const querySnapshot = await db.collection(collection).get();
-  const data = querySnapshot.docs.map((doc) => doc.data());
-  return data;
+export const GetDocument = async function (
+  path: string,
+  documentName: string
+): Promise<any> {
+  if (get(currentUser)) {
+    const dataRef = doc(db, path, documentName);
+    const dataSnap = await getDoc(dataRef);
+    return dataSnap.data();
+  }
 };
-export const GetDocument = async (collection: string, id: string) => {
-  const docRef = await db.collection(collection).doc(id).get();
-  return docRef.data();
-};
-export const AddDocument = async (collection: string, data: any) => {
-  const docRef = await db.collection(collection).add(data);
-  return docRef.id;
-};
-export const UpdateDocument = async (
-  collection: string,
-  id: string,
+export const SetDocument = async function (
+  path: string,
+  documentName: string,
   data: any
-) => {
-  const docRef = await db.collection(collection).doc(id).update(data);
-  return docRef;
-};
-export const DeleteDocument = async (collection: string, id: string) => {
-  const docRef = await db.collection(collection).doc(id).delete();
-  return docRef;
-};
-export const GenerateId = (collection: string) => {
-  return db.collection(collection).doc().id;
+):Promise<any> {
+  if (get(currentUser)) {
+    const dataRef = doc(db, path, documentName);
+    await setDoc(dataRef, { ...data });
+    return data;
+  }
 };
