@@ -1,6 +1,14 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  getAuth,
+  signInWithPopup,
+  setPersistence,
+  browserSessionPersistence
+} from "firebase/auth";
+import { get, writable } from "svelte/store";
+import { currentUser } from "$data/cache";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
@@ -17,23 +25,14 @@ const db: any = getFirestore(app);
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
 
-let currentUser = null;
 export const login = async () => {
-  if (currentUser) {
-    return currentUser;
+  if (get(currentUser)) {
+    return get(currentUser);
   }
-await signInWithPopup(auth, provider)
-  .then((result) => {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
-    // The signed-in user info.
-    const user = result.user;
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
-    currentUser = user;
-  })
-  .catch((error) => {
+  await setPersistence(auth, browserSessionPersistence).catch((error) => {
+    // Handle error
+  });
+  let res: any = await signInWithPopup(auth, provider).catch((error) => {
     // Handle Errors here.
     const errorCode = error.code;
     const errorMessage = error.message;
@@ -43,16 +42,15 @@ await signInWithPopup(auth, provider)
     const credential = GoogleAuthProvider.credentialFromError(error);
     // ...
   });
+  return res.user;
 };
 auth.onAuthStateChanged((user) => {
   if (user) {
-    console.log("logged in");
+    currentUser.set(user);
   } else {
-    currentUser = null;
-    logout();
+    currentUser.set(null); 
   }
 });
-
 export const logout = async () => {
   await auth.signOut();
 };

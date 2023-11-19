@@ -10,8 +10,9 @@
   import AvatarIcon from "$src/icons/avatar.svg?raw";
 
   import { onMount } from "svelte";
-  import { itemPackage } from "$src/data/cache";
+  import { currentUser, itemPackage } from "$src/data/cache";
   import { OutfitPackage } from "$src/data/common";
+  import { logoutUser } from "$src/data/auth";
 
   export const load = async () => {
     if (browser) {
@@ -71,8 +72,13 @@
         {@html SubscriptionIcon}
       </button>
     </a>
-    <button class="icon avatar-button dark">
-      {@html AvatarIcon}
+    <button class="icon avatar-button dark" on:click={logoutUser}>
+      
+      {#if $currentUser != null}
+        <img src={$currentUser.photoURL} alt="Avatar" />
+      {:else}
+        {@html AvatarIcon}
+      {/if}
     </button>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->

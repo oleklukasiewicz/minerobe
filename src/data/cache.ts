@@ -35,3 +35,4 @@ const cacheToLocalStorage = function () {
 };
 itemPackage.subscribe(cacheToLocalStorage);
 
+export const currentUser: Writable<any> = writable(null);
