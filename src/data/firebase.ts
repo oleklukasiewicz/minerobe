@@ -12,10 +12,8 @@ import {
   signInWithPopup,
   setPersistence,
   browserSessionPersistence,
+  browserLocalPersistence,
 } from "firebase/auth";
-import { get, writable } from "svelte/store";
-import { currentUser } from "$data/cache";
-import { WardrobePackage } from "./wardrobe";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
@@ -31,12 +29,20 @@ export const db: any = getFirestore(app);
 
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
-
-export const login = async () => {
-  if (get(currentUser)) {
-    return get(currentUser);
+let cUser;
+auth.onAuthStateChanged((user) => {
+  console.log("auth state changed");
+  if (user) {
+    cUser = user;
+  } else {
+    cUser = null;
   }
-  await setPersistence(auth, browserSessionPersistence).catch((error) => {
+});
+export const login = async () => {
+  if (cUser) {
+    return cUser;
+  }
+  await setPersistence(auth, browserLocalPersistence).catch((error) => {
     // Handle error
   });
   let res: any = await signInWithPopup(auth, provider).catch((error) => {
@@ -49,29 +55,22 @@ export const login = async () => {
     const credential = GoogleAuthProvider.credentialFromError(error);
     // ...
   });
+  cUser = res.user;
   return res.user;
 };
 
-let cUser;
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    cUser=user;
-  } else {
-    cUser=null;
-  }
-});
-export const GetUser=function()
-{
+export const GetUser = function () {
   return cUser;
-}
+};
 export const logout = async () => {
   await auth.signOut();
+  cUser = null;
 };
 export const GetDocument = async function (
   path: string,
   documentName: string
 ): Promise<any> {
-  if (get(currentUser)) {
+  if (cUser) {
     const dataRef = doc(db, path, documentName);
     const dataSnap = await getDoc(dataRef);
     return dataSnap.data();
@@ -81,8 +80,8 @@ export const SetDocument = async function (
   path: string,
   documentName: string,
   data: any
-):Promise<any> {
-  if (get(currentUser)) {
+): Promise<any> {
+  if (cUser) {
     const dataRef = doc(db, path, documentName);
     await setDoc(dataRef, { ...data });
     return data;
