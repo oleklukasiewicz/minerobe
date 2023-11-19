@@ -9,18 +9,20 @@
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
 
+  import { FileData, MODEL_TYPE, OUTFIT_TYPE, OutfitLayer } from "$data/common";
   import {
-    FileData,
-    MODEL_TYPE,
-    OUTFIT_TYPE,
-    OutfitLayer,
-  } from "$data/common";
-  import { itemPackage,alexModel,steveModel, planksTexture } from "$data/cache";
+    itemPackage,
+    alexModel,
+    steveModel,
+    planksTexture,
+    wardrobe,
+  } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import DownloadPackageIcon from "$icons/flatten.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
+  import FolderPlusIcon from "$icons/folder-plus.svg?raw";
 
   import DefaultAnimation from "$animation/default";
   import NewOutfitBottomAnimation from "$animation/bottom";
@@ -61,13 +63,13 @@
       alpha: true,
       preserveDrawingBuffer: true,
     });
-    baseLayer=$planksTexture;
+    baseLayer = $planksTexture;
     if (localStorage != null && $itemLayers.length == 0) {
       console.log("loading from local storage");
       const layersJson = localStorage.getItem("package");
       if (layersJson != null) {
         const localStorageData = JSON.parse(layersJson);
-       $itemPackage =localStorageData;
+        $itemPackage = localStorageData;
       }
     }
     loaded = true;
@@ -239,6 +241,13 @@
     isDragging = false;
   };
 
+  const addToWardrobe = function () {
+    wardrobe.update((wardrobe) => {
+      wardrobe.outfits.push($itemPackage);
+      return wardrobe;
+    });
+  };
+
   itemLayers.subscribe((layers) => {
     updateTexture(layers.map((x) => x[$itemModelType]));
   });
@@ -293,7 +302,7 @@
       <span class="caption">{$_("layers")}</span>
       <div class="item-layers">
         {#if loaded}
-       {#each $itemLayers as item, index}
+          {#each $itemLayers as item, index}
             <div class="item-layer">
               <ItemLayer
                 texture={item}
@@ -357,6 +366,13 @@
           title={$_("downloadPackage")}
           class:disabled={$itemLayers.length == 0}
           class="icon tertiary">{@html DownloadPackageIcon}</button
+        >
+        <button
+          id="add-to-wardrobe"
+          on:click={addToWardrobe}
+          title="Add to wardrobe"
+          class:disabled={$itemLayers.length == 0}
+          class="icon tertiary">{@html FolderPlusIcon}</button
         >
       </div>
     </div>

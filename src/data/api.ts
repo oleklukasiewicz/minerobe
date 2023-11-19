@@ -30,6 +30,13 @@ export const GetWardrobe = async function () {
     return await GetDocument(WARDROBE_PATH, get(currentUser).uid);
 };
 export const SetWardrobe = async function (data) {
-  if (get(currentUser)&& data!=null)
-    return await SetDocument(WARDROBE_PATH, get(currentUser).uid, data);
+  if (get(currentUser) && data != null) {
+    //convert wardrobe package to object
+    const json = JSON.stringify(data);
+    return await SetDocument(
+      WARDROBE_PATH,
+      get(currentUser).uid,
+      JSON.parse(json)
+    );
+  }
 };
