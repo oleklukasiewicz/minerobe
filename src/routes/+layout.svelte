@@ -10,9 +10,8 @@
   import AvatarIcon from "$src/icons/avatar.svg?raw";
 
   import { onMount } from "svelte";
-  import { currentUser, itemPackage, wardrobe } from "$src/data/cache";
-  import { OutfitPackage } from "$src/data/common";
-  import { loadUserToCache, loginUser, logoutUser } from "$src/data/auth";
+  import { currentUser} from "$src/data/cache";
+  import { loadUserToCache, loginUser, logoutUser } from "$src/api/auth";
 
   export const load = async () => {
     if (browser) {
@@ -21,18 +20,6 @@
     await waitLocale();
   };
   onMount(async () => {
-    if (localStorage != null && $itemPackage.layers.length == 0) {
-      console.log("loading from local storage");
-      const layersJson = localStorage.getItem("package");
-      if (layersJson != null) {
-        const localStorageData = JSON.parse(layersJson);
-        $itemPackage = new OutfitPackage(
-          localStorageData.name,
-          localStorageData.model,
-          localStorageData.layers
-        );
-      }
-    }
     await loginUser();
     loadUserToCache();
   });

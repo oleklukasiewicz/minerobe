@@ -22,24 +22,3 @@ export const GetOutfitVariant = async function (
   //fetch outfit variant from db
   return await new OutfitPackage("", "", []);
 };
-
-//wardrobe
-const WARDROBE_PATH = "wardrobes";
-export const GetWardrobe = async function () {
-  if (get(currentUser))
-    return await GetDocument(WARDROBE_PATH, get(currentUser).uid);
-};
-export const SetWardrobe = async function (data) {
-  if (get(currentUser) && data != null) {
-    //convert wardrobe package to object
-    const json = JSON.stringify(data);
-    return await SetDocument(
-      WARDROBE_PATH,
-      get(currentUser).uid,
-      JSON.parse(json)
-    );
-  }
-};
-export const GenerateIdForWardrobeItem = function () {
-  return GenerateId(WARDROBE_PATH);
-};

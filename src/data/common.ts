@@ -97,3 +97,15 @@ export class OutfitPublisher {
     this.avatar = avatar;
   }
 }
+export class WardrobePackage
+{
+    id: string;
+    outfits:OutfitPackage[];
+    studio:OutfitPackage;
+    constructor(id:string,outfits:OutfitPackage[],studio:OutfitPackage =null)
+    {
+        this.id = id;
+        this.outfits = outfits;
+        this.studio = studio;
+    }
+}

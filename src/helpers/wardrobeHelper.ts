@@ -1,7 +1,6 @@
-import { GenerateIdForWardrobeItem } from "$src/data/api";
+import { GenerateIdForWardrobeItem } from "$src/api/wardrobe";
 import { currentUser, wardrobe } from "$src/data/cache";
-import { OutfitPackageMetadata, type OutfitPackage } from "$src/data/common";
-import type { WardrobePackage } from "$src/data/wardrobe";
+import { OutfitPackageMetadata, type OutfitPackage, WardrobePackage } from "$src/data/common";
 import { get } from "svelte/store";
 
 export const AddToWardrobe = async function (wardrobeItem: OutfitPackage) {
