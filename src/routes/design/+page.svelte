@@ -2,8 +2,8 @@
   import { _ } from "svelte-i18n";
   import * as THREE from "three";
   import type { Writable } from "svelte/store";
-  import writableDerived, { propertyStore } from "svelte-writable-derived";
-  import { onDestroy, onMount } from "svelte";
+  import { propertyStore } from "svelte-writable-derived";
+  import { onMount } from "svelte";
 
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
@@ -15,14 +15,13 @@
     alexModel,
     steveModel,
     planksTexture,
-    wardrobe,
   } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import DownloadPackageIcon from "$icons/flatten.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
-  import FolderPlusIcon from "$icons/folder-plus.svg?raw";
+  import HearthIcon from "$icons/heart.svg?raw";
 
   import DefaultAnimation from "$animation/default";
   import NewOutfitBottomAnimation from "$animation/bottom";
@@ -40,7 +39,11 @@
     ImportLayerFromFile,
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
-  import { AddToWardrobe } from "$src/helpers/wardrobeHelper";
+  import {
+    AddToWardrobe,
+    RemoveFromWardrobe,
+  } from "$src/helpers/wardrobeHelper";
+  import { GenerateIdForWardrobeItem } from "$src/api/wardrobe";
 
   let itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
@@ -243,9 +246,17 @@
   };
 
   const addToWardrobe = async function () {
+    if ($itemPackage.metadata.wardrobeItemId == null) {
+      const id = GenerateIdForWardrobeItem();
+      $itemPackage.metadata.wardrobeItemId = id;
+    }
     await AddToWardrobe($itemPackage);
   };
 
+  const removeFromWardrobe = async function () {
+    await RemoveFromWardrobe($itemPackage.metadata.wardrobeItemId);
+    $itemPackage.metadata.wardrobeItemId = null;
+  };
   itemLayers.subscribe((layers) => {
     updateTexture(layers.map((x) => x[$itemModelType]));
   });
@@ -365,13 +376,23 @@
           class:disabled={$itemLayers.length == 0}
           class="icon tertiary">{@html DownloadPackageIcon}</button
         >
-        <button
-          id="add-to-wardrobe"
-          on:click={addToWardrobe}
-          title="Add to wardrobe"
-          class:disabled={$itemLayers.length == 0}
-          class="icon tertiary">{@html FolderPlusIcon}</button
-        >
+        {#if $itemPackage.metadata.wardrobeItemId == null}
+          <button
+            id="add-to-wardrobe"
+            on:click={addToWardrobe}
+            title="Add to wardrobe"
+            class:disabled={$itemLayers.length == 0}
+            class="icon tertiary">{@html HearthIcon}</button
+          >
+        {:else}
+          <button
+            on:click={removeFromWardrobe}
+            id="add-to-wardrobe"
+            title="Already in wardrobe"
+            class:disabled={$itemLayers.length == 0}
+            class="icon">{@html HearthIcon}</button
+          >
+        {/if}
       </div>
     </div>
   </div>

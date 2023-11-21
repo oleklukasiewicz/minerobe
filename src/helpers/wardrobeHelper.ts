@@ -6,14 +6,6 @@ import { get } from "svelte/store";
 export const AddToWardrobe = async function (wardrobeItem: OutfitPackage) {
   if (get(currentUser)) {
     const wardrobePackage: WardrobePackage = get(wardrobe);
-    console.log(wardrobePackage);
-    console.log(
-      wardrobePackage.outfits.find(
-        (outfit: OutfitPackage) =>
-          outfit.metadata?.wardrobeItemId ==
-          wardrobeItem.metadata?.wardrobeItemId
-      )
-    );
     if (
       wardrobePackage.outfits.find(
         (outfit: OutfitPackage) =>
@@ -31,3 +23,13 @@ export const AddToWardrobe = async function (wardrobeItem: OutfitPackage) {
     wardrobe.set(wardrobePackage);
   }
 };
+export const RemoveFromWardrobe = async function (wardrobeItemId: string) {
+  if (get(currentUser)) {
+    const wardrobePackage: WardrobePackage = get(wardrobe);
+    wardrobePackage.outfits = wardrobePackage.outfits.filter(
+      (outfit: OutfitPackage) =>
+        outfit.metadata?.wardrobeItemId != wardrobeItemId
+    );
+    wardrobe.set(wardrobePackage);
+  }
+}
