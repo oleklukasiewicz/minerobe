@@ -23,6 +23,7 @@
       texture={item.layers[0]}
       model={item.model != "alex" ? $steveModel : $alexModel}
       modelName={item.model}
+      metadata={item.metadata}
     />
   {/each}
 {/if}

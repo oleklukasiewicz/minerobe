@@ -85,6 +85,7 @@ export const MODEL_TYPE = {
 export class OutfitPackageMetadata {
   publisher: OutfitPublisher;
   wardrobeItemId: string;
+  publisherId: string;
 }
 export class OutfitLayerMetadata {}
 export class OutfitPublisher {
@@ -107,5 +108,27 @@ export class WardrobePackage
         this.id = id;
         this.outfits = outfits;
         this.studio = studio;
+    }
+}
+export class MinerobeUser
+{
+    id:string;
+    name:string;
+    avatar:string;
+    constructor(id:string,name:string,avatar:string)
+    {
+        this.id = id;
+        this.name = name;
+        this.avatar = avatar;
+    }
+}
+export class MinerobeUserLink
+{
+    id:string;
+    userId:string;
+    constructor(id:string,userId:string)
+    {
+        this.id = id;
+        this.userId = userId;
     }
 }

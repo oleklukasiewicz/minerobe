@@ -1,6 +1,6 @@
 import { GenerateIdForWardrobeItem } from "$src/api/wardrobe";
 import { currentUser, wardrobe } from "$src/data/cache";
-import { OutfitPackageMetadata, type OutfitPackage, WardrobePackage } from "$src/data/common";
+import { OutfitPackageMetadata, type OutfitPackage, WardrobePackage, OutfitPublisher } from "$src/data/common";
 import { get } from "svelte/store";
 
 export const AddToWardrobe = async function (wardrobeItem: OutfitPackage) {
@@ -18,7 +18,7 @@ export const AddToWardrobe = async function (wardrobeItem: OutfitPackage) {
     if (!wardrobeItem.metadata)
       wardrobeItem.metadata = new OutfitPackageMetadata();
     wardrobeItem.metadata.wardrobeItemId = GenerateIdForWardrobeItem();
-
+    wardrobeItem.metadata.publisherId = get(currentUser).id;
     wardrobePackage.outfits.push(wardrobeItem);
     wardrobe.set(wardrobePackage);
   }

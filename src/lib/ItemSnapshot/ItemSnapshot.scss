@@ -1,26 +1,25 @@
-.item-snapshot
-{
-    display: flex;
-    max-width: 200px;
-    height: auto;
-    margin: 4px;
-    padding-bottom: 8px;
-    flex-direction: column;
-    transition: 0.3s;
-    .item-snapshot-title
-    {
-        font-family: minecraft;
-        margin: 8px 8px 16px;
-        box-sizing: border-box;
+.item-snapshot {
+  display: flex;
+  max-width: 200px;
+  height: auto;
+  margin: 4px;
+  flex-direction: column;
+  transition: 0.3s;
+  .item-snapshot-data {
+    margin: 8px;
+    display: table;
+    .item-snapshot-title {
+      font-family: minecraft;
+      box-sizing: border-box;
     }
-    &:hover
-    {
-        background-color: var(--color-accent);
-        color: var(--color-accent-font);
-        cursor: pointer;
-    }
-    &:active{
-        background-color: var(--color-hover);
-        color: var(--color-accent-font);
-    }
+  }
+  &:hover {
+    background-color: var(--color-accent);
+    color: var(--color-accent-font);
+    cursor: pointer;
+  }
+  &:active {
+    background-color: var(--color-hover);
+    color: var(--color-accent-font);
+  }
 }

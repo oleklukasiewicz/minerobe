@@ -5,7 +5,7 @@ import { get } from "svelte/store";
 const WARDROBE_PATH = "wardrobes";
 export const GetWardrobe = async function () {
   if (get(currentUser))
-    return await GetDocument(WARDROBE_PATH, get(currentUser).uid);
+    return await GetDocument(WARDROBE_PATH, get(currentUser).id);
 };
 export const SetWardrobe = async function (data) {
   if (get(currentUser) && data != null) {
@@ -13,7 +13,7 @@ export const SetWardrobe = async function (data) {
     const json = JSON.stringify(data);
     return await SetDocument(
       WARDROBE_PATH,
-      get(currentUser).uid,
+      get(currentUser).id,
       JSON.parse(json)
     );
   }

@@ -11,7 +11,7 @@
 
   import { onMount } from "svelte";
   import { currentUser} from "$src/data/cache";
-  import { loadUserToCache, loginUser, logoutUser } from "$src/api/auth";
+  import {loginUser, logoutUser } from "$src/api/auth";
 
   export const load = async () => {
     if (browser) {
@@ -21,7 +21,6 @@
   };
   onMount(async () => {
     await loginUser();
-    loadUserToCache();
   });
 
   const toggleLogin = async () => {
@@ -73,7 +72,7 @@
     </a>
     <button class="icon avatar-button dark" on:click={toggleLogin}>
       {#if $currentUser != null}
-        <img src={$currentUser.photoURL} alt="Avatar" />
+        <img src={$currentUser.avatar} alt="Avatar" />
       {:else}
         {@html AvatarIcon}
       {/if}
