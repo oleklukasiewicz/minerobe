@@ -2,13 +2,14 @@
 .sets-list {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
-#new-set
-{
-    min-width: 200px;
+#new-set {
+  max-width: 200px;
+  min-width: 150px;
+  flex: 1;
 }
-.outfits
-{
-    padding: 16px;
-    box-sizing: border-box;
+.outfits {
+  padding: 16px;
+  box-sizing: border-box;
 }

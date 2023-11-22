@@ -77,7 +77,6 @@
     loaded = true;
     itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
     updateTexture($itemLayers.map((x) => x[$itemModelType]));
-    console.log($itemPackage);
   });
 
   const upLayer = async function (e) {
