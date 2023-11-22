@@ -389,7 +389,6 @@
             id="add-to-wardrobe"
             on:click={addToWardrobe}
             title="Add to wardrobe"
-            class:disabled={$itemLayers.length == 0}
             class="icon tertiary">{@html HearthIcon}</button
           >
         {:else}
@@ -397,7 +396,6 @@
             on:click={removeFromWardrobe}
             id="add-to-wardrobe"
             title="Already in wardrobe"
-            class:disabled={$itemLayers.length == 0}
             class="icon">{@html HearthIcon}</button
           >
         {/if}
