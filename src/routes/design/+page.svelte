@@ -157,7 +157,10 @@
 
   const importPackage = async function () {
     const newPackage = await ImportImagePackageJson();
+    const metadata = $itemPackage.metadata;
     $itemPackage = newPackage;
+    $itemPackage.metadata = metadata;
+
     const random = Math.random();
 
     if (random < 0.2) {
@@ -216,7 +219,9 @@
             });
           } else {
             let newPackage = await ImportImagePackageJsonFromFile(file);
+            const metadata = $itemPackage.metadata;
             $itemPackage = newPackage;
+            $itemPackage.metadata = metadata;
             const random = Math.random();
 
             if (random < 0.2) {
