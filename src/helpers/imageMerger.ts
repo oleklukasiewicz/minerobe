@@ -76,7 +76,7 @@ export let mergeImages = function (
         images.forEach(function (image) {
           ctx.globalAlpha = image.opacity ? image.opacity : 1;
           //set temp canvas
-          let tempDrawed = tempCtx.drawImage(
+          tempCtx.drawImage(
             image.img,
             image.x || 0,
             image.y || 0

@@ -1,3 +1,5 @@
+import { GenerateIdForCollection } from "./firebase";
+
 export class FileData {
   fileName: string;
   content: string;
@@ -17,7 +19,7 @@ export class OutfitLayer {
   steve: FileData;
   alex: FileData;
   id: string;
-  constructor(name: string, steve: FileData, alex: FileData, id: string = "") {
+  constructor(name: string, steve: FileData, alex: FileData, id: string = GenerateIdForCollection("dummy")) {
     this.name = name;
     this.id = id;
     if (!steve && alex) {

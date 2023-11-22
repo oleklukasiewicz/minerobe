@@ -54,16 +54,6 @@
       preserveDrawingBuffer: true,
     });
     baseLayer = $planksTexture;
-    if (localStorage != null && $itemLayers.length == 0) {
-      console.log("loading from local storage");
-      const layersJson = localStorage.getItem("package");
-      if (layersJson != null) {
-        const localStorageData = JSON.parse(layersJson);
-        if (localStorageData != null) {
-          localPackage.set(localStorageData);
-        }
-      }
-    }
     loaded = true;
     itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
     updateTexture();

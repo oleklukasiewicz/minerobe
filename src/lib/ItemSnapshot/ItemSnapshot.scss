@@ -5,21 +5,44 @@
   margin: 4px;
   flex-direction: column;
   transition: 0.3s;
+  background-color: var(--color-theme-D1);
   .item-snapshot-data {
-    margin: 8px;
+    padding: 10px 8px;
+    box-sizing: border-box;
     display: table;
+    width: 100%;
+    flex:1;
+    .color-viever
+    {
+      min-width: 20px;
+      min-height: 20px;
+      vertical-align: middle;
+      display: inline-table;
+      float: right;
+      border: 3px solid var(--color-theme-D1);
+    }
     .item-snapshot-title {
       font-family: minecraft;
       box-sizing: border-box;
+      margin: 8px 0px;
+      display: table;
     }
   }
   &:hover {
     background-color: var(--color-accent);
-    color: var(--color-accent-font);
+    .item-snapshot-data {
+      .item-snapshot-title {
+        color: var(--color-accent-font);
+      }
+    }
     cursor: pointer;
   }
   &:active {
     background-color: var(--color-hover);
-    color: var(--color-accent-font);
+    .item-snapshot-data {
+      .item-snapshot-title {
+        color: var(--color-accent-font);
+      }
+    }
   }
 }

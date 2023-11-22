@@ -12,6 +12,7 @@ import { MinerobeUser, MinerobeUserLink } from "$src/data/common";
 
 const USER_PATH = "users";
 const USER_LINK_PATH = "user-link";
+
 export const loginUser = async function () {
   let user = await login();
   let firebaseUser = GetUser();

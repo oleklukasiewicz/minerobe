@@ -1,8 +1,4 @@
-import {
-  FileData,
-  OutfitPackage,
-  OutfitLayer,
-} from "$src/data/common";
+import { FileData, OutfitPackage, OutfitLayer } from "$src/data/common";
 import { GetContextFromBase64, GetOutfitType } from "./imageDataHelpers";
 import JSZip from "jszip";
 import { mergeImages } from "./imageMerger";
@@ -84,15 +80,15 @@ export const ExportImagePackageJson = async function (
   modelType: string,
   itemName: string
 ) {
-  const pack=new OutfitPackage(itemName, modelType, layers);
+  const pack = new OutfitPackage(itemName, modelType, layers);
   const json = JSON.stringify(pack);
 
-  const blob = new Blob([json], { type: 'application/json' });
+  const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
-  link.download = itemName.toLowerCase() + '_package.json';
+  link.download = itemName.toLowerCase() + "_package.json";
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -115,14 +111,22 @@ export const ImportImagePackageJson = async function () {
         const importedPackage = new OutfitPackage(
           jsonData.name,
           jsonData.model,
-          jsonData.layers
+          jsonData.layers.map((x: any) => {
+            const steve = x.steve
+              ? new FileData(x.steve.fileName, x.steve.content, x.steve.type)
+              : null;
+            const alex = x.alex
+              ? new FileData(x.alex.fileName, x.alex.content, x.alex.type)
+              : null;
+            return new OutfitLayer(x.name, steve, alex);
+          })
         );
         resolve(importedPackage);
       };
       reader.readAsText(file);
     };
   });
-}
+};
 export const ImportImagePackageJsonFromFile = async function (file: File) {
   return new Promise<OutfitPackage>((resolve) => {
     const reader = new FileReader();
@@ -138,7 +142,7 @@ export const ImportImagePackageJsonFromFile = async function (file: File) {
     };
     reader.readAsText(file);
   });
-}
+};
 export const ImportImagePackage = async function () {
   const input = document.createElement("input");
   input.type = "file";

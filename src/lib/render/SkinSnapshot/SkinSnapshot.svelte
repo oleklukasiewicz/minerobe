@@ -38,7 +38,7 @@
       return;
     }
   };
-  $: setCameraPosZ(type);
+  setCameraPosZ(type);
 </script>
 
 <div>

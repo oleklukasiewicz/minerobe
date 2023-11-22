@@ -68,17 +68,10 @@
       preserveDrawingBuffer: true,
     });
     baseLayer = $planksTexture;
-    if (localStorage != null && $itemLayers.length == 0) {
-      console.log("loading from local storage");
-      const layersJson = localStorage.getItem("package");
-      if (layersJson != null) {
-        const localStorageData = JSON.parse(layersJson);
-        $itemPackage = localStorageData;
-      }
-    }
     loaded = true;
     itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
     updateTexture($itemLayers.map((x) => x[$itemModelType]));
+    console.log($itemPackage);
   });
 
   const upLayer = async function (e) {
@@ -311,7 +304,7 @@
       <span class="caption">{$_("layers")}</span>
       <div class="item-layers">
         {#if loaded}
-          {#each $itemLayers as item, index}
+          {#each $itemLayers as item, index (item.id)}
             <div class="item-layer">
               <ItemLayer
                 texture={item}
