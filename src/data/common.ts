@@ -19,7 +19,12 @@ export class OutfitLayer {
   steve: FileData;
   alex: FileData;
   id: string;
-  constructor(name: string, steve: FileData, alex: FileData, id: string = GenerateIdForCollection("dummy")) {
+  constructor(
+    name: string,
+    steve: FileData,
+    alex: FileData,
+    id: string = GenerateIdForCollection("dummy")
+  ) {
     this.name = name;
     this.id = id;
     if (!steve && alex) {
@@ -51,6 +56,7 @@ export class OutfitLayer {
 export class OutfitPackage {
   name: string;
   model: string;
+  type: string;
   layers: OutfitLayer[];
   metadata: OutfitPackageMetadata;
   id: string;
@@ -59,13 +65,15 @@ export class OutfitPackage {
     model: string,
     layers: OutfitLayer[],
     id: string = "",
-    metadata: OutfitPackageMetadata = new OutfitPackageMetadata()
+    metadata: OutfitPackageMetadata = new OutfitPackageMetadata(),
+    type: string = PACKAGE_TYPE.OUTFIT
   ) {
     this.name = name;
     this.model = model;
     this.layers = layers;
     this.metadata = metadata;
     this.id = id;
+    this.type = type;
   }
 }
 export const OUTFIT_TYPE = {
@@ -83,7 +91,10 @@ export const MODEL_TYPE = {
   ALEX: "alex",
   STEVE: "steve",
 };
-
+export const PACKAGE_TYPE = {
+  OUTFIT: "outfit",
+  OUTFIT_SET: "outfit_set",
+};
 export class OutfitPackageMetadata {
   publisher: OutfitPublisher;
   wardrobeItemId: string;
@@ -100,37 +111,38 @@ export class OutfitPublisher {
     this.avatar = avatar;
   }
 }
-export class WardrobePackage
-{
-    id: string;
-    outfits:OutfitPackage[];
-    studio:OutfitPackage;
-    constructor(id:string,outfits:OutfitPackage[],studio:OutfitPackage =null)
-    {
-        this.id = id;
-        this.outfits = outfits;
-        this.studio = studio;
-    }
+export class WardrobePackage {
+  id: string;
+  outfits: OutfitPackage[];
+  sets: OutfitPackage[];
+  studio: OutfitPackage;
+  constructor(
+    id: string,
+    outfits: OutfitPackage[],
+    sets: OutfitPackage[] = [],
+    studio: OutfitPackage = null
+  ) {
+    this.id = id;
+    this.outfits = outfits;
+    this.studio = studio;
+    this.sets = sets;
+  }
 }
-export class MinerobeUser
-{
-    id:string;
-    name:string;
-    avatar:string;
-    constructor(id:string,name:string,avatar:string)
-    {
-        this.id = id;
-        this.name = name;
-        this.avatar = avatar;
-    }
+export class MinerobeUser {
+  id: string;
+  name: string;
+  avatar: string;
+  constructor(id: string, name: string, avatar: string) {
+    this.id = id;
+    this.name = name;
+    this.avatar = avatar;
+  }
 }
-export class MinerobeUserLink
-{
-    id:string;
-    userId:string;
-    constructor(id:string,userId:string)
-    {
-        this.id = id;
-        this.userId = userId;
-    }
+export class MinerobeUserLink {
+  id: string;
+  userId: string;
+  constructor(id: string, userId: string) {
+    this.id = id;
+    this.userId = userId;
+  }
 }

@@ -1,4 +1,4 @@
-import { FileData, OutfitPackage, OutfitLayer } from "$src/data/common";
+import { FileData, OutfitPackage, OutfitLayer, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/common";
 import { GetContextFromBase64, GetOutfitType } from "./imageDataHelpers";
 import JSZip from "jszip";
 import { mergeImages } from "./imageMerger";
@@ -119,7 +119,7 @@ export const ImportImagePackageJson = async function () {
               ? new FileData(x.alex.fileName, x.alex.content, x.alex.type)
               : null;
             return new OutfitLayer(x.name, steve, alex);
-          })
+          }),undefined,undefined,jsonData.type
         );
         resolve(importedPackage);
       };

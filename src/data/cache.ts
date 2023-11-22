@@ -5,14 +5,14 @@ import {
   type Readable,
   get,
 } from "svelte/store";
-import { MODEL_TYPE, OutfitPackage } from "./common";
+import { MODEL_TYPE, OutfitPackage, PACKAGE_TYPE } from "./common";
 import alexModelData from "$src/model/alex.gltf?raw";
 import steveModelData from "$src/model/steve.gltf?raw";
 import planksTextureRaw from "$src/texture/default_planks.png?url";
 import { WardrobePackage } from "./common";
 import { GetWardrobe, SetWardrobe } from "$src/api/wardrobe";
 
-let defaultOutfitPackage = new OutfitPackage("New skin", MODEL_TYPE.ALEX, []);
+let defaultOutfitPackage = new OutfitPackage("New skin", MODEL_TYPE.ALEX, [], "", undefined, PACKAGE_TYPE.OUTFIT_SET);
 export let itemPackage: Writable<OutfitPackage> =
   writable(defaultOutfitPackage);
 export let alexModel: Readable<string> = readable(
@@ -40,7 +40,7 @@ currentUser.subscribe(async (user) => {
     //settings up account
     let w = await GetWardrobe();
     if (w == null) {
-      w = new WardrobePackage("default_wardrobe", []);
+      w = new WardrobePackage("default_wardrobe", [], [], null);
       await SetWardrobe(w);
     }
     wardrobe.set(w);

@@ -9,7 +9,13 @@
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
 
-  import { FileData, MODEL_TYPE, OUTFIT_TYPE, OutfitLayer } from "$data/common";
+  import {
+    FileData,
+    MODEL_TYPE,
+    OUTFIT_TYPE,
+    OutfitLayer,
+    PACKAGE_TYPE,
+  } from "$data/common";
   import {
     itemPackage,
     alexModel,
@@ -300,6 +306,11 @@
           class="title-input"
           bind:value={$itemPackage.name}
         />
+        <span class="label rare"
+          >{$itemPackage.type == PACKAGE_TYPE.OUTFIT ? "OUTFIT" : "OUTFITS SET"}</span
+        >
+        <br/>
+        <br/>
       </div>
       <span class="caption">{$_("layers")}</span>
       <div class="item-layers">
