@@ -12,7 +12,14 @@ import planksTextureRaw from "$src/texture/default_planks.png?url";
 import { WardrobePackage } from "./common";
 import { GetWardrobe, SetWardrobe } from "$src/api/wardrobe";
 
-let defaultOutfitPackage = new OutfitPackage("New skin", MODEL_TYPE.ALEX, [], "", undefined, PACKAGE_TYPE.OUTFIT_SET);
+let defaultOutfitPackage = new OutfitPackage(
+  "New skin",
+  MODEL_TYPE.ALEX,
+  [],
+  "",
+  undefined,
+  PACKAGE_TYPE.OUTFIT_SET
+);
 export let itemPackage: Writable<OutfitPackage> =
   writable(defaultOutfitPackage);
 export let alexModel: Readable<string> = readable(
@@ -28,11 +35,24 @@ export const currentUser: Writable<any> = writable(null);
 export const wardrobe: Writable<WardrobePackage> = writable(null);
 
 itemPackage.subscribe((data) => {
-  if(get(wardrobe) != null && data != null)
-  wardrobe.update((w) => {
-    w.studio = data;
-    return w;
-  });
+  if (get(wardrobe) != null && data != null)
+    wardrobe.update((w) => {
+      w.studio = data;
+      if (data.metadata.wardrobeItemId != null) {
+        if (data.type == PACKAGE_TYPE.OUTFIT_SET) {
+          const index = w.sets.findIndex(
+            (x) => x.metadata.wardrobeItemId == data.metadata.wardrobeItemId
+          );
+          if (index != -1) w.sets[index] = data;
+        } else {
+          const index = w.outfits.findIndex(
+            (x) => x.metadata.wardrobeItemId == data.metadata.wardrobeItemId
+          );
+          if (index != -1) w.outfits[index] = data;
+        }
+      }
+      return w;
+    });
 });
 
 currentUser.subscribe(async (user) => {
@@ -44,8 +64,7 @@ currentUser.subscribe(async (user) => {
       await SetWardrobe(w);
     }
     wardrobe.set(w);
-    if(w.studio != null)
-    itemPackage.set(w.studio);
+    if (w.studio != null) itemPackage.set(w.studio);
   }
 });
 wardrobe.subscribe(async (data) => {

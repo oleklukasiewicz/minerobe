@@ -85,6 +85,7 @@ export const OUTFIT_TYPE = {
   ACCESSORY: "accessory",
   SUIT: "suit",
   DEFAULT: "default",
+  OUTFIT_SET: "outfit_set",
 };
 
 export const MODEL_TYPE = {
@@ -99,6 +100,15 @@ export class OutfitPackageMetadata {
   publisher: OutfitPublisher;
   wardrobeItemId: string;
   publisherId: string;
+  constructor(
+    publisher: OutfitPublisher = null,
+    wardrobeItemId: string=null,
+    publisherId: string = null
+  ) {
+    this.publisher = publisher;
+    this.wardrobeItemId = wardrobeItemId;
+    this.publisherId = publisherId;
+  }
 }
 export class OutfitLayerMetadata {}
 export class OutfitPublisher {

@@ -10,7 +10,10 @@
   export let refreshRender = undefined;
 
   let camPozY = 0.1,
+    camPozX = 0,
     camPozZ = 1.8;
+  let sceneRotX = Math.PI / 4;
+  let sceneRotY = Math.PI * 0.75;
   const setCameraPosZ = function (type) {
     if (type == OUTFIT_TYPE.HAT) {
       camPozY = 0.2;
@@ -37,6 +40,13 @@
       camPozZ = 1.8;
       return;
     }
+    if (type == OUTFIT_TYPE.OUTFIT_SET) {
+      camPozY = 0;
+      camPozZ = 1.7;
+      camPozX = 0;
+      sceneRotX=0;
+      return;
+    }
   };
   setCameraPosZ(type);
 </script>
@@ -46,12 +56,12 @@
     {texture}
     {model}
     bind:refreshRender
-    sceneRotY={Math.PI * 0.75}
-    sceneRotX={Math.PI / 4}
+    {sceneRotY}
+    {sceneRotX}
     cameraPosZ={camPozZ}
     cameraPosY={camPozY}
+    cameraPosX={camPozX}
     {modelName}
-    cameraPosX={0.1}
     orbitControlsEnabled={false}
     backgroundColorOpacity={0}
     renderFloor={false}

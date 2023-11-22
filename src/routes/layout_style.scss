@@ -31,7 +31,7 @@
     }
   }
   .nav-filler {
-    transition: opacity 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+    transition: opacity var(--time) cubic-bezier(0.1, 0.9, 0.2, 1);
   }
   &.opened {
     @media (max-width: 768px) {
@@ -63,7 +63,7 @@
   }
   .items {
     flex: 1;
-    transition: 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+    transition: var(--time) cubic-bezier(0.1, 0.9, 0.2, 1);
     background-color: var(--color-theme-font);
     display: flex;
     gap: 8px;

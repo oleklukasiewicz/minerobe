@@ -11,7 +11,7 @@
       }
       .render {
         max-height: 100%;
-        transition: 0.3s;
+        transition: var(--time);
         aspect-ratio: 1/1;
         outline: 3px solid transparent;
         box-sizing: border-box;

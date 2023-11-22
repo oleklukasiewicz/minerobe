@@ -2,7 +2,11 @@
   import SkinSnapshot from "$lib/render/SkinSnapshot/SkinSnapshot.svelte";
   import { GetMinerobeUser } from "$src/api/auth";
   import type { OutfitLayer, OutfitPackageMetadata } from "$src/data/common";
-  import { ConvertRGBToHex, FindInColors, GetColorFromImage } from "$src/helpers/imageDataHelpers";
+  import {
+    ConvertRGBToHex,
+    FindInColors,
+    GetColorFromImage,
+  } from "$src/helpers/imageDataHelpers";
   import { onMount } from "svelte";
 
   export let texture: OutfitLayer = null;
@@ -16,10 +20,10 @@
   let dominantColorHex = null;
   let dominantColorString = null;
   onMount(async () => {
-    if (metadata.publisher == null) {
+    if (metadata.publisher == null && metadata.publisherId != null) {
       metadata.publisher = await GetMinerobeUser(metadata.publisherId);
     }
-    dominantColor= await GetColorFromImage(texture[modelName].content);
+    dominantColor = await GetColorFromImage(texture[modelName].content);
     dominantColorString = FindInColors(dominantColor);
     dominantColorHex = ConvertRGBToHex(dominantColor);
   });
@@ -37,7 +41,11 @@
     <b class="item-snapshot-title">{label}</b>
     {#if metadata.publisher}
       <span class="label unique">{metadata.publisher.name}</span>
-      <span class="color-viever" title="{dominantColorString}" style="background-color: {dominantColorHex};"></span>
+      <span
+        class="color-viever"
+        title={dominantColorString}
+        style="background-color: {dominantColorHex};"
+      ></span>
     {/if}
   </div>
 </div>

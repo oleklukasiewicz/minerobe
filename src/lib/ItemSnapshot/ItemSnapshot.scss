@@ -4,7 +4,7 @@
   height: auto;
   margin: 4px;
   flex-direction: column;
-  transition: 0.3s;
+  transition: var(--time);
   background-color: var(--color-theme-D1);
   .item-snapshot-data {
     padding: 10px 8px;

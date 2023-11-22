@@ -1,4 +1,14 @@
-.outfits-list
+.outfits-list,
+.sets-list {
+  display: flex;
+  gap: 8px;
+}
+#new-set
 {
-    display: flex;
+    min-width: 200px;
+}
+.outfits
+{
+    padding: 16px;
+    box-sizing: border-box;
 }
