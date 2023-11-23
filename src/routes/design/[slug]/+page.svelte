@@ -9,12 +9,13 @@
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemVariant from "$lib/ItemVariant/ItemVariant.svelte";
 
-  import { FileData, MODEL_TYPE, OUTFIT_TYPE, OutfitLayer, OutfitPackage } from "$data/common";
+  import { FileData, OutfitLayer, OutfitPackage } from "$data/common";
   import {
     alexModel,
     steveModel,
     planksTexture,
   } from "$data/cache";
+  import { MODEL_TYPE, OUTFIT_TYPE } from "$data/consts";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import DownloadPackageIcon from "$icons/flatten.svg?raw";
