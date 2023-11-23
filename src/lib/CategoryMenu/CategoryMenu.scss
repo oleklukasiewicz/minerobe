@@ -1,0 +1,11 @@
+.category-menu
+{
+    background-color: var(--color-hover);
+    max-width: 300px;
+    min-width: 300px;
+    .category-menu-label
+    {
+        color:var(--color-accent-font);
+        margin: 12px 16px;
+    }
+}

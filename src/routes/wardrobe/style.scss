@@ -13,3 +13,11 @@
   padding: 16px;
   box-sizing: border-box;
 }
+.wardrobe-view {
+  display: grid;
+  width: 100%;
+  grid-template-columns:  auto 1fr;
+  grid-template-rows: auto;
+  height: calc(100vh - 60px);
+  box-sizing: border-box;
+}

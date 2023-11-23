@@ -6,14 +6,12 @@
   import { onMount } from "svelte";
   import * as THREE from "three";
   import PlusIcon from "$icons/plus.svg?raw";
-  import {
-    OutfitPackage,
-    OutfitPackageMetadata,
-  } from "$src/data/common";
+  import { OutfitPackage, OutfitPackageMetadata } from "$src/data/common";
   import { MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
   import { GenerateIdForWardrobeItem } from "$src/api/wardrobe";
   import { GenerateIdForCollection } from "$src/data/firebase";
   import { AddToWardrobe } from "$src/helpers/wardrobeHelper";
+  import CategoryMenu from "$lib/CategoryMenu/CategoryMenu.svelte";
 
   let layersRenderer: THREE.WebGLRenderer = null;
 
@@ -39,39 +37,42 @@
   };
 </script>
 
-<div class="outfits">
-  {#if loaded && $wardrobe != null}
-    <div class="outfits-list">
-      {#each $wardrobe.outfits as item}
-        <ItemSnapshot
-          renderer={layersRenderer}
-          texture={item.layers[0]}
-          model={item.model != "alex" ? $steveModel : $alexModel}
-          modelName={item.model}
-          metadata={item.metadata}
-        />
-      {/each}
-    </div>
-    <h1>Sets</h1>
-    <div class="sets-list">
-      {#each $wardrobe.sets as item}
-        <ItemSetSnapshot
-          renderer={layersRenderer}
-          outfitPackage={item}
-          model={item.model != "alex" ? $steveModel : $alexModel}
-          modelName={item.model}
-          metadata={item.metadata}
-          on:click={() => {
-            navigateToDesign(item);
-          }}
-        />
-      {/each}
-      <button id="new-set" on:click={() => addNewSet()}>
-        {@html PlusIcon}<br />
-        New set</button
-      >
-    </div>
-  {/if}
+<div class="wardrobe-view">
+  <CategoryMenu label="Wardrobe"/>
+  <div class="outfits">
+    {#if loaded && $wardrobe != null}
+      <div class="outfits-list">
+        {#each $wardrobe.outfits as item}
+          <ItemSnapshot
+            renderer={layersRenderer}
+            texture={item.layers[0]}
+            model={item.model != "alex" ? $steveModel : $alexModel}
+            modelName={item.model}
+            metadata={item.metadata}
+          />
+        {/each}
+      </div>
+      <h1>Sets</h1>
+      <div class="sets-list">
+        {#each $wardrobe.sets as item}
+          <ItemSetSnapshot
+            renderer={layersRenderer}
+            outfitPackage={item}
+            model={item.model != "alex" ? $steveModel : $alexModel}
+            modelName={item.model}
+            metadata={item.metadata}
+            on:click={() => {
+              navigateToDesign(item);
+            }}
+          />
+        {/each}
+        <button id="new-set" on:click={() => addNewSet()}>
+          {@html PlusIcon}<br />
+          New set</button
+        >
+      </div>
+    {/if}
+  </div>
 </div>
 
 <style lang="scss">
