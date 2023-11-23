@@ -36,6 +36,7 @@
     --color-theme-D4: #828282;
     --color-theme-D5: #626262;
     --color-theme-D6: #424242;
+    --color-theme-D7: #282828;
     --size-font-icon: 13px;
     --size-font-caption: 12px;
     --size-font-base: 14px;
@@ -288,4 +289,12 @@ input{
 }
 input:hover{
     border-bottom: 2px solid var(--color-active-L1);
+}
+.icon-small>svg
+{
+    transform: scale(0.75)
+}
+.icon-big>svg
+{
+    transform: scale(1.3)
 }

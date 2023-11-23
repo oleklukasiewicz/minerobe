@@ -6,7 +6,9 @@
   {#if label}
     <h2 class="category-menu-label">{label}</h2>
   {/if}
-  <div class="category-menu-items"></div>
+  <div class="category-menu-items">
+    <slot/>
+  </div>
 </div>
 
 <style lang="scss">

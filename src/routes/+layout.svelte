@@ -67,14 +67,14 @@
         class="icon subscribtion-button dark"
         class:selected={$page.route.id == "/wardrobe"}
       >
-        {@html SubscriptionIcon}
+       <span class="icon-small"> {@html SubscriptionIcon}</span>
       </button>
     </a>
     <button class="icon avatar-button dark" on:click={toggleLogin}>
       {#if $currentUser != null}
         <img src={$currentUser.avatar} alt="Avatar" />
       {:else}
-        {@html AvatarIcon}
+      <span class="icon-small"> {@html AvatarIcon}</span>
       {/if}
     </button>
     <!-- svelte-ignore a11y-click-events-have-key-events -->

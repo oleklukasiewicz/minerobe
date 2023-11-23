@@ -12,6 +12,9 @@
   import { GenerateIdForCollection } from "$src/data/firebase";
   import { AddToWardrobe } from "$src/helpers/wardrobeHelper";
   import CategoryMenu from "$lib/CategoryMenu/CategoryMenu.svelte";
+  import CategoryMenuItem from "$lib/CategoryMenuItem/CategoryMenuItem.svelte";
+  import AnimationIcon from "$icons/animation.svg?raw";
+  import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
 
   let layersRenderer: THREE.WebGLRenderer = null;
 
@@ -38,7 +41,10 @@
 </script>
 
 <div class="wardrobe-view">
-  <CategoryMenu label="Wardrobe"/>
+  <CategoryMenu label="Wardrobe">
+    <CategoryMenuItem label="Sets" selected icon={AnimationIcon} />
+    <CategoryMenuItem label="Outfits" icon={ShoppingBagIcon} />
+  </CategoryMenu>
   <div class="outfits">
     {#if loaded && $wardrobe != null}
       <div class="outfits-list">
@@ -67,7 +73,7 @@
           />
         {/each}
         <button id="new-set" on:click={() => addNewSet()}>
-          {@html PlusIcon}<br />
+          <span class="icon-big">{@html PlusIcon}</span><br /><br />
           New set</button
         >
       </div>

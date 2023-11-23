@@ -1,0 +1,15 @@
+.category-menu-item {
+  width: 100%;
+  text-align: left;
+  &.tertiary {
+    color: var(--color-accent-font);
+  }
+  div {
+    display: inline-table;
+  }
+  span {
+    display: inline-table;
+    vertical-align: top;
+    margin: 5px;
+  }
+}
