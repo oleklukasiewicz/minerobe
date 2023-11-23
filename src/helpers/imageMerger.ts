@@ -1,4 +1,4 @@
-import { MODEL_TYPE } from "$src/data/common";
+import { MODEL_TYPE } from "$data/consts";
 
 // Defaults
 const defaultOptions = {

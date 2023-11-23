@@ -1,3 +1,4 @@
+import { LAYER_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "./consts";
 import { GenerateIdForCollection } from "./firebase";
 
 export class FileData {
@@ -19,14 +20,20 @@ export class OutfitLayer {
   steve: FileData;
   alex: FileData;
   id: string;
+  variantId: string;
+  type: string;
   constructor(
     name: string,
     steve: FileData,
     alex: FileData,
-    id: string = GenerateIdForCollection("dummy")
+    id: string = GenerateIdForCollection("dummy"),
+    type: string = LAYER_TYPE.LOCAL,
+    variantId: string = ""
   ) {
     this.name = name;
+    this.variantId = variantId;
     this.id = id;
+    this.type = type;
     if (!steve && alex) {
       this.steve = alex;
       this.alex = alex;
@@ -38,21 +45,15 @@ export class OutfitLayer {
       this.alex = alex;
     }
   }
-  isChanged(other: OutfitLayer) {
-    if (this.name !== other.name) {
-      return true;
-    }
-    if (
-      !(this.steve.content == other.steve.content) ||
-      !(this.alex.content == other.alex.content)
-    ) {
-      return true;
-    }
-
-    return false;
+}
+export class OutfitLayerLink {
+  id: string;
+  variantId: string;
+  constructor(id: string, variantId: string) {
+    this.id = id;
+    this.variantId = variantId;
   }
 }
-
 export class OutfitPackage {
   name: string;
   model: string;
@@ -76,33 +77,13 @@ export class OutfitPackage {
     this.type = type;
   }
 }
-export const OUTFIT_TYPE = {
-  TOP: "top",
-  HOODIE: "hoodie",
-  HAT: "hat",
-  BOTTOM: "bottom",
-  SHOES: "shoes",
-  ACCESSORY: "accessory",
-  SUIT: "suit",
-  DEFAULT: "default",
-  OUTFIT_SET: "outfit_set",
-};
-
-export const MODEL_TYPE = {
-  ALEX: "alex",
-  STEVE: "steve",
-};
-export const PACKAGE_TYPE = {
-  OUTFIT: "outfit",
-  OUTFIT_SET: "outfit_set",
-};
 export class OutfitPackageMetadata {
   publisher: OutfitPublisher;
   wardrobeItemId: string;
   publisherId: string;
   constructor(
     publisher: OutfitPublisher = null,
-    wardrobeItemId: string=null,
+    wardrobeItemId: string = null,
     publisherId: string = null
   ) {
     this.publisher = publisher;

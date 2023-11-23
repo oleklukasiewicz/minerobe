@@ -1,4 +1,4 @@
-import { initializeApp, getApps } from "firebase/app";
+import { initializeApp } from "firebase/app";
 import {
   getFirestore,
   collection,
@@ -11,7 +11,6 @@ import {
   getAuth,
   signInWithPopup,
   setPersistence,
-  browserSessionPersistence,
   browserLocalPersistence,
 } from "firebase/auth";
 

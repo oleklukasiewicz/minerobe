@@ -5,7 +5,8 @@ import {
   type Readable,
   get,
 } from "svelte/store";
-import { MODEL_TYPE, OutfitPackage, PACKAGE_TYPE } from "./common";
+import { MODEL_TYPE, PACKAGE_TYPE} from "$data/consts";
+import { OutfitPackage } from "./common";
 import alexModelData from "$src/model/alex.gltf?raw";
 import steveModelData from "$src/model/steve.gltf?raw";
 import planksTextureRaw from "$src/texture/default_planks.png?url";

@@ -9,12 +9,9 @@
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
 
+  import { MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$data/consts";
   import {
-    FileData,
-    MODEL_TYPE,
-    OUTFIT_TYPE,
-    OutfitLayer,
-    PACKAGE_TYPE,
+    FileData, OutfitLayer
   } from "$data/common";
   import {
     itemPackage,

@@ -1,6 +1,6 @@
 <script>
   import SkinRender from "../SkinRender/SkinRender.svelte";
-  import { OUTFIT_TYPE } from "$src/data/common";
+  import { OUTFIT_TYPE } from "$data/consts";
 
   export let texture = null;
   export let model = null;

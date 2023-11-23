@@ -4,8 +4,8 @@ import {
   OutfitPackageMetadata,
   type OutfitPackage,
   WardrobePackage,
-  PACKAGE_TYPE,
 } from "$src/data/common";
+import { PACKAGE_TYPE } from "$data/consts";
 import { get } from "svelte/store";
 
 export const AddToWardrobe = async function (wardrobeItem: OutfitPackage) {

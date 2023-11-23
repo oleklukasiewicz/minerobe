@@ -1,4 +1,4 @@
-import { OUTFIT_TYPE } from "$data/common";
+import { OUTFIT_TYPE } from "$data/consts";
 import { COLORS, COLORS_ARRAY } from "$data/consts";
 import { closest } from "color-diff";
 
@@ -126,7 +126,6 @@ export const stringToRgb = (rgbString: string) => {
 };
 export const FindClosestColorHex = (hexColor: string) => {
   // convert hex into rgb object
-  console.log(hexColor);
   const rgbColor = hexToRgb(hexColor);
   return closest(rgbColor, COLORS_ARRAY);
 };

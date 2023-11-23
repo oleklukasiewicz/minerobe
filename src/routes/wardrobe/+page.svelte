@@ -7,11 +7,10 @@
   import * as THREE from "three";
   import PlusIcon from "$icons/plus.svg?raw";
   import {
-    MODEL_TYPE,
     OutfitPackage,
     OutfitPackageMetadata,
-    PACKAGE_TYPE,
   } from "$src/data/common";
+  import { MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
   import { GenerateIdForWardrobeItem } from "$src/api/wardrobe";
   import { GenerateIdForCollection } from "$src/data/firebase";
   import { AddToWardrobe } from "$src/helpers/wardrobeHelper";

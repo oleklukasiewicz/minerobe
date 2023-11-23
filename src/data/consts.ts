@@ -73,3 +73,27 @@ export const COLORS = {
     "BLACK": { r: 0, g: 0, b: 0 }
 };
 export const COLORS_ARRAY=Object.keys(COLORS).map((key)=>{return {...COLORS[key]}})
+export const LAYER_TYPE = {
+    LOCAL: "local",
+    REMOTE: "remote",
+  };
+  export const OUTFIT_TYPE = {
+    TOP: "top",
+    HOODIE: "hoodie",
+    HAT: "hat",
+    BOTTOM: "bottom",
+    SHOES: "shoes",
+    ACCESSORY: "accessory",
+    SUIT: "suit",
+    DEFAULT: "default",
+    OUTFIT_SET: "outfit_set",
+  };
+  
+  export const MODEL_TYPE = {
+    ALEX: "alex",
+    STEVE: "steve",
+  };
+  export const PACKAGE_TYPE = {
+    OUTFIT: "outfit",
+    OUTFIT_SET: "outfit_set",
+  };
