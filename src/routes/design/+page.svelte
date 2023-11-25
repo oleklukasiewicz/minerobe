@@ -10,9 +10,7 @@
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
 
   import { MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$data/consts";
-  import {
-    FileData, OutfitLayer
-  } from "$data/common";
+  import { FileData, OutfitLayer } from "$data/common";
   import {
     itemPackage,
     alexModel,
@@ -44,9 +42,9 @@
   import { mergeImages } from "$helpers/imageMerger";
   import {
     AddToWardrobe,
+    IsItemInWardrobe,
     RemoveFromWardrobe,
-  } from "$src/helpers/wardrobeHelper";
-  import { GenerateIdForWardrobeItem } from "$src/api/wardrobe";
+  } from "$src/api/wardrobe";
 
   let itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
@@ -63,6 +61,8 @@
   let layersRenderer;
   let isDragging = false;
 
+  let isPackageInWardrobe = false;
+
   let updateAnimation = function (anim) {};
 
   onMount(async () => {
@@ -72,6 +72,7 @@
     });
     baseLayer = $planksTexture;
     loaded = true;
+    isPackageInWardrobe = IsItemInWardrobe($itemPackage.id, $itemPackage.type);
     itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
     updateTexture($itemLayers.map((x) => x[$itemModelType]));
   });
@@ -132,7 +133,7 @@
   };
 
   const exportPackage = async function () {
-    await ExportImagePackageJson($itemLayers, $itemModelType, $itemName);
+    await ExportImagePackageJson($itemPackage);
     await updateAnimation(ClapAnimation);
     await updateAnimation(DefaultAnimation);
   };
@@ -153,10 +154,8 @@
   };
 
   const importPackage = async function () {
-    const newPackage = await ImportImagePackageJson();
-    const metadata = $itemPackage.metadata;
+    const newPackage = await ImportImagePackageJson($itemPackage);
     $itemPackage = newPackage;
-    $itemPackage.metadata = metadata;
 
     const random = Math.random();
 
@@ -215,10 +214,11 @@
               return layers;
             });
           } else {
-            let newPackage = await ImportImagePackageJsonFromFile(file);
-            const metadata = $itemPackage.metadata;
+            let newPackage = await ImportImagePackageJsonFromFile(
+              file,
+              $itemPackage
+            );
             $itemPackage = newPackage;
-            $itemPackage.metadata = metadata;
             const random = Math.random();
 
             if (random < 0.2) {
@@ -246,16 +246,13 @@
   };
 
   const addToWardrobe = async function () {
-    if ($itemPackage.metadata.wardrobeItemId == null) {
-      const id = GenerateIdForWardrobeItem();
-      $itemPackage.metadata.wardrobeItemId = id;
-    }
     await AddToWardrobe($itemPackage);
+    isPackageInWardrobe = true;
   };
 
   const removeFromWardrobe = async function () {
-    await RemoveFromWardrobe($itemPackage.metadata.wardrobeItemId);
-    $itemPackage.metadata.wardrobeItemId = null;
+    await RemoveFromWardrobe($itemPackage.id);
+    isPackageInWardrobe = false;
   };
   itemLayers.subscribe((layers) => {
     updateTexture(layers.map((x) => x[$itemModelType]));
@@ -308,10 +305,15 @@
           bind:value={$itemPackage.name}
         />
         <span class="label rare"
-          >{$itemPackage.type == PACKAGE_TYPE.OUTFIT ? "OUTFIT" : "OUTFITS SET"}</span
+          >{$itemPackage.type == PACKAGE_TYPE.OUTFIT
+            ? $_("outfit")
+            : $_("outfit_set")}</span
         >
-        <br/>
-        <br/>
+        {#if $itemPackage.publisher}
+          <span class="label unique" style="margin-left:8px">{$itemPackage.publisher.name}</span>
+        {/if}
+        <br />
+        <br />
       </div>
       <span class="caption">{$_("layers")}</span>
       <div class="item-layers">
@@ -381,7 +383,7 @@
           class:disabled={$itemLayers.length == 0}
           class="icon tertiary">{@html DownloadPackageIcon}</button
         >
-        {#if $itemPackage.metadata.wardrobeItemId == null}
+        {#if isPackageInWardrobe == false}
           <button
             id="add-to-wardrobe"
             on:click={addToWardrobe}

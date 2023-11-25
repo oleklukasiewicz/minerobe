@@ -1,22 +1,20 @@
 <script lang="ts">
   import SkinSnapshot from "$lib/render/SkinSnapshot/SkinSnapshot.svelte";
   import { GetMinerobeUser } from "$src/api/auth";
-  import type{ OutfitPackage, OutfitPackageMetadata } from "$src/data/common";
+  import type{ MinerobeUser, OutfitPackage } from "$src/data/common";
   import { OUTFIT_TYPE } from "$data/consts";
   import { mergeImages } from "$src/helpers/imageMerger";
   import { onMount } from "svelte";
+  import { currentUser } from "$src/data/cache";
 
   export let outfitPackage: OutfitPackage = null;
   export let model = null;
   export let modelName = "";
   export let renderer = undefined;
   export let label = outfitPackage.name || "New outfit";
-  export let metadata: OutfitPackageMetadata = null;
+  export let publisher: MinerobeUser = null;
   let texture: string = null;
   onMount(async () => {
-    if (metadata.publisher == null && metadata.publisherId != null) {
-      metadata.publisher = await GetMinerobeUser(metadata.publisherId);
-    }
     await mergeImages(
       [
         ...outfitPackage.layers.map((x) => x[outfitPackage.model].content),
@@ -41,8 +39,8 @@
   />
   <div class="item-set-snapshot-data">
     <b class="item-set-snapshot-title">{label}</b>
-    {#if metadata.publisher}
-      <span class="label unique">{metadata.publisher.name}</span>
+    {#if publisher.id != $currentUser.id}
+      <span class="label unique">{publisher.name}</span>
     {/if}
   </div>
 </div>

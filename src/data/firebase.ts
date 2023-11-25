@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import {
   GoogleAuthProvider,
@@ -93,10 +94,20 @@ export const SetDocument = async function (
 ): Promise<any> {
   if (cUser) {
     const dataRef = doc(db, path, documentName);
-    await setDoc(dataRef, { ...data });
+    const dataJson = JSON.parse(JSON.stringify(data));
+    await setDoc(dataRef, dataJson);
     return data;
   }
 };
+export const DeleteDocument = async function (
+  path: string,
+  documentName: string
+): Promise<any> {
+  if (cUser) {
+    const dataRef = doc(db, path, documentName);
+    await deleteDoc(dataRef);
+  }
+}
 export const GenerateIdForCollection = function (collectionName: string) {
   if (cUser) {
     const dataRef: any = collection(db, collectionName);

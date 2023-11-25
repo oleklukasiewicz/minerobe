@@ -23,6 +23,7 @@
     if (type == OUTFIT_TYPE.TOP || type == OUTFIT_TYPE.HOODIE) {
       camPozY = -0.1;
       camPozZ = 1.7;
+      camPozX = 0.1;
       return;
     }
     if (type == OUTFIT_TYPE.BOTTOM) {
@@ -38,6 +39,11 @@
     if (type == OUTFIT_TYPE.DEFAULT) {
       camPozY = 0.1;
       camPozZ = 1.8;
+      return;
+    }
+    if (type == OUTFIT_TYPE.SUIT) {
+      camPozY = 0.1;
+      camPozZ = 2;
       return;
     }
     if (type == OUTFIT_TYPE.OUTFIT_SET) {

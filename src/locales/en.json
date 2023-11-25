@@ -26,5 +26,7 @@
   "package": "Package",
   "importPackage": "Import package",
   "newLayerVariant": "Add new layer variant",
-  "variant": "Variant"
+  "variant": "Variant",
+  "outfit_set": "Outfit set",
+  "outfit": "Outfit"
 }

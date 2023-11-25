@@ -19,11 +19,9 @@ export const ExportImage = async function (
   document.body.removeChild(link);
 };
 export const ExportImagePackageJson = async function (
-  layers: OutfitLayer[],
-  modelType: string,
-  itemName: string
+  outfitPackage: OutfitPackage
 ) {
-  const pack = new OutfitPackage(itemName, modelType, layers);
+  const pack = outfitPackage;
   const json = JSON.stringify(pack);
 
   const blob = new Blob([json], { type: "application/json" });
@@ -31,12 +29,12 @@ export const ExportImagePackageJson = async function (
 
   const link = document.createElement("a");
   link.href = url;
-  link.download = itemName.toLowerCase() + "_package.json";
+  link.download = outfitPackage.name.toLowerCase() + "_package.json";
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 };
-export const ImportImagePackageJson = async function () {
+export const ImportImagePackageJson = async function (context:OutfitPackage) {
   //create node for fle download
   const input = document.createElement("input");
   input.type = "file";
@@ -46,33 +44,20 @@ export const ImportImagePackageJson = async function () {
   return new Promise<OutfitPackage>((resolve) => {
     input.onchange = (event: any) => {
       let file = event.target.files[0];
-      resolve(ImportImagePackageJsonFromFile(file));
+      resolve(ImportImagePackageJsonFromFile(file,context));
     };
   });
 };
-export const ImportImagePackageJsonFromFile = async function (file: File) {
+export const ImportImagePackageJsonFromFile = async function (file: File,context:OutfitPackage) {
   return new Promise<OutfitPackage>((resolve) => {
     const reader = new FileReader();
     reader.onload = async (event) => {
       const base64Data: any = event.target.result;
       const jsonData = JSON.parse(base64Data);
-      const importedPackage = new OutfitPackage(
-        jsonData.name,
-        jsonData.model,
-        jsonData.layers.map((x: any) => {
-          const steve = x.steve
-            ? new FileData(x.steve.fileName, x.steve.content, x.steve.type)
-            : null;
-          const alex = x.alex
-            ? new FileData(x.alex.fileName, x.alex.content, x.alex.type)
-            : null;
-          return new OutfitLayer(x.name, steve, alex);
-        }),
-        undefined,
-        undefined,
-        jsonData.type
-      );
-      resolve(importedPackage);
+      context.layers = jsonData.layers;
+      context.name = jsonData.name;
+      context.model = jsonData.model;
+      resolve(context);
     };
     reader.readAsText(file);
   });

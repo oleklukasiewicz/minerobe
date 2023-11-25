@@ -1,5 +1,7 @@
+import { get } from "svelte/store";
 import { LAYER_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "./consts";
 import { GenerateIdForCollection } from "./firebase";
+import { currentUser } from "./cache";
 
 export class FileData {
   fileName: string;
@@ -59,36 +61,25 @@ export class OutfitPackage {
   model: string;
   type: string;
   layers: OutfitLayer[];
-  metadata: OutfitPackageMetadata;
+  publisher:MinerobeUser;
   id: string;
+  isShared: boolean;
   constructor(
     name: string,
     model: string,
     layers: OutfitLayer[],
-    id: string = "",
-    metadata: OutfitPackageMetadata = new OutfitPackageMetadata(),
-    type: string = PACKAGE_TYPE.OUTFIT
+    type: string = PACKAGE_TYPE.OUTFIT,
+    publisher: MinerobeUser = get(currentUser),
+    id: string = GenerateIdForCollection("dummy"),
+    isShared: boolean = false
   ) {
     this.name = name;
     this.model = model;
     this.layers = layers;
-    this.metadata = metadata;
-    this.id = id;
     this.type = type;
-  }
-}
-export class OutfitPackageMetadata {
-  publisher: OutfitPublisher;
-  wardrobeItemId: string;
-  publisherId: string;
-  constructor(
-    publisher: OutfitPublisher = null,
-    wardrobeItemId: string = null,
-    publisherId: string = null
-  ) {
     this.publisher = publisher;
-    this.wardrobeItemId = wardrobeItemId;
-    this.publisherId = publisherId;
+    this.id = id;
+    this.isShared = isShared;
   }
 }
 export class OutfitLayerMetadata {}

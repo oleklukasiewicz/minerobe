@@ -6,15 +6,11 @@
   import { onMount } from "svelte";
   import * as THREE from "three";
   import PlusIcon from "$icons/plus.svg?raw";
-  import { OutfitPackage, OutfitPackageMetadata } from "$src/data/common";
-  import { MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
-  import { GenerateIdForWardrobeItem } from "$src/api/wardrobe";
-  import { GenerateIdForCollection } from "$src/data/firebase";
-  import { AddToWardrobe } from "$src/helpers/wardrobeHelper";
   import CategoryMenu from "$lib/CategoryMenu/CategoryMenu.svelte";
   import CategoryMenuItem from "$lib/CategoryMenuItem/CategoryMenuItem.svelte";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
+  import { CreatedNewOutfitSet } from "$src/api/sets";
 
   let layersRenderer: THREE.WebGLRenderer = null;
 
@@ -27,15 +23,7 @@
     loaded = true;
   });
   const addNewSet = async function () {
-    const newSet = new OutfitPackage(
-      "New skin",
-      MODEL_TYPE.ALEX,
-      [],
-      GenerateIdForCollection("dummy"),
-      new OutfitPackageMetadata(null, GenerateIdForWardrobeItem(), null),
-      PACKAGE_TYPE.OUTFIT_SET
-    );
-    await AddToWardrobe(newSet);
+    const newSet= await CreatedNewOutfitSet();
     navigateToDesign(newSet);
   };
 </script>
@@ -54,7 +42,7 @@
             texture={item.layers[0]}
             model={item.model != "alex" ? $steveModel : $alexModel}
             modelName={item.model}
-            metadata={item.metadata}
+           
           />
         {/each}
       </div>
@@ -64,9 +52,9 @@
           <ItemSetSnapshot
             renderer={layersRenderer}
             outfitPackage={item}
+            publisher={item.publisher}
             model={item.model != "alex" ? $steveModel : $alexModel}
             modelName={item.model}
-            metadata={item.metadata}
             on:click={() => {
               navigateToDesign(item);
             }}
