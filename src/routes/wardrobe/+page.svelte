@@ -23,7 +23,7 @@
     loaded = true;
   });
   const addNewSet = async function () {
-    const newSet= await CreatedNewOutfitSet();
+    const newSet = await CreatedNewOutfitSet();
     navigateToDesign(newSet);
   };
 </script>
@@ -34,7 +34,7 @@
     <CategoryMenuItem label="Outfits" icon={ShoppingBagIcon} />
   </CategoryMenu>
   <div class="outfits">
-    {#if loaded && $wardrobe != null}
+    {#if loaded && $wardrobe != null && $wardrobe.sets?.length>0 }
       <div class="outfits-list">
         {#each $wardrobe.outfits as item}
           <ItemSnapshot
@@ -42,7 +42,6 @@
             texture={item.layers[0]}
             model={item.model != "alex" ? $steveModel : $alexModel}
             modelName={item.model}
-           
           />
         {/each}
       </div>

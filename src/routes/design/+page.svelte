@@ -45,6 +45,7 @@
     IsItemInWardrobe,
     RemoveFromWardrobe,
   } from "$src/api/wardrobe";
+  import { ShareOutfitSet } from "$src/api/sets";
 
   let itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
@@ -192,7 +193,9 @@
       await updateAnimation(DefaultAnimation);
     }
   };
-
+  const sharePackage = async function () {
+    const shared = await ShareOutfitSet($itemPackage);
+  };
   const handleRenderDrop = async function (event) {
     event.preventDefault();
 
@@ -310,7 +313,9 @@
             : $_("outfit_set")}</span
         >
         {#if $itemPackage.publisher}
-          <span class="label unique" style="margin-left:8px">{$itemPackage.publisher.name}</span>
+          <span class="label unique" style="margin-left:8px"
+            >{$itemPackage.publisher.name}</span
+          >
         {/if}
         <br />
         <br />

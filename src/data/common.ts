@@ -56,6 +56,16 @@ export class OutfitLayerLink {
     this.variantId = variantId;
   }
 }
+export class OutfitPackageLink {
+  id: string;
+  model: string;
+  type: string;
+  constructor(linkId: string, model: string) {
+    this.id = linkId;
+    this.model = model;
+    this.type = PACKAGE_TYPE.OUTFIT_SET_LINK;
+  }
+}
 export class OutfitPackage {
   name: string;
   model: string;

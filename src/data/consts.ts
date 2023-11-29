@@ -96,4 +96,5 @@ export const LAYER_TYPE = {
   export const PACKAGE_TYPE = {
     OUTFIT: "outfit",
     OUTFIT_SET: "outfit_set",
+    OUTFIT_SET_LINK: "outfit_set_link",
   };

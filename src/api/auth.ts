@@ -34,7 +34,7 @@ export const logoutUser = async function () {
 const createUser = async function (user: any):Promise<MinerobeUser> {
   const userID = GenerateIdForCollection(USER_PATH);
   await SetDocument(USER_LINK_PATH,user.uid, new MinerobeUserLink(user.uid,userID));
-  const userImg = await fetch(user.photoURL);
+  const userImg = await fetch(user.photoURL,{ referrerPolicy: 'no-referrer' });
   const userImgBlob = await userImg.blob();
 
   return new Promise((resolve, reject) => {

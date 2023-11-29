@@ -1,4 +1,4 @@
-import { currentUser } from "$src/data/cache";
+import { currentUser, wardrobe } from "$src/data/cache";
 import { OutfitPackage, type OutfitLayer } from "$src/data/common";
 import { MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
 import {
@@ -7,7 +7,12 @@ import {
   GetDocument,
   SetDocument,
 } from "$src/data/firebase";
-import { AddToWardrobe } from "./wardrobe";
+import { GetMinerobeUser } from "./auth";
+import {
+  AddToWardrobe,
+  IsItemInWardrobe,
+  UpdateWardrobeItem,
+} from "./wardrobe";
 import { get } from "svelte/store";
 
 const SETS_PATH = "sets";
@@ -49,7 +54,13 @@ export const SaveOutfitSet = async function (
 export const GetOutfitSet = async function (
   id: string
 ): Promise<OutfitPackage> {
-  const outfitSet = await GetDocument(SETS_PATH, id);
+  let outfitSet = (await GetDocument(SETS_PATH, id)) as OutfitPackage;
+  if (
+    outfitSet.publisher.id != get(currentUser).id &&
+    outfitSet.isShared == false
+  )
+    return null;
+  outfitSet.publisher = await GetMinerobeUser(outfitSet.publisher.id);
   return outfitSet;
 };
 
@@ -58,4 +69,14 @@ export const RemoveOutfitSet = async function (id: string) {
   if (get(currentUser).id == outfitSet.publisher.id) {
     await DeleteDocument(SETS_PATH, id);
   }
+};
+export const ShareOutfitSet = async function (outfitSet: OutfitPackage) {
+  outfitSet.isShared = true;
+  const newId = GenerateIdForOutfitSet();
+  await SetDocument(SETS_PATH, newId, outfitSet);
+  outfitSet.id = newId;
+  if (IsItemInWardrobe(outfitSet.id, outfitSet.type)) {
+    await UpdateWardrobeItem(outfitSet);
+  }
+  return outfitSet;
 };

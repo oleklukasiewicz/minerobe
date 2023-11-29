@@ -32,6 +32,8 @@
     ExportImagePackageJson,
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
+  import { GetOutfitSet } from "$src/api/sets";
+  import { page } from "$app/stores";
 
   let localPackage:Writable<OutfitPackage> = writable(new OutfitPackage("New skin", MODEL_TYPE.ALEX, []));
   let itemLayers: Writable<OutfitLayer[]> = propertyStore(localPackage, "layers");
@@ -54,6 +56,10 @@
       alpha: true,
       preserveDrawingBuffer: true,
     });
+    let outfitPackage=await GetOutfitSet($page.params.slug);
+    if (outfitPackage) {
+      localPackage.set(outfitPackage);
+    }
     baseLayer = $planksTexture;
     loaded = true;
     itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
@@ -67,7 +73,7 @@
   };
 
   const exportPackage = async function () {
-    await ExportImagePackageJson([$selectedVariant], $itemModelType, $itemName);
+    await ExportImagePackageJson($localPackage);
     await updateAnimation(ClapAnimation);
     await updateAnimation(DefaultAnimation);
   };
