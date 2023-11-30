@@ -21,6 +21,7 @@ const config = {
     $locales: "src/locales",
     $icons: "src/icons",
     $helpers: "src/helpers",
+    $texture: "src/texture",
   },
   },
 };

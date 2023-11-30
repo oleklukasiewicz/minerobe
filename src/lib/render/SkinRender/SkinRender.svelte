@@ -3,6 +3,7 @@
   import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
   import * as THREE from "three";
+  import floorTexture from "$texture/floor.png?url";
   import type { RenderAnimation } from "$src/data/animation";
 
   // Replace with the path to your 3D model and texture
@@ -257,14 +258,17 @@
     }
     if (renderFloor) {
       //add scene floor
+      const ft = await textureLoader.loadAsync(floorTexture); // replace with your base64 string
+
       const floorGeometry = new THREE.PlaneGeometry(10, 10, 10, 10);
       const floorMaterial = new THREE.MeshBasicMaterial({
-        color: 0x5f5f5f,
+       map: ft,
         side: THREE.DoubleSide,
       });
       const floor = new THREE.Mesh(floorGeometry, floorMaterial);
       floor.rotation.x = Math.PI / 2;
       floor.position.y = 0;
+
       scene.add(floor);
     }
     window.addEventListener("resize", onWindowResize);
