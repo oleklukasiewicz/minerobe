@@ -10,7 +10,7 @@
   import AvatarIcon from "$src/icons/avatar.svg?raw";
 
   import { onMount } from "svelte";
-  import { currentUser} from "$src/data/cache";
+  import { currentUser, setup} from "$src/data/cache";
   import {loginUser, logoutUser } from "$src/api/auth";
 
   export const load = async () => {
@@ -20,6 +20,7 @@
     await waitLocale();
   };
   onMount(async () => {
+    setup();
     await loginUser();
   });
 

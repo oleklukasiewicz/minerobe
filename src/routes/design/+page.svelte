@@ -53,6 +53,7 @@
   );
   let itemModelType: Writable<string> = propertyStore(itemPackage, "model");
   let itemName: Writable<string> = propertyStore(itemPackage, "name");
+  let itemPublisher = propertyStore(itemPackage, "publisher");
   let baseLayer;
   let itemModel: any = null;
   let modelTexture: string = null;
@@ -312,9 +313,9 @@
             ? $_("outfit")
             : $_("outfit_set")}</span
         >
-        {#if $itemPackage.publisher}
+        {#if $itemPublisher}
           <span class="label unique" style="margin-left:8px"
-            >{$itemPackage.publisher.name}</span
+            >{$itemPublisher.name}</span
           >
         {/if}
         <br />

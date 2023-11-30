@@ -1,53 +1,33 @@
-import { currentUser, wardrobe, wardrobeNormalized } from "$src/data/cache";
-import type {
-  OutfitPackageLink,
-  OutfitPackage,
-  WardrobePackage,
-} from "$src/data/common";
-import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+import { currentUser, wardrobe } from "$src/data/cache";
+import type { OutfitPackage, WardrobePackage } from "$src/data/common";
+import { PACKAGE_TYPE } from "$src/data/consts";
 import {
   GetDocument,
   SetDocument,
   GenerateIdForCollection,
 } from "$src/data/firebase";
 import { get } from "svelte/store";
-import { GetOutfitSet, RemoveOutfitSet } from "./sets";
-import { GetMinerobeUser } from "./auth";
+import {
+  GetOutfitSet,
+  PrepareOutfitSet,
+  RemoveOutfitSet,
+  ResolveOutfitSet,
+} from "./sets";
 
 const WARDROBE_PATH = "wardrobes";
 export const GetWardrobe = async function () {
+  console.log("getting wardrobe");
   if (get(currentUser)) {
-    let wardrobe = await GetDocument(WARDROBE_PATH, get(currentUser).id);
-    if (wardrobe != null && wardrobe.sets != null) {
-      let mappedSets = [];
-      await Promise.all(
-        wardrobe.sets.map(async (item) => {
-          const mapped = await ResolveWardrobeSetItem(item);
-          mappedSets.push(mapped);
-        })
-      );
-      wardrobe.sets = mappedSets;
-      if (wardrobe.studio != null) {
-        wardrobe.studio.publisher = await GetMinerobeUser(
-          wardrobe.studio.publisher.id
-        );
-      }
-      return wardrobe;
-    }
+    let dt = await GetDocument(WARDROBE_PATH, get(currentUser).id);
+    if(dt == null && dt.sets==null) return null;
+    const data = await ResolveWardrobe(dt);
+    return data;
   }
-};
-const ResolveWardrobeSetItem = async function (item: any) {
-  if (item.type != PACKAGE_TYPE.OUTFIT_SET_LINK) {
-    item.publisher = await GetMinerobeUser(item.publisher.id);
-    return item;
-  }
-  const outfitSet = await GetOutfitSet(item.id);
-  return outfitSet;
 };
 export const SetWardrobe = async function (data) {
   if (get(currentUser) && data != null) {
-    //convert wardrobe package to objec
-    return await SetDocument(WARDROBE_PATH, get(currentUser).id, data);
+    await PrepareWardrobe(data);
+    await SetDocument(WARDROBE_PATH, get(currentUser).id, data);
   }
 };
 export const GenerateIdForWardrobeItem = function () {
@@ -113,4 +93,30 @@ export const UpdateWardrobeItem = async function (wardrobeItem: OutfitPackage) {
     }
     wardrobe.set(wardrobePackage);
   }
+};
+export const UpdateStudioItem = async function (wardrobeItem: OutfitPackage) {
+  if (get(currentUser)) {
+    const wardrobePackage: WardrobePackage = get(wardrobe);
+    wardrobePackage.studio = wardrobeItem;
+    wardrobe.set(wardrobePackage);
+  }
+}
+export const PrepareWardrobe = async function (pack: WardrobePackage) {
+  let data= Object.assign({}, pack);
+  data.sets = data.sets.map((item) => PrepareOutfitSet(item));
+  data.studio = PrepareOutfitSet(data.studio);
+  return data;
+};
+export const ResolveWardrobe = async function (data: WardrobePackage) {
+  let mappedSets: OutfitPackage[] = [];
+  await Promise.all(
+    data.sets.map(async (item) => {
+      const mapped = await ResolveOutfitSet(item);
+      mappedSets.push(mapped);
+      return mapped;
+    })
+  );
+  data.sets = mappedSets as OutfitPackage[];
+  data.studio = await ResolveOutfitSet(data.studio);
+  return data;
 };

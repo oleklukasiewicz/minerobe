@@ -1,5 +1,10 @@
 import { currentUser, wardrobe } from "$src/data/cache";
-import { OutfitPackage, type OutfitLayer } from "$src/data/common";
+import {
+  OutfitPackage,
+  type OutfitLayer,
+  OutfitPackageLink,
+  MinerobeUser,
+} from "$src/data/common";
 import { MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
 import {
   DeleteDocument,
@@ -77,6 +82,24 @@ export const ShareOutfitSet = async function (outfitSet: OutfitPackage) {
   outfitSet.id = newId;
   if (IsItemInWardrobe(outfitSet.id, outfitSet.type)) {
     await UpdateWardrobeItem(outfitSet);
+  }
+  return outfitSet;
+};
+export const PrepareOutfitSet = function (ot: OutfitPackage) {
+  let outfitSet = Object.assign({}, ot);
+  if (outfitSet.isShared == true)
+    return new OutfitPackageLink(
+      outfitSet.id,
+      outfitSet.model
+    ) as OutfitPackage;
+  outfitSet.publisher= new MinerobeUser(outfitSet.publisher.id, null,null);
+  return outfitSet;
+};
+export const ResolveOutfitSet = async function (outfitSet: OutfitPackage) {
+  if (outfitSet.type == PACKAGE_TYPE.OUTFIT_SET_LINK) {
+    return await GetOutfitSet(outfitSet.id);
+  } else {
+    outfitSet.publisher = await GetMinerobeUser(outfitSet.publisher.id);
   }
   return outfitSet;
 };

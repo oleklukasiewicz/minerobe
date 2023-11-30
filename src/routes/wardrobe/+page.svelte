@@ -34,7 +34,7 @@
     <CategoryMenuItem label="Outfits" icon={ShoppingBagIcon} />
   </CategoryMenu>
   <div class="outfits">
-    {#if loaded && $wardrobe != null && $wardrobe.sets?.length>0 }
+    {#if loaded && $wardrobe != null }
       <div class="outfits-list">
         {#each $wardrobe.outfits as item}
           <ItemSnapshot
