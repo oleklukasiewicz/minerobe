@@ -347,7 +347,7 @@
                 on:remove={removeLayer}
                 canUp={index != 0}
                 canDown={index != $itemLayers.length - 1}
-                selected={item.name == $selectedLayer.name}
+                selected={item?.name == $selectedLayer?.name}
                 on:click={() => ($selectedLayer = item)}
               />
             </div>
