@@ -172,7 +172,7 @@
       let textureS: any = textureSP;
 
       loadedRender.traverse((child: any) => {
-        if (child.isMesh) {
+        if (child.isMesh && textureS != null) {
           // Set texture filtering and wrap mode to improve sharpness
           textureS.magFilter = THREE.NearestFilter;
           textureS.minFilter = THREE.LinearMipmapLinearFilter;
@@ -262,7 +262,7 @@
 
       const floorGeometry = new THREE.PlaneGeometry(3, 3, 3, 3);
       const floorMaterial = new THREE.MeshBasicMaterial({
-       map: ft,
+        map: ft,
         side: THREE.DoubleSide,
       });
       const floor = new THREE.Mesh(floorGeometry, floorMaterial);

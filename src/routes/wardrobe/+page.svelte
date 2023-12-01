@@ -79,6 +79,7 @@
             <ItemSnapshot
               renderer={layersRenderer}
               texture={item}
+              extended={true}
               model={item.model != "alex" ? $steveModel : $alexModel}
               modelName={item.model}
               on:click={() => {

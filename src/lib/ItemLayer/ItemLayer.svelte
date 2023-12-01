@@ -88,7 +88,7 @@
       <button
         class="secondary icon"
         title={$_("newLayerVariant")}
-        on:click={addVariant}
+        on:click|stopPropagation={addVariant}
       >
         {@html UserPlusIcon}</button
       >
@@ -97,7 +97,7 @@
         <button
           class="tertiary icon"
           title={$_("up")}
-          on:click={up}
+          on:click|stopPropagation={up}
           class:disabled={!canUp}
         >
           {@html UpIcon}</button
@@ -105,12 +105,12 @@
         <button
           class="tertiary icon"
           title={$_("down")}
-          on:click={down}
+          on:click|stopPropagation={down}
           class:disabled={!canDown}>{@html DownIcon}</button
         >
       {/if}
       <div class="separator vertical" />
-      <button class="tertiary icon" title={$_("remove")} on:click={remove}>
+      <button class="tertiary icon" title={$_("remove")}  on:click|stopPropagation={remove}>
         {@html DeleteIcon}</button
       >
     </div>

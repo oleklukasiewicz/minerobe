@@ -84,7 +84,11 @@
     itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
     if ($isItemSet) updateTexture($itemLayers.map((x) => x[$itemModelType]));
     else {
-      selectedLayer.set($itemPackage.layers[0]);
+      if ($itemLayers.length > 0) {
+        $selectedLayer = $itemLayers[0];
+      } else {
+        updateTexture([]);
+      }
     }
   });
 
@@ -118,7 +122,15 @@
       updatedLayer = $itemLayers[index + 1];
     }
     itemLayers.update((layers) => {
+      let refresh = false;
+      if ($selectedLayer.name == layers[index].name) {
+        refresh = true;
+      }
       layers.splice(index, 1);
+      if (refresh) {
+        if ($itemLayers.length > 0) $selectedLayer = layers[0];
+        else $selectedLayer = null;
+      }
       return layers;
     });
   };
@@ -262,10 +274,18 @@
     isPackageInWardrobe = false;
   };
   itemLayers.subscribe((layers) => {
-    updateTexture(layers.map((x) => x[$itemModelType]));
+    if ($isItemSet) updateTexture(layers.map((x) => x[$itemModelType]));
+    else {
+      if (layers.length > 0 && $selectedLayer == null)
+        $selectedLayer = layers[0];
+      else
+        updateTexture(
+          $selectedLayer != null ? [$selectedLayer[$itemModelType]] : []
+        );
+    }
   });
   itemModelType.subscribe((model) => {
-    if ($itemLayers?.length != null) {
+    if ($itemLayers?.length > 0) {
       itemModel = model == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
       if (updatedLayer) {
         updatedLayer = new OutfitLayer(
@@ -274,12 +294,13 @@
           new FileData("null", null, OUTFIT_TYPE.TOP)
         );
       }
-      updateTexture($itemLayers.map((x) => x[$itemModelType]));
+      if ($isItemSet) updateTexture($itemLayers.map((x) => x[model]));
+      else updateTexture([$selectedLayer[model]]);
     }
   });
   selectedLayer.subscribe((layer) => {
     if ($isItemSet) return;
-    updateTexture(layer!=null ? [layer[$itemModelType]] : []);
+    updateTexture(layer != null ? [layer[$itemModelType]] : []);
   });
 </script>
 
@@ -359,7 +380,10 @@
             type="submit"
             class="secondary"
             on:click={importLayer}
-            >{@html AddIcon} {$isItemSet? $_("layersOpt.addLayer"):$_("layersOpt.addVariant")}</button
+            >{@html AddIcon}
+            {$isItemSet
+              ? $_("layersOpt.addLayer")
+              : $_("layersOpt.addVariant")}</button
           >
           <button
             id="import-package-action"

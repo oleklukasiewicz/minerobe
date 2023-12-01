@@ -1,6 +1,9 @@
 .item-snapshot {
   display: flex;
   max-width: 200px;
+  min-width: 150px;
+  height: auto;
+  flex: 1;
   height: auto;
   flex-direction: column;
   transition: var(--time);
@@ -11,15 +14,18 @@
     display: table;
     width: 100%;
     flex:1;
+    .colors
+    {
+      float: right;
     .color-viever
     {
       min-width: 20px;
       min-height: 20px;
       vertical-align: middle;
       display: inline-table;
-      float: right;
       border: 3px solid var(--color-theme-D1);
     }
+  }
     .item-snapshot-title {
       font-family: minecraft;
       box-sizing: border-box;
@@ -31,6 +37,10 @@
     background-color: var(--color-accent);
     .item-snapshot-data {
       .item-snapshot-title {
+        color: var(--color-accent-font);
+      }
+      .colors
+      {
         color: var(--color-accent-font);
       }
     }

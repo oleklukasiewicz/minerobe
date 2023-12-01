@@ -6,6 +6,7 @@
     ConvertRGBToHex,
     FindInColors,
     GetColorFromImage,
+    GetOutfitType,
   } from "$src/helpers/imageDataHelpers";
   import { onMount } from "svelte";
 
@@ -14,42 +15,70 @@
   export let model = null;
   export let modelName = "";
   export let renderer = undefined;
-  export let label =
-    texture?.name || "New outfit";
-  let dominantColor = null;
-  let dominantColorHex = null;
-  let dominantColorString = null;
+  export let extended = false;
+  export let label = texture?.name || "New outfit";
+  let dominantColor = [];
   let variantTexture = null;
+  const limit = 2;
+  let aboveLimit = 0;
   onMount(async () => {
-    variantTexture = texture.layers.find((x) => x.id == variant)|| texture.layers[0];
-    if(!variantTexture) return;
-    dominantColor = await GetColorFromImage(variantTexture[texture.model].content);
-    dominantColorString = FindInColors(dominantColor);
-    dominantColorHex = ConvertRGBToHex(dominantColor);
-    
+    variantTexture =
+      texture.layers.find((x) => x.id == variant) || texture.layers[0];
+    if (!variantTexture) return;
+    if (!extended) {
+      dominantColor = [
+        await GetColorFromImage(variantTexture[texture.model].content),
+      ];
+    } else {
+      dominantColor = await Promise.all(
+        texture.layers.map(async (x) => {
+          return await GetColorFromImage(x[texture.model].content);
+        })
+      );
+      if (dominantColor.length > limit) {
+        aboveLimit = dominantColor.length - limit;
+        dominantColor = dominantColor.slice(0, limit);
+      }
+    }
   });
-
+  let refreshRender = function () {};
+  const setVariant = function (index) {
+    variantTexture = texture.layers[index];
+    if (renderer) {
+      refreshRender();
+    }
+  };
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="item-snapshot" on:click>
   {#if variantTexture}
-  <SkinSnapshot
-    texture={variantTexture[texture.model].content}
-    {model}
-    {renderer}
-    {modelName}
-    type={texture.type}
-  />
+    <SkinSnapshot
+      texture={variantTexture[texture.model].content}
+      {model}
+      {renderer}
+      {modelName}
+      {refreshRender}
+    />
   {/if}
   <div class="item-snapshot-data">
     <b class="item-snapshot-title">{label}</b>
     {#if texture.publisher}
       <span class="label unique">{texture.publisher.name}</span>
-      <span
-        class="color-viever"
-        title={dominantColorString}
-        style="background-color: {dominantColorHex};"
-      ></span>
+      <div class="colors">
+        {#each dominantColor as color, index}
+          <span
+            class="color-viever"
+            title={FindInColors(color)}
+            style="background-color: {ConvertRGBToHex(color)}; margin-left:4px;"
+            on:click|stopPropagation={() => setVariant(index)}
+          ></span>
+        {/each}
+        {#if aboveLimit > 0}
+          <span style="font-family:minecraft;margin-right:4px;">+{aboveLimit}</span>
+        {/if}
+      </div>
     {/if}
   </div>
 </div>

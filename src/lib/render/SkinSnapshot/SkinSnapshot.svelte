@@ -1,20 +1,27 @@
 <script>
   import SkinRender from "../SkinRender/SkinRender.svelte";
   import { OUTFIT_TYPE } from "$data/consts";
+  import {
+    GetContextFromBase64,
+    GetOutfitType,
+  } from "$src/helpers/imageDataHelpers";
 
   export let texture = null;
   export let model = null;
   export let modelName = "";
-  export let type = OUTFIT_TYPE.DEFAULT;
+  export let type = null;
   export let renderer = undefined;
-  export let refreshRender = undefined;
+  export let refreshRender = null;
 
-  let camPozY = 0.1,
-    camPozX = 0,
+  let camPozY = 0,
+    camPozX = 0.05,
     camPozZ = 1.8;
   let sceneRotX = Math.PI / 4;
   let sceneRotY = Math.PI * 0.75;
-  const setCameraPosZ = function (type) {
+  const setCameraPosZ = async function (type) {
+    if (type==null) {
+      type = GetOutfitType(await GetContextFromBase64(texture));
+    }
     if (type == OUTFIT_TYPE.HAT) {
       camPozY = 0.2;
       camPozZ = 2;
@@ -50,7 +57,7 @@
       camPozY = 0;
       camPozZ = 1.7;
       camPozX = 0;
-      sceneRotX=0;
+      sceneRotX = 0;
       return;
     }
   };
