@@ -15,17 +15,13 @@ import { WardrobePackage } from "./common";
 import { OutfitPackage } from "./common";
 import {
   GetWardrobe,
+  PrepareWardrobe,
   SetWardrobe,
   UpdateWardrobeItem,
 } from "$src/api/wardrobe";
 import { SaveOutfitSet } from "$src/api/sets";
+import { propertyStore } from "svelte-writable-derived";
 
-export let itemPackage: Writable<OutfitPackage> = writable({
-  name: "",
-  model: "",
-  type: PACKAGE_TYPE.OUTFIT_SET,
-  layers: [],
-} as OutfitPackage);
 export let alexModel: Readable<string> = readable(
   "data:model/gltf+json;base64," + btoa(alexModelData)
 );
@@ -36,7 +32,24 @@ export let steveModel: Readable<string> = readable(
 export let planksTexture: Readable<string> = readable(planksTextureRaw);
 
 export const currentUser: Writable<MinerobeUser> = writable(null);
-export const wardrobe: Writable<WardrobePackage> = writable(null);
+export const wardrobe: Writable<WardrobePackage> = writable(
+  new WardrobePackage(
+    "default_wardrobe",
+    [],
+    [],
+    new OutfitPackage(
+      "default",
+      "alex",
+      [],
+      PACKAGE_TYPE.OUTFIT,
+      new MinerobeUser("", "", "")
+    )
+  )
+);
+export let itemPackage: Writable<OutfitPackage> = propertyStore(
+  wardrobe,
+  "studio"
+);
 export const setup = function () {
   currentUser.subscribe(async (user) => {
     if (user) {
@@ -64,10 +77,6 @@ export const setup = function () {
 const setupSubscriptions = function () {
   itemPackage.subscribe(async (data: OutfitPackage) => {
     if (data != null && data.isShared) await SaveOutfitSet(data);
-    wardrobe.update((w) => {
-      w.studio = data;
-      return w;
-    });
   });
   wardrobe.subscribe(async (data) => {
     await SetWardrobe(data);

@@ -2,6 +2,7 @@
   display: flex;
   min-height: 56px;
   background-color: var(--color-theme-D1);
+  transition: var(--time);
   margin: 2px 0px;
   box-sizing: border-box;
   max-width: 100%;
@@ -30,6 +31,28 @@
         margin: 6px 0px 0px;
         padding: 1px 8px;
         //transform: translateY(-2px);
+      }
+    }
+  }
+  &.selectable {
+    cursor: pointer;
+    &:hover {
+      background-color: var(--color-theme-D2);
+    }
+    &.active {
+      background-color: var(--color-theme-D3);
+    }
+    &.selected {
+      & .icon,input {
+        color: var(--color-accent-font);
+      }
+      background-color: var(--color-accent);
+      & .render {
+        border-color: var(--color-accent-L1);
+        background-color: var(--color-accent-L2);
+      }
+      & .separator {
+        border-color: var(--color-accent-L1);
       }
     }
   }

@@ -11,7 +11,8 @@
   "downloadPackage": "Download Package",
   "defaultskinname": "New Skin",
   "layersOpt": {
-    "addLayer": "Add Outfit"
+    "addLayer": "Add Outfit",
+    "addVariant": "Add Variant"
   },
   "modelOpt": {
     "steve": "Classic",
@@ -28,5 +29,7 @@
   "newLayerVariant": "Add new layer variant",
   "variant": "Variant",
   "outfit_set": "Outfit set",
-  "outfit": "Outfit"
+  "outfit": "Outfit",
+  "sharePackage": "Share",
+  "variants": "Variants"
 }

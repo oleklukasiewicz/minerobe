@@ -29,7 +29,8 @@ export const CreatedNewOutfitSet = async function (
   name: string = "New Skin",
   layers: OutfitLayer[] = [],
   model: string = MODEL_TYPE.ALEX,
-  addToWardrobe: boolean = true
+  addToWardrobe: boolean = true,
+  isShared: boolean = false
 ): Promise<OutfitPackage> {
   const outfitPackage: OutfitPackage = new OutfitPackage(
     name,
@@ -38,10 +39,11 @@ export const CreatedNewOutfitSet = async function (
     PACKAGE_TYPE.OUTFIT_SET,
     get(currentUser),
     GenerateIdForOutfitSet(),
-    false
+    isShared
   );
-
-  await SetDocument(SETS_PATH, outfitPackage.id, outfitPackage);
+  if (isShared) {
+    await SetDocument(SETS_PATH, outfitPackage.id, outfitPackage);
+  }
   if (addToWardrobe) {
     await AddToWardrobe(outfitPackage);
   }
@@ -61,8 +63,9 @@ export const GetOutfitSet = async function (
 ): Promise<OutfitPackage> {
   let outfitSet = (await GetDocument(SETS_PATH, id)) as OutfitPackage;
   if (
-    outfitSet.publisher.id != get(currentUser).id &&
-    outfitSet.isShared == false
+    outfitSet == null ||
+    (outfitSet?.publisher?.id != get(currentUser)?.id &&
+      outfitSet.isShared == false)
   )
     return null;
   outfitSet.publisher = await GetMinerobeUser(outfitSet.publisher.id);
@@ -92,7 +95,7 @@ export const PrepareOutfitSet = function (ot: OutfitPackage) {
       outfitSet.id,
       outfitSet.model
     ) as OutfitPackage;
-  outfitSet.publisher= new MinerobeUser(outfitSet.publisher.id, null,null);
+  outfitSet.publisher = new MinerobeUser(outfitSet.publisher.id, null, null);
   return outfitSet;
 };
 export const ResolveOutfitSet = async function (outfitSet: OutfitPackage) {

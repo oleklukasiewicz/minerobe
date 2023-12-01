@@ -260,7 +260,7 @@
       //add scene floor
       const ft = await textureLoader.loadAsync(floorTexture); // replace with your base64 string
 
-      const floorGeometry = new THREE.PlaneGeometry(10, 10, 10, 10);
+      const floorGeometry = new THREE.PlaneGeometry(3, 3, 3, 3);
       const floorMaterial = new THREE.MeshBasicMaterial({
        map: ft,
         side: THREE.DoubleSide,

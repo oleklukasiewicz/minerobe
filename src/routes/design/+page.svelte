@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import * as THREE from "three";
-  import type { Writable } from "svelte/store";
+  import { derived, writable, type Writable } from "svelte/store";
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
@@ -16,6 +16,7 @@
     alexModel,
     steveModel,
     planksTexture,
+    currentUser,
   } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
@@ -23,6 +24,7 @@
   import DownloadPackageIcon from "$icons/flatten.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
+  import CloudIcon from "$icons/cloud.svg?raw";
 
   import DefaultAnimation from "$animation/default";
   import NewOutfitBottomAnimation from "$animation/bottom";
@@ -54,6 +56,9 @@
   let itemModelType: Writable<string> = propertyStore(itemPackage, "model");
   let itemName: Writable<string> = propertyStore(itemPackage, "name");
   let itemPublisher = propertyStore(itemPackage, "publisher");
+  let isItemSet = derived(itemPackage, ($itemPackage) => {
+    return $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET;
+  });
   let baseLayer;
   let itemModel: any = null;
   let modelTexture: string = null;
@@ -62,6 +67,7 @@
   let updatedLayer: OutfitLayer = null;
   let layersRenderer;
   let isDragging = false;
+  let selectedLayer: Writable<OutfitLayer> = writable(null);
 
   let isPackageInWardrobe = false;
 
@@ -76,7 +82,10 @@
     loaded = true;
     isPackageInWardrobe = IsItemInWardrobe($itemPackage.id, $itemPackage.type);
     itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
-    updateTexture($itemLayers.map((x) => x[$itemModelType]));
+    if ($isItemSet) updateTexture($itemLayers.map((x) => x[$itemModelType]));
+    else {
+      selectedLayer.set($itemPackage.layers[0]);
+    }
   });
 
   const upLayer = async function (e) {
@@ -131,12 +140,6 @@
   const downloadImage = async () => {
     await ExportImage($itemLayers, $itemModelType, $itemName);
     await updateAnimation(HandsUpAnimation);
-    await updateAnimation(DefaultAnimation);
-  };
-
-  const exportPackage = async function () {
-    await ExportImagePackageJson($itemPackage);
-    await updateAnimation(ClapAnimation);
     await updateAnimation(DefaultAnimation);
   };
 
@@ -274,6 +277,10 @@
       updateTexture($itemLayers.map((x) => x[$itemModelType]));
     }
   });
+  selectedLayer.subscribe((layer) => {
+    if ($isItemSet) return;
+    updateTexture(layer!=null ? [layer[$itemModelType]] : []);
+  });
 </script>
 
 <div class="item-page">
@@ -321,13 +328,15 @@
         <br />
         <br />
       </div>
-      <span class="caption">{$_("layers")}</span>
+      <span class="caption">{$isItemSet ? $_("layers") : $_("variants")}</span>
       <div class="item-layers">
         {#if loaded}
           {#each $itemLayers as item, index (item.id)}
             <div class="item-layer">
               <ItemLayer
                 texture={item}
+                selectable={!$isItemSet}
+                controls={$isItemSet}
                 model={itemModel}
                 modelName={$itemPackage.model}
                 renderer={layersRenderer}
@@ -338,6 +347,8 @@
                 on:remove={removeLayer}
                 canUp={index != 0}
                 canDown={index != $itemLayers.length - 1}
+                selected={item.name == $selectedLayer.name}
+                on:click={() => ($selectedLayer = item)}
               />
             </div>
           {/each}
@@ -348,7 +359,7 @@
             type="submit"
             class="secondary"
             on:click={importLayer}
-            >{@html AddIcon} {$_("layersOpt.addLayer")}</button
+            >{@html AddIcon} {$isItemSet? $_("layersOpt.addLayer"):$_("layersOpt.addVariant")}</button
           >
           <button
             id="import-package-action"
@@ -382,13 +393,22 @@
           class:disabled={$itemLayers.length == 0}
           >{@html DownloadIcon}{$_("download")}</button
         >
-        <button
+        <!-- <button
           id="download-package-action"
           on:click={exportPackage}
           title={$_("downloadPackage")}
           class:disabled={$itemLayers.length == 0}
           class="icon tertiary">{@html DownloadPackageIcon}</button
-        >
+        > -->
+        {#if $itemPublisher.id == $currentUser?.id}
+          <button
+            id="share-package-action"
+            on:click={sharePackage}
+            class:disabled={$itemPackage.isShared}
+            title={$_("sharePackage")}
+            class="icon tertiary">{@html CloudIcon}</button
+          >
+        {/if}
         {#if isPackageInWardrobe == false}
           <button
             id="add-to-wardrobe"

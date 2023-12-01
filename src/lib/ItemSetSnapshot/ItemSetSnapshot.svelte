@@ -1,11 +1,13 @@
 <script lang="ts">
   import SkinSnapshot from "$lib/render/SkinSnapshot/SkinSnapshot.svelte";
   import { GetMinerobeUser } from "$src/api/auth";
-  import type{ MinerobeUser, OutfitPackage } from "$src/data/common";
+  import type { MinerobeUser, OutfitPackage } from "$src/data/common";
   import { OUTFIT_TYPE } from "$data/consts";
   import { mergeImages } from "$src/helpers/imageMerger";
   import { onMount } from "svelte";
   import { currentUser } from "$src/data/cache";
+
+  import CloudIcon from "$icons/cloud.svg?raw";
 
   export let outfitPackage: OutfitPackage = null;
   export let model = null;
@@ -38,7 +40,12 @@
     type={OUTFIT_TYPE.OUTFIT_SET}
   />
   <div class="item-set-snapshot-data">
-    <b class="item-set-snapshot-title">{label}</b>
+    <div class="data">
+      <b class="item-set-snapshot-title">{label}</b>
+      {#if outfitPackage.isShared}
+        <div class="share-icon icon-small">{@html CloudIcon}</div>
+      {/if}
+    </div>
     {#if publisher.id != $currentUser.id}
       <span class="label unique">{publisher.name}</span>
     {/if}

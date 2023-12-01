@@ -13,21 +13,25 @@ import {
   RemoveOutfitSet,
   ResolveOutfitSet,
 } from "./sets";
+import { PrepareOutfit, ResolveOutfit } from "./outfits";
 
 const WARDROBE_PATH = "wardrobes";
 export const GetWardrobe = async function () {
   console.log("getting wardrobe");
   if (get(currentUser)) {
     let dt = await GetDocument(WARDROBE_PATH, get(currentUser).id);
-    if(dt == null && dt.sets==null) return null;
+    if (dt == null && dt.sets == null) return null;
     const data = await ResolveWardrobe(dt);
     return data;
   }
 };
 export const SetWardrobe = async function (data) {
   if (get(currentUser) && data != null) {
-    await PrepareWardrobe(data);
-    await SetDocument(WARDROBE_PATH, get(currentUser).id, data);
+    await SetDocument(
+      WARDROBE_PATH,
+      get(currentUser).id,
+      await PrepareWardrobe(data)
+    );
   }
 };
 export const GenerateIdForWardrobeItem = function () {
@@ -100,11 +104,12 @@ export const UpdateStudioItem = async function (wardrobeItem: OutfitPackage) {
     wardrobePackage.studio = wardrobeItem;
     wardrobe.set(wardrobePackage);
   }
-}
+};
 export const PrepareWardrobe = async function (pack: WardrobePackage) {
-  let data= Object.assign({}, pack);
+  let data = Object.assign({}, pack);
   data.sets = data.sets.map((item) => PrepareOutfitSet(item));
-  data.studio = PrepareOutfitSet(data.studio);
+  data.outfits = data.outfits.map((item) => PrepareOutfit(item));
+  if (data.studio?.id) data.studio = PrepareOutfitSet(data.studio);
   return data;
 };
 export const ResolveWardrobe = async function (data: WardrobePackage) {
@@ -116,7 +121,16 @@ export const ResolveWardrobe = async function (data: WardrobePackage) {
       return mapped;
     })
   );
+  let mappedOutfits: OutfitPackage[] = [];
+  await Promise.all(
+    data.outfits.map(async (item) => {
+      const mapped = await ResolveOutfit(item);
+      mappedOutfits.push(mapped);
+      return mapped;
+    })
+  );
   data.sets = mappedSets as OutfitPackage[];
-  data.studio = await ResolveOutfitSet(data.studio);
+  data.outfits = mappedOutfits as OutfitPackage[];
+  if (data.studio?.id) data.studio = await ResolveOutfitSet(data.studio);
   return data;
 };

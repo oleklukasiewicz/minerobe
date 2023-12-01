@@ -97,4 +97,5 @@ export const LAYER_TYPE = {
     OUTFIT: "outfit",
     OUTFIT_SET: "outfit_set",
     OUTFIT_SET_LINK: "outfit_set_link",
+    OUTFIT_LINK: "outfit_link",
   };

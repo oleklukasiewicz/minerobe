@@ -1,7 +1,7 @@
 <script lang="ts">
   import SkinSnapshot from "$lib/render/SkinSnapshot/SkinSnapshot.svelte";
   import { GetMinerobeUser } from "$src/api/auth";
-  import type { OutfitLayer, OutfitPackageMetadata } from "$src/data/common";
+  import type { OutfitLayer, OutfitPackage } from "$src/data/common";
   import {
     ConvertRGBToHex,
     FindInColors,
@@ -9,38 +9,42 @@
   } from "$src/helpers/imageDataHelpers";
   import { onMount } from "svelte";
 
-  export let texture: OutfitLayer = null;
+  export let texture: OutfitPackage = null;
+  export let variant: string = null;
   export let model = null;
   export let modelName = "";
   export let renderer = undefined;
   export let label =
-    texture?.name || texture[modelName]?.fileName || "New outfit";
-  export let metadata: OutfitPackageMetadata = null;
+    texture?.name || "New outfit";
   let dominantColor = null;
   let dominantColorHex = null;
   let dominantColorString = null;
+  let variantTexture = null;
   onMount(async () => {
-    if (metadata.publisher == null && metadata.publisherId != null) {
-      metadata.publisher = await GetMinerobeUser(metadata.publisherId);
-    }
-    dominantColor = await GetColorFromImage(texture[modelName].content);
+    variantTexture = texture.layers.find((x) => x.id == variant)|| texture.layers[0];
+    if(!variantTexture) return;
+    dominantColor = await GetColorFromImage(variantTexture[texture.model].content);
     dominantColorString = FindInColors(dominantColor);
     dominantColorHex = ConvertRGBToHex(dominantColor);
+    
   });
+
 </script>
 
-<div class="item-snapshot">
+<div class="item-snapshot" on:click>
+  {#if variantTexture}
   <SkinSnapshot
-    texture={texture[modelName].content}
+    texture={variantTexture[texture.model].content}
     {model}
     {renderer}
     {modelName}
-    type={texture[modelName].type}
+    type={texture.type}
   />
+  {/if}
   <div class="item-snapshot-data">
     <b class="item-snapshot-title">{label}</b>
-    {#if metadata.publisher}
-      <span class="label unique">{metadata.publisher.name}</span>
+    {#if texture.publisher}
+      <span class="label unique">{texture.publisher.name}</span>
       <span
         class="color-viever"
         title={dominantColorString}

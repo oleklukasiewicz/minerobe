@@ -1,51 +1,58 @@
 .item-set-snapshot {
-    display: flex;
-    max-width: 200px;
-    min-width: 150px;
-    height: auto;
-    flex:1;
-    padding-top: 8px;
-    flex-direction: column;
-    transition: var(--time);
-    background-color: var(--color-theme-D1);
-    .item-set-snapshot-data {
-      padding: 10px 8px;
-      box-sizing: border-box;
-      display: table;
-      width: 100%;
-      flex:1;
-      .color-viever
-      {
-        min-width: 20px;
-        min-height: 20px;
-        vertical-align: middle;
-        display: inline-table;
-        float: right;
-        border: 3px solid var(--color-theme-D1);
+  display: flex;
+  max-width: 200px;
+  min-width: 150px;
+  height: auto;
+  flex: 1;
+  padding-top: 8px;
+  flex-direction: column;
+  transition: var(--time);
+  background-color: var(--color-theme-D1);
+  .item-set-snapshot-data {
+    padding: 10px 8px;
+    box-sizing: border-box;
+    display: table;
+    width: 100%;
+    flex: 1;
+    .data {
+      display: flex;
+      .share-icon {
+        margin-top: 6px;
       }
       .item-set-snapshot-title {
-        font-family: minecraft;
-        box-sizing: border-box;
-        margin: 8px 0px;
-        display: table;
+        flex: 1;
       }
     }
-    &:hover {
-      background-color: var(--color-accent);
-      .item-set-snapshot-data {
-        .item-set-snapshot-title {
-          color: var(--color-accent-font);
-        }
-      }
-      cursor: pointer;
+    .color-viever {
+      min-width: 20px;
+      min-height: 20px;
+      vertical-align: middle;
+      display: inline-table;
+      float: right;
+      border: 3px solid var(--color-theme-D1);
     }
-    &:active {
-      background-color: var(--color-hover);
-      .item-set-snapshot-data {
-        .item-set-snapshot-title {
-          color: var(--color-accent-font);
-        }
+    .item-set-snapshot-title {
+      font-family: minecraft;
+      box-sizing: border-box;
+      margin: 8px 0px;
+      display: table;
+    }
+  }
+  &:hover {
+    background-color: var(--color-accent);
+    .data {
+      & > * {
+        color: var(--color-accent-font);
+      }
+    }
+    cursor: pointer;
+  }
+  &:active {
+    background-color: var(--color-hover);
+    .data {
+      & > * {
+        color: var(--color-accent-font);
       }
     }
   }
-  
+}

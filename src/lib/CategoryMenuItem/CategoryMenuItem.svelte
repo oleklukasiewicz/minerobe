@@ -3,7 +3,7 @@
     export let icon: string = null;
     export let selected:boolean = false;
 </script>
-<button class="category-menu-item" class:tertiary={!selected}>
+<button class="category-menu-item" class:tertiary={!selected} on:click>
     {#if icon}
         <div class="icon-small">{@html icon}</div>
     {/if}

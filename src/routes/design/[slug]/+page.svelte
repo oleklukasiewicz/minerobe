@@ -10,15 +10,12 @@
   import ItemVariant from "$lib/ItemVariant/ItemVariant.svelte";
 
   import { FileData, OutfitLayer, OutfitPackage } from "$data/common";
-  import {
-    alexModel,
-    steveModel,
-    planksTexture,
-  } from "$data/cache";
-  import { MODEL_TYPE, OUTFIT_TYPE } from "$data/consts";
+  import { alexModel, steveModel, planksTexture } from "$data/cache";
+  import { MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$data/consts";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import DownloadPackageIcon from "$icons/flatten.svg?raw";
+  import HearthIcon from "$icons/heart.svg?raw";
 
   import DefaultAnimation from "$animation/default";
   import NewOutfitBottomAnimation from "$animation/bottom";
@@ -34,9 +31,19 @@
   import { mergeImages } from "$helpers/imageMerger";
   import { GetOutfitSet } from "$src/api/sets";
   import { page } from "$app/stores";
+  import {
+    AddToWardrobe,
+    IsItemInWardrobe,
+    RemoveFromWardrobe,
+  } from "$src/api/wardrobe";
 
-  let localPackage:Writable<OutfitPackage> = writable(new OutfitPackage("New skin", MODEL_TYPE.ALEX, []));
-  let itemLayers: Writable<OutfitLayer[]> = propertyStore(localPackage, "layers");
+  let localPackage: Writable<OutfitPackage> = writable(
+    new OutfitPackage("New skin", MODEL_TYPE.ALEX, [])
+  );
+  let itemLayers: Writable<OutfitLayer[]> = propertyStore(
+    localPackage,
+    "layers"
+  );
   let itemModelType: Writable<string> = propertyStore(localPackage, "model");
   let itemName: Writable<string> = propertyStore(localPackage, "name");
   let baseLayer;
@@ -48,6 +55,7 @@
   let layersRenderer;
   let isDragging = false;
   let selectedVariant: Writable<OutfitLayer> = writable(null);
+  let isPackageInWardrobe = false;
 
   let updateAnimation = function (anim) {};
 
@@ -56,25 +64,24 @@
       alpha: true,
       preserveDrawingBuffer: true,
     });
-    let outfitPackage=await GetOutfitSet($page.params.slug);
+    let outfitPackage = await GetOutfitSet($page.params.slug);
     if (outfitPackage) {
       localPackage.set(outfitPackage);
     }
     baseLayer = $planksTexture;
     loaded = true;
     itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
+    $selectedVariant = $itemLayers[0];
+    isPackageInWardrobe = await IsItemInWardrobe(
+      $page.params.slug,
+      PACKAGE_TYPE.OUTFIT
+    );
     updateTexture();
   });
 
   const downloadImage = async () => {
     await ExportImage([$selectedVariant], $itemModelType, $itemName);
     await updateAnimation(HandsUpAnimation);
-    await updateAnimation(DefaultAnimation);
-  };
-
-  const exportPackage = async function () {
-    await ExportImagePackageJson($localPackage);
-    await updateAnimation(ClapAnimation);
     await updateAnimation(DefaultAnimation);
   };
 
@@ -122,6 +129,15 @@
   selectedVariant.subscribe((variant) => {
     updateTexture();
   });
+  const shareOutfit = async function () {};
+  const addToWardrobe = async function () {
+    await AddToWardrobe($localPackage);
+    isPackageInWardrobe = true;
+  };
+  const removeFromWardrobe = async function () {
+    await RemoveFromWardrobe($localPackage.id);
+    isPackageInWardrobe = false;
+  };
 </script>
 
 <div class="item-page">
@@ -145,9 +161,12 @@
       <div class="item-name">
         <span class="caption inline">{$_("name")}</span><br />
         <div id="item-title" class="title">{$itemName}</div>
-        <span class="label unique">Test</span>
+        <span class="label rare">{PACKAGE_TYPE.OUTFIT}</span>
+        <span class="label unique" style="margin-left:8px"
+          >{$localPackage.publisher.name}</span
+        >
       </div>
-      <br/>
+      <br />
       <span class="caption">{$_("variant")}</span>
       <div class="item-variants">
         {#if loaded}
@@ -187,13 +206,28 @@
           class:disabled={$selectedVariant == null}
           >{@html DownloadIcon}{$_("download")}</button
         >
-        <button
+        <!-- <button
           id="download-package-action"
           on:click={exportPackage}
           title={$_("downloadPackage")}
           class:disabled={$selectedVariant == null}
           class="icon tertiary">{@html DownloadPackageIcon}</button
-        >
+        > -->
+        {#if isPackageInWardrobe == false}
+          <button
+            id="add-to-wardrobe"
+            on:click={addToWardrobe}
+            title="Add to wardrobe"
+            class="icon tertiary">{@html HearthIcon}</button
+          >
+        {:else}
+          <button
+            id="remove-from-wardrobe"
+            title="Already in wardrobe"
+            on:click={removeFromWardrobe}
+            class="icon">{@html HearthIcon}</button
+          >
+        {/if}
       </div>
     </div>
   </div>
