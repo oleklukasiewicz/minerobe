@@ -249,6 +249,10 @@ button.selected
     width: 1px;
     border-left: solid 2px var(--color-theme-D2);
     margin: 10px 4px;
+}.separator.horizontal{
+    height: 1px;
+    border-bottom: solid 2px var(--color-theme-D2);
+    margin: 4px 10px;
 }
 .flex{
     display: flex;

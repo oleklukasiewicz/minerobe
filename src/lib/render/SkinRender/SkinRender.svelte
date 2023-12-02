@@ -255,6 +255,7 @@
       controls = new OrbitControls(camera, renderer.domElement);
       controls.maxDistance = 3.0;
       controls.minDistance = 0.5;
+      controls.enablePan = false;
     }
     if (renderFloor) {
       //add scene floor

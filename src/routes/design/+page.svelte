@@ -186,6 +186,7 @@
   };
 
   const updateTexture = async (layers) => {
+    if (!loaded) return;
     if (baseLayer) {
       modelTexture = await mergeImages(
         [...layers.map((x) => x.content), baseLayer].reverse(),

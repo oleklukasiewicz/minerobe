@@ -1,13 +1,17 @@
 .outfits-list,
 .sets-list {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+
   gap: 8px;
-  flex-wrap: wrap;
+  margin-top: 8px;
 }
-#new-set {
-  max-width: 200px;
-  min-width: 150px;
-  flex: 1;
+#new-set,
+#new-outfit {
+  display: inline;
+  vertical-align: top;
+  margin-left: 12px;
+  margin-top: 4px;
 }
 .outfits {
   padding: 16px;
@@ -16,7 +20,7 @@
 .wardrobe-view {
   display: grid;
   width: 100%;
-  grid-template-columns:  auto 1fr;
+  grid-template-columns: auto 1fr;
   grid-template-rows: auto;
   height: calc(100vh - 60px);
   box-sizing: border-box;

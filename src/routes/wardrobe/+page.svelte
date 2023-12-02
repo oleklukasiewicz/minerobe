@@ -9,14 +9,21 @@
   import CategoryMenu from "$lib/CategoryMenu/CategoryMenu.svelte";
   import CategoryMenuItem from "$lib/CategoryMenuItem/CategoryMenuItem.svelte";
   import AnimationIcon from "$icons/animation.svg?raw";
+  import AvatarIcon from "$icons/avatar.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import { CreatedNewOutfitSet } from "$src/api/sets";
   import { CreatedNewOutfit } from "$src/api/outfits";
+  import { OUTFIT_TYPE } from "$src/data/consts";
 
   let layersRenderer: THREE.WebGLRenderer = null;
 
   let currentView = "sets";
   let loaded = false;
+  let categories = Object.keys(OUTFIT_TYPE).filter(
+    (x) =>
+      OUTFIT_TYPE[x] != OUTFIT_TYPE.DEFAULT &&
+      OUTFIT_TYPE[x] != OUTFIT_TYPE.OUTFIT_SET
+  );
   onMount(() => {
     layersRenderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -31,6 +38,20 @@
   const addNewOutfit = async function () {
     const newSet = await CreatedNewOutfit();
     navigateToDesign(newSet);
+  };
+  let outfitList = [];
+  const setOutfitsList = function (view) {
+    if (view == "outfit") outfitList = $wardrobe.outfits;
+    else
+      outfitList = $wardrobe.outfits.filter((x) => {
+        return x.layers[0]["steve"].type == OUTFIT_TYPE[currentView];
+      });
+  };
+  $: setOutfitsList(currentView);
+  const getOutfitsCountForType = function (type) {
+    return $wardrobe.outfits.filter((x) => {
+      return x.layers[0]["steve"].type == OUTFIT_TYPE[type];
+    }).length;
   };
 </script>
 
@@ -48,13 +69,35 @@
       icon={ShoppingBagIcon}
       on:click={() => (currentView = "outfit")}
     />
+    <span class="separator horizontal" />
+    {#each categories as item}
+    {#if getOutfitsCountForType(item) > 0}
+      <CategoryMenuItem
+        label={item}
+        selected={currentView == item}
+        icon={AvatarIcon}
+        badge={getOutfitsCountForType(item).toString()}
+        on:click={() => (currentView = item)}
+      />
+    {/if}
+    {/each}
   </CategoryMenu>
   <div class="outfits">
     {#if loaded && $wardrobe != null}
       {#if currentView == "sets"}
-        <h1>Sets</h1>
+        <div>
+          <h1 class="inline">Sets</h1>
+          <button
+            id="new-outfit"
+            class="small icon-small"
+            on:click={() => addNewSet()}
+          >
+            {@html PlusIcon}
+            <span>New set</span></button
+          >
+        </div>
         <div class="sets-list">
-          {#each $wardrobe.sets as item}
+          {#each $wardrobe.sets as item (item.id)}
             <ItemSetSnapshot
               renderer={layersRenderer}
               outfitPackage={item}
@@ -66,16 +109,22 @@
               }}
             />
           {/each}
-          <button id="new-set" on:click={() => addNewSet()}>
-            <span class="icon-big">{@html PlusIcon}</span><br /><br />
-            New set</button
-          >
         </div>
       {/if}
-      {#if currentView == "outfit"}
-        <h1>Outfits</h1>
+      {#if currentView != "sets"}
+        <div>
+          <h1 class="inline">Outfits</h1>
+          <button
+            id="new-set"
+            class="small icon-small"
+            on:click={() => addNewOutfit()}
+          >
+            {@html PlusIcon}
+            <span>New outfit</span></button
+          >
+        </div>
         <div class="outfits-list">
-          {#each $wardrobe.outfits as item}
+          {#each outfitList as item (item.id)}
             <ItemSnapshot
               renderer={layersRenderer}
               texture={item}
@@ -87,10 +136,6 @@
               }}
             />
           {/each}
-          <button id="new-set" on:click={() => addNewOutfit()}>
-            <span class="icon-big">{@html PlusIcon}</span><br /><br />
-            New outfit</button
-          >
         </div>
       {/if}
     {/if}
