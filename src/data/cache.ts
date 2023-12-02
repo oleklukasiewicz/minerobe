@@ -21,6 +21,7 @@ import {
 } from "$src/api/wardrobe";
 import { SaveOutfitSet } from "$src/api/sets";
 import { propertyStore } from "svelte-writable-derived";
+import { SaveOutfit } from "$src/api/outfits";
 
 export let alexModel: Readable<string> = readable(
   "data:model/gltf+json;base64," + btoa(alexModelData)
@@ -76,7 +77,11 @@ export const setup = function () {
 };
 const setupSubscriptions = function () {
   itemPackage.subscribe(async (data: OutfitPackage) => {
-    if (data != null && data.isShared) await SaveOutfitSet(data);
+    if (data != null && data.isShared) {
+      if (data.type == PACKAGE_TYPE.OUTFIT_SET) {
+        await SaveOutfitSet(data);
+      } else await SaveOutfit(data);
+    }
   });
   wardrobe.subscribe(async (data) => {
     await SetWardrobe(data);

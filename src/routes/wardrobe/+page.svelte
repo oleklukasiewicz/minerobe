@@ -40,19 +40,25 @@
     navigateToDesign(newSet);
   };
   let outfitList = [];
+  let outfitsCount = [];
   const setOutfitsList = function (view) {
     if (view == "outfit") outfitList = $wardrobe.outfits;
     else
       outfitList = $wardrobe.outfits.filter((x) => {
+        if (x.layers.length == 0) return false;
         return x.layers[0]["steve"].type == OUTFIT_TYPE[currentView];
       });
   };
   $: setOutfitsList(currentView);
-  const getOutfitsCountForType = function (type) {
-    return $wardrobe.outfits.filter((x) => {
-      return x.layers[0]["steve"].type == OUTFIT_TYPE[type];
-    }).length;
-  };
+  wardrobe.subscribe((x) => {
+    categories.forEach((category) => {
+      outfitsCount[category] = x.outfits.filter((outfit) => {
+        if (outfit.layers.length == 0) return false;
+        return outfit.layers[0]["steve"].type == OUTFIT_TYPE[category];
+      }).length;
+    });
+    setOutfitsList(currentView);
+  });
 </script>
 
 <div class="wardrobe-view">
@@ -70,16 +76,16 @@
       on:click={() => (currentView = "outfit")}
     />
     <span class="separator horizontal" />
-    {#each categories as item}
-    {#if getOutfitsCountForType(item) > 0}
-      <CategoryMenuItem
-        label={item}
-        selected={currentView == item}
-        icon={AvatarIcon}
-        badge={getOutfitsCountForType(item).toString()}
-        on:click={() => (currentView = item)}
-      />
-    {/if}
+    {#each categories as item, index}
+      {#if outfitsCount[item] > 0}
+        <CategoryMenuItem
+          label={item}
+          selected={currentView == item}
+          icon={AvatarIcon}
+          badge={outfitsCount[item]}
+          on:click={() => (currentView = item)}
+        />
+      {/if}
     {/each}
   </CategoryMenu>
   <div class="outfits">

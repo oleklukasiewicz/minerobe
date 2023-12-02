@@ -48,6 +48,7 @@
     RemoveFromWardrobe,
   } from "$src/api/wardrobe";
   import { ShareOutfitSet } from "$src/api/sets";
+  import { ShareOutfit } from "$src/api/outfits";
 
   let itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
@@ -211,7 +212,8 @@
     }
   };
   const sharePackage = async function () {
-    const shared = await ShareOutfitSet($itemPackage);
+    if ($isItemSet) await ShareOutfitSet($itemPackage);
+    else await ShareOutfit($itemPackage);
   };
   const handleRenderDrop = async function (event) {
     event.preventDefault();

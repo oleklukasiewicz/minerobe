@@ -87,8 +87,8 @@ export const RemoveOutfit = async function (id: string) {
 export const ShareOutfit = async function (outfit: OutfitPackage) {
   outfit.isShared = true;
   const newId = GenerateIdForOutfit();
-  await SetDocument(OUTFIT_PATH, newId, outfit);
   outfit.id = newId;
+  await SetDocument(OUTFIT_PATH, newId, outfit);
   if (IsItemInWardrobe(outfit.id, outfit.type)) {
     await UpdateWardrobeItem(outfit);
   }

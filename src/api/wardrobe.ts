@@ -109,7 +109,9 @@ export const PrepareWardrobe = async function (pack: WardrobePackage) {
   let data = Object.assign({}, pack);
   data.sets = data.sets.map((item) => PrepareOutfitSet(item));
   data.outfits = data.outfits.map((item) => PrepareOutfit(item));
-  if (data.studio?.id) data.studio = PrepareOutfitSet(data.studio);
+  if (data.studio?.id) {
+    data.studio = await PrepareItem(data.studio);
+  }
   return data;
 };
 export const ResolveWardrobe = async function (data: WardrobePackage) {
@@ -131,6 +133,16 @@ export const ResolveWardrobe = async function (data: WardrobePackage) {
   );
   data.sets = mappedSets as OutfitPackage[];
   data.outfits = mappedOutfits as OutfitPackage[];
-  if (data.studio?.id) data.studio = await ResolveOutfitSet(data.studio);
+  if (data.studio?.id) {
+    data.studio = await ResolveItem(data.studio);
+  }
   return data;
+};
+export const ResolveItem = function (item: OutfitPackage) {
+  if (item.type == PACKAGE_TYPE.OUTFIT_SET) return ResolveOutfitSet(item);
+  else return ResolveOutfit(item);
+};
+export const PrepareItem = function (item: OutfitPackage) {
+  if (item.type == PACKAGE_TYPE.OUTFIT_SET) return PrepareOutfitSet(item);
+  else return PrepareOutfit(item);
 };
