@@ -60,10 +60,10 @@ export class OutfitPackageLink {
   id: string;
   model: string;
   type: string;
-  constructor(linkId: string, model: string) {
+  constructor(linkId: string, model: string,type:string=PACKAGE_TYPE.OUTFIT_SET_LINK) {
     this.id = linkId;
     this.model = model;
-    this.type = PACKAGE_TYPE.OUTFIT_SET_LINK;
+    this.type = type;
   }
 }
 export class OutfitPackage {
@@ -92,7 +92,6 @@ export class OutfitPackage {
     this.isShared = isShared;
   }
 }
-export class OutfitLayerMetadata {}
 export class OutfitPublisher {
   name: string;
   id: string;

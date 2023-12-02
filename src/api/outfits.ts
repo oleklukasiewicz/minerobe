@@ -52,7 +52,8 @@ export const PrepareOutfit = function (ot: OutfitPackage) {
   if (outfitSet.isShared == true)
     return new OutfitPackageLink(
       outfitSet.id,
-      outfitSet.model
+      outfitSet.model,
+      PACKAGE_TYPE.OUTFIT_LINK
     ) as OutfitPackage;
   outfitSet.publisher = new MinerobeUser(outfitSet.publisher.id, null, null);
   return outfitSet;
