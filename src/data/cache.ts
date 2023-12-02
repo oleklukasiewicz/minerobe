@@ -33,25 +33,43 @@ export let steveModel: Readable<string> = readable(
 export let planksTexture: Readable<string> = readable(planksTextureRaw);
 
 export const currentUser: Writable<MinerobeUser> = writable(null);
-export const wardrobe: Writable<WardrobePackage> = writable(
-  new WardrobePackage(
-    "default_wardrobe",
-    [],
-    [],
-    new OutfitPackage(
-      "default",
-      "alex",
-      [],
-      PACKAGE_TYPE.OUTFIT,
-      new MinerobeUser("", "", "")
-    )
-  )
-);
-export let itemPackage: Writable<OutfitPackage> = propertyStore(
+export const wardrobe: Writable<WardrobePackage> = writable({
+  id: "default_wardrobe",
+  outfits: [],
+  sets: [],
+  studio: {
+    id: "default",
+    model: "alex",
+    type: PACKAGE_TYPE.OUTFIT,
+    isShared: false,
+    name: "alex",
+    layers: [],
+    publisher: {
+      id: "",
+      name: "",
+      avatar: "",
+    },
+  },
+});
+export const itemPackage: Writable<OutfitPackage> = propertyStore(
   wardrobe,
   "studio"
 );
 export const setup = function () {
+  wardrobe.set(
+    new WardrobePackage(
+      "default_wardrobe",
+      [],
+      [],
+      new OutfitPackage(
+        "default",
+        "alex",
+        [],
+        PACKAGE_TYPE.OUTFIT,
+        new MinerobeUser("", "", "")
+      )
+    )
+  );
   currentUser.subscribe(async (user) => {
     if (user) {
       //settings up account

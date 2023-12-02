@@ -8,6 +8,10 @@
   max-width: 100%;
   flex-wrap: wrap;
   gap: 4px;
+  &.disabled
+  {
+    opacity: 1 ;
+  }
   .actions {
     display: flex;
     padding: 12px;

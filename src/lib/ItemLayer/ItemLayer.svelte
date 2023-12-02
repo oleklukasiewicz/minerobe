@@ -64,6 +64,7 @@
   class="item-layer"
   class:selected
   class:selectable
+  class:disabled={readonly}
   on:click
   in:fadeInScale={{ duration: 300 }}
   out:fadeInScale={{ duration: 300 }}
@@ -79,7 +80,7 @@
       />
     </div>
     <span
-      ><input bind:value={label} class:disabled={readonly} />
+      ><input bind:value={label} />
       <br /><span class="label common">{texture[modelName].type}</span></span
     >
   </div>

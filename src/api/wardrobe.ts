@@ -20,7 +20,7 @@ export const GetWardrobe = async function () {
   console.log("getting wardrobe");
   if (get(currentUser)) {
     let dt = await GetDocument(WARDROBE_PATH, get(currentUser).id);
-    if (dt == null && dt.sets == null) return null;
+    if (dt == null) return null;
     const data = await ResolveWardrobe(dt);
     return data;
   }

@@ -46,6 +46,11 @@
       .item-layers {
         display: flex;
         flex-direction: column;
+        &.set
+        {
+          flex-direction: row;
+          gap: 8px;
+        }
         form {
           margin-top: 8px;
           gap: 8px;
