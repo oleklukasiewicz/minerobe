@@ -15,9 +15,7 @@ import { WardrobePackage } from "./common";
 import { OutfitPackage } from "./common";
 import {
   GetWardrobe,
-  PrepareWardrobe,
   SetWardrobe,
-  UpdateWardrobeItem,
 } from "$src/api/wardrobe";
 import { SaveOutfitSet } from "$src/api/sets";
 import { propertyStore } from "svelte-writable-derived";
@@ -32,7 +30,7 @@ export let steveModel: Readable<string> = readable(
 
 export let planksTexture: Readable<string> = readable(planksTextureRaw);
 
-export let appState: Writable<string> = writable(APP_STATE.LOADING);
+export const appState: Writable<string> = writable(APP_STATE.LOADING);
 export const currentUser: Writable<MinerobeUser> = writable(null);
 export const wardrobe: Writable<WardrobePackage> = writable({
   id: "default_wardrobe",
@@ -52,6 +50,10 @@ export const wardrobe: Writable<WardrobePackage> = writable({
     },
   },
 });
+export const baseTexture :Readable<string> = readable(get(planksTexture));
+
+
+
 export const itemPackage: Writable<OutfitPackage> = propertyStore(
   wardrobe,
   "studio"

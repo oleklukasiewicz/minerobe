@@ -1,29 +1,38 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import * as THREE from "three";
-  import { derived, writable, type Writable } from "svelte/store";
+  import {
+    derived,
+    writable,
+    type Readable,
+    type Writable,
+  } from "svelte/store";
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
   import RatioButton from "$lib/RatioButton/RatioButton.svelte";
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
+  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
 
-  import { APP_STATE, MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$data/consts";
-  import { FileData, OutfitLayer } from "$data/common";
+  import {
+    APP_STATE,
+    MODEL_TYPE,
+    OUTFIT_TYPE,
+    PACKAGE_TYPE,
+  } from "$data/consts";
+  import { OutfitLayer } from "$data/common";
   import {
     itemPackage,
     alexModel,
     steveModel,
-    planksTexture,
     currentUser,
-    wardrobe,
     appState,
+    baseTexture,
   } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
-  import DownloadPackageIcon from "$icons/flatten.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
   import CloudIcon from "$icons/cloud.svg?raw";
@@ -37,7 +46,6 @@
 
   import {
     ExportImage,
-    ExportImagePackageJson,
     ImportImage,
     ImportImagePackageJson,
     ImportImagePackageJsonFromFile,
@@ -47,31 +55,38 @@
   import {
     AddToWardrobe,
     IsItemInWardrobe,
+    IsPackageInWardrobe,
     RemoveFromWardrobe,
   } from "$src/api/wardrobe";
   import { ShareOutfitSet } from "$src/api/sets";
   import { ShareOutfit } from "$src/api/outfits";
-  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
 
-  let itemLayers: Writable<OutfitLayer[]> = propertyStore(
+  const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
     "layers"
   );
-  let itemModelType: Writable<string> = propertyStore(itemPackage, "model");
-  let itemName: Writable<string> = propertyStore(itemPackage, "name");
-  let itemPublisher = propertyStore(itemPackage, "publisher");
-  let isItemSet = derived(itemPackage, ($itemPackage) => {
-    return $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET;
-  });
-  let baseLayer;
-  let itemModel: any = null;
+  const itemModelType: Writable<string> = propertyStore(itemPackage, "model");
+  const itemName: Writable<string> = propertyStore(itemPackage, "name");
+  const itemPublisher = propertyStore(itemPackage, "publisher");
+
+  const selectedLayer: Writable<OutfitLayer> = writable(null);
+
+  const isItemSet = derived(
+    itemPackage,
+    ($itemPackage) => $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET
+  );
+  const itemModel: Readable<string> = derived(
+    itemModelType,
+    ($itemModelType) =>
+      $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel
+  );
+
   let modelTexture: string = null;
   let loaded = false;
 
   let updatedLayer: OutfitLayer = null;
   let layersRenderer;
   let isDragging = false;
-  let selectedLayer: Writable<OutfitLayer> = writable(null);
 
   let isPackageInWardrobe = false;
 
@@ -82,26 +97,15 @@
       alpha: true,
       preserveDrawingBuffer: true,
     });
-    baseLayer = $planksTexture;
     appState.subscribe((state) => {
-      if (loaded || state!=APP_STATE.READY) return;
+      if (loaded || state != APP_STATE.READY) return;
       loaded = true;
-      isPackageInWardrobe = IsItemInWardrobe(
-        $itemPackage.id,
-        $itemPackage.type
-      );
-      itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
-      if ($isItemSet) updateTexture($itemLayers.map((x) => x[$itemModelType]));
-      else {
-        if ($itemLayers.length > 0) {
-          $selectedLayer = $itemLayers[0];
-        } else {
-          updateTexture([]);
-        }
-      }
+      isPackageInWardrobe = IsPackageInWardrobe($itemPackage);
+      updateTexture();
     });
   });
 
+  //layers / texture
   const upLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
     if (index > 0) {
@@ -144,7 +148,57 @@
       return layers;
     });
   };
+  const addImageVariant = async function (data) {
+    const layer = data.detail.texture;
+    const newLayer = await ImportImage();
+    itemLayers.update((layers) => {
+      const index = layers.indexOf(layer);
+      if ($itemModelType == MODEL_TYPE.ALEX) {
+        layers[index].alex = newLayer;
+      } else {
+        layers[index].steve = newLayer;
+      }
+      return layers;
+    });
+    updateAnimation(NewOutfitBottomAnimation);
+  };
+  const updateTexture = async () => {
+    if (!loaded) return;
 
+    let layers = [];
+    if ($isItemSet) layers = $itemLayers.map((x) => x[$itemModelType]);
+    else {
+      if ($itemLayers.length > 0) {
+        if ($selectedLayer == null) $selectedLayer = $itemLayers[0];
+        layers = [$selectedLayer[$itemModelType]];
+      } else {
+        layers = [];
+      }
+    }
+
+    modelTexture = await mergeImages(
+      [...layers.map((x) => x.content), $baseTexture].reverse(),
+      undefined,
+      $itemModelType
+    );
+    if (updatedLayer) {
+      switch (updatedLayer[$itemModelType]?.type) {
+        case OUTFIT_TYPE.HAT:
+          await updateAnimation(HatAnimation);
+          break;
+        case OUTFIT_TYPE.TOP:
+        case OUTFIT_TYPE.HOODIE:
+          await updateAnimation(NewOutfitBottomAnimation);
+          break;
+        case OUTFIT_TYPE.SHOES:
+          await updateAnimation(WavingAnimation);
+          break;
+      }
+    }
+    await updateAnimation(DefaultAnimation);
+  };
+
+  //imports / export
   const importLayer = async function () {
     const newLayer = await ImportImage();
     itemLayers.update((layers) => {
@@ -165,21 +219,6 @@
     await updateAnimation(DefaultAnimation);
   };
 
-  const addImageVariant = async function (data) {
-    const layer = data.detail.texture;
-    const newLayer = await ImportImage();
-    itemLayers.update((layers) => {
-      const index = layers.indexOf(layer);
-      if ($itemModelType == MODEL_TYPE.ALEX) {
-        layers[index].alex = newLayer;
-      } else {
-        layers[index].steve = newLayer;
-      }
-      return layers;
-    });
-    updateAnimation(NewOutfitBottomAnimation);
-  };
-
   const importPackage = async function () {
     const newPackage = await ImportImagePackageJson($itemPackage);
     $itemPackage = newPackage;
@@ -195,35 +234,21 @@
     updateAnimation(DefaultAnimation);
   };
 
-  const updateTexture = async (layers) => {
-    if (!loaded) return;
-    if (baseLayer) {
-      modelTexture = await mergeImages(
-        [...layers.map((x) => x.content), baseLayer].reverse(),
-        undefined,
-        $itemModelType
-      );
-      if (updatedLayer) {
-        switch (updatedLayer[$itemModelType]?.type) {
-          case OUTFIT_TYPE.HAT:
-            await updateAnimation(HatAnimation);
-            break;
-          case OUTFIT_TYPE.TOP:
-          case OUTFIT_TYPE.HOODIE:
-            await updateAnimation(NewOutfitBottomAnimation);
-            break;
-          case OUTFIT_TYPE.SHOES:
-            await updateAnimation(WavingAnimation);
-            break;
-        }
-      }
-      await updateAnimation(DefaultAnimation);
-    }
-  };
+  //sharing / wardrobe
   const sharePackage = async function () {
     if ($isItemSet) await ShareOutfitSet($itemPackage);
     else await ShareOutfit($itemPackage);
   };
+  const addToWardrobe = async function () {
+    await AddToWardrobe($itemPackage);
+    isPackageInWardrobe = true;
+  };
+  const removeFromWardrobe = async function () {
+    await RemoveFromWardrobe($itemPackage.id);
+    isPackageInWardrobe = false;
+  };
+
+  //drag and drop
   const handleRenderDrop = async function (event) {
     event.preventDefault();
 
@@ -271,49 +296,14 @@
   const handleRenderDragEnter = function (event) {
     isDragging = true;
   };
-
   const handleRenderDragLeave = function (event) {
     isDragging = false;
   };
 
-  const addToWardrobe = async function () {
-    await AddToWardrobe($itemPackage);
-    isPackageInWardrobe = true;
-  };
-
-  const removeFromWardrobe = async function () {
-    await RemoveFromWardrobe($itemPackage.id);
-    isPackageInWardrobe = false;
-  };
-  itemLayers.subscribe((layers) => {
-    if ($isItemSet) updateTexture(layers.map((x) => x[$itemModelType]));
-    else {
-      if (layers.length > 0 && $selectedLayer == null)
-        $selectedLayer = layers[0];
-      else
-        updateTexture(
-          $selectedLayer != null ? [$selectedLayer[$itemModelType]] : []
-        );
-    }
-  });
-  itemModelType.subscribe((model) => {
-    if ($itemLayers?.length > 0) {
-      itemModel = model == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
-      if (updatedLayer) {
-        updatedLayer = new OutfitLayer(
-          "null",
-          new FileData("null", null, OUTFIT_TYPE.TOP),
-          new FileData("null", null, OUTFIT_TYPE.TOP)
-        );
-      }
-      if ($isItemSet) updateTexture($itemLayers.map((x) => x[model]));
-      else updateTexture([$selectedLayer[model]]);
-    }
-  });
-  selectedLayer.subscribe((layer) => {
-    if ($isItemSet) return;
-    updateTexture(layer != null ? [layer[$itemModelType]] : []);
-  });
+  //subscribtions
+  itemLayers.subscribe((layers) => updateTexture());
+  itemModelType.subscribe((model) => updateTexture());
+  selectedLayer.subscribe((layer) => (!$isItemSet ? updateTexture() : null));
 </script>
 
 <div class="item-page">
@@ -330,7 +320,7 @@
       {#if loaded}
         <SkinRender
           texture={modelTexture}
-          model={itemModel}
+          model={$itemModel}
           modelName={$itemPackage.model}
           onlyRenderSnapshot={false}
           animation={DefaultAnimation}
@@ -390,7 +380,7 @@
                 texture={item}
                 selectable={!$isItemSet}
                 controls={$isItemSet}
-                model={itemModel}
+                model={$itemModel}
                 modelName={$itemPackage.model}
                 renderer={layersRenderer}
                 bind:label={item.name}

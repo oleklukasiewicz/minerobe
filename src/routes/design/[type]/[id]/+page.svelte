@@ -1,7 +1,12 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import * as THREE from "three";
-  import { derived, writable, type Writable } from "svelte/store";
+  import {
+    derived,
+    writable,
+    type Readable,
+    type Writable,
+  } from "svelte/store";
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
@@ -18,6 +23,7 @@
     currentUser,
     wardrobe,
     appState,
+    baseTexture,
   } from "$data/cache";
   import {
     APP_STATE,
@@ -52,27 +58,36 @@
   import { GetOutfit } from "$src/api/outfits";
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
 
-  let localPackage: Writable<OutfitPackage> = writable(
+  const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage("New skin", MODEL_TYPE.ALEX, [])
   );
-  let itemLayers: Writable<OutfitLayer[]> = propertyStore(
+
+  const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     localPackage,
     "layers"
   );
-  let itemModelType: Writable<string> = propertyStore(localPackage, "model");
-  let itemName: Writable<string> = propertyStore(localPackage, "name");
-  let isItemSet = derived(localPackage, ($localPackage) => {
-    return $localPackage.type == PACKAGE_TYPE.OUTFIT_SET;
-  });
-  let baseLayer;
-  let itemModel: any = null;
+  const itemModelType: Writable<string> = propertyStore(localPackage, "model");
+  const itemName: Writable<string> = propertyStore(localPackage, "name");
+
+  const isItemSet = derived(
+    localPackage,
+    ($localPackage) => $localPackage.type == PACKAGE_TYPE.OUTFIT_SET
+  );
+  const itemModel: Readable<string> = derived(
+    itemModelType,
+    ($itemModelType) =>
+      $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel
+  );
+
+  const selectedVariant: Writable<OutfitLayer> = writable(null);
+
   let modelTexture: string = null;
   let loaded = false;
 
   let updatedLayer: OutfitLayer = null;
   let layersRenderer;
   let isDragging = false;
-  let selectedVariant: Writable<OutfitLayer> = writable(null);
+
   let isPackageInWardrobe = false;
   let updateAnimation: (animation: any) => void = () => {};
 
@@ -84,6 +99,7 @@
     let type = $page.params.type;
     let id = $page.params.id;
     let outfitPackage;
+
     appState.subscribe(async (state) => {
       if (loaded || state != APP_STATE.READY) return;
       outfitPackage =
@@ -92,84 +108,61 @@
           : await GetOutfitSet(id);
       if (outfitPackage) {
         localPackage.set(outfitPackage);
-        itemModel =
-          $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
-        $selectedVariant = $itemLayers[0];
         isPackageInWardrobe = await IsItemInWardrobe(
           $localPackage.id,
           $localPackage.type
         );
       }
-      baseLayer = $planksTexture;
       loaded = true;
       updateTexture();
     });
   });
 
+  //export
   const downloadImage = async () => {
     await ExportImage([$selectedVariant], $itemModelType, $itemName);
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
   };
 
+  //texture
   const updateTexture = async () => {
-    if (baseLayer) {
-      if ($isItemSet) {
-        let layers = $itemLayers;
-        if (layers) {
-          modelTexture = await mergeImages(
-            [
-              ...layers.map((x) => x[$itemModelType].content),
-              baseLayer,
-            ].reverse(),
-            undefined,
-            $itemModelType
-          );
-        }
+    if (!loaded) return;
+
+    let layers = [];
+    if ($isItemSet) layers = $itemLayers.map((x) => x[$itemModelType]);
+    else {
+      if ($itemLayers.length > 0) {
+        if ($selectedVariant == null) $selectedVariant = $itemLayers[0];
+        layers = [$selectedVariant[$itemModelType]];
       } else {
-        let layers = [baseLayer];
-        if ($selectedVariant)
-          layers.unshift($selectedVariant[$itemModelType].content);
-        modelTexture = await mergeImages(
-          layers.reverse(),
-          undefined,
-          $itemModelType
-        );
+        layers = [];
       }
-      if (updatedLayer) {
-        switch (updatedLayer[$itemModelType]?.type) {
-          case OUTFIT_TYPE.HAT:
-            await updateAnimation(HatAnimation);
-            break;
-          case OUTFIT_TYPE.TOP:
-          case OUTFIT_TYPE.HOODIE:
-            await updateAnimation(NewOutfitBottomAnimation);
-            break;
-          case OUTFIT_TYPE.SHOES:
-            await updateAnimation(WavingAnimation);
-            break;
-        }
-      }
-      await updateAnimation(DefaultAnimation);
     }
+
+    modelTexture = await mergeImages(
+      [...layers.map((x) => x.content), $baseTexture].reverse(),
+      undefined,
+      $itemModelType
+    );
+    if (updatedLayer) {
+      switch (updatedLayer[$itemModelType]?.type) {
+        case OUTFIT_TYPE.HAT:
+          await updateAnimation(HatAnimation);
+          break;
+        case OUTFIT_TYPE.TOP:
+        case OUTFIT_TYPE.HOODIE:
+          await updateAnimation(NewOutfitBottomAnimation);
+          break;
+        case OUTFIT_TYPE.SHOES:
+          await updateAnimation(WavingAnimation);
+          break;
+      }
+    }
+    await updateAnimation(DefaultAnimation);
   };
 
-  itemModelType.subscribe((model) => {
-    if ($itemLayers?.length != null) {
-      itemModel = model == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
-      if (updatedLayer) {
-        updatedLayer = new OutfitLayer(
-          "null",
-          new FileData("null", null, OUTFIT_TYPE.TOP),
-          new FileData("null", null, OUTFIT_TYPE.TOP)
-        );
-      }
-      updateTexture();
-    }
-  });
-  selectedVariant.subscribe((variant) => {
-    updateTexture();
-  });
+  //sharing
   const addToWardrobe = async function () {
     await AddToWardrobe($localPackage);
     isPackageInWardrobe = true;
@@ -178,6 +171,10 @@
     await RemoveFromWardrobe($localPackage.id);
     isPackageInWardrobe = false;
   };
+
+  //subs
+  itemModelType.subscribe((model) => updateTexture());
+  selectedVariant.subscribe((variant) => updateTexture());
 </script>
 
 <div class="item-page">
@@ -187,7 +184,7 @@
       {#if loaded}
         <SkinRender
           texture={modelTexture}
-          model={itemModel}
+          model={$itemModel}
           modelName={$itemModelType}
           onlyRenderSnapshot={false}
           animation={DefaultAnimation}
@@ -244,7 +241,7 @@
                 texture={item}
                 selectable={!$isItemSet}
                 controls={$isItemSet}
-                model={itemModel}
+                model={$itemModel}
                 modelName={$localPackage.model}
                 renderer={layersRenderer}
                 bind:label={item.name}
@@ -257,7 +254,7 @@
             {#each $itemLayers as layer, index}
               <ItemVariant
                 texture={layer[$itemModelType]}
-                model={itemModel}
+                model={$itemModel}
                 modelName={$itemModelType}
                 renderer={layersRenderer}
                 label={layer.name}
