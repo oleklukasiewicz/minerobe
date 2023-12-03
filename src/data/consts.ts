@@ -99,3 +99,9 @@ export const LAYER_TYPE = {
     OUTFIT_SET_LINK: "outfit_set_link",
     OUTFIT_LINK: "outfit_link",
   };
+  export const APP_STATE = {
+    LOADING: "loading",
+    READY: "ready",
+    USER_READY: "user_ready",
+    ERROR: "error",
+  };

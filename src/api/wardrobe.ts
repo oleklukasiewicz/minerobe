@@ -144,7 +144,7 @@ export const ResolveItem = function (item: OutfitPackage) {
   else return item;
 };
 export const PrepareItem = function (item: OutfitPackage) {
-  if (item.type == PACKAGE_TYPE.OUTFIT_SET_LINK) return PrepareOutfitSet(item);
-  if(item.type == PACKAGE_TYPE.OUTFIT_LINK) return PrepareOutfit(item);
+  if (item.type == PACKAGE_TYPE.OUTFIT_SET) return PrepareOutfitSet(item);
+  if(item.type == PACKAGE_TYPE.OUTFIT) return PrepareOutfit(item);
   else return item;
 };

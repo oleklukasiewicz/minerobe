@@ -9,7 +9,7 @@
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
 
-  import { MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$data/consts";
+  import { APP_STATE, MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$data/consts";
   import { FileData, OutfitLayer } from "$data/common";
   import {
     itemPackage,
@@ -17,6 +17,8 @@
     steveModel,
     planksTexture,
     currentUser,
+    wardrobe,
+    appState,
   } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
@@ -49,6 +51,7 @@
   } from "$src/api/wardrobe";
   import { ShareOutfitSet } from "$src/api/sets";
   import { ShareOutfit } from "$src/api/outfits";
+  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
 
   let itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
@@ -80,17 +83,23 @@
       preserveDrawingBuffer: true,
     });
     baseLayer = $planksTexture;
-    loaded = true;
-    isPackageInWardrobe = IsItemInWardrobe($itemPackage.id, $itemPackage.type);
-    itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
-    if ($isItemSet) updateTexture($itemLayers.map((x) => x[$itemModelType]));
-    else {
-      if ($itemLayers.length > 0) {
-        $selectedLayer = $itemLayers[0];
-      } else {
-        updateTexture([]);
+    appState.subscribe((state) => {
+      if (loaded || state!=APP_STATE.READY) return;
+      loaded = true;
+      isPackageInWardrobe = IsItemInWardrobe(
+        $itemPackage.id,
+        $itemPackage.type
+      );
+      itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
+      if ($isItemSet) updateTexture($itemLayers.map((x) => x[$itemModelType]));
+      else {
+        if ($itemLayers.length > 0) {
+          $selectedLayer = $itemLayers[0];
+        } else {
+          updateTexture([]);
+        }
       }
-    }
+    });
   });
 
   const upLayer = async function (e) {
@@ -327,32 +336,52 @@
           animation={DefaultAnimation}
           bind:changeAnimation={updateAnimation}
         />
+      {:else}
+        <Placeholder />
       {/if}
     </div>
   </div>
   <div class="item-data">
     <div class="data">
       <div class="item-name">
-        <span class="caption inline">{$_("name")}</span><br />
-        <input
-          id="item-title"
-          class="title-input"
-          bind:value={$itemPackage.name}
-        />
-        <span class="label rare"
-          >{$itemPackage.type == PACKAGE_TYPE.OUTFIT
-            ? $_("outfit")
-            : $_("outfit_set")}</span
-        >
-        {#if $itemPublisher}
-          <span class="label unique" style="margin-left:8px"
-            >{$itemPublisher.name}</span
-          >
+        <span class="caption inline">
+          {#if loaded}
+            {$_("name")}
+          {:else}
+            <Placeholder style="height:16px;width:64px;" />
+          {/if}
+        </span><br />
+        {#if loaded}
+          <input
+            id="item-title"
+            class="title-input"
+            bind:value={$itemPackage.name}
+          />
+        {:else}
+          <Placeholder style="height:48px;margin-bottom:8px;" />
         {/if}
-        <br />
-        <br />
+        {#if loaded}
+          <span class="label rare"
+            >{$itemPackage.type == PACKAGE_TYPE.OUTFIT
+              ? $_("outfit")
+              : $_("outfit_set")}</span
+          >
+          {#if $itemPublisher}
+            <span class="label unique" style="margin-left:8px"
+              >{$itemPublisher.name}</span
+            >
+          {/if}
+          <br />
+          <br />
+        {/if}
       </div>
-      <span class="caption">{$isItemSet ? $_("layers") : $_("variants")}</span>
+      <span class="caption">
+        {#if loaded}
+          {$isItemSet ? $_("layers") : $_("variants")}
+        {:else}
+          <Placeholder style="height:16px;width:64px;" />
+        {/if}
+      </span>
       <div class="item-layers">
         {#if loaded}
           {#each $itemLayers as item, index (item.id)}
@@ -382,6 +411,7 @@
             id="add-layer-action"
             type="submit"
             class="secondary"
+            class:disabled={!loaded}
             on:click={importLayer}
             >{@html AddIcon}
             {$isItemSet
@@ -391,6 +421,7 @@
           <button
             id="import-package-action"
             title={$_("importPackage")}
+            class:disabled={!loaded}
             on:click={importPackage}
             class="secondary"
             >{@html ImportPackageIcon} {$_("importPackage")}</button
@@ -398,16 +429,24 @@
         </form>
       </div>
       <br />
-      <span class="caption">{$_("model")}</span>
+      <span class="caption">
+        {#if loaded}
+          {$_("model")}
+        {:else}
+          <Placeholder style="height:16px;width:64px;" />
+        {/if}</span
+      >
       <div class="item-model">
         <RatioButton
           label={$_("modelOpt.steve")}
           value={MODEL_TYPE.STEVE}
+          disabled={!loaded}
           bind:group={$itemPackage.model}
         />
         <RatioButton
           label={$_("modelOpt.alex")}
           value={MODEL_TYPE.ALEX}
+          disabled={!loaded}
           bind:group={$itemPackage.model}
         />
       </div>
@@ -417,7 +456,7 @@
         <button
           id="download-action"
           on:click={downloadImage}
-          class:disabled={$itemLayers.length == 0}
+          class:disabled={$itemLayers.length == 0 || !loaded}
           >{@html DownloadIcon}{$_("download")}</button
         >
         <!-- <button
@@ -431,7 +470,7 @@
           <button
             id="share-package-action"
             on:click={sharePackage}
-            class:disabled={$itemPackage.isShared}
+            class:disabled={$itemPackage.isShared || !loaded}
             title={$_("sharePackage")}
             class="icon tertiary">{@html CloudIcon}</button
           >
@@ -441,12 +480,14 @@
             id="add-to-wardrobe"
             on:click={addToWardrobe}
             title="Add to wardrobe"
+            class:disabled={!loaded}
             class="icon tertiary">{@html HearthIcon}</button
           >
         {:else}
           <button
             on:click={removeFromWardrobe}
             id="add-to-wardrobe"
+            class:disabled={!loaded}
             title="Already in wardrobe"
             class="icon">{@html HearthIcon}</button
           >

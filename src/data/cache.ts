@@ -6,8 +6,8 @@ import {
   get,
   derived,
 } from "svelte/store";
-import { PACKAGE_TYPE } from "$data/consts";
-import { MinerobeUser } from "./common";
+import { APP_STATE, PACKAGE_TYPE } from "$data/consts";
+import { AppState, MinerobeUser } from "./common";
 import alexModelData from "$src/model/alex.gltf?raw";
 import steveModelData from "$src/model/steve.gltf?raw";
 import planksTextureRaw from "$src/texture/default_planks.png?url";
@@ -32,6 +32,7 @@ export let steveModel: Readable<string> = readable(
 
 export let planksTexture: Readable<string> = readable(planksTextureRaw);
 
+export let appState: Writable<string> = writable(APP_STATE.LOADING);
 export const currentUser: Writable<MinerobeUser> = writable(null);
 export const wardrobe: Writable<WardrobePackage> = writable({
   id: "default_wardrobe",
@@ -73,6 +74,8 @@ export const setup = function () {
   currentUser.subscribe(async (user) => {
     if (user) {
       //settings up account
+      if (get(appState) == APP_STATE.LOADING)
+        appState.set(APP_STATE.USER_READY);
       itemPackage.set(
         new OutfitPackage(
           "default",
@@ -89,7 +92,10 @@ export const setup = function () {
       wardrobe.set(w);
       console.log("setting wardrobe");
       if (w.studio != null) itemPackage.set(w.studio);
+      appState.set(APP_STATE.READY);
       setupSubscriptions();
+    } else {
+      appState.set(APP_STATE.LOADING);
     }
   });
 };

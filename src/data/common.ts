@@ -1,5 +1,5 @@
 import { get } from "svelte/store";
-import { LAYER_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "./consts";
+import { APP_STATE, LAYER_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "./consts";
 import { GenerateIdForCollection } from "./firebase";
 import { currentUser } from "./cache";
 
@@ -60,7 +60,11 @@ export class OutfitPackageLink {
   id: string;
   model: string;
   type: string;
-  constructor(linkId: string, model: string,type:string=PACKAGE_TYPE.OUTFIT_SET_LINK) {
+  constructor(
+    linkId: string,
+    model: string,
+    type: string = PACKAGE_TYPE.OUTFIT_SET_LINK
+  ) {
     this.id = linkId;
     this.model = model;
     this.type = type;
@@ -71,7 +75,7 @@ export class OutfitPackage {
   model: string;
   type: string;
   layers: OutfitLayer[];
-  publisher:MinerobeUser;
+  publisher: MinerobeUser;
   id: string;
   isShared: boolean;
   constructor(
@@ -135,5 +139,33 @@ export class MinerobeUserLink {
   constructor(id: string, userId: string) {
     this.id = id;
     this.userId = userId;
+  }
+}
+export class AppState {
+  app: string;
+  wardrobe: boolean;
+  user: boolean;
+  constructor() {
+    this.app = APP_STATE.LOADING;
+  }
+  wardrobeReady = function () {
+    if (this.app == APP_STATE.USER_READY) {
+      this.wardrobe = true;
+      this.app=APP_STATE.READY;
+    }
+    return this;
+  };
+  userReady = function () {
+    if (this.app == APP_STATE.LOADING) {
+      this.user = true;
+      this.app= APP_STATE.USER_READY;
+    }
+    return this;
+  }
+  userUnready = function () {
+    this.user = false;
+    this.wardrobe = false;
+    this.app = APP_STATE.LOADING;
+    return this;
   }
 }
