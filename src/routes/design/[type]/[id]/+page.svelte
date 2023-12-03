@@ -45,6 +45,7 @@
 
   import {
     ExportImage,
+    ExportImageLayers,
     ExportImagePackageJson,
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
@@ -57,6 +58,9 @@
   } from "$src/api/wardrobe";
   import { GetOutfit } from "$src/api/outfits";
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
+  import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
+  import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
+  import { GetAnimationForType } from "$src/helpers/imageDataHelpers";
 
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage("New skin", MODEL_TYPE.ALEX, [])
@@ -87,6 +91,7 @@
   let updatedLayer: OutfitLayer = null;
   let layersRenderer;
   let isDragging = false;
+  let rendererLayers: FileData[] = [];
 
   let isPackageInWardrobe = false;
   let updateAnimation: (animation: any) => void = () => {};
@@ -120,7 +125,7 @@
 
   //export
   const downloadImage = async () => {
-    await ExportImage([$selectedVariant], $itemModelType, $itemName);
+    await ExportImageLayers(rendererLayers, $itemModelType, $itemName);
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
   };
@@ -129,37 +134,28 @@
   const updateTexture = async () => {
     if (!loaded) return;
 
-    let layers = [];
-    if ($isItemSet) layers = $itemLayers.map((x) => x[$itemModelType]);
+    if ($isItemSet) rendererLayers = $itemLayers.map((x) => x[$itemModelType]);
     else {
       if ($itemLayers.length > 0) {
         if ($selectedVariant == null) $selectedVariant = $itemLayers[0];
-        layers = [$selectedVariant[$itemModelType]];
+        rendererLayers = [$selectedVariant[$itemModelType]];
       } else {
-        layers = [];
+        rendererLayers = [];
       }
     }
 
     modelTexture = await mergeImages(
-      [...layers.map((x) => x.content), $baseTexture].reverse(),
+      [...rendererLayers.map((x) => x.content), $baseTexture].reverse(),
       undefined,
       $itemModelType
     );
     if (updatedLayer) {
-      switch (updatedLayer[$itemModelType]?.type) {
-        case OUTFIT_TYPE.HAT:
-          await updateAnimation(HatAnimation);
-          break;
-        case OUTFIT_TYPE.TOP:
-        case OUTFIT_TYPE.HOODIE:
-          await updateAnimation(NewOutfitBottomAnimation);
-          break;
-        case OUTFIT_TYPE.SHOES:
-          await updateAnimation(WavingAnimation);
-          break;
+      const anim = GetAnimationForType(updatedLayer[$itemModelType]?.type);
+      if (anim) {
+        await updateAnimation(anim);
+        await updateAnimation(DefaultAnimation);
       }
     }
-    await updateAnimation(DefaultAnimation);
   };
 
   //sharing
@@ -198,13 +194,7 @@
   <div class="item-data">
     <div class="data">
       <div class="item-name">
-        <span class="caption inline">
-          {#if loaded}
-            {$_("name")}
-          {:else}
-            <Placeholder style="height:16px;width:64px;" />
-          {/if}
-        </span><br />
+        <SectionTitle label={$_("name")} placeholder={!loaded} />
         <div id="item-title" class="title">
           {#if loaded}
             {$itemName}
@@ -225,14 +215,10 @@
       </div>
 
       <br />
-      <span class="caption">
-        {#if loaded}
-          {$isItemSet ? $_("layers") : $_("variants")}
-        {:else}
-          <Placeholder style="height:16px;width:64px;" />
-        {/if}
-      </span>
-
+      <SectionTitle
+        label={$isItemSet ? $_("layers") : $_("variants")}
+        placeholder={!loaded}
+      />
       {#if loaded}
         {#if isItemSet}
           {#each $itemLayers as item, index (item.id)}
@@ -266,56 +252,30 @@
         {/if}
       {/if}
       <br />
-      <span class="caption">
-        {#if loaded}
-          {$_("model")}
-        {:else}
-          <Placeholder style="height:16px;width:64px;" />
-        {/if}</span
-      >
-      <div class="item-model">
-        <RatioButton
-          label={$_("modelOpt.steve")}
-          value={MODEL_TYPE.STEVE}
-          disabled={!loaded}
-          bind:group={$itemModelType}
-        />
-        <RatioButton
-          label={$_("modelOpt.alex")}
-          value={MODEL_TYPE.ALEX}
-          disabled={!loaded}
-          bind:group={$itemModelType}
-        />
-      </div>
+      <SectionTitle label={$_("model")} placeholder={!loaded} />
+      <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
       <br />
       <br />
       <div class="item-actions">
         <button
           id="download-action"
           on:click={downloadImage}
-          class:disabled={$selectedVariant == null || !loaded}
-          >{@html DownloadIcon}{$_("download")}</button
+          class:disabled={(!$isItemSet ? $selectedVariant == null : false) ||
+            !loaded}>{@html DownloadIcon}{$_("download")}</button
         >
-        <!-- <button
-          id="download-package-action"
-          on:click={exportPackage}
-          title={$_("downloadPackage")}
-          class:disabled={$selectedVariant == null}
-          class="icon tertiary">{@html DownloadPackageIcon}</button
-        > -->
         {#if isPackageInWardrobe == false}
           <button
             id="add-to-wardrobe"
             on:click={addToWardrobe}
             title="Add to wardrobe"
-            disabled={!loaded}
+            class:disabled={!loaded}
             class="icon tertiary">{@html HearthIcon}</button
           >
         {:else}
           <button
             id="remove-from-wardrobe"
             title="Already in wardrobe"
-            disabled={!loaded}
+            class:disabled={!loaded}
             on:click={removeFromWardrobe}
             class="icon">{@html HearthIcon}</button
           >
