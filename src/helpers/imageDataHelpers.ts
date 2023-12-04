@@ -1,5 +1,8 @@
 import { OUTFIT_TYPE } from "$data/consts";
 import { COLORS, COLORS_ARRAY } from "$data/consts";
+import NewOutfitBottomAnimation from "$src/animation/bottom";
+import HatAnimation from "$src/animation/hat";
+import WavingAnimation from "$src/animation/waving";
 import { closest } from "color-diff";
 
 export const GetOutfitType = function (imageContext: any) {
@@ -150,4 +153,18 @@ export const GetColorFromImage=async function(base64: string) {
 export const ConvertRGBToHex = (rgb: any) => {
   const { r, g, b } = rgb;
   return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+export const GetAnimationForType = function(type: string) {
+    switch (type) {
+      case OUTFIT_TYPE.HAT:
+       return HatAnimation
+        break;
+      case OUTFIT_TYPE.TOP:
+      case OUTFIT_TYPE.HOODIE:
+        return NewOutfitBottomAnimation
+        break;
+      case OUTFIT_TYPE.SHOES:
+        return WavingAnimation
+        break;
+    }
 }

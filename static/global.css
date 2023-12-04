@@ -95,9 +95,6 @@ br{
     user-select: none;
     text-align: end;
 }
-.label.placeholder{
-    box-shadow: none;
-}
 .label.unique{
     background: linear-gradient(var(--color-unique),var(--color-unique-A1));
 }
@@ -230,20 +227,6 @@ button.selected
     background-color: var(--color-accent);
     border-bottom: 2px solid var(--color-accent-D1);
     color: var(--color-accent-font);
-}
-.placeholder{
-    background-color: var(--color-theme-D2)!important;
-    content: none;
-    pointer-events: none;
-    color: transparent!important;
-    text-shadow: none!important;
-    animation-name: Blink;
-    animation-iteration-count: infinite;
-    animation-duration: 1.2s;
-}
-.placeholder > *{
-    background-color: var(--color-theme-D2);
-    color: transparent!important;
 }
 .separator.vertical{
     width: 1px;

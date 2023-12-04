@@ -1,7 +1,12 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import * as THREE from "three";
-  import { derived, writable, type Writable } from "svelte/store";
+  import {
+    derived,
+    writable,
+    type Readable,
+    type Writable,
+  } from "svelte/store";
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
@@ -17,8 +22,15 @@
     planksTexture,
     currentUser,
     wardrobe,
+    appState,
+    baseTexture,
   } from "$data/cache";
-  import { MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$data/consts";
+  import {
+    APP_STATE,
+    MODEL_TYPE,
+    OUTFIT_TYPE,
+    PACKAGE_TYPE,
+  } from "$data/consts";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import DownloadPackageIcon from "$icons/flatten.svg?raw";
@@ -33,6 +45,7 @@
 
   import {
     ExportImage,
+    ExportImageLayers,
     ExportImagePackageJson,
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
@@ -44,28 +57,42 @@
     RemoveFromWardrobe,
   } from "$src/api/wardrobe";
   import { GetOutfit } from "$src/api/outfits";
+  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
+  import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
+  import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
+  import { GetAnimationForType } from "$src/helpers/imageDataHelpers";
 
-  let localPackage: Writable<OutfitPackage> = writable(
+  const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage("New skin", MODEL_TYPE.ALEX, [])
   );
-  let itemLayers: Writable<OutfitLayer[]> = propertyStore(
+
+  const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     localPackage,
     "layers"
   );
-  let itemModelType: Writable<string> = propertyStore(localPackage, "model");
-  let itemName: Writable<string> = propertyStore(localPackage, "name");
-  let isItemSet = derived(localPackage, ($localPackage) => {
-    return $localPackage.type == PACKAGE_TYPE.OUTFIT_SET;
-  });
-  let baseLayer;
-  let itemModel: any = null;
+  const itemModelType: Writable<string> = propertyStore(localPackage, "model");
+  const itemName: Writable<string> = propertyStore(localPackage, "name");
+
+  const isItemSet = derived(
+    localPackage,
+    ($localPackage) => $localPackage.type == PACKAGE_TYPE.OUTFIT_SET
+  );
+  const itemModel: Readable<string> = derived(
+    itemModelType,
+    ($itemModelType) =>
+      $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel
+  );
+
+  const selectedVariant: Writable<OutfitLayer> = writable(null);
+
   let modelTexture: string = null;
   let loaded = false;
 
   let updatedLayer: OutfitLayer = null;
   let layersRenderer;
   let isDragging = false;
-  let selectedVariant: Writable<OutfitLayer> = writable(null);
+  let rendererLayers: FileData[] = [];
+
   let isPackageInWardrobe = false;
   let updateAnimation: (animation: any) => void = () => {};
 
@@ -77,87 +104,61 @@
     let type = $page.params.type;
     let id = $page.params.id;
     let outfitPackage;
-    wardrobe.subscribe(async (user) => {
-      if (user) {
-        outfitPackage =
-          type == PACKAGE_TYPE.OUTFIT
-            ? await GetOutfit(id)
-            : await GetOutfitSet(id);
-        if (outfitPackage) {
-          localPackage.set(outfitPackage);
-          itemModel =
-            $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
-          $selectedVariant = $itemLayers[0];
-          isPackageInWardrobe = await IsItemInWardrobe($localPackage.id, $localPackage.type);
-        }
-        baseLayer = $planksTexture;
-        loaded = true;
-        updateTexture();
+
+    appState.subscribe(async (state) => {
+      if (loaded || state != APP_STATE.READY) return;
+      outfitPackage =
+        type == PACKAGE_TYPE.OUTFIT
+          ? await GetOutfit(id)
+          : await GetOutfitSet(id);
+      if (outfitPackage) {
+        localPackage.set(outfitPackage);
+        isPackageInWardrobe = await IsItemInWardrobe(
+          $localPackage.id,
+          $localPackage.type
+        );
       }
+      loaded = true;
+      updateTexture();
     });
   });
 
+  //export
   const downloadImage = async () => {
-    await ExportImage([$selectedVariant], $itemModelType, $itemName);
+    await ExportImageLayers(rendererLayers, $itemModelType, $itemName);
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
   };
 
+  //texture
   const updateTexture = async () => {
-    if (baseLayer) {
-      if ($isItemSet) {
-        let layers = $itemLayers;
-        if (layers) {
-          modelTexture = await mergeImages(
-            [...layers.map((x) => x[$itemModelType].content), baseLayer].reverse(),
-            undefined,
-            $itemModelType
-          );
-        }
+    if (!loaded) return;
+
+    if ($isItemSet) rendererLayers = $itemLayers.map((x) => x[$itemModelType]);
+    else {
+      if ($itemLayers.length > 0) {
+        if ($selectedVariant == null) $selectedVariant = $itemLayers[0];
+        rendererLayers = [$selectedVariant[$itemModelType]];
       } else {
-        let layers = [baseLayer];
-        if ($selectedVariant)
-          layers.unshift($selectedVariant[$itemModelType].content);
-        modelTexture = await mergeImages(
-          layers.reverse(),
-          undefined,
-          $itemModelType
-        );
+        rendererLayers = [];
       }
-      if (updatedLayer) {
-        switch (updatedLayer[$itemModelType]?.type) {
-          case OUTFIT_TYPE.HAT:
-            await updateAnimation(HatAnimation);
-            break;
-          case OUTFIT_TYPE.TOP:
-          case OUTFIT_TYPE.HOODIE:
-            await updateAnimation(NewOutfitBottomAnimation);
-            break;
-          case OUTFIT_TYPE.SHOES:
-            await updateAnimation(WavingAnimation);
-            break;
-        }
+    }
+
+    modelTexture = await mergeImages(
+      [...rendererLayers.map((x) => x.content), $baseTexture].reverse(),
+      undefined,
+      $itemModelType
+    );
+    if (updatedLayer) {
+      const anim = GetAnimationForType(updatedLayer[$itemModelType]?.type);
+      if (anim) {
+        await updateAnimation(anim);
+        await updateAnimation(DefaultAnimation);
       }
-      await updateAnimation(DefaultAnimation);
     }
   };
 
-  itemModelType.subscribe((model) => {
-    if ($itemLayers?.length != null) {
-      itemModel = model == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
-      if (updatedLayer) {
-        updatedLayer = new OutfitLayer(
-          "null",
-          new FileData("null", null, OUTFIT_TYPE.TOP),
-          new FileData("null", null, OUTFIT_TYPE.TOP)
-        );
-      }
-      updateTexture();
-    }
-  });
-  selectedVariant.subscribe((variant) => {
-    updateTexture();
-  });
+  //sharing
   const addToWardrobe = async function () {
     await AddToWardrobe($localPackage);
     isPackageInWardrobe = true;
@@ -166,6 +167,10 @@
     await RemoveFromWardrobe($localPackage.id);
     isPackageInWardrobe = false;
   };
+
+  //subs
+  itemModelType.subscribe((model) => updateTexture());
+  selectedVariant.subscribe((variant) => updateTexture());
 </script>
 
 <div class="item-page">
@@ -175,21 +180,29 @@
       {#if loaded}
         <SkinRender
           texture={modelTexture}
-          model={itemModel}
+          model={$itemModel}
           modelName={$itemModelType}
           onlyRenderSnapshot={false}
           animation={DefaultAnimation}
           bind:changeAnimation={updateAnimation}
         />
+      {:else}
+        <Placeholder />
       {/if}
     </div>
   </div>
   <div class="item-data">
-    {#if loaded && $localPackage.id != null}
-      <div class="data">
-        <div class="item-name">
-          <span class="caption inline">{$_("name")}</span><br />
-          <div id="item-title" class="title">{$itemName}</div>
+    <div class="data">
+      <div class="item-name">
+        <SectionTitle label={$_("name")} placeholder={!loaded} />
+        <div id="item-title" class="title">
+          {#if loaded}
+            {$itemName}
+          {:else}
+            <Placeholder style="height:48px;margin-bottom:8px;" />
+          {/if}
+        </div>
+        {#if loaded}
           <span class="label rare"
             >{$localPackage.type == PACKAGE_TYPE.OUTFIT
               ? $_("outfit")
@@ -198,91 +211,77 @@
           <span class="label unique" style="margin-left:8px"
             >{$localPackage.publisher.name}</span
           >
-        </div>
-        <br />
-        <span class="caption">{$isItemSet ? $_("layers") : $_("variants")}</span
-        >
-
-        {#if loaded}
-          {#if isItemSet}
-            {#each $itemLayers as item, index (item.id)}
-              <div class="item-layer">
-                <ItemLayer
-                  texture={item}
-                  selectable={!$isItemSet}
-                  controls={$isItemSet}
-                  model={itemModel}
-                  modelName={$localPackage.model}
-                  renderer={layersRenderer}
-                  bind:label={item.name}
-                  readonly={true}
-                />
-              </div>
-            {/each}
-          {:else}
-            <div class="item-variants">
-              {#each $itemLayers as layer, index}
-                <ItemVariant
-                  texture={layer[$itemModelType]}
-                  model={itemModel}
-                  modelName={$itemModelType}
-                  renderer={layersRenderer}
-                  label={layer.name}
-                  on:click={() => ($selectedVariant = layer)}
-                  selected={$selectedVariant == layer}
-                />
-              {/each}
-            </div>
-          {/if}
         {/if}
-        <br />
-        <span class="caption">{$_("model")}</span>
-        <div class="item-model">
-          <RatioButton
-            label={$_("modelOpt.steve")}
-            value={MODEL_TYPE.STEVE}
-            bind:group={$itemModelType}
-          />
-          <RatioButton
-            label={$_("modelOpt.alex")}
-            value={MODEL_TYPE.ALEX}
-            bind:group={$itemModelType}
-          />
-        </div>
-        <br />
-        <br />
-        <div class="item-actions">
-          <button
-            id="download-action"
-            on:click={downloadImage}
-            class:disabled={$selectedVariant == null}
-            >{@html DownloadIcon}{$_("download")}</button
-          >
-          <!-- <button
-          id="download-package-action"
-          on:click={exportPackage}
-          title={$_("downloadPackage")}
-          class:disabled={$selectedVariant == null}
-          class="icon tertiary">{@html DownloadPackageIcon}</button
-        > -->
-          {#if isPackageInWardrobe == false}
-            <button
-              id="add-to-wardrobe"
-              on:click={addToWardrobe}
-              title="Add to wardrobe"
-              class="icon tertiary">{@html HearthIcon}</button
-            >
-          {:else}
-            <button
-              id="remove-from-wardrobe"
-              title="Already in wardrobe"
-              on:click={removeFromWardrobe}
-              class="icon">{@html HearthIcon}</button
-            >
-          {/if}
-        </div>
       </div>
-    {/if}
+
+      <br />
+      <SectionTitle
+        label={$isItemSet ? $_("layers") : $_("variants")}
+        placeholder={!loaded}
+      />
+      {#if loaded}
+        {#if isItemSet}
+          {#each $itemLayers as item, index (item.id)}
+            <div class="item-layer">
+              <ItemLayer
+                texture={item}
+                selectable={!$isItemSet}
+                controls={$isItemSet}
+                model={$itemModel}
+                modelName={$localPackage.model}
+                renderer={layersRenderer}
+                bind:label={item.name}
+                readonly={true}
+              />
+            </div>
+          {/each}
+        {:else}
+          <div class="item-variants">
+            {#each $itemLayers as layer, index}
+              <ItemVariant
+                texture={layer[$itemModelType]}
+                model={$itemModel}
+                modelName={$itemModelType}
+                renderer={layersRenderer}
+                label={layer.name}
+                on:click={() => ($selectedVariant = layer)}
+                selected={$selectedVariant == layer}
+              />
+            {/each}
+          </div>
+        {/if}
+      {/if}
+      <br />
+      <SectionTitle label={$_("model")} placeholder={!loaded} />
+      <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
+      <br />
+      <br />
+      <div class="item-actions">
+        <button
+          id="download-action"
+          on:click={downloadImage}
+          class:disabled={(!$isItemSet ? $selectedVariant == null : false) ||
+            !loaded}>{@html DownloadIcon}{$_("download")}</button
+        >
+        {#if isPackageInWardrobe == false}
+          <button
+            id="add-to-wardrobe"
+            on:click={addToWardrobe}
+            title="Add to wardrobe"
+            class:disabled={!loaded}
+            class="icon tertiary">{@html HearthIcon}</button
+          >
+        {:else}
+          <button
+            id="remove-from-wardrobe"
+            title="Already in wardrobe"
+            class:disabled={!loaded}
+            on:click={removeFromWardrobe}
+            class="icon">{@html HearthIcon}</button
+          >
+        {/if}
+      </div>
+    </div>
   </div>
 </div>
 

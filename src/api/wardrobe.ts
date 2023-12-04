@@ -53,6 +53,9 @@ export const IsItemInWardrobe = function (id: string, type: string) {
     return false;
   }
 };
+export const IsPackageInWardrobe = function (pack:OutfitPackage) {
+  return IsItemInWardrobe(pack.id,pack.type);
+}
 
 export const AddToWardrobe = async function (wardrobeItem: OutfitPackage) {
   if (get(currentUser)) {
@@ -139,14 +142,17 @@ export const ResolveWardrobe = async function (data: WardrobePackage) {
   }
   return data;
 };
+//for data downloading
 export const ResolveItem = function (item: OutfitPackage) {
   if (item.type == PACKAGE_TYPE.OUTFIT_SET_LINK) return ResolveOutfitSet(item);
   if (item.type == PACKAGE_TYPE.OUTFIT_LINK) return ResolveOutfit(item);
   else return item;
 };
+
+//for data sending
 export const PrepareItem = function (item: OutfitPackage) {
-  if (item.type == PACKAGE_TYPE.OUTFIT_SET_LINK) return PrepareOutfitSet(item);
-  if (item.type == PACKAGE_TYPE.OUTFIT_LINK) return PrepareOutfit(item);
+  if (item.type == PACKAGE_TYPE.OUTFIT_SET) return PrepareOutfitSet(item);
+  if(item.type == PACKAGE_TYPE.OUTFIT) return PrepareOutfit(item);
   else return item;
 };
 export const SharePackage= async function (item: OutfitPackage) {

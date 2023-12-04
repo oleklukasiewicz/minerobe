@@ -1,7 +1,7 @@
 <script lang="ts">
   import ItemSetSnapshot from "$lib/ItemSetSnapshot/ItemSetSnapshot.svelte";
   import ItemSnapshot from "$lib/ItemSnapshot/ItemSnapshot.svelte";
-  import { alexModel, steveModel, wardrobe } from "$src/data/cache";
+  import { alexModel, appState, steveModel, wardrobe } from "$src/data/cache";
   import { navigateToDesign } from "$src/helpers/navigationHelper";
   import { onMount } from "svelte";
   import * as THREE from "three";
@@ -13,7 +13,8 @@
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import { CreatedNewOutfitSet } from "$src/api/sets";
   import { CreatedNewOutfit } from "$src/api/outfits";
-  import { OUTFIT_TYPE } from "$src/data/consts";
+  import { APP_STATE, OUTFIT_TYPE } from "$src/data/consts";
+  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
 
   let layersRenderer: THREE.WebGLRenderer = null;
 
@@ -29,7 +30,9 @@
       alpha: true,
       preserveDrawingBuffer: true,
     });
-    loaded = true;
+    appState.subscribe((x) => {
+      if (x == APP_STATE.READY) loaded = true;
+    });
   });
   const addNewSet = async function () {
     const newSet = await CreatedNewOutfitSet();
@@ -62,34 +65,37 @@
 </script>
 
 <div class="wardrobe-view">
-  <CategoryMenu label="Wardrobe">
-    <CategoryMenuItem
-      label="Sets"
-      selected={currentView == "sets"}
-      icon={AnimationIcon}
-      on:click={() => (currentView = "sets")}
-    />
-    <CategoryMenuItem
-      label="Outfits"
-      selected={currentView == "outfit"}
-      icon={ShoppingBagIcon}
-      on:click={() => (currentView = "outfit")}
-    />
-    <span class="separator horizontal" />
-    {#each categories as item, index}
-      {#if outfitsCount[item] > 0}
-        <CategoryMenuItem
-          label={item}
-          selected={currentView == item}
-          icon={AvatarIcon}
-          badge={outfitsCount[item]}
-          on:click={() => (currentView = item)}
-        />
-      {/if}
-    {/each}
-  </CategoryMenu>
+  <div class="filler" style="width:300px"></div>
+  <div class="wardrobe-categories">
+    <CategoryMenu label="Wardrobe">
+      <CategoryMenuItem
+        label="Sets"
+        selected={currentView == "sets"}
+        icon={AnimationIcon}
+        on:click={() => (currentView = "sets")}
+      />
+      <CategoryMenuItem
+        label="Outfits"
+        selected={currentView == "outfit"}
+        icon={ShoppingBagIcon}
+        on:click={() => (currentView = "outfit")}
+      />
+      <span class="separator horizontal" />
+      {#each categories as item, index}
+        {#if outfitsCount[item] > 0}
+          <CategoryMenuItem
+            label={item}
+            selected={currentView == item}
+            icon={AvatarIcon}
+            badge={outfitsCount[item]}
+            on:click={() => (currentView = item)}
+          />
+        {/if}
+      {/each}
+    </CategoryMenu>
+  </div>
   <div class="outfits">
-    {#if loaded && $wardrobe != null}
+    {#if loaded}
       {#if currentView == "sets"}
         <div>
           <h1 class="inline">Sets</h1>
@@ -144,6 +150,12 @@
           {/each}
         </div>
       {/if}
+    {:else}
+      <div class="sets-list">
+        {#each new Array(25) as item, index}
+          <Placeholder style="width:200px;height:268px;" />
+        {/each}
+      </div>
     {/if}
   </div>
 </div>

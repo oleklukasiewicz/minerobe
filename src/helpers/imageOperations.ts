@@ -18,6 +18,22 @@ export const ExportImage = async function (
   link.click();
   document.body.removeChild(link);
 };
+export const ExportImageLayers = async function (
+  layers: FileData[],
+  modelType: string,
+  fileName: string
+) {
+  const link = document.createElement("a");
+  link.href = await mergeImages(
+    [...layers.map((x) => x.content)].reverse(),
+    undefined,
+    modelType
+  );
+  link.download = fileName.toLowerCase() + ".png";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 export const ExportImagePackageJson = async function (
   outfitPackage: OutfitPackage
 ) {

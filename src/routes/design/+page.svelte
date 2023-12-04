@@ -1,27 +1,39 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import * as THREE from "three";
-  import { derived, writable, type Writable } from "svelte/store";
+  import {
+    derived,
+    writable,
+    type Readable,
+    type Writable,
+  } from "svelte/store";
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
-  import RatioButton from "$lib/RatioButton/RatioButton.svelte";
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
+  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
+  import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
+  import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
 
-  import { MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$data/consts";
+  import {
+    APP_STATE,
+    MODEL_TYPE,
+    OUTFIT_TYPE,
+    PACKAGE_TYPE,
+  } from "$data/consts";
   import { FileData, OutfitLayer } from "$data/common";
   import {
     itemPackage,
     alexModel,
     steveModel,
-    planksTexture,
     currentUser,
+    appState,
+    baseTexture,
   } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
-  import DownloadPackageIcon from "$icons/flatten.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
   import CloudIcon from "$icons/cloud.svg?raw";
@@ -31,11 +43,9 @@
   import ClapAnimation from "$animation/clap";
   import HandsUpAnimation from "$animation/handsup";
   import WavingAnimation from "$animation/waving";
-  import HatAnimation from "$src/animation/hat";
 
   import {
-    ExportImage,
-    ExportImagePackageJson,
+    ExportImageLayers,
     ImportImage,
     ImportImagePackageJson,
     ImportImagePackageJsonFromFile,
@@ -44,34 +54,43 @@
   import { mergeImages } from "$helpers/imageMerger";
   import {
     AddToWardrobe,
-    IsItemInWardrobe,
+    IsPackageInWardrobe,
     RemoveFromWardrobe,
     SharePackage,
   } from "$src/api/wardrobe";
   import { ShareOutfitSet } from "$src/api/sets";
   import { ShareOutfit } from "$src/api/outfits";
+  import { GetAnimationForType } from "$src/helpers/imageDataHelpers";
 
-  let itemLayers: Writable<OutfitLayer[]> = propertyStore(
+  const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
     "layers"
   );
-  let itemModelType: Writable<string> = propertyStore(itemPackage, "model");
-  let itemName: Writable<string> = propertyStore(itemPackage, "name");
-  let itemPublisher = propertyStore(itemPackage, "publisher");
-  let isItemSet = derived(itemPackage, ($itemPackage) => {
-    return $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET;
-  });
-  let baseLayer;
-  let itemModel: any = null;
+  const itemModelType: Writable<string> = propertyStore(itemPackage, "model");
+  const itemName: Writable<string> = propertyStore(itemPackage, "name");
+  const itemPublisher = propertyStore(itemPackage, "publisher");
+
+  const selectedLayer: Writable<OutfitLayer> = writable(null);
+
+  const isItemSet = derived(
+    itemPackage,
+    ($itemPackage) => $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET
+  );
+  const itemModel: Readable<string> = derived(
+    itemModelType,
+    ($itemModelType) =>
+      $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel
+  );
+
   let modelTexture: string = null;
   let loaded = false;
 
   let updatedLayer: OutfitLayer = null;
   let layersRenderer;
   let isDragging = false;
-  let selectedLayer: Writable<OutfitLayer> = writable(null);
 
   let isPackageInWardrobe = false;
+  let rendererLayers: FileData[] = [];
 
   let updateAnimation = function (anim) {};
 
@@ -80,20 +99,15 @@
       alpha: true,
       preserveDrawingBuffer: true,
     });
-    baseLayer = $planksTexture;
-    loaded = true;
-    isPackageInWardrobe = IsItemInWardrobe($itemPackage.id, $itemPackage.type);
-    itemModel = $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
-    if ($isItemSet) updateTexture($itemLayers.map((x) => x[$itemModelType]));
-    else {
-      if ($itemLayers.length > 0) {
-        $selectedLayer = $itemLayers[0];
-      } else {
-        updateTexture([]);
-      }
-    }
+    appState.subscribe((state) => {
+      if (loaded || state != APP_STATE.READY) return;
+      loaded = true;
+      isPackageInWardrobe = IsPackageInWardrobe($itemPackage);
+      updateTexture();
+    });
   });
 
+  //layers / texture
   const upLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
     if (index > 0) {
@@ -136,7 +150,48 @@
       return layers;
     });
   };
+  const addImageVariant = async function (data) {
+    const layer = data.detail.texture;
+    const newLayer = await ImportImage();
+    itemLayers.update((layers) => {
+      const index = layers.indexOf(layer);
+      if ($itemModelType == MODEL_TYPE.ALEX) {
+        layers[index].alex = newLayer;
+      } else {
+        layers[index].steve = newLayer;
+      }
+      return layers;
+    });
+    updateAnimation(NewOutfitBottomAnimation);
+  };
+  const updateTexture = async () => {
+    if (!loaded) return;
 
+    if ($isItemSet) rendererLayers = $itemLayers.map((x) => x[$itemModelType]);
+    else {
+      if ($itemLayers.length > 0) {
+        if ($selectedLayer == null) $selectedLayer = $itemLayers[0];
+        rendererLayers = [$selectedLayer[$itemModelType]];
+      } else {
+        rendererLayers = [];
+      }
+    }
+
+    modelTexture = await mergeImages(
+      [...rendererLayers.map((x) => x.content), $baseTexture].reverse(),
+      undefined,
+      $itemModelType
+    );
+    if (updatedLayer) {
+      const anim = GetAnimationForType(updatedLayer[$itemModelType]?.type);
+      if (anim) {
+        await updateAnimation(anim);
+        await updateAnimation(DefaultAnimation);
+      }
+    }
+  };
+
+  //imports / export
   const importLayer = async function () {
     const newLayer = await ImportImage();
     itemLayers.update((layers) => {
@@ -152,24 +207,9 @@
   };
 
   const downloadImage = async () => {
-    await ExportImage($itemLayers, $itemModelType, $itemName);
+    await ExportImageLayers(rendererLayers, $itemModelType, $itemName);
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
-  };
-
-  const addImageVariant = async function (data) {
-    const layer = data.detail.texture;
-    const newLayer = await ImportImage();
-    itemLayers.update((layers) => {
-      const index = layers.indexOf(layer);
-      if ($itemModelType == MODEL_TYPE.ALEX) {
-        layers[index].alex = newLayer;
-      } else {
-        layers[index].steve = newLayer;
-      }
-      return layers;
-    });
-    updateAnimation(NewOutfitBottomAnimation);
   };
 
   const importPackage = async function () {
@@ -187,32 +227,21 @@
     updateAnimation(DefaultAnimation);
   };
 
-  const updateTexture = async (layers) => {
-    if (!loaded) return;
-    if (baseLayer) {
-      modelTexture = await mergeImages(
-        [...layers.map((x) => x.content), baseLayer].reverse(),
-        undefined,
-        $itemModelType
-      );
-      if (updatedLayer) {
-        switch (updatedLayer[$itemModelType]?.type) {
-          case OUTFIT_TYPE.HAT:
-            await updateAnimation(HatAnimation);
-            break;
-          case OUTFIT_TYPE.TOP:
-          case OUTFIT_TYPE.HOODIE:
-            await updateAnimation(NewOutfitBottomAnimation);
-            break;
-          case OUTFIT_TYPE.SHOES:
-            await updateAnimation(WavingAnimation);
-            break;
-        }
-      }
-      await updateAnimation(DefaultAnimation);
-    }
+  //sharing / wardrobe
+  const sharePackage = async function () {
+    if ($isItemSet) await ShareOutfitSet($itemPackage);
+    else await ShareOutfit($itemPackage);
   };
-  const sharePackage = async () => await SharePackage($itemPackage);
+  const addToWardrobe = async function () {
+    await AddToWardrobe($itemPackage);
+    isPackageInWardrobe = true;
+  };
+  const removeFromWardrobe = async function () {
+    await RemoveFromWardrobe($itemPackage.id);
+    isPackageInWardrobe = false;
+  };
+
+  //drag and drop
   const handleRenderDrop = async function (event) {
     event.preventDefault();
 
@@ -260,49 +289,14 @@
   const handleRenderDragEnter = function (event) {
     isDragging = true;
   };
-
   const handleRenderDragLeave = function (event) {
     isDragging = false;
   };
 
-  const addToWardrobe = async function () {
-    await AddToWardrobe($itemPackage);
-    isPackageInWardrobe = true;
-  };
-
-  const removeFromWardrobe = async function () {
-    await RemoveFromWardrobe($itemPackage.id);
-    isPackageInWardrobe = false;
-  };
-  itemLayers.subscribe((layers) => {
-    if ($isItemSet) updateTexture(layers.map((x) => x[$itemModelType]));
-    else {
-      if (layers.length > 0 && $selectedLayer == null)
-        $selectedLayer = layers[0];
-      else
-        updateTexture(
-          $selectedLayer != null ? [$selectedLayer[$itemModelType]] : []
-        );
-    }
-  });
-  itemModelType.subscribe((model) => {
-    if ($itemLayers?.length > 0) {
-      itemModel = model == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
-      if (updatedLayer) {
-        updatedLayer = new OutfitLayer(
-          "null",
-          new FileData("null", null, OUTFIT_TYPE.TOP),
-          new FileData("null", null, OUTFIT_TYPE.TOP)
-        );
-      }
-      if ($isItemSet) updateTexture($itemLayers.map((x) => x[model]));
-      else updateTexture([$selectedLayer[model]]);
-    }
-  });
-  selectedLayer.subscribe((layer) => {
-    if ($isItemSet) return;
-    updateTexture(layer != null ? [layer[$itemModelType]] : []);
-  });
+  //subscribtions
+  itemLayers.subscribe((layers) => updateTexture());
+  itemModelType.subscribe((model) => updateTexture());
+  selectedLayer.subscribe((layer) => (!$isItemSet ? updateTexture() : null));
 </script>
 
 <div class="item-page">
@@ -319,38 +313,49 @@
       {#if loaded}
         <SkinRender
           texture={modelTexture}
-          model={itemModel}
+          model={$itemModel}
           modelName={$itemPackage.model}
           onlyRenderSnapshot={false}
           animation={DefaultAnimation}
           bind:changeAnimation={updateAnimation}
         />
+      {:else}
+        <Placeholder />
       {/if}
     </div>
   </div>
   <div class="item-data">
     <div class="data">
       <div class="item-name">
-        <span class="caption inline">{$_("name")}</span><br />
-        <input
-          id="item-title"
-          class="title-input"
-          bind:value={$itemPackage.name}
-        />
-        <span class="label rare"
-          >{$itemPackage.type == PACKAGE_TYPE.OUTFIT
-            ? $_("outfit")
-            : $_("outfit_set")}</span
-        >
-        {#if $itemPublisher}
-          <span class="label unique" style="margin-left:8px"
-            >{$itemPublisher.name}</span
-          >
+        <SectionTitle label={$_("name")} placeholder={!loaded} />
+        {#if loaded}
+          <input
+            id="item-title"
+            class="title-input"
+            bind:value={$itemPackage.name}
+          />
+        {:else}
+          <Placeholder style="height:48px;margin-bottom:8px;" />
         {/if}
-        <br />
-        <br />
+        {#if loaded}
+          <span class="label rare"
+            >{$itemPackage.type == PACKAGE_TYPE.OUTFIT
+              ? $_("outfit")
+              : $_("outfit_set")}</span
+          >
+          {#if $itemPublisher}
+            <span class="label unique" style="margin-left:8px"
+              >{$itemPublisher.name}</span
+            >
+          {/if}
+          <br />
+          <br />
+        {/if}
       </div>
-      <span class="caption">{$isItemSet ? $_("layers") : $_("variants")}</span>
+      <SectionTitle
+        label={$isItemSet ? $_("layers") : $_("variants")}
+        placeholder={!loaded}
+      />
       <div class="item-layers">
         {#if loaded}
           {#each $itemLayers as item, index (item.id)}
@@ -359,7 +364,7 @@
                 texture={item}
                 selectable={!$isItemSet}
                 controls={$isItemSet}
-                model={itemModel}
+                model={$itemModel}
                 modelName={$itemPackage.model}
                 renderer={layersRenderer}
                 bind:label={item.name}
@@ -380,6 +385,7 @@
             id="add-layer-action"
             type="submit"
             class="secondary"
+            class:disabled={!loaded}
             on:click={importLayer}
             >{@html AddIcon}
             {$isItemSet
@@ -389,6 +395,7 @@
           <button
             id="import-package-action"
             title={$_("importPackage")}
+            class:disabled={!loaded}
             on:click={importPackage}
             class="secondary"
             >{@html ImportPackageIcon} {$_("importPackage")}</button
@@ -396,40 +403,22 @@
         </form>
       </div>
       <br />
-      <span class="caption">{$_("model")}</span>
-      <div class="item-model">
-        <RatioButton
-          label={$_("modelOpt.steve")}
-          value={MODEL_TYPE.STEVE}
-          bind:group={$itemPackage.model}
-        />
-        <RatioButton
-          label={$_("modelOpt.alex")}
-          value={MODEL_TYPE.ALEX}
-          bind:group={$itemPackage.model}
-        />
-      </div>
+      <SectionTitle label={$_("model")} placeholder={!loaded} />
+      <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
       <br />
       <br />
       <div class="item-actions">
         <button
           id="download-action"
           on:click={downloadImage}
-          class:disabled={$itemLayers.length == 0}
+          class:disabled={$itemLayers.length == 0 || !loaded}
           >{@html DownloadIcon}{$_("download")}</button
         >
-        <!-- <button
-          id="download-package-action"
-          on:click={exportPackage}
-          title={$_("downloadPackage")}
-          class:disabled={$itemLayers.length == 0}
-          class="icon tertiary">{@html DownloadPackageIcon}</button
-        > -->
         {#if $itemPublisher.id == $currentUser?.id}
           <button
             id="share-package-action"
             on:click={sharePackage}
-            class:disabled={$itemPackage.isShared}
+            class:disabled={$itemPackage.isShared || !loaded}
             title={$_("sharePackage")}
             class="icon tertiary">{@html CloudIcon}</button
           >
@@ -439,12 +428,14 @@
             id="add-to-wardrobe"
             on:click={addToWardrobe}
             title="Add to wardrobe"
+            class:disabled={!loaded}
             class="icon tertiary">{@html HearthIcon}</button
           >
         {:else}
           <button
             on:click={removeFromWardrobe}
             id="add-to-wardrobe"
+            class:disabled={!loaded}
             title="Already in wardrobe"
             class="icon">{@html HearthIcon}</button
           >
