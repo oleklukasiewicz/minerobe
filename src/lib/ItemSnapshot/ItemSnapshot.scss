@@ -13,35 +13,41 @@
     box-sizing: border-box;
     display: table;
     width: 100%;
-    flex:1;
-    .colors
-    {
-      float: right;
-     margin-top: 3px;
-    .color-viever
-    {
-      min-width: 16px;
-      min-height: 16px;
-      vertical-align: middle;
-      display: inline-table;
-      border: 3px solid var(--color-theme-D1);
+    flex: 1;
+    .data {
+      display: flex;
+      .share-icon {
+        margin-top: 6px;
+      }
+      .item-snapshot-title {
+        flex: 1;
+        font-family: minecraft;
+        box-sizing: border-box;
+        margin: 8px 0px;
+        display: table;
+      }
     }
-  }
-    .item-snapshot-title {
-      font-family: minecraft;
-      box-sizing: border-box;
-      margin: 8px 0px;
-      display: table;
+    .colors {
+      float: right;
+      margin-top: 3px;
+      .color-viever {
+        min-width: 16px;
+        min-height: 16px;
+        vertical-align: middle;
+        display: inline-table;
+        border: 3px solid var(--color-theme-D1);
+      }
     }
   }
   &:hover {
     background-color: var(--color-accent);
     .item-snapshot-data {
-      .item-snapshot-title {
-        color: var(--color-accent-font);
+      .data {
+        & > * {
+          color: var(--color-accent-font);
+        }
       }
-      .colors
-      {
+      .colors {
         color: var(--color-accent-font);
       }
     }
@@ -50,8 +56,10 @@
   &:active {
     background-color: var(--color-hover);
     .item-snapshot-data {
-      .item-snapshot-title {
-        color: var(--color-accent-font);
+      .data {
+        & > * {
+          color: var(--color-accent-font);
+        }
       }
     }
   }

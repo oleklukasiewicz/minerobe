@@ -1,14 +1,13 @@
 <script lang="ts">
   import SkinSnapshot from "$lib/render/SkinSnapshot/SkinSnapshot.svelte";
-  import { GetMinerobeUser } from "$src/api/auth";
-  import type { OutfitLayer, OutfitPackage } from "$src/data/common";
+  import type {  OutfitPackage } from "$src/data/common";
   import {
     ConvertRGBToHex,
     FindInColors,
     GetColorFromImage,
-    GetOutfitType,
   } from "$src/helpers/imageDataHelpers";
   import { onMount } from "svelte";
+  import CloudIcon from "$icons/cloud.svg?raw";
 
   export let texture: OutfitPackage = null;
   export let variant: string = null;
@@ -63,7 +62,12 @@
     />
   {/if}
   <div class="item-snapshot-data">
-    <b class="item-snapshot-title">{label}</b>
+    <div class="data">
+      <b class="item-snapshot-title">{label}</b>
+      {#if texture.isShared}
+        <div class="share-icon icon-small">{@html CloudIcon}</div>
+      {/if}
+    </div>
     {#if texture.publisher}
       <span class="label unique">{texture.publisher.name}</span>
       <div class="colors">
