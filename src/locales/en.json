@@ -31,5 +31,7 @@
   "outfit_set": "Outfit set",
   "outfit": "Outfit",
   "sharePackage": "Share",
-  "variants": "Variants"
+  "variants": "Variants",
+  "shared": "Shared",
+  "goToItemPage": "Item page"
 }

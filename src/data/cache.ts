@@ -105,6 +105,6 @@ const setupSubscriptions = function () {
     }
   });
   wardrobe.subscribe(async (data) => {
-    await SetWardrobe(data);
+    if (get(appState) == APP_STATE.READY) await SetWardrobe(data);
   });
 };

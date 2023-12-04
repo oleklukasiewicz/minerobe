@@ -19,7 +19,6 @@
   import {
     APP_STATE,
     MODEL_TYPE,
-    OUTFIT_TYPE,
     PACKAGE_TYPE,
   } from "$data/consts";
   import { FileData, OutfitLayer } from "$data/common";
@@ -37,6 +36,7 @@
   import AddIcon from "$icons/plus.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
   import CloudIcon from "$icons/cloud.svg?raw";
+  import SpotlightIcon from "$icons/spotlight.svg?raw";
 
   import DefaultAnimation from "$animation/default";
   import NewOutfitBottomAnimation from "$animation/bottom";
@@ -56,7 +56,6 @@
     AddToWardrobe,
     IsPackageInWardrobe,
     RemoveFromWardrobe,
-    SharePackage,
   } from "$src/api/wardrobe";
   import { ShareOutfitSet } from "$src/api/sets";
   import { ShareOutfit } from "$src/api/outfits";
@@ -341,15 +340,13 @@
           <Placeholder style="height:48px;margin-bottom:8px;" />
         {/if}
         {#if loaded}
-          <span class="label rare"
+          <span class="label common"
             >{$itemPackage.type == PACKAGE_TYPE.OUTFIT
               ? $_("outfit")
               : $_("outfit_set")}</span
           >
-          {#if $itemPublisher}
-            <span class="label unique" style="margin-left:8px"
-              >{$itemPublisher.name}</span
-            >
+          {#if $itemPackage.isShared}
+            <span class="label rare" style="margin-left:8px">{$_("shared")}</span>
           {/if}
           <br />
           <br />
@@ -418,13 +415,22 @@
           >{@html DownloadIcon}{$_("download")}</button
         >
         {#if $itemPublisher.id == $currentUser?.id}
-          <button
-            id="share-package-action"
-            on:click={sharePackage}
-            class:disabled={$itemPackage.isShared || !loaded}
-            title={$_("sharePackage")}
-            class="icon tertiary">{@html CloudIcon}</button
-          >
+          {#if $itemPackage.isShared}
+            <a href={"/design/" + $itemPackage.type + "/" + $itemPackage.id}>
+              <button
+                id="share-package-action"
+                title={$_("goToItemPage")}
+                class="secondary">{@html SpotlightIcon} {$_("goToItemPage")}</button
+              ></a
+            >
+          {:else}
+            <button
+              id="share-package-action"
+              on:click={sharePackage}
+              title={$_("sharePackage")}
+              class="icon tertiary">{@html CloudIcon}</button
+            >
+          {/if}
         {/if}
         {#if $itemPublisher.id != $currentUser?.id}
           {#if isPackageInWardrobe == false}

@@ -76,7 +76,7 @@
           ></span>
         {/each}
         {#if aboveLimit > 0}
-          <span style="font-family:minecraft;margin-right:4px;">+{aboveLimit}</span>
+          <span style="font-family:minecraft;margin-right:4px;vertical-align:top;">+{aboveLimit}</span>
         {/if}
       </div>
     {/if}

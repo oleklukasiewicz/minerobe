@@ -10,12 +10,11 @@
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
-  import RatioButton from "$lib/RatioButton/RatioButton.svelte";
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemVariant from "$lib/ItemVariant/ItemVariant.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
 
-  import { FileData, OutfitLayer, OutfitPackage } from "$data/common";
+  import { FileData, MinerobeUser, OutfitLayer, OutfitPackage } from "$data/common";
   import {
     alexModel,
     steveModel,
@@ -25,29 +24,15 @@
     appState,
     baseTexture,
   } from "$data/cache";
-  import {
-    APP_STATE,
-    MODEL_TYPE,
-    OUTFIT_TYPE,
-    PACKAGE_TYPE,
-  } from "$data/consts";
+  import { APP_STATE, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
 
   import DownloadIcon from "$icons/download.svg?raw";
-  import DownloadPackageIcon from "$icons/flatten.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
 
   import DefaultAnimation from "$animation/default";
-  import NewOutfitBottomAnimation from "$animation/bottom";
-  import ClapAnimation from "$animation/clap";
   import HandsUpAnimation from "$animation/handsup";
-  import WavingAnimation from "$animation/waving";
-  import HatAnimation from "$src/animation/hat";
 
-  import {
-    ExportImage,
-    ExportImageLayers,
-    ExportImagePackageJson,
-  } from "$helpers/imageOperations";
+  import { ExportImageLayers } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
   import { GetOutfitSet } from "$src/api/sets";
   import { page } from "$app/stores";
@@ -63,9 +48,16 @@
   import { GetAnimationForType } from "$src/helpers/imageDataHelpers";
 
   const localPackage: Writable<OutfitPackage> = writable(
-    new OutfitPackage("New skin", MODEL_TYPE.ALEX, [])
+    new OutfitPackage(
+      "New skin",
+      MODEL_TYPE.ALEX,
+      [],
+      PACKAGE_TYPE.OUTFIT,
+      new MinerobeUser(null,null,null),
+      null,
+      false
+    )
   );
-
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     localPackage,
     "layers"
@@ -112,7 +104,7 @@
           type == PACKAGE_TYPE.OUTFIT
             ? await GetOutfit(id)
             : await GetOutfitSet(id);
-        console.log(outfitPackage);
+
         if (outfitPackage) {
           localPackage.set(outfitPackage);
         }
@@ -124,6 +116,11 @@
           $localPackage.id,
           $localPackage.type
         );
+        //patching
+        if($currentUser?.id == $localPackage.publisher?.id && !isPackageInWardrobe) {
+          await AddToWardrobe($localPackage);
+          isPackageInWardrobe = true;
+        }
       }
     });
   });
@@ -208,7 +205,7 @@
           {/if}
         </div>
         {#if loaded}
-          <span class="label rare"
+          <span class="label common"
             >{$localPackage.type == PACKAGE_TYPE.OUTFIT
               ? $_("outfit")
               : $_("outfit_set")}</span
