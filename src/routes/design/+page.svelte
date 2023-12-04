@@ -46,6 +46,7 @@
     AddToWardrobe,
     IsItemInWardrobe,
     RemoveFromWardrobe,
+    SharePackage,
   } from "$src/api/wardrobe";
   import { ShareOutfitSet } from "$src/api/sets";
   import { ShareOutfit } from "$src/api/outfits";
@@ -211,10 +212,7 @@
       await updateAnimation(DefaultAnimation);
     }
   };
-  const sharePackage = async function () {
-    if ($isItemSet) await ShareOutfitSet($itemPackage);
-    else await ShareOutfit($itemPackage);
-  };
+  const sharePackage = async () => await SharePackage($itemPackage);
   const handleRenderDrop = async function (event) {
     event.preventDefault();
 

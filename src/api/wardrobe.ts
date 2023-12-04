@@ -12,8 +12,9 @@ import {
   PrepareOutfitSet,
   RemoveOutfitSet,
   ResolveOutfitSet,
+  ShareOutfitSet,
 } from "./sets";
-import { PrepareOutfit, ResolveOutfit } from "./outfits";
+import { PrepareOutfit, ResolveOutfit, ShareOutfit } from "./outfits";
 
 const WARDROBE_PATH = "wardrobes";
 export const GetWardrobe = async function () {
@@ -140,11 +141,15 @@ export const ResolveWardrobe = async function (data: WardrobePackage) {
 };
 export const ResolveItem = function (item: OutfitPackage) {
   if (item.type == PACKAGE_TYPE.OUTFIT_SET_LINK) return ResolveOutfitSet(item);
-  if(item.type == PACKAGE_TYPE.OUTFIT_LINK) return ResolveOutfit(item);
+  if (item.type == PACKAGE_TYPE.OUTFIT_LINK) return ResolveOutfit(item);
   else return item;
 };
 export const PrepareItem = function (item: OutfitPackage) {
   if (item.type == PACKAGE_TYPE.OUTFIT_SET_LINK) return PrepareOutfitSet(item);
-  if(item.type == PACKAGE_TYPE.OUTFIT_LINK) return PrepareOutfit(item);
+  if (item.type == PACKAGE_TYPE.OUTFIT_LINK) return PrepareOutfit(item);
   else return item;
+};
+export const SharePackage= async function (item: OutfitPackage) {
+  if (item.type == PACKAGE_TYPE.OUTFIT_SET) return await ShareOutfitSet(item);
+  return await ShareOutfit(item);
 };
