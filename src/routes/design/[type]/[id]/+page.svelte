@@ -112,7 +112,7 @@
           type == PACKAGE_TYPE.OUTFIT
             ? await GetOutfit(id)
             : await GetOutfitSet(id);
-          console.log(outfitPackage);
+        console.log(outfitPackage);
         if (outfitPackage) {
           localPackage.set(outfitPackage);
         }
@@ -268,22 +268,24 @@
           class:disabled={(!$isItemSet ? $selectedVariant == null : false) ||
             !loaded}>{@html DownloadIcon}{$_("download")}</button
         >
-        {#if isPackageInWardrobe == false || isGuest}
-          <button
-            id="add-to-wardrobe"
-            on:click={addToWardrobe}
-            title="Add to wardrobe"
-            class:disabled={!loaded || isGuest}
-            class="icon tertiary">{@html HearthIcon}</button
-          >
-        {:else}
-          <button
-            id="remove-from-wardrobe"
-            title="Already in wardrobe"
-            class:disabled={!loaded || isGuest}
-            on:click={removeFromWardrobe}
-            class="icon">{@html HearthIcon}</button
-          >
+        {#if $localPackage.publisher?.id != $currentUser?.id}
+          {#if isPackageInWardrobe == false || isGuest}
+            <button
+              id="add-to-wardrobe"
+              on:click={addToWardrobe}
+              title="Add to wardrobe"
+              class:disabled={!loaded || isGuest}
+              class="icon tertiary">{@html HearthIcon}</button
+            >
+          {:else}
+            <button
+              id="remove-from-wardrobe"
+              title="Already in wardrobe"
+              class:disabled={!loaded || isGuest}
+              on:click={removeFromWardrobe}
+              class="icon">{@html HearthIcon}</button
+            >
+          {/if}
         {/if}
       </div>
     </div>

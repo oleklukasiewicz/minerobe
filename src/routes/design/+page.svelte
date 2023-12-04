@@ -426,22 +426,24 @@
             class="icon tertiary">{@html CloudIcon}</button
           >
         {/if}
-        {#if isPackageInWardrobe == false}
-          <button
-            id="add-to-wardrobe"
-            on:click={addToWardrobe}
-            title="Add to wardrobe"
-            class:disabled={!loaded}
-            class="icon tertiary">{@html HearthIcon}</button
-          >
-        {:else}
-          <button
-            on:click={removeFromWardrobe}
-            id="add-to-wardrobe"
-            class:disabled={!loaded}
-            title="Already in wardrobe"
-            class="icon">{@html HearthIcon}</button
-          >
+        {#if $itemPublisher.id != $currentUser?.id}
+          {#if isPackageInWardrobe == false}
+            <button
+              id="add-to-wardrobe"
+              on:click={addToWardrobe}
+              title="Add to wardrobe"
+              class:disabled={!loaded}
+              class="icon tertiary">{@html HearthIcon}</button
+            >
+          {:else}
+            <button
+              on:click={removeFromWardrobe}
+              id="add-to-wardrobe"
+              class:disabled={!loaded}
+              title="Already in wardrobe"
+              class="icon">{@html HearthIcon}</button
+            >
+          {/if}
         {/if}
       </div>
     </div>

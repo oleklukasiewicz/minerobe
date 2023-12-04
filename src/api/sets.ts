@@ -53,7 +53,7 @@ export const SaveOutfitSet = async function (
   outfitSet: OutfitPackage
 ): Promise<OutfitPackage> {
   const outfitSetRef = await GetDocument(SETS_PATH, outfitSet.id);
-  if (outfitSetRef && outfitSetRef.publisher.id == get(currentUser).id) {
+  if (outfitSetRef && outfitSetRef.publisher.id == get(currentUser).id && outfitSet.layers.length > 0) {
     await SetDocument(SETS_PATH, outfitSet.id, await PrepareOutfitSet(outfitSet,false));
   }
   return outfitSet;
@@ -79,6 +79,7 @@ export const RemoveOutfitSet = async function (id: string) {
   }
 };
 export const ShareOutfitSet = async function (outfitSet: OutfitPackage) {
+  if(outfitSet.layers.length==0) return;
   outfitSet.isShared = true;
   const newId = GenerateIdForOutfitSet();
   outfitSet.id = newId;
