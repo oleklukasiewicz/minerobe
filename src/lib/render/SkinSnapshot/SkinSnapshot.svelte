@@ -5,6 +5,7 @@
     GetContextFromBase64,
     GetOutfitType,
   } from "$src/helpers/imageDataHelpers";
+  import { onMount } from "svelte";
 
   export let texture = null;
   export let model = null;
@@ -18,13 +19,18 @@
     camPozZ = 1.8;
   let sceneRotX = Math.PI / 4;
   let sceneRotY = Math.PI * 0.75;
+  let loaded = false;
+  onMount(async () => {
+    await setCameraPosZ(type);
+    loaded = true;
+  });
   const setCameraPosZ = async function (type) {
     if (type==null) {
       type = GetOutfitType(await GetContextFromBase64(texture));
     }
     if (type == OUTFIT_TYPE.HAT) {
-      camPozY = 0.2;
-      camPozZ = 2;
+      camPozY = 0.3;
+      camPozZ = 2.2;
       return;
     }
     if (type == OUTFIT_TYPE.TOP || type == OUTFIT_TYPE.HOODIE) {
@@ -61,10 +67,10 @@
       return;
     }
   };
-  setCameraPosZ(type);
 </script>
 
-<div>
+<div class="skin-snapshot">
+  {#if loaded}
   <SkinRender
     {texture}
     {model}
@@ -81,4 +87,12 @@
     {renderer}
     onlyRenderSnapshot={true}
   />
+  {/if}
 </div>
+<style lang="scss">
+.skin-snapshot {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+}
+</style>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import ItemSetSnapshot from "$lib/ItemSetSnapshot/ItemSetSnapshot.svelte";
   import ItemSnapshot from "$lib/ItemSnapshot/ItemSnapshot.svelte";
-  import { alexModel, appState, steveModel, wardrobe } from "$src/data/cache";
+  import { alexModel, appState, currentUser, steveModel, wardrobe } from "$src/data/cache";
   import { navigateToDesign } from "$src/helpers/navigationHelper";
   import { onMount } from "svelte";
   import * as THREE from "three";
@@ -81,6 +81,7 @@
         on:click={() => (currentView = "outfit")}
       />
       <span class="separator horizontal" />
+      {#if $currentUser}
       {#each categories as item, index}
         {#if outfitsCount[item] > 0}
           <CategoryMenuItem
@@ -92,6 +93,7 @@
           />
         {/if}
       {/each}
+      {/if}
     </CategoryMenu>
   </div>
   <div class="outfits">

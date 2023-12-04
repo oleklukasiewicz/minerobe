@@ -17,10 +17,11 @@
     .colors
     {
       float: right;
+      transform: translateY(2px);
     .color-viever
     {
-      min-width: 20px;
-      min-height: 20px;
+      min-width: 16px;
+      min-height: 16px;
       vertical-align: middle;
       display: inline-table;
       border: 3px solid var(--color-theme-D1);

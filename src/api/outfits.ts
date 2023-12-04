@@ -37,7 +37,7 @@ export const CreatedNewOutfit = async function (
     model,
     layers,
     PACKAGE_TYPE.OUTFIT,
-    new MinerobeUser(get(currentUser).id, null, null),
+    get(currentUser),
     GenerateIdForOutfit(),
     isShared
   );

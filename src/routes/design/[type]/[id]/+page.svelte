@@ -268,7 +268,7 @@
           class:disabled={(!$isItemSet ? $selectedVariant == null : false) ||
             !loaded}>{@html DownloadIcon}{$_("download")}</button
         >
-        {#if $localPackage.publisher?.id != $currentUser?.id}
+        {#if $localPackage.publisher?.id != $currentUser?.id && $currentUser != null}
           {#if isPackageInWardrobe == false || isGuest}
             <button
               id="add-to-wardrobe"
