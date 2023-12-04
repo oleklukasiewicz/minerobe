@@ -222,7 +222,7 @@
         placeholder={!loaded}
       />
       {#if loaded}
-        {#if isItemSet}
+        {#if $isItemSet}
           {#each $itemLayers as item, index (item.id)}
             <div class="item-layer">
               <ItemLayer
