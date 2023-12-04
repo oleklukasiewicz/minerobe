@@ -22,7 +22,7 @@
 	"dependencies": {
 		"color-diff": "^1.4.0",
 		"dotenv": "^16.3.1",
-		"firebase": "^10.6.0",
+		"firebase": "^10.7.0",
 		"gltf-loader": "^1.0.0",
 		"jszip": "^3.10.1",
 		"path": "^0.12.7",
