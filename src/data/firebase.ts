@@ -31,7 +31,6 @@ const provider = new GoogleAuthProvider();
 const auth = getAuth();
 let cUser;
 auth.onAuthStateChanged((user) => {
-  console.log("auth state changed");
   if (user) {
     cUser = user;
   } else {
@@ -39,17 +38,20 @@ auth.onAuthStateChanged((user) => {
   }
 });
 
-export const getCurrentUser = () => {
+export const getCurrentUserFromLocal = () => {
   return new Promise((resolve, reject) => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       unsubscribe();
       resolve(user);
+      if (user) {
+        cUser = user;
+      }
     }, reject);
   });
 };
 
 export const login = async () => {
-  await getCurrentUser();
+  await getCurrentUserFromLocal();
   if (cUser) {
     return cUser;
   }
@@ -66,8 +68,8 @@ export const login = async () => {
     const credential = GoogleAuthProvider.credentialFromError(error);
     // ...
   });
-  cUser = res.user;
-  return res.user;
+  cUser = res?.user;
+  return res?.user;
 };
 
 export const GetUser = function () {
@@ -81,11 +83,9 @@ export const GetDocument = async function (
   path: string,
   documentName: string
 ): Promise<any> {
-  if (cUser) {
     const dataRef = doc(db, path, documentName);
     const dataSnap = await getDoc(dataRef);
     return dataSnap.data();
-  }
 };
 export const SetDocument = async function (
   path: string,

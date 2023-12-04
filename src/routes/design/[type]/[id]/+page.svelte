@@ -87,7 +87,7 @@
 
   let modelTexture: string = null;
   let loaded = false;
-
+  let isGuest = false;
   let updatedLayer: OutfitLayer = null;
   let layersRenderer;
   let isDragging = false;
@@ -106,20 +106,25 @@
     let outfitPackage;
 
     appState.subscribe(async (state) => {
-      if (loaded || state != APP_STATE.READY) return;
-      outfitPackage =
-        type == PACKAGE_TYPE.OUTFIT
-          ? await GetOutfit(id)
-          : await GetOutfitSet(id);
-      if (outfitPackage) {
-        localPackage.set(outfitPackage);
+      isGuest = state == APP_STATE.LOADING;
+      if (!loaded) {
+        outfitPackage =
+          type == PACKAGE_TYPE.OUTFIT
+            ? await GetOutfit(id)
+            : await GetOutfitSet(id);
+          console.log(outfitPackage);
+        if (outfitPackage) {
+          localPackage.set(outfitPackage);
+        }
+        loaded = true;
+        updateTexture();
+      }
+      if (!isGuest) {
         isPackageInWardrobe = await IsItemInWardrobe(
           $localPackage.id,
           $localPackage.type
         );
       }
-      loaded = true;
-      updateTexture();
     });
   });
 
@@ -263,19 +268,19 @@
           class:disabled={(!$isItemSet ? $selectedVariant == null : false) ||
             !loaded}>{@html DownloadIcon}{$_("download")}</button
         >
-        {#if isPackageInWardrobe == false}
+        {#if isPackageInWardrobe == false || isGuest}
           <button
             id="add-to-wardrobe"
             on:click={addToWardrobe}
             title="Add to wardrobe"
-            class:disabled={!loaded}
+            class:disabled={!loaded || isGuest}
             class="icon tertiary">{@html HearthIcon}</button
           >
         {:else}
           <button
             id="remove-from-wardrobe"
             title="Already in wardrobe"
-            class:disabled={!loaded}
+            class:disabled={!loaded || isGuest}
             on:click={removeFromWardrobe}
             class="icon">{@html HearthIcon}</button
           >

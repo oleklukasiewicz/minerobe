@@ -36,20 +36,20 @@ export const CreatedNewOutfit = async function (
     model,
     layers,
     PACKAGE_TYPE.OUTFIT,
-    get(currentUser),
+    new MinerobeUser(get(currentUser).id, null, null),
     GenerateIdForOutfit(),
     false
   );
 
-  await SetDocument(OUTFIT_PATH, outfitPackage.id, outfitPackage);
+  await SetDocument(OUTFIT_PATH, outfitPackage.id, await PrepareOutfit(outfitPackage,false));
   if (addToWardrobe) {
     await AddToWardrobe(outfitPackage);
   }
   return outfitPackage;
 };
-export const PrepareOutfit = function (ot: OutfitPackage) {
+export const PrepareOutfit = function (ot: OutfitPackage, toLink: boolean =true) {
   let outfitSet = Object.assign({}, ot);
-  if (outfitSet.isShared == true)
+  if (outfitSet.isShared == true && toLink == true)
     return new OutfitPackageLink(
       outfitSet.id,
       outfitSet.model,
@@ -62,8 +62,8 @@ export const SaveOutfit = async function (
   outfit: OutfitPackage
 ): Promise<OutfitPackage> {
   const outfitRef = await GetDocument(OUTFIT_PATH, outfit.id);
-  if (outfitRef) {
-    await SetDocument(OUTFIT_PATH, outfit.id, outfit);
+  if (outfitRef && outfitRef.publisher.id == get(currentUser).id) {
+    await SetDocument(OUTFIT_PATH, outfit.id, await PrepareOutfit(outfit,false));
   }
   return outfit;
 };
@@ -88,7 +88,7 @@ export const ShareOutfit = async function (outfit: OutfitPackage) {
   outfit.isShared = true;
   const newId = GenerateIdForOutfit();
   outfit.id = newId;
-  await SetDocument(OUTFIT_PATH, newId, outfit);
+  await SetDocument(OUTFIT_PATH, newId, await PrepareOutfit(outfit,false));
   if (IsItemInWardrobe(outfit.id, outfit.type)) {
     await UpdateWardrobeItem(outfit);
   }

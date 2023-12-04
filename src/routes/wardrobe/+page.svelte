@@ -31,7 +31,7 @@
       preserveDrawingBuffer: true,
     });
     appState.subscribe((x) => {
-      if (x == APP_STATE.READY) loaded = true;
+      loaded = x == APP_STATE.READY;
     });
   });
   const addNewSet = async function () {

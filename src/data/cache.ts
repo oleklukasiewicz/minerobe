@@ -13,10 +13,7 @@ import steveModelData from "$src/model/steve.gltf?raw";
 import planksTextureRaw from "$src/texture/default_planks.png?url";
 import { WardrobePackage } from "./common";
 import { OutfitPackage } from "./common";
-import {
-  GetWardrobe,
-  SetWardrobe,
-} from "$src/api/wardrobe";
+import { GetWardrobe, SetWardrobe } from "$src/api/wardrobe";
 import { SaveOutfitSet } from "$src/api/sets";
 import { propertyStore } from "svelte-writable-derived";
 import { SaveOutfit } from "$src/api/outfits";
@@ -50,9 +47,7 @@ export const wardrobe: Writable<WardrobePackage> = writable({
     },
   },
 });
-export const baseTexture :Readable<string> = readable(get(planksTexture));
-
-
+export const baseTexture: Readable<string> = readable(get(planksTexture));
 
 export const itemPackage: Writable<OutfitPackage> = propertyStore(
   wardrobe,

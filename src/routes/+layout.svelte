@@ -10,8 +10,8 @@
   import AvatarIcon from "$src/icons/avatar.svg?raw";
 
   import { onMount } from "svelte";
-  import { currentUser, setup} from "$src/data/cache";
-  import {loginUser, logoutUser } from "$src/api/auth";
+  import { currentUser, setup } from "$src/data/cache";
+  import { getCurrentUser, loginUser, logoutUser } from "$src/api/auth";
 
   export const load = async () => {
     if (browser) {
@@ -21,11 +21,11 @@
   };
   onMount(async () => {
     setup();
-    await loginUser();
+    await getCurrentUser();
   });
 
   const toggleLogin = async () => {
-    if ($currentUser != null) {
+    if ($currentUser) {
       await logoutUser();
     } else {
       await loginUser();
@@ -63,19 +63,19 @@
       />
     </div>
     <div class="spacer" style="flex:1;" />
-    <a href="/wardrobe">
+    <a href="/wardrobe" class:disabled={$currentUser == null }>
       <button
         class="icon subscribtion-button dark"
         class:selected={$page.route.id == "/wardrobe"}
       >
-       <span class="icon-small"> {@html SubscriptionIcon}</span>
+        <span class="icon-small"> {@html SubscriptionIcon}</span>
       </button>
     </a>
     <button class="icon avatar-button dark" on:click={toggleLogin}>
       {#if $currentUser != null}
         <img src={$currentUser.avatar} alt="Avatar" />
       {:else}
-      <span class="icon-small"> {@html AvatarIcon}</span>
+        <span class="icon-small"> {@html AvatarIcon}</span>
       {/if}
     </button>
     <!-- svelte-ignore a11y-click-events-have-key-events -->

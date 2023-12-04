@@ -100,7 +100,10 @@
       preserveDrawingBuffer: true,
     });
     appState.subscribe((state) => {
-      if (loaded || state != APP_STATE.READY) return;
+      if (loaded || state != APP_STATE.READY) {
+        loaded = false;
+        return;
+      }
       loaded = true;
       isPackageInWardrobe = IsPackageInWardrobe($itemPackage);
       updateTexture();

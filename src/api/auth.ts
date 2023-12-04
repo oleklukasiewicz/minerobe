@@ -5,6 +5,7 @@ import {
   GetDocument,
   GetUser,
   SetDocument,
+  getCurrentUserFromLocal,
   login,
   logout,
 } from "../data/firebase";
@@ -13,15 +14,36 @@ import { MinerobeUser, MinerobeUserLink } from "$src/data/common";
 const USER_PATH = "users";
 const USER_LINK_PATH = "user-link";
 
+export const getCurrentUser = async function () {
+  await getCurrentUserFromLocal();
+  let firebaseUser = GetUser();
+  let minerobeUser: MinerobeUser;
+  if (firebaseUser) {
+    let minerobeUserLink: MinerobeUserLink = await GetDocument(
+      USER_LINK_PATH,
+      firebaseUser.uid
+    );
+    if (minerobeUserLink) {
+      minerobeUser = await GetDocument(USER_PATH, minerobeUserLink.userId);
+    }
+    currentUser.set(minerobeUser);
+  } else {
+    currentUser.update((user) => {
+      return undefined;
+    });
+  }
+};
 export const loginUser = async function () {
   let user = await login();
   let firebaseUser = GetUser();
-  let minerobeUser:MinerobeUser;
-  let minerobeUserLink:MinerobeUserLink = await GetDocument(USER_LINK_PATH, firebaseUser.uid);
+  let minerobeUser: MinerobeUser;
+  let minerobeUserLink: MinerobeUserLink = await GetDocument(
+    USER_LINK_PATH,
+    firebaseUser.uid
+  );
   if (minerobeUserLink) {
     minerobeUser = await GetDocument(USER_PATH, minerobeUserLink.userId);
-  }
-  else {
+  } else {
     minerobeUser = await createUser(user);
   }
 
@@ -31,10 +53,14 @@ export const logoutUser = async function () {
   await logout();
   currentUser.set(null);
 };
-const createUser = async function (user: any):Promise<MinerobeUser> {
+const createUser = async function (user: any): Promise<MinerobeUser> {
   const userID = GenerateIdForCollection(USER_PATH);
-  await SetDocument(USER_LINK_PATH,user.uid, new MinerobeUserLink(user.uid,userID));
-  const userImg = await fetch(user.photoURL,{ referrerPolicy: 'no-referrer' });
+  await SetDocument(
+    USER_LINK_PATH,
+    user.uid,
+    new MinerobeUserLink(user.uid, userID)
+  );
+  const userImg = await fetch(user.photoURL, { referrerPolicy: "no-referrer" });
   const userImgBlob = await userImg.blob();
 
   return new Promise((resolve, reject) => {
@@ -59,5 +85,5 @@ export const SetMinerobeUser = async function (user: MinerobeUser) {
   }
 };
 export const GetMinerobeUser = async function (id: string) {
-  if (get(currentUser)) return await GetDocument(USER_PATH, id);
+  return await GetDocument(USER_PATH, id);
 };

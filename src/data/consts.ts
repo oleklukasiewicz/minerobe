@@ -104,4 +104,5 @@ export const LAYER_TYPE = {
     READY: "ready",
     USER_READY: "user_ready",
     ERROR: "error",
+    GUEST_READY: "guest_ready",
   };

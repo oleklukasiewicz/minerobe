@@ -53,8 +53,8 @@ export const SaveOutfitSet = async function (
   outfitSet: OutfitPackage
 ): Promise<OutfitPackage> {
   const outfitSetRef = await GetDocument(SETS_PATH, outfitSet.id);
-  if (outfitSetRef) {
-    await SetDocument(SETS_PATH, outfitSet.id, outfitSet);
+  if (outfitSetRef && outfitSetRef.publisher.id == get(currentUser).id) {
+    await SetDocument(SETS_PATH, outfitSet.id, await PrepareOutfitSet(outfitSet,false));
   }
   return outfitSet;
 };
@@ -88,9 +88,9 @@ export const ShareOutfitSet = async function (outfitSet: OutfitPackage) {
   }
   return outfitSet;
 };
-export const PrepareOutfitSet = function (ot: OutfitPackage) {
+export const PrepareOutfitSet = function (ot: OutfitPackage, toLink: boolean = true) {
   let outfitSet = Object.assign({}, ot);
-  if (outfitSet.isShared == true)
+  if (outfitSet.isShared == true && toLink == true)
     return new OutfitPackageLink(
       outfitSet.id,
       outfitSet.model

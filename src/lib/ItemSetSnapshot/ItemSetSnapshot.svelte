@@ -46,7 +46,7 @@
         <div class="share-icon icon-small">{@html CloudIcon}</div>
       {/if}
     </div>
-    {#if publisher.id != $currentUser.id}
+    {#if publisher.id != $currentUser?.id}
       <span class="label unique">{publisher.name}</span>
     {/if}
   </div>
