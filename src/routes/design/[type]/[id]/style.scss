@@ -30,9 +30,6 @@
         max-width: 600px;
         margin: auto;
       }
-      .item-model {
-        display: flex;
-      }
       .item-variants
       {
         display: flex;
@@ -41,23 +38,6 @@
       .item-name {
         #item-title {
           margin: 4px 0px 10px;
-        }
-      }
-      .item-layers {
-        display: flex;
-        flex-direction: column;
-        &.set
-        {
-          flex-direction: row;
-          gap: 8px;
-        }
-        form {
-          margin-top: 8px;
-          gap: 8px;
-          button {
-            flex: 1;
-            font-size: larger;
-          }
         }
       }
       .item-actions {
