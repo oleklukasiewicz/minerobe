@@ -52,6 +52,10 @@ export const itemPackage: Writable<OutfitPackage> = propertyStore(
   wardrobe,
   "studio"
 );
+
+let itemPackageSubscription;
+let wardrobeSubscription;
+
 export const setup = function () {
   wardrobe.set(
     new WardrobePackage(
@@ -82,25 +86,36 @@ export const setup = function () {
         )
       );
       let w = await FetchWardrobe();
-      if (w != null) wardrobe.set(w);
-      console.log("setting wardrobe");
-      if (w.studio != null) itemPackage.set(w.studio);
-      appState.set(APP_STATE.READY);
-      setupSubscriptions();
+      if (w != null) {
+        wardrobe.set(w);
+        console.log("setting wardrobe");
+        if (w.studio != null) itemPackage.set(w.studio);
+        appState.set(APP_STATE.READY);
+
+        if (itemPackageSubscription) itemPackageSubscription();
+        if (wardrobeSubscription) wardrobeSubscription();
+
+        setupSubscriptions();
+      }
     } else {
+      if (itemPackageSubscription) itemPackageSubscription();
+      if (wardrobeSubscription) wardrobeSubscription();
+
       appState.set(APP_STATE.LOADING);
     }
   });
 };
 const setupSubscriptions = function () {
-  itemPackage.subscribe(async (data: OutfitPackage) => {
-    if (data != null) {
-      if (data.type == PACKAGE_TYPE.OUTFIT_SET) {
-        await UploadOutfitSet(data);
-      } else await UploadOutfit(data);
+  itemPackageSubscription = itemPackage.subscribe(
+    async (data: OutfitPackage) => {
+      if (data != null) {
+        if (data.type == PACKAGE_TYPE.OUTFIT_SET) {
+          await UploadOutfitSet(data);
+        } else await UploadOutfit(data);
+      }
     }
-  });
-  wardrobe.subscribe(async (data) => {
+  );
+  wardrobeSubscription = wardrobe.subscribe(async (data) => {
     if (get(appState) == APP_STATE.READY && data) await UploadWardrobe(data);
   });
 };
