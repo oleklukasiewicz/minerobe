@@ -1,161 +1,67 @@
 import { currentUser, wardrobe } from "$src/data/cache";
-import type { OutfitPackage, WardrobePackage } from "$src/data/common";
+import {
+  OutfitPackageLink,
+  type OutfitPackage,
+  WardrobePackage,
+} from "$src/data/common";
 import { PACKAGE_TYPE } from "$src/data/consts";
-import {
-  GetDocument,
-  SetDocument,
-  GenerateIdForCollection,
-} from "$src/data/firebase";
+import { GetDocument, SetDocument } from "$src/data/firebase";
 import { get } from "svelte/store";
-import {
-  GetOutfitSet,
-  PrepareOutfitSet,
-  RemoveOutfitSet,
-  ResolveOutfitSet,
-  ShareOutfitSet,
-} from "./sets";
-import { PrepareOutfit, ResolveOutfit, ShareOutfit } from "./outfits";
+import { FetchOutfitSetFromLink, ParseOutfitSetToLocal } from "./sets";
+import { FetchOutfitFromLink, ParseOutfitToLocal } from "./outfits";
 
 const WARDROBE_PATH = "wardrobes";
-export const GetWardrobe = async function () {
-  console.log("getting wardrobe");
-  if (get(currentUser)) {
-    let dt = await GetDocument(WARDROBE_PATH, get(currentUser).id);
-    if (dt == null) return null;
-    const data = await ResolveWardrobe(dt);
-    return data;
-  }
-};
-export const SetWardrobe = async function (data) {
-  if (get(currentUser) && data != null) {
-    await SetDocument(
-      WARDROBE_PATH,
-      get(currentUser).id,
-      await PrepareWardrobe(data)
-    );
-  }
-};
-export const GenerateIdForWardrobeItem = function () {
-  return GenerateIdForCollection(WARDROBE_PATH);
-};
 
-const GetDirectoryForType = function (type: string) {
-  if (type == PACKAGE_TYPE.OUTFIT_SET) return get(wardrobe).sets;
-  else return get(wardrobe).outfits;
-};
-
-export const IsItemInWardrobe = function (id: string, type: string) {
-  if (get(currentUser)) {
-    if (
-      GetDirectoryForType(type).find((outfit: OutfitPackage) => outfit.id == id)
-    )
-      return true;
-    return false;
-  }
-};
-export const IsPackageInWardrobe = function (pack:OutfitPackage) {
-  return IsItemInWardrobe(pack.id,pack.type);
-}
-
-export const AddToWardrobe = async function (wardrobeItem: OutfitPackage) {
-  if (get(currentUser)) {
-    const wardrobePackage: WardrobePackage = get(wardrobe);
-
-    if (IsItemInWardrobe(wardrobeItem.id, wardrobeItem.type)) return;
-    if (wardrobeItem.type == PACKAGE_TYPE.OUTFIT_SET)
-      wardrobePackage.sets.push(wardrobeItem);
-    else wardrobePackage.outfits.push(wardrobeItem);
-
-    wardrobe.set(wardrobePackage);
-  }
-};
-export const RemoveFromWardrobe = async function (wardrobeItemId: string) {
-  if (get(currentUser)) {
-    const item = await GetOutfitSet(wardrobeItemId);
-    if (item != null && item.publisher.id == get(currentUser).id) {
-      await RemoveOutfitSet(wardrobeItemId);
-    }
-    const wardrobePackage: WardrobePackage = get(wardrobe);
-    wardrobePackage.outfits = wardrobePackage.outfits.filter(
-      (outfit: OutfitPackage) => outfit.id != wardrobeItemId
-    );
-    wardrobePackage.sets = wardrobePackage.sets.filter(
-      (outfit: OutfitPackage) => outfit.id != wardrobeItemId
-    );
-    wardrobe.set(wardrobePackage);
-  }
-};
-export const UpdateWardrobeItem = async function (wardrobeItem: OutfitPackage) {
-  if (get(currentUser)) {
-    const wardrobePackage: WardrobePackage = get(wardrobe);
-    if (wardrobeItem.type == PACKAGE_TYPE.OUTFIT_SET) {
-      const index = wardrobePackage.sets.findIndex(
-        (outfit: OutfitPackage) => outfit.id == wardrobeItem.id
-      );
-      wardrobePackage.sets[index] = wardrobeItem;
-    } else {
-      const index = wardrobePackage.outfits.findIndex(
-        (outfit: OutfitPackage) => outfit.id == wardrobeItem.id
-      );
-      wardrobePackage.outfits[index] = wardrobeItem;
-    }
-    wardrobe.set(wardrobePackage);
-  }
-};
-export const UpdateStudioItem = async function (wardrobeItem: OutfitPackage) {
-  if (get(currentUser)) {
-    const wardrobePackage: WardrobePackage = get(wardrobe);
-    wardrobePackage.studio = wardrobeItem;
-    wardrobe.set(wardrobePackage);
-  }
-};
-export const PrepareWardrobe = async function (pack: WardrobePackage) {
+export const ParseWardrobeToDatabase = function (pack: WardrobePackage) {
   let data = Object.assign({}, pack);
-  data.sets = data.sets.map((item) => PrepareOutfitSet(item));
-  data.outfits = data.outfits.map((item) => PrepareOutfit(item));
+  data.sets = data.sets.map(
+    (item) => new OutfitPackageLink(item.id, item.model) as OutfitPackage
+  );
+  data.outfits = data.outfits.map(
+    (item) => new OutfitPackageLink(item.id, item.model) as OutfitPackage
+  );
   if (data.studio?.id) {
-    data.studio = await PrepareItem(data.studio);
+    data.studio = new OutfitPackageLink(
+      data.studio.id,
+      data.studio.model,
+      data.studio.type == PACKAGE_TYPE.OUTFIT_SET
+        ? PACKAGE_TYPE.OUTFIT_SET_LINK
+        : PACKAGE_TYPE.OUTFIT_LINK
+    ) as OutfitPackage;
   }
   return data;
 };
-export const ResolveWardrobe = async function (data: WardrobePackage) {
-  let mappedSets: OutfitPackage[] = [];
-  await Promise.all(
-    data.sets.map(async (item) => {
-      const mapped = await ResolveOutfitSet(item);
-      mappedSets.push(mapped);
-      return mapped;
-    })
+export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
+  const parsedSets = Promise.all(
+    data.sets.map(
+      async (item: OutfitPackageLink) => await FetchOutfitSetFromLink(item)
+    )
   );
-  let mappedOutfits: OutfitPackage[] = [];
-  await Promise.all(
-    data.outfits.map(async (item) => {
-      const mapped = await ResolveOutfit(item);
-      mappedOutfits.push(mapped);
-      return mapped;
-    })
+  const parsedOutfits = Promise.all(
+    data.outfits.map(
+      async (item: OutfitPackageLink) => await FetchOutfitFromLink(item)
+    )
   );
-  data.sets = mappedSets as OutfitPackage[];
-  data.outfits = mappedOutfits as OutfitPackage[];
-  if (data.studio?.id) {
-    data.studio = await ResolveItem(data.studio);
-  }
-  return data;
-};
-//for data downloading
-export const ResolveItem = function (item: OutfitPackage) {
-  if (item.type == PACKAGE_TYPE.OUTFIT_SET_LINK) return ResolveOutfitSet(item);
-  if (item.type == PACKAGE_TYPE.OUTFIT_LINK) return ResolveOutfit(item);
-  else return item;
-};
 
-//for data sending
-export const PrepareItem = function (item: OutfitPackage) {
-  if (item.type == PACKAGE_TYPE.OUTFIT_SET) return PrepareOutfitSet(item);
-  if(item.type == PACKAGE_TYPE.OUTFIT) return PrepareOutfit(item);
-  else return item;
+  data.sets = await parsedSets;
+  data.outfits = await parsedOutfits;
+
+  if (data.studio?.id) {
+    if (data.studio.type == PACKAGE_TYPE.OUTFIT_SET_LINK)
+      data.studio = await FetchOutfitSetFromLink(data.studio);
+    else data.studio = await FetchOutfitFromLink(data.studio);
+  }
+  return data;
 };
-export const SharePackage= async function (item: OutfitPackage) {
-  if (item.type == PACKAGE_TYPE.OUTFIT_SET) return await ShareOutfitSet(item);
-  return await ShareOutfit(item);
+export const FetchWardrobe = async function () {
+  let dt = await GetDocument(WARDROBE_PATH, get(currentUser).id);
+  if (dt == null) return new WardrobePackage("default_wardrobe", [], []);
+  return ParseWardrobeToLocal(dt);
+};
+export const UploadWardrobe = async function (data: WardrobePackage) {
+  await SetDocument(
+    WARDROBE_PATH,
+    get(currentUser).id,
+    await ParseWardrobeToDatabase(data)
+  );
 };

@@ -28,9 +28,9 @@ export class OutfitLayer {
     name: string,
     steve: FileData,
     alex: FileData,
-    id: string = GenerateIdForCollection("dummy"),
+    id: string,
     type: string = LAYER_TYPE.LOCAL,
-    variantId: string = ""
+    variantId: string = null
   ) {
     this.name = name;
     this.variantId = variantId;
@@ -50,10 +50,12 @@ export class OutfitLayer {
 }
 export class OutfitLayerLink {
   id: string;
+  type: string;
   variantId: string;
   constructor(id: string, variantId: string) {
     this.id = id;
     this.variantId = variantId;
+    this.type = LAYER_TYPE.REMOTE;
   }
 }
 export class OutfitPackageLink {

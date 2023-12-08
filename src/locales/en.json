@@ -11,7 +11,7 @@
   "downloadPackage": "Download Package",
   "defaultskinname": "New Skin",
   "layersOpt": {
-    "addLayer": "Add Outfit",
+    "addLayer": "Import Image",
     "addVariant": "Add Variant"
   },
   "modelOpt": {
@@ -33,5 +33,9 @@
   "sharePackage": "Share",
   "variants": "Variants",
   "shared": "Shared",
-  "goToItemPage": "Item page"
+  "goToItemPage": "Item page",
+  "layerType": {
+    "remote": "linked"
+  },
+  "importOutfit": "Add From Wardrobe"
 }

@@ -9,6 +9,7 @@
   import DownIcon from "$src/icons/chevron-down.svg?raw";
   import DeleteIcon from "$src/icons/close.svg?raw";
   import UserPlusIcon from "$src/icons/user-plus.svg?raw";
+  import { LAYER_TYPE } from "$src/data/consts";
 
   export let texture: OutfitLayer = null;
   export let model = null;
@@ -20,6 +21,7 @@
   export let controls = true;
   export let selected = false;
   export let selectable = false;
+  export let multiVariant = true;
   export let label =
     texture?.name || texture[modelName]?.fileName || "New layer";
 
@@ -80,21 +82,31 @@
       />
     </div>
     <span
-      ><input bind:value={label} />
-      <br /><span class="label common">{texture[modelName].type}</span></span
-    >
+      ><input bind:value={label} class:disabled={texture.type == LAYER_TYPE.REMOTE}/>
+      <br /><span class="label common">{texture[modelName].type}</span>
+      {#if texture.type == LAYER_TYPE.REMOTE}
+        <span class="label rare" style="margin-left:8px;"
+          >{$_("layerType.remote")}</span
+        >
+      {/if}
+    </span>
   </div>
   {#if !readonly}
     <div class="actions">
-      <button
-        class="secondary icon"
-        title={$_("newLayerVariant")}
-        on:click|stopPropagation={addVariant}
-      >
-        {@html UserPlusIcon}</button
-      >
+      {#if multiVariant && texture.type != LAYER_TYPE.REMOTE}
+        <button
+          class="secondary icon"
+          title={$_("newLayerVariant")}
+          on:click|stopPropagation={addVariant}
+        >
+          {@html UserPlusIcon}</button
+        >
+       
+      {/if}
+      {#if controls && multiVariant && texture.type != LAYER_TYPE.REMOTE}
+      <div class="separator vertical" />
+      {/if}
       {#if controls}
-        <div class="separator vertical" />
         <button
           class="tertiary icon"
           title={$_("up")}
@@ -111,7 +123,11 @@
         >
       {/if}
       <div class="separator vertical" />
-      <button class="tertiary icon" title={$_("remove")}  on:click|stopPropagation={remove}>
+      <button
+        class="tertiary icon"
+        title={$_("remove")}
+        on:click|stopPropagation={remove}
+      >
         {@html DeleteIcon}</button
       >
     </div>

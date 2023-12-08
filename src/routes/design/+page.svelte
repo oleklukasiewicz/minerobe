@@ -18,10 +18,11 @@
 
   import {
     APP_STATE,
+    LAYER_TYPE,
     MODEL_TYPE,
     PACKAGE_TYPE,
   } from "$data/consts";
-  import { FileData, OutfitLayer } from "$data/common";
+  import { FileData, OutfitLayer, OutfitPackage } from "$data/common";
   import {
     itemPackage,
     alexModel,
@@ -29,6 +30,7 @@
     currentUser,
     appState,
     baseTexture,
+    wardrobe,
   } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
@@ -52,14 +54,11 @@
     ImportLayerFromFile,
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
-  import {
-    AddToWardrobe,
-    IsPackageInWardrobe,
-    RemoveFromWardrobe,
-  } from "$src/api/wardrobe";
-  import { ShareOutfitSet } from "$src/api/sets";
-  import { ShareOutfit } from "$src/api/outfits";
+  import { GenerateIdForOutfitLayer } from "$src/api/outfits";
   import { GetAnimationForType } from "$src/helpers/imageDataHelpers";
+  import Dialog from "$lib/Dialog/Dialog.svelte";
+  import OutfitPicker from "$lib/OutfitPicker/OutfitPicker.svelte";
+  import { AddItemToWardrobe, IsItemInWardrobe, RemoveItemFromWardrobe, ShareItem } from "$src/helpers/apiHelper";
 
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
@@ -90,6 +89,7 @@
 
   let isPackageInWardrobe = false;
   let rendererLayers: FileData[] = [];
+  let isOutfitPickerOpen = false;
 
   let updateAnimation = function (anim) {};
 
@@ -104,7 +104,7 @@
         return;
       }
       loaded = true;
-      isPackageInWardrobe = IsPackageInWardrobe($itemPackage);
+      isPackageInWardrobe = IsItemInWardrobe($itemPackage,$wardrobe);
       updateTexture();
     });
   });
@@ -141,7 +141,8 @@
     }
     itemLayers.update((layers) => {
       let refresh = false;
-      if ($selectedLayer.name == layers[index].name) {
+
+      if (!$isItemSet && $selectedLayer.name == layers[index].name) {
         refresh = true;
       }
       layers.splice(index, 1);
@@ -192,6 +193,17 @@
       }
     }
   };
+  const addNewRemoteLayer = async function (outfit: OutfitPackage) {
+    isOutfitPickerOpen = false;
+    let layer = outfit.layers[0];
+    itemLayers.update((layers) => {
+      layer.id = outfit.id;
+      layer.type = LAYER_TYPE.REMOTE;
+      const newRemote = layer;
+      layers.unshift(newRemote);
+      return layers;
+    });
+  };
 
   //imports / export
   const importLayer = async function () {
@@ -199,9 +211,10 @@
     itemLayers.update((layers) => {
       let newOutfit;
       if ($itemModelType == MODEL_TYPE.ALEX)
-        newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer);
-      else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null);
+        newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer, null);
+      else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null, null);
       updatedLayer = newOutfit;
+      newOutfit.variantId = GenerateIdForOutfitLayer();
       layers.unshift(newOutfit);
 
       return layers;
@@ -231,15 +244,15 @@
 
   //sharing / wardrobe
   const sharePackage = async function () {
-    if ($isItemSet) await ShareOutfitSet($itemPackage);
-    else await ShareOutfit($itemPackage);
+   await ShareItem($itemPackage);
+   $itemPackage.isShared = true;
   };
   const addToWardrobe = async function () {
-    await AddToWardrobe($itemPackage);
+    AddItemToWardrobe($itemPackage);
     isPackageInWardrobe = true;
   };
   const removeFromWardrobe = async function () {
-    await RemoveFromWardrobe($itemPackage.id);
+    await RemoveItemFromWardrobe($itemPackage.id,$itemPackage.type);
     isPackageInWardrobe = false;
   };
 
@@ -256,12 +269,22 @@
             itemLayers.update((layers) => {
               let newOutfit;
               if ($itemModelType == MODEL_TYPE.ALEX)
-                newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer);
+                newOutfit = new OutfitLayer(
+                  newLayer.fileName,
+                  null,
+                  newLayer,
+                  null
+                );
               else
-                newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null);
+                newOutfit = new OutfitLayer(
+                  newLayer.fileName,
+                  newLayer,
+                  null,
+                  null
+                );
               updatedLayer = newOutfit;
               layers.unshift(newOutfit);
-
+              newOutfit.variantId = GenerateIdForOutfitLayer();
               return layers;
             });
           } else {
@@ -294,7 +317,6 @@
   const handleRenderDragLeave = function (event) {
     isDragging = false;
   };
-
   //subscribtions
   itemLayers.subscribe((layers) => updateTexture());
   itemModelType.subscribe((model) => updateTexture());
@@ -346,7 +368,9 @@
               : $_("outfit_set")}</span
           >
           {#if $itemPackage.isShared}
-            <span class="label rare" style="margin-left:8px">{$_("shared")}</span>
+            <span class="label rare" style="margin-left:8px"
+              >{$_("shared")}</span
+            >
           {/if}
           <br />
           <br />
@@ -358,7 +382,7 @@
       />
       <div class="item-layers">
         {#if loaded}
-          {#each $itemLayers as item, index (item.id)}
+          {#each $itemLayers as item, index (item.id + item.variantId)}
             <div class="item-layer">
               <ItemLayer
                 texture={item}
@@ -381,24 +405,26 @@
           {/each}
         {/if}
         <form style="display: flex;">
+          {#if $isItemSet}
+          <button
+            id="import-package-action"
+            title={$_("importOutfit")}
+            class:disabled={!loaded}
+            on:click={() => (isOutfitPickerOpen = true)}
+            class="secondary"
+            >{@html AddIcon} {$_("importOutfit")}</button
+          >
+          {/if}
           <button
             id="add-layer-action"
             type="submit"
             class="secondary"
             class:disabled={!loaded}
             on:click={importLayer}
-            >{@html AddIcon}
+            >{@html ImportPackageIcon}
             {$isItemSet
               ? $_("layersOpt.addLayer")
               : $_("layersOpt.addVariant")}</button
-          >
-          <button
-            id="import-package-action"
-            title={$_("importPackage")}
-            class:disabled={!loaded}
-            on:click={importPackage}
-            class="secondary"
-            >{@html ImportPackageIcon} {$_("importPackage")}</button
           >
         </form>
       </div>
@@ -420,7 +446,8 @@
               <button
                 id="share-package-action"
                 title={$_("goToItemPage")}
-                class="secondary">{@html SpotlightIcon} {$_("goToItemPage")}</button
+                class="secondary"
+                >{@html SpotlightIcon} {$_("goToItemPage")}</button
               ></a
             >
           {:else}
@@ -454,6 +481,19 @@
       </div>
     </div>
   </div>
+  <Dialog bind:open={isOutfitPickerOpen}>
+    <div class="outfit-picker-dialog">
+      <h1>Pick your outfit</h1>
+      {#if loaded && isOutfitPickerOpen}
+        <OutfitPicker
+          renderer={layersRenderer}
+          outfits={$wardrobe.outfits}
+          modelName={$wardrobe.studio.model}
+          on:select={(e) => addNewRemoteLayer(e.detail)}
+        />
+      {/if}
+    </div>
+  </Dialog>
 </div>
 
 <style lang="scss">

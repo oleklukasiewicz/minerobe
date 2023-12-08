@@ -11,10 +11,10 @@
   import AnimationIcon from "$icons/animation.svg?raw";
   import AvatarIcon from "$icons/avatar.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
-  import { CreatedNewOutfitSet } from "$src/api/sets";
-  import { CreatedNewOutfit } from "$src/api/outfits";
   import { APP_STATE, OUTFIT_TYPE } from "$src/data/consts";
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
+  import { CreateOutfitSet } from "$src/api/sets";
+  import { CreateOutfit } from "$src/api/outfits";
 
   let layersRenderer: THREE.WebGLRenderer = null;
 
@@ -35,11 +35,11 @@
     });
   });
   const addNewSet = async function () {
-    const newSet = await CreatedNewOutfitSet();
+    const newSet = await CreateOutfitSet(true);
     navigateToDesign(newSet);
   };
   const addNewOutfit = async function () {
-    const newSet = await CreatedNewOutfit();
+    const newSet = await CreateOutfit(true);
     navigateToDesign(newSet);
   };
   let outfitList = [];

@@ -4,15 +4,18 @@
   import type { OutfitPackage } from "$src/data/common";
   import { MODEL_TYPE } from "$src/data/consts";
   import * as THREE from "three";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
 
   const dispatch = createEventDispatcher();
   export let outfits: OutfitPackage[] = [];
   export let modelName = "";
+  export let renderer = null;
+  export const updateRenderer = () => {
+    mapOutfits(outfits);
+  };
 
   let model = null;
   let mappedOutfits: OutfitPackage[] = [];
-  let renderer = new THREE.WebGLRenderer({ alpha: true });
 
   const mapOutfits = function (list: OutfitPackage[]) {
     mappedOutfits = [];
@@ -30,6 +33,10 @@
     dispatch("select", outfit);
   };
 
+  onMount(() => {
+    if (renderer == null) renderer = new THREE.WebGLRenderer({ alpha: true });
+    mapOutfits(outfits);
+  });
   $: mapOutfits(outfits);
 </script>
 
@@ -37,6 +44,7 @@
   {#each mappedOutfits as outfit, index}
     <ItemSnapshot
       texture={outfit}
+      dense={true}
       {model}
       {renderer}
       {modelName}

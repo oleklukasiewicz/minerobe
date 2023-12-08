@@ -1,6 +1,6 @@
 <script lang="ts">
   import SkinSnapshot from "$lib/render/SkinSnapshot/SkinSnapshot.svelte";
-  import type {  OutfitPackage } from "$src/data/common";
+  import type { OutfitPackage } from "$src/data/common";
   import {
     ConvertRGBToHex,
     FindInColors,
@@ -16,6 +16,7 @@
   export let renderer = undefined;
   export let extended = false;
   export let label = texture?.name || "New outfit";
+  export let dense = false;
   let dominantColor = [];
   let variantTexture = null;
   const limit = 2;
@@ -51,7 +52,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="item-snapshot" on:click>
+<div class="item-snapshot" on:click class:dense>
   {#if variantTexture}
     <SkinSnapshot
       texture={variantTexture[texture.model].content}
@@ -80,7 +81,10 @@
           ></span>
         {/each}
         {#if aboveLimit > 0}
-          <span style="font-family:minecraft;margin-right:4px;vertical-align:top;">+{aboveLimit}</span>
+          <span
+            style="font-family:minecraft;margin-right:4px;vertical-align:top;"
+            >+{aboveLimit}</span
+          >
         {/if}
       </div>
     {/if}

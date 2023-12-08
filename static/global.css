@@ -46,6 +46,7 @@
     --size-font-title: 24px;
     --size-font-subheader: 34px;
     --size-font-header: 46px;
+    --color-dialog: rgba(0,0,0,.6);
 }
 @keyframes Blink{
     0%{

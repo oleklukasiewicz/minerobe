@@ -4,19 +4,18 @@ import {
   type Writable,
   type Readable,
   get,
-  derived,
 } from "svelte/store";
 import { APP_STATE, PACKAGE_TYPE } from "$data/consts";
-import { AppState, MinerobeUser } from "./common";
+import { MinerobeUser } from "./common";
 import alexModelData from "$src/model/alex.gltf?raw";
 import steveModelData from "$src/model/steve.gltf?raw";
 import planksTextureRaw from "$src/texture/default_planks.png?url";
 import { WardrobePackage } from "./common";
 import { OutfitPackage } from "./common";
-import { GetWardrobe, SetWardrobe } from "$src/api/wardrobe";
-import { SaveOutfitSet } from "$src/api/sets";
 import { propertyStore } from "svelte-writable-derived";
-import { SaveOutfit } from "$src/api/outfits";
+import { FetchWardrobe, UploadWardrobe } from "$src/api/wardrobe";
+import { UploadOutfitSet } from "$src/api/sets";
+import { UploadOutfit } from "$src/api/outfits";
 
 export let alexModel: Readable<string> = readable(
   "data:model/gltf+json;base64," + btoa(alexModelData)
@@ -30,7 +29,7 @@ export let planksTexture: Readable<string> = readable(planksTextureRaw);
 export const appState: Writable<string> = writable(APP_STATE.LOADING);
 export const currentUser: Writable<MinerobeUser> = writable(null);
 export const wardrobe: Writable<WardrobePackage> = writable({
-  id: "default_wardrobe",
+  id: null,
   outfits: [],
   sets: [],
   studio: {
@@ -82,11 +81,8 @@ export const setup = function () {
           new MinerobeUser(user.id, user.name, user.avatar)
         )
       );
-      let w = await GetWardrobe();
-      if (w == null) {
-        w = new WardrobePackage("default_wardrobe", [], [], null);
-      }
-      wardrobe.set(w);
+      let w = await FetchWardrobe();
+      if (w != null) wardrobe.set(w);
       console.log("setting wardrobe");
       if (w.studio != null) itemPackage.set(w.studio);
       appState.set(APP_STATE.READY);
@@ -98,13 +94,13 @@ export const setup = function () {
 };
 const setupSubscriptions = function () {
   itemPackage.subscribe(async (data: OutfitPackage) => {
-    if (data != null && data.isShared) {
+    if (data != null) {
       if (data.type == PACKAGE_TYPE.OUTFIT_SET) {
-        await SaveOutfitSet(data);
-      } else await SaveOutfit(data);
+        await UploadOutfitSet(data);
+      } else await UploadOutfit(data);
     }
   });
   wardrobe.subscribe(async (data) => {
-    if (get(appState) == APP_STATE.READY) await SetWardrobe(data);
+    if (get(appState) == APP_STATE.READY && data) await UploadWardrobe(data);
   });
 };

@@ -1,11 +1,12 @@
-import { currentUser } from "$src/data/cache";
+import { currentUser, wardrobe } from "$src/data/cache";
 import {
   OutfitPackage,
   type OutfitLayer,
   OutfitPackageLink,
   MinerobeUser,
+  OutfitLayerLink,
 } from "$src/data/common";
-import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+import { LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
 import {
   DeleteDocument,
   GenerateIdForCollection,
@@ -13,104 +14,83 @@ import {
   SetDocument,
 } from "$src/data/firebase";
 import { get } from "svelte/store";
-import {
-  AddToWardrobe,
-  IsItemInWardrobe,
-  UpdateWardrobeItem,
-} from "./wardrobe";
 import { GetMinerobeUser } from "./auth";
+import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 
 const OUTFIT_PATH = "outfits";
+const OOUTFIT_LAYER_PATH = "dummy";
 
 export const GenerateIdForOutfit = function () {
   return GenerateIdForCollection(OUTFIT_PATH);
 };
-export const CreatedNewOutfit = async function (
-  name: string = "New Outfit",
-  layers: OutfitLayer[] = [],
-  model: string = MODEL_TYPE.ALEX,
-  addToWardrobe: boolean = true,
+export const GenerateIdForOutfitLayer = function () {
+  return GenerateIdForCollection(OOUTFIT_LAYER_PATH);
+};
+
+const _fetchOutfit = async function (id,bypassSharedFlag=false) {
+  let outfit = await GetDocument(OUTFIT_PATH, id);
+  if (
+    outfit == null ||
+    (outfit?.publisher?.id != get(currentUser)?.id && (bypassSharedFlag?false:outfit.isShared == false))
+  )
+    return null;
+  return outfit;
+};
+export const ParseOutfitToLocal = async function (pack: OutfitPackage) {
+  let parsed = Object.assign({}, pack);
+  parsed.publisher = await GetMinerobeUser(parsed.publisher.id);
+  return parsed;
+};
+export const ParseOutfitToDatabase = function (outfit: OutfitPackage) {
+  let data = Object.assign({}, outfit);
+  data.publisher = new MinerobeUser(data.publisher.id, null, null);
+  return data;
+};
+export const FetchOutfitFromLink = async function (link: OutfitPackageLink) {
+  let parsed = await _fetchOutfit(link.id);
+  if (parsed == null) return null;
+  parsed.model = link.model;
+  parsed.publisher = await GetMinerobeUser(parsed.publisher.id);
+  return parsed;
+};
+export const FetchOutfit = async function (id: string) {
+  let parsed = await _fetchOutfit(id);
+  return await ParseOutfitToLocal(parsed);
+};
+export const FetchOutfitLayerFromLink = async function (link: OutfitLayerLink,bypassSharredFlag:boolean = false) {
+  let parsed = await _fetchOutfit(link.id,bypassSharredFlag);
+  if (parsed == null) return null;
+  let layer = parsed.layers.find((layer) => layer.variantId == link.variantId);
+  layer.id = parsed.id;
+  layer.type = LAYER_TYPE.REMOTE;
+  layer.name = parsed.name + " - " + layer.name;
+  return layer;
+};
+export const UploadOutfit = async function (outfit: OutfitPackage) {
+  if(outfit.publisher.id != get(currentUser)?.id) return;
+  if(outfit.layers.length == 0) return;
+  await SetDocument(
+    OUTFIT_PATH,
+    outfit.id,
+    await ParseOutfitToDatabase(outfit)
+  );
+};
+export const CreateOutfit = async function (
+  addToWardrobe: boolean = false,
   isShared: boolean = false
-): Promise<OutfitPackage> {
-  const outfitPackage: OutfitPackage = new OutfitPackage(
-    name,
-    model,
-    layers,
+) {
+  let outfit = new OutfitPackage(
+    "New outfit",
+    MODEL_TYPE.ALEX,
+    [],
     PACKAGE_TYPE.OUTFIT,
     get(currentUser),
     GenerateIdForOutfit(),
     isShared
   );
-  if (isShared) {
-    await SetDocument(
-      OUTFIT_PATH,
-      outfitPackage.id,
-      await PrepareOutfit(outfitPackage, false)
-    );
-  }
+  await UploadOutfit(outfit);
   if (addToWardrobe) {
-    await AddToWardrobe(outfitPackage);
+    await AddItemToWardrobe(outfit);
   }
-  return outfitPackage;
-};
-export const PrepareOutfit = function (
-  ot: OutfitPackage,
-  toLink: boolean = true
-) {
-  let outfitSet = Object.assign({}, ot);
-  if (outfitSet.isShared == true && toLink == true)
-    return new OutfitPackageLink(
-      outfitSet.id,
-      outfitSet.model,
-      PACKAGE_TYPE.OUTFIT_LINK
-    ) as OutfitPackage;
-  outfitSet.publisher = new MinerobeUser(outfitSet.publisher.id, null, null);
-  return outfitSet;
-};
-export const SaveOutfit = async function (
-  outfit: OutfitPackage
-): Promise<OutfitPackage> {
-  if (outfit.layers.length == 0) return null;
-  const outfitRef = await GetDocument(OUTFIT_PATH, outfit.id);
-  if (outfitRef && outfitRef.publisher.id == get(currentUser).id) {
-    await SetDocument(
-      OUTFIT_PATH,
-      outfit.id,
-      await PrepareOutfit(outfit, false)
-    );
-  }
-  return outfit;
-};
-export const GetOutfit = async function (id: string): Promise<OutfitPackage> {
-  let outfit = await GetDocument(OUTFIT_PATH, id);
-  if (
-    outfit == null ||
-    (outfit?.publisher?.id != get(currentUser)?.id && outfit.isShared == false)
-  )
-    return null;
-  outfit.publisher = await GetMinerobeUser(outfit.publisher.id);
-  return outfit;
-};
-export const RemoveOutfit = async function (id: string) {
-  const outfit = await GetOutfit(id);
-  if (get(currentUser).id == outfit.publisher.id) {
-    await DeleteDocument(OUTFIT_PATH, id);
-  }
-};
-export const ShareOutfit = async function (outfit: OutfitPackage) {
-  if (outfit.layers.length == 0) return;
-  outfit.isShared = true;
-  const newId = GenerateIdForOutfit();
-  outfit.id = newId;
-  await SetDocument(OUTFIT_PATH, newId, await PrepareOutfit(outfit, false));
-  if (IsItemInWardrobe(outfit.id, outfit.type)) {
-    await UpdateWardrobeItem(outfit);
-  }
-  return outfit;
-};
-export const ResolveOutfit = async function (outfit: OutfitPackage) {
-  if (outfit.type == PACKAGE_TYPE.OUTFIT_LINK) {
-    return await GetOutfit(outfit.id);
-  } else outfit.publisher = await GetMinerobeUser(outfit.publisher.id);
   return outfit;
 };

@@ -12,6 +12,6 @@ export default defineConfig({
   },
   server: {
     /*here*/
-    hmr: { overlay: false },
+    hmr: { overlay: false, },
   },
 });

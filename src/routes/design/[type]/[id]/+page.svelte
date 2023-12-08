@@ -34,18 +34,14 @@
 
   import { ExportImageLayers } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
-  import { GetOutfitSet } from "$src/api/sets";
   import { page } from "$app/stores";
-  import {
-    AddToWardrobe,
-    IsItemInWardrobe,
-    RemoveFromWardrobe,
-  } from "$src/api/wardrobe";
-  import { GetOutfit } from "$src/api/outfits";
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
   import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
   import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
   import { GetAnimationForType } from "$src/helpers/imageDataHelpers";
+  import { FetchOutfit } from "$src/api/outfits";
+  import { FetchOutfitSet } from "$src/api/sets";
+  import { AddItemToWardrobe, IsItemInWardrobe, RemoveItemFromWardrobe } from "$src/helpers/apiHelper";
 
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -102,9 +98,8 @@
       if (!loaded) {
         outfitPackage =
           type == PACKAGE_TYPE.OUTFIT
-            ? await GetOutfit(id)
-            : await GetOutfitSet(id);
-
+            ? await FetchOutfit(id)
+            : await FetchOutfitSet(id);
         if (outfitPackage) {
           localPackage.set(outfitPackage);
         }
@@ -112,13 +107,10 @@
         updateTexture();
       }
       if (!isGuest) {
-        isPackageInWardrobe = await IsItemInWardrobe(
-          $localPackage.id,
-          $localPackage.type
-        );
+        isPackageInWardrobe = IsItemInWardrobe($localPackage,$wardrobe);
         //patching
         if($currentUser?.id == $localPackage.publisher?.id && !isPackageInWardrobe) {
-          await AddToWardrobe($localPackage);
+          await AddItemToWardrobe($localPackage)
           isPackageInWardrobe = true;
         }
       }
@@ -162,11 +154,11 @@
 
   //sharing
   const addToWardrobe = async function () {
-    await AddToWardrobe($localPackage);
+    await AddItemToWardrobe($localPackage);
     isPackageInWardrobe = true;
   };
   const removeFromWardrobe = async function () {
-    await RemoveFromWardrobe($localPackage.id);
+    await RemoveItemFromWardrobe($localPackage.id,$localPackage.type);
     isPackageInWardrobe = false;
   };
 

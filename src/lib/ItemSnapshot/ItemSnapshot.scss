@@ -1,13 +1,23 @@
 .item-snapshot {
   display: flex;
   max-width: 200px;
-  min-width: 175px;
-  height: auto;
+  min-width: 100px;
+  width: auto;
   flex: 1;
   height: auto;
   flex-direction: column;
   transition: var(--time);
   background-color: var(--color-theme-D1);
+  &.dense {
+    display: grid;
+    grid-template-columns: 85px auto;
+    max-width: 100vw;
+    height: 85px;
+    .item-snapshot-data {
+      min-width: 50%;
+      flex: 1;
+    }
+  }
   .item-snapshot-data {
     padding: 10px 8px;
     box-sizing: border-box;
