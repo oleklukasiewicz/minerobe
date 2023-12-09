@@ -1,5 +1,6 @@
 import { DeleteOutfit, UploadOutfit } from "$src/api/outfits";
 import { DeleteOutfitSet, UploadOutfitSet } from "$src/api/sets";
+import { AddLike, RemoveLike } from "$src/api/social";
 import { wardrobe } from "$src/data/cache";
 import { OutfitPackage } from "$src/data/common";
 import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
@@ -25,6 +26,10 @@ export const ShareItem = async function (item) {
 };
 export const AddItemToWardrobe = function (item: OutfitPackage) {
   let wardrobeObj = get(wardrobe);
+  if(!IsItemInWardrobe(item, wardrobeObj))
+  {
+    AddLike(item.id, item.type);
+  }
   if (item.type == PACKAGE_TYPE.OUTFIT_SET) {
     wardrobeObj.sets.push(item);
   }
@@ -43,6 +48,7 @@ export const RemoveItemFromWardrobe = function (id, type) {
       (outfit) => outfit?.id != id
     );
   }
+  RemoveLike(id, type);
   wardrobe.update((wardrobe) => {
     wardrobe.sets = wardrobeObj.sets;
     wardrobe.outfits = wardrobeObj.outfits;

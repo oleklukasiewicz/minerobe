@@ -126,3 +126,14 @@ export const GenerateIdForCollection = function (collectionName: string) {
     return doc(dataRef).id;
   }
 };
+export const UpdateRawDocument = async function (
+  path: string,
+  documentName: string,
+  data: any
+): Promise<any> {
+  if (cUser) {
+    const dataRef = doc(db, path, documentName);
+    await setDoc(dataRef, data, { merge: true });
+    return data;
+  }
+}

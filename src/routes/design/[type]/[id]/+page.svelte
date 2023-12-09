@@ -108,11 +108,7 @@
       }
       if (!isGuest) {
         isPackageInWardrobe = IsItemInWardrobe($localPackage,$wardrobe);
-        //patching
-        if($currentUser?.id == $localPackage.publisher?.id && !isPackageInWardrobe) {
-          await AddItemToWardrobe($localPackage)
-          isPackageInWardrobe = true;
-        }
+        $selectedVariant = $itemLayers[0];
       }
     });
   });
