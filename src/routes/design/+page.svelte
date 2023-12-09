@@ -39,6 +39,7 @@
   import HearthIcon from "$icons/heart.svg?raw";
   import CloudIcon from "$icons/cloud.svg?raw";
   import SpotlightIcon from "$icons/spotlight.svg?raw";
+  import CloseIcon from "$icons/close.svg?raw";
 
   import DefaultAnimation from "$animation/default";
   import NewOutfitBottomAnimation from "$animation/bottom";
@@ -58,7 +59,12 @@
   import { GetAnimationForType } from "$src/helpers/imageDataHelpers";
   import Dialog from "$lib/Dialog/Dialog.svelte";
   import OutfitPicker from "$lib/OutfitPicker/OutfitPicker.svelte";
-  import { AddItemToWardrobe, IsItemInWardrobe, RemoveItemFromWardrobe, ShareItem } from "$src/helpers/apiHelper";
+  import {
+    AddItemToWardrobe,
+    IsItemInWardrobe,
+    RemoveItemFromWardrobe,
+    ShareItem,
+  } from "$src/helpers/apiHelper";
 
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
@@ -104,7 +110,7 @@
         return;
       }
       loaded = true;
-      isPackageInWardrobe = IsItemInWardrobe($itemPackage,$wardrobe);
+      isPackageInWardrobe = IsItemInWardrobe($itemPackage, $wardrobe);
       updateTexture();
     });
   });
@@ -196,6 +202,15 @@
   const addNewRemoteLayer = async function (outfit: OutfitPackage) {
     isOutfitPickerOpen = false;
     let layer = outfit.layers[0];
+    //check if layer already exists
+    if (
+      $itemLayers.find(
+        (x) =>
+          x.id == outfit.id && x.variantId == layer.variantId
+      )
+    )
+      return;
+      
     itemLayers.update((layers) => {
       layer.id = outfit.id;
       layer.type = LAYER_TYPE.REMOTE;
@@ -244,15 +259,15 @@
 
   //sharing / wardrobe
   const sharePackage = async function () {
-   await ShareItem($itemPackage);
-   $itemPackage.isShared = true;
+    await ShareItem($itemPackage);
+    $itemPackage.isShared = true;
   };
   const addToWardrobe = async function () {
     AddItemToWardrobe($itemPackage);
     isPackageInWardrobe = true;
   };
   const removeFromWardrobe = async function () {
-    await RemoveItemFromWardrobe($itemPackage.id,$itemPackage.type);
+    await RemoveItemFromWardrobe($itemPackage.id, $itemPackage.type);
     isPackageInWardrobe = false;
   };
 
@@ -404,16 +419,15 @@
             </div>
           {/each}
         {/if}
-        <form style="display: flex;">
+        <form style="display: flex;flex-wrap:wrap;">
           {#if $isItemSet}
-          <button
-            id="import-package-action"
-            title={$_("importOutfit")}
-            class:disabled={!loaded}
-            on:click={() => (isOutfitPickerOpen = true)}
-            class="secondary"
-            >{@html AddIcon} {$_("importOutfit")}</button
-          >
+            <button
+              id="import-package-action"
+              title={$_("importOutfit")}
+              class:disabled={!loaded}
+              on:click={() => (isOutfitPickerOpen = true)}
+              class="secondary">{@html AddIcon} {$_("importOutfit")}</button
+            >
           {/if}
           <button
             id="add-layer-action"
@@ -444,6 +458,7 @@
           {#if $itemPackage.isShared}
             <a href={"/design/" + $itemPackage.type + "/" + $itemPackage.id}>
               <button
+                style="min-width:100px"
                 id="share-package-action"
                 title={$_("goToItemPage")}
                 class="secondary"
@@ -483,7 +498,18 @@
   </div>
   <Dialog bind:open={isOutfitPickerOpen}>
     <div class="outfit-picker-dialog">
-      <h1>Pick your outfit</h1>
+      <div>
+        <h1 style="flex:1;margin-top:0px;">Pick outfit</h1>
+        <button
+          style="margin: 0px 0px 16px"
+          class="icon tertiary"
+          on:click={() => {
+            isOutfitPickerOpen = false;
+          }}
+        >
+          {@html CloseIcon}
+        </button>
+      </div>
       {#if loaded && isOutfitPickerOpen}
         <OutfitPicker
           renderer={layersRenderer}

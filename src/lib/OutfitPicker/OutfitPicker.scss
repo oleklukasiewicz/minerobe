@@ -1,7 +1,9 @@
 .outfit-picker {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 290px));
-
-  gap: 4px;
+  .list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    margin-top: 8px;
+    gap: 4px;
+  }
   max-width: 100%;
 }

@@ -3,6 +3,7 @@ import { COLORS, COLORS_ARRAY } from "$data/consts";
 import NewOutfitBottomAnimation from "$src/animation/bottom";
 import HatAnimation from "$src/animation/hat";
 import WavingAnimation from "$src/animation/waving";
+import type { OutfitPackage } from "$src/data/common";
 import { closest } from "color-diff";
 
 export const GetOutfitType = function (imageContext: any) {
@@ -63,7 +64,7 @@ export const GetPixelCountInArea = function (
   width: number,
   height: number
 ) {
-  const imageData = imageContext.getImageData(x, y, width, height);
+  const imageData = imageContext.getImageData(x, y, width, height,{ willReadFrequently: true });
   let nonTransparentPixelsCount = 0;
   for (let i = 0; i < imageData.data.length; i += 4) {
     const alpha = imageData.data[i + 3];
@@ -167,4 +168,19 @@ export const GetAnimationForType = function(type: string) {
         return WavingAnimation
         break;
     }
+}
+export const GetCategoriesFromList = function(list: OutfitPackage[]) {
+  let categories = Object.keys(OUTFIT_TYPE).filter(
+    (x) =>
+      OUTFIT_TYPE[x] != OUTFIT_TYPE.DEFAULT &&
+      OUTFIT_TYPE[x] != OUTFIT_TYPE.OUTFIT_SET
+  );
+  let categoryCount = {};
+  categories.forEach((category) => {
+    categoryCount[category] = list.filter((outfit) => {
+      if (outfit.layers.length == 0) return false;
+      return outfit.layers[0]["steve"].type == OUTFIT_TYPE[category];
+    }).length;
+  });
+  return categoryCount;
 }

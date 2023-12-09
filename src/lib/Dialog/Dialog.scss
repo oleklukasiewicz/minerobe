@@ -1,27 +1,41 @@
-.dialog
-{
-    position: fixed;
-    top: 0;
-    left: 0;
+.dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  display: none;
+  background-color: var(--color-dialog);
+  .dialog-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--color-theme);
+    border-bottom: 2px solid var(--color-theme-D4);
+    border-top: 2px solid var(--color-theme-D2);
+    overflow-y: auto;
+    min-width: none;
+    display: table;
+    .dialog-content-container {
+      overflow: auto;
+      max-height: 75vh;
+      min-width: 60vw;
+    }
+  }
+  &.open {
+    display: block;
+  }
+}
+@media only screen and (max-width: 700px) {
+  .dialog-content {
+    max-width: 100vw;
     width: 100vw;
-    height: 100vh;
-    z-index: 10;
-    display: none;
-    background-color: var(--color-dialog);
-    .dialog-content
-    {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: var(--color-theme);
-        overflow-y: auto;
-        max-width: 60vw;
-        max-height: 50vh;
-        width: 100%;
-    }
-    &.open
-    {
-        display: block;
-    }
+    min-width: 100vw;
+    bottom: 0px ;
+    top: auto !important;
+    transform: translate(0%, 0%) !important;
+    left: 0px !important;
+  }
 }

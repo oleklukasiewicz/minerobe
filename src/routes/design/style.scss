@@ -43,6 +43,7 @@
         gap: 8px;
         button {
           flex: 1;
+          min-width: 200px;
           font-size: larger;
         }
       }
@@ -50,7 +51,9 @@
     .item-actions {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
       button {
+        min-width: 200px;
         flex: 1;
         font-size: larger;
       }
@@ -61,7 +64,12 @@
   }
 }
 .outfit-picker-dialog {
-  margin: 8px 16px;
+  margin: 16px;
+  div
+  {
+    display: flex;
+    flex-direction: row;
+  }
 }
 @media only screen and (max-width: 700px) {
   .item-page {
@@ -79,6 +87,16 @@
       .data {
         max-width: 100%;
       }
+    }
+  }
+  .item-actions {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr;
+    
+    a,#share-package-action
+    {
+      width: 100%;
     }
   }
 }

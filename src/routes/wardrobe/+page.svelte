@@ -15,16 +15,12 @@
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
   import { CreateOutfitSet } from "$src/api/sets";
   import { CreateOutfit } from "$src/api/outfits";
+  import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
 
   let layersRenderer: THREE.WebGLRenderer = null;
 
   let currentView = "sets";
   let loaded = false;
-  let categories = Object.keys(OUTFIT_TYPE).filter(
-    (x) =>
-      OUTFIT_TYPE[x] != OUTFIT_TYPE.DEFAULT &&
-      OUTFIT_TYPE[x] != OUTFIT_TYPE.OUTFIT_SET
-  );
   onMount(() => {
     layersRenderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -43,7 +39,7 @@
     navigateToDesign(newSet);
   };
   let outfitList = [];
-  let outfitsCount = [];
+  let outfitsCount = {};
   const setOutfitsList = function (view) {
     if (view == "outfit") outfitList = $wardrobe.outfits;
     else
@@ -54,12 +50,7 @@
   };
   $: setOutfitsList(currentView);
   wardrobe.subscribe((x) => {
-    categories.forEach((category) => {
-      outfitsCount[category] = x.outfits.filter((outfit) => {
-        if (outfit.layers.length == 0) return false;
-        return outfit.layers[0]["steve"].type == OUTFIT_TYPE[category];
-      }).length;
-    });
+    outfitsCount= GetCategoriesFromList(x.outfits);
     setOutfitsList(currentView);
   });
 </script>
@@ -82,7 +73,7 @@
       />
       <span class="separator horizontal" />
       {#if $currentUser}
-      {#each categories as item, index}
+      {#each Object.keys(outfitsCount) as item, index}
         {#if outfitsCount[item] > 0}
           <CategoryMenuItem
             label={item}

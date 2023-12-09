@@ -22,6 +22,7 @@
   export let selected = false;
   export let selectable = false;
   export let multiVariant = true;
+  export let showLabels = true;
   export let label =
     texture?.name || texture[modelName]?.fileName || "New layer";
 
@@ -82,12 +83,17 @@
       />
     </div>
     <span
-      ><input bind:value={label} class:disabled={texture.type == LAYER_TYPE.REMOTE}/>
+      ><input
+        bind:value={label}
+        class:disabled={texture.type == LAYER_TYPE.REMOTE}
+      />
       <br /><span class="label common">{texture[modelName].type}</span>
-      {#if texture.type == LAYER_TYPE.REMOTE}
-        <span class="label rare" style="margin-left:8px;"
-          >{$_("layerType.remote")}</span
-        >
+      {#if showLabels}
+        {#if texture.type == LAYER_TYPE.REMOTE}
+          <span class="label rare" style="margin-left:8px;"
+            >{$_("layerType.remote")}</span
+          >
+        {/if}
       {/if}
     </span>
   </div>
@@ -101,10 +107,9 @@
         >
           {@html UserPlusIcon}</button
         >
-       
       {/if}
       {#if controls && multiVariant && texture.type != LAYER_TYPE.REMOTE}
-      <div class="separator vertical" />
+        <div class="separator vertical" />
       {/if}
       {#if controls}
         <button

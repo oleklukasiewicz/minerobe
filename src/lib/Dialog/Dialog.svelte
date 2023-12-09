@@ -22,7 +22,9 @@
     in:fadeInScale={{ duration: 300 }}
     out:fadeInScale={{ duration: 300 }}
   >
-    <slot />
+    <div class="dialog-content-container">
+      <slot />
+    </div>
   </div>
 </div>
 

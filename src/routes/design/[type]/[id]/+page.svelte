@@ -215,10 +215,11 @@
       />
       {#if loaded}
         {#if $isItemSet}
-          {#each $itemLayers as item, index (item.id)}
+          {#each $itemLayers as item (item.id+item.variantId)}
             <div class="item-layer">
               <ItemLayer
                 texture={item}
+                showLabels={false}
                 selectable={!$isItemSet}
                 controls={$isItemSet}
                 model={$itemModel}
@@ -231,7 +232,7 @@
           {/each}
         {:else}
           <div class="item-variants">
-            {#each $itemLayers as layer, index}
+            {#each $itemLayers as layer (layer.id+layer.variantId)}
               <ItemVariant
                 texture={layer[$itemModelType]}
                 model={$itemModel}
