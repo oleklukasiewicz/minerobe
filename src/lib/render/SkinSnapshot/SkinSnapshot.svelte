@@ -25,7 +25,7 @@
     loaded = true;
   });
   const setCameraPosZ = async function (type) {
-    if (type==null) {
+    if (type == null) {
       type = GetOutfitType(await GetContextFromBase64(texture));
     }
     if (type == OUTFIT_TYPE.HAT) {
@@ -33,9 +33,15 @@
       camPozZ = 2.2;
       return;
     }
-    if (type == OUTFIT_TYPE.TOP || type == OUTFIT_TYPE.HOODIE) {
+    if (type == OUTFIT_TYPE.TOP) {
       camPozY = -0.1;
       camPozZ = 1.7;
+      camPozX = 0.1;
+      return;
+    }
+    if (type == OUTFIT_TYPE.HOODIE) {
+      camPozY = 0.1;
+      camPozZ = 2;
       camPozX = 0.1;
       return;
     }
@@ -71,28 +77,29 @@
 
 <div class="skin-snapshot">
   {#if loaded}
-  <SkinRender
-    {texture}
-    {model}
-    bind:refreshRender
-    {sceneRotY}
-    {sceneRotX}
-    cameraPosZ={camPozZ}
-    cameraPosY={camPozY}
-    cameraPosX={camPozX}
-    {modelName}
-    orbitControlsEnabled={false}
-    backgroundColorOpacity={0}
-    renderFloor={false}
-    {renderer}
-    onlyRenderSnapshot={true}
-  />
+    <SkinRender
+      {texture}
+      {model}
+      bind:refreshRender
+      {sceneRotY}
+      {sceneRotX}
+      cameraPosZ={camPozZ}
+      cameraPosY={camPozY}
+      cameraPosX={camPozX}
+      {modelName}
+      orbitControlsEnabled={false}
+      backgroundColorOpacity={0}
+      renderFloor={false}
+      {renderer}
+      onlyRenderSnapshot={true}
+    />
   {/if}
 </div>
+
 <style lang="scss">
-.skin-snapshot {
-  width: 100%;
-  height: 100%;
-  aspect-ratio: 1;
-}
+  .skin-snapshot {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1;
+  }
 </style>

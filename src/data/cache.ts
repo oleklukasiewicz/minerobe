@@ -44,6 +44,10 @@ export const wardrobe: Writable<WardrobePackage> = writable({
       name: "",
       avatar: "",
     },
+    social: {
+      likes: 0,
+     isFeatured: false,
+    }
   },
 });
 export const baseTexture: Readable<string> = readable(get(planksTexture));
@@ -67,7 +71,8 @@ export const setup = function () {
         "alex",
         [],
         PACKAGE_TYPE.OUTFIT,
-        new MinerobeUser("", "", "")
+        new MinerobeUser("", "", ""),
+        "_blank"
       )
     )
   );
@@ -82,7 +87,8 @@ export const setup = function () {
           "alex",
           [],
           PACKAGE_TYPE.OUTFIT,
-          new MinerobeUser(user.id, user.name, user.avatar)
+          new MinerobeUser(user.id, user.name, user.avatar),
+          "_blank"
         )
       );
       let w = await FetchWardrobe();
@@ -108,7 +114,7 @@ export const setup = function () {
 const setupSubscriptions = function () {
   itemPackageSubscription = itemPackage.subscribe(
     async (data: OutfitPackage) => {
-      if (data != null) {
+      if (data != null && data.id != null) {
         if (data.type == PACKAGE_TYPE.OUTFIT_SET) {
           await UploadOutfitSet(data);
         } else await UploadOutfit(data);

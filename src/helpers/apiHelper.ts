@@ -1,8 +1,8 @@
-import { UploadOutfit } from "$src/api/outfits";
-import { UploadOutfitSet } from "$src/api/sets";
+import { DeleteOutfit, UploadOutfit } from "$src/api/outfits";
+import { DeleteOutfitSet, UploadOutfitSet } from "$src/api/sets";
 import { wardrobe } from "$src/data/cache";
-import type { OutfitPackage } from "$src/data/common";
-import { PACKAGE_TYPE } from "$src/data/consts";
+import { OutfitPackage } from "$src/data/common";
+import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
 import { get } from "svelte/store";
 
 export const IsItemInWardrobe = function (item, wardrobe) {
@@ -23,9 +23,8 @@ export const ShareItem = async function (item) {
     await UploadOutfit(item);
   }
 };
-export const AddItemToWardrobe = function (item:OutfitPackage) {
+export const AddItemToWardrobe = function (item: OutfitPackage) {
   let wardrobeObj = get(wardrobe);
-  if(item.layers.length == 0) return;
   if (item.type == PACKAGE_TYPE.OUTFIT_SET) {
     wardrobeObj.sets.push(item);
   }
@@ -40,7 +39,31 @@ export const RemoveItemFromWardrobe = function (id, type) {
     wardrobeObj.sets = wardrobeObj.sets.filter((set) => set?.id != id);
   }
   if (type == PACKAGE_TYPE.OUTFIT) {
-    wardrobeObj.outfits = wardrobeObj.outfits.filter((outfit) => outfit?.id != id);
+    wardrobeObj.outfits = wardrobeObj.outfits.filter(
+      (outfit) => outfit?.id != id
+    );
   }
-  wardrobe.set(wardrobeObj);
+  wardrobe.update((wardrobe) => {
+    wardrobe.sets = wardrobeObj.sets;
+    wardrobe.outfits = wardrobeObj.outfits;
+    return wardrobe;
+  });
+};
+export const RemoveItem = function (item: OutfitPackage) {
+  if (get(wardrobe).studio.id == item.id) {
+    wardrobe.update((wardrobe) => {
+      wardrobe.studio = new OutfitPackage(
+        "new outfit",
+        MODEL_TYPE.ALEX,
+        [],
+        PACKAGE_TYPE.OUTFIT,
+        undefined,null,null,null
+      );
+      return wardrobe;
+    });
+  }
+  if (item.type == PACKAGE_TYPE.OUTFIT_SET) DeleteOutfitSet(item);
+  if (item.type == PACKAGE_TYPE.OUTFIT) DeleteOutfit(item);
+  if (IsItemInWardrobe(item, get(wardrobe)))
+  RemoveItemFromWardrobe(item.id, item.type);
 };

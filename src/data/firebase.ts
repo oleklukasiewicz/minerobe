@@ -99,6 +99,18 @@ export const SetDocument = async function (
     return data;
   }
 };
+export const UpdateDocument = async function (
+  path: string,
+  documentName: string,
+  data: any
+): Promise<any> {
+  if (cUser) {
+    const dataRef = doc(db, path, documentName);
+    const dataJson = JSON.parse(JSON.stringify(data));
+    await setDoc(dataRef, dataJson, { merge: true });
+    return data;
+  }
+}
 export const DeleteDocument = async function (
   path: string,
   documentName: string

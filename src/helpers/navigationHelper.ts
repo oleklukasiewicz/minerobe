@@ -6,3 +6,6 @@ export const navigateToDesign = function (packag: OutfitPackage) {
   itemPackage.set(packag);
   goto(`/design`);
 };
+export const navigateToWardrobe = function () {
+  goto(`/wardrobe`);
+}

@@ -1,5 +1,5 @@
 import { get } from "svelte/store";
-import { APP_STATE, LAYER_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "./consts";
+import { LAYER_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "./consts";
 import { GenerateIdForCollection } from "./firebase";
 import { currentUser } from "./cache";
 
@@ -80,6 +80,7 @@ export class OutfitPackage {
   publisher: MinerobeUser;
   id: string;
   isShared: boolean;
+  social: PackageSocialData;
   constructor(
     name: string,
     model: string,
@@ -87,7 +88,8 @@ export class OutfitPackage {
     type: string = PACKAGE_TYPE.OUTFIT,
     publisher: MinerobeUser = get(currentUser),
     id: string = GenerateIdForCollection("dummy"),
-    isShared: boolean = false
+    isShared: boolean = false,
+    social: PackageSocialData = new PackageSocialData()
   ) {
     this.name = name;
     this.model = model;
@@ -96,16 +98,7 @@ export class OutfitPackage {
     this.publisher = publisher;
     this.id = id;
     this.isShared = isShared;
-  }
-}
-export class OutfitPublisher {
-  name: string;
-  id: string;
-  avatar: string;
-  constructor(id: string, name: string, avatar: string) {
-    this.name = name;
-    this.id = id;
-    this.avatar = avatar;
+    this.social = social;
   }
 }
 export class WardrobePackage {
@@ -143,31 +136,12 @@ export class MinerobeUserLink {
     this.userId = userId;
   }
 }
-export class AppState {
-  app: string;
-  wardrobe: boolean;
-  user: boolean;
-  constructor() {
-    this.app = APP_STATE.LOADING;
-  }
-  wardrobeReady = function () {
-    if (this.app == APP_STATE.USER_READY) {
-      this.wardrobe = true;
-      this.app=APP_STATE.READY;
-    }
-    return this;
-  };
-  userReady = function () {
-    if (this.app == APP_STATE.LOADING) {
-      this.user = true;
-      this.app= APP_STATE.USER_READY;
-    }
-    return this;
-  }
-  userUnready = function () {
-    this.user = false;
-    this.wardrobe = false;
-    this.app = APP_STATE.LOADING;
-    return this;
+
+export class PackageSocialData {
+  likes: number;
+  isFeatured: boolean;
+  constructor(likes: number = 1, isFeatured: boolean = false) {
+    this.likes = likes;
+    this.isFeatured = isFeatured;
   }
 }
