@@ -14,7 +14,12 @@
   import ItemVariant from "$lib/ItemVariant/ItemVariant.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
 
-  import { FileData, MinerobeUser, OutfitLayer, OutfitPackage } from "$data/common";
+  import {
+    FileData,
+    MinerobeUser,
+    OutfitLayer,
+    OutfitPackage,
+  } from "$data/common";
   import {
     alexModel,
     steveModel,
@@ -41,7 +46,11 @@
   import { GetAnimationForType } from "$src/helpers/imageDataHelpers";
   import { FetchOutfit } from "$src/api/outfits";
   import { FetchOutfitSet } from "$src/api/sets";
-  import { AddItemToWardrobe, IsItemInWardrobe, RemoveItemFromWardrobe } from "$src/helpers/apiHelper";
+  import {
+    AddItemToWardrobe,
+    IsItemInWardrobe,
+    RemoveItemFromWardrobe,
+  } from "$src/helpers/apiHelper";
 
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -49,7 +58,7 @@
       MODEL_TYPE.ALEX,
       [],
       PACKAGE_TYPE.OUTFIT,
-      new MinerobeUser(null,null,null),
+      new MinerobeUser(null, null, null),
       null,
       false
     )
@@ -107,7 +116,7 @@
         updateTexture();
       }
       if (!isGuest) {
-        isPackageInWardrobe = IsItemInWardrobe($localPackage,$wardrobe);
+        isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
         $selectedVariant = $itemLayers[0];
       }
     });
@@ -154,7 +163,7 @@
     isPackageInWardrobe = true;
   };
   const removeFromWardrobe = async function () {
-    await RemoveItemFromWardrobe($localPackage.id,$localPackage.type);
+    await RemoveItemFromWardrobe($localPackage.id, $localPackage.type);
     isPackageInWardrobe = false;
   };
 
@@ -184,7 +193,12 @@
   <div class="item-data">
     <div class="data">
       <div class="item-name">
-        <SectionTitle label={$_("name")} placeholder={!loaded} />
+        <SectionTitle
+          label={$localPackage.type == PACKAGE_TYPE.OUTFIT
+            ? $_("outfit")
+            : $_("outfit_set")}
+          placeholder={!loaded}
+        />
         <div id="item-title" class="title">
           {#if loaded}
             {$itemName}
@@ -193,12 +207,7 @@
           {/if}
         </div>
         {#if loaded}
-          <span class="label common"
-            >{$localPackage.type == PACKAGE_TYPE.OUTFIT
-              ? $_("outfit")
-              : $_("outfit_set")}</span
-          >
-          <span class="label unique" style="margin-left:8px"
+          <span class="label unique"
             >{$localPackage.publisher.name}</span
           >
         {/if}
@@ -211,7 +220,7 @@
       />
       {#if loaded}
         {#if $isItemSet}
-          {#each $itemLayers as item (item.id+item.variantId)}
+          {#each $itemLayers as item (item.id + item.variantId)}
             <div class="item-layer">
               <ItemLayer
                 texture={item}
@@ -228,7 +237,7 @@
           {/each}
         {:else}
           <div class="item-variants">
-            {#each $itemLayers as layer (layer.id+layer.variantId)}
+            {#each $itemLayers as layer (layer.id + layer.variantId)}
               <ItemVariant
                 texture={layer[$itemModelType]}
                 model={$itemModel}
