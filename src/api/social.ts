@@ -1,10 +1,15 @@
 import { PACKAGE_TYPE } from "$src/data/consts";
-import { UpdateDocument, UpdateRawDocument } from "$src/data/firebase";
+import {
+  IsDocumentExist,
+  UpdateRawDocument,
+} from "$src/data/firebase";
 import { increment } from "firebase/firestore";
 
 export const AddLike = async (id: string, type: string) => {
   const dir = type == PACKAGE_TYPE.OUTFIT ? "outfits" : "sets";
-  UpdateRawDocument(dir, id, {
+  const isExist = await IsDocumentExist(dir, id);
+  if (!isExist) return;
+  await UpdateRawDocument(dir, id, {
     social: {
       likes: increment(1),
     },
@@ -12,7 +17,9 @@ export const AddLike = async (id: string, type: string) => {
 };
 export const RemoveLike = async (id: string, type: string) => {
   const dir = type == PACKAGE_TYPE.OUTFIT ? "outfits" : "sets";
-  UpdateRawDocument(dir, id, {
+  const isExist = await IsDocumentExist(dir, id);
+  if (!isExist) return;
+  await UpdateRawDocument(dir, id, {
     social: {
       likes: increment(-1),
     },

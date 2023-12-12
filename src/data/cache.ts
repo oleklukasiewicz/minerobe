@@ -6,12 +6,12 @@ import {
   get,
 } from "svelte/store";
 import { APP_STATE, PACKAGE_TYPE } from "$data/consts";
-import { MinerobeUser } from "./common";
+import type { MinerobeUser } from "./common";
 import alexModelData from "$src/model/alex.gltf?raw";
 import steveModelData from "$src/model/steve.gltf?raw";
 import planksTextureRaw from "$src/texture/default_planks.png?url";
-import { WardrobePackage } from "./common";
-import { OutfitPackage } from "./common";
+import type { WardrobePackage } from "./common";
+import type { OutfitPackage } from "./common";
 import { propertyStore } from "svelte-writable-derived";
 import { FetchWardrobe, UploadWardrobe } from "$src/api/wardrobe";
 import { UploadOutfitSet } from "$src/api/sets";
@@ -61,36 +61,11 @@ let itemPackageSubscription;
 let wardrobeSubscription;
 
 export const setup = function () {
-  wardrobe.set(
-    new WardrobePackage(
-      "default_wardrobe",
-      [],
-      [],
-      new OutfitPackage(
-        "default",
-        "alex",
-        [],
-        PACKAGE_TYPE.OUTFIT,
-        new MinerobeUser("", "", ""),
-        "_blank"
-      )
-    )
-  );
   currentUser.subscribe(async (user) => {
     if (user) {
       //settings up account
       if (get(appState) == APP_STATE.LOADING)
         appState.set(APP_STATE.USER_READY);
-      itemPackage.set(
-        new OutfitPackage(
-          "default",
-          "alex",
-          [],
-          PACKAGE_TYPE.OUTFIT,
-          new MinerobeUser(user.id, user.name, user.avatar),
-          "_blank"
-        )
-      );
       let w = await FetchWardrobe();
       if (w != null) {
         wardrobe.set(w);

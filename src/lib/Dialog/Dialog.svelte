@@ -1,14 +1,6 @@
 <script lang="ts">
-  import { cubicOut } from "svelte/easing";
-
   export let open = false;
-  function fadeInScale(node, { duration }) {
-    return {
-      duration,
-      easing: cubicOut,
-      css: (t) => `opacity: ${t}; transform: scale(${0.9 + t * 0.1})`,
-    };
-  }
+  export let style = "";
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -19,10 +11,8 @@
   <div
     class="dialog-content"
     on:click|stopPropagation
-    in:fadeInScale={{ duration: 300 }}
-    out:fadeInScale={{ duration: 300 }}
   >
-    <div class="dialog-content-container">
+    <div class="dialog-content-container"  {style}>
       <slot />
     </div>
   </div>

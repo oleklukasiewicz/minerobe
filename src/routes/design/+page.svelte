@@ -104,7 +104,9 @@
 
   let isPackageInWardrobe = false;
   let rendererLayers: FileData[] = [];
+
   let isOutfitPickerOpen = false;
+  let isDeleteDialogOpen = false;
 
   let updateAnimation = function (anim) {};
 
@@ -394,7 +396,8 @@
               <button
                 class="icon secondary icon-small small"
                 style="margin-top: 8px;"
-                on:click={deletePackage}>{@html TrashIcon}</button
+                on:click={() => (isDeleteDialogOpen = true)}
+                >{@html TrashIcon}</button
               >
             </div>
           {:else}
@@ -445,28 +448,28 @@
             {/each}
           {/if}
           {#if $itemPublisher.id == $currentUser?.id}
-          <form style="display: flex;flex-wrap:wrap;">
-            {#if $isItemSet}
+            <form style="display: flex;flex-wrap:wrap;">
+              {#if $isItemSet}
+                <button
+                  id="import-package-action"
+                  title={$_("importOutfit")}
+                  class:disabled={!loaded}
+                  on:click={() => (isOutfitPickerOpen = true)}
+                  class="secondary">{@html AddIcon} {$_("importOutfit")}</button
+                >
+              {/if}
               <button
-                id="import-package-action"
-                title={$_("importOutfit")}
+                id="add-layer-action"
+                type="submit"
+                class="secondary"
                 class:disabled={!loaded}
-                on:click={() => (isOutfitPickerOpen = true)}
-                class="secondary">{@html AddIcon} {$_("importOutfit")}</button
+                on:click={importLayer}
+                >{@html ImportPackageIcon}
+                {$isItemSet
+                  ? $_("layersOpt.addLayer")
+                  : $_("layersOpt.addVariant")}</button
               >
-            {/if}
-            <button
-              id="add-layer-action"
-              type="submit"
-              class="secondary"
-              class:disabled={!loaded}
-              on:click={importLayer}
-              >{@html ImportPackageIcon}
-              {$isItemSet
-                ? $_("layersOpt.addLayer")
-                : $_("layersOpt.addVariant")}</button
-            >
-          </form>
+            </form>
           {/if}
         </div>
         <br />
@@ -548,6 +551,31 @@
         {/if}
       </div>
     </Dialog>
+    <Dialog bind:open={isDeleteDialogOpen} style="min-width:30vw">
+      <div style="text-align:center;margin:8px;">
+        <h2>{$_("dialog.confirmDeleteItem")}</h2>
+        <div style="display:flex;flex-direction:row; gap:8px">
+          <button
+            class="tertiary"
+            style="flex:1;"
+            on:click={() => {
+              isDeleteDialogOpen = false;
+            }}
+          >
+            {@html CloseIcon} {$_("cancel")}
+          </button>
+          <button
+            style="flex:1;"
+            on:click={() => {
+              isDeleteDialogOpen = false;
+              deletePackage();
+            }}
+          >
+            {@html TrashIcon} {$_("delete")}
+          </button>
+        </div>
+      </div></Dialog
+    >
   {:else}
     <div class="item-view-placeholder">
       <!-- svelte-ignore missing-declaration -->

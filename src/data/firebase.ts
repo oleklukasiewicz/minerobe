@@ -87,6 +87,14 @@ export const GetDocument = async function (
     const dataSnap = await getDoc(dataRef);
     return dataSnap.data();
 };
+export const IsDocumentExist = async function (
+  path: string,
+  documentName: string
+): Promise<boolean> {
+  const dataRef = doc(db, path, documentName);
+  const dataSnap = await getDoc(dataRef);
+  return dataSnap.exists();
+};
 export const SetDocument = async function (
   path: string,
   documentName: string,
