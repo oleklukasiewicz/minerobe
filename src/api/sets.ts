@@ -1,4 +1,4 @@
-import { currentUser, wardrobe } from "$src/data/cache";
+import { currentUser } from "$src/data/cache";
 import {
   OutfitPackage,
   type OutfitLayer,
@@ -10,14 +10,12 @@ import {
 import {
   LAYER_TYPE,
   MODEL_TYPE,
-  OUTFIT_TYPE,
   PACKAGE_TYPE,
 } from "$src/data/consts";
 import {
   DeleteDocument,
   GenerateIdForCollection,
   GetDocument,
-  SetDocument,
   UpdateDocument,
 } from "$src/data/firebase";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
@@ -26,9 +24,7 @@ import { FetchOutfitLayerFromLink } from "./outfits";
 import { get } from "svelte/store";
 
 const SETS_PATH = "sets";
-export const GenerateIdForOutfitSet = function () {
-  return GenerateIdForCollection(SETS_PATH);
-};
+export const GenerateIdForOutfitSet = () => GenerateIdForCollection(SETS_PATH);
 
 const _fetchOutfitSet = async function (id: string): Promise<OutfitPackage> {
   let outfitSet = (await GetDocument(SETS_PATH, id)) as OutfitPackage;

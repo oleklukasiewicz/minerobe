@@ -2,9 +2,6 @@
   import OutfitPicker from "$lib/OutfitPicker/OutfitPicker.svelte";
   import { appState, wardrobe } from "$src/data/cache";
   import { APP_STATE } from "$src/data/consts";
-  import type { PageData } from "./$types";
-
-  export let data: PageData;
 </script>
 
 <h1 id="view-title">Explore new outfits</h1>

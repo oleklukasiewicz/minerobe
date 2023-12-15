@@ -1,7 +1,6 @@
-import { currentUser, wardrobe } from "$src/data/cache";
+import { currentUser } from "$src/data/cache";
 import {
   OutfitPackage,
-  type OutfitLayer,
   OutfitPackageLink,
   MinerobeUser,
   OutfitLayerLink,
@@ -12,7 +11,6 @@ import {
   DeleteDocument,
   GenerateIdForCollection,
   GetDocument,
-  SetDocument,
   UpdateDocument,
 } from "$src/data/firebase";
 import { get } from "svelte/store";
@@ -22,12 +20,9 @@ import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 const OUTFIT_PATH = "outfits";
 const OOUTFIT_LAYER_PATH = "dummy";
 
-export const GenerateIdForOutfit = function () {
-  return GenerateIdForCollection(OUTFIT_PATH);
-};
-export const GenerateIdForOutfitLayer = function () {
-  return GenerateIdForCollection(OOUTFIT_LAYER_PATH);
-};
+export const GenerateIdForOutfit = () => GenerateIdForCollection(OUTFIT_PATH);
+export const GenerateIdForOutfitLayer = () =>
+  GenerateIdForCollection(OOUTFIT_LAYER_PATH);
 
 const _fetchOutfit = async function (id, bypassSharedFlag = false) {
   let outfit = await GetDocument(OUTFIT_PATH, id);
@@ -83,7 +78,7 @@ export const UploadOutfit = async function (
   isNew: boolean = false
 ) {
   console.trace();
-  if (outfit.publisher.id != get(currentUser)?.id || outfit.id==null) return;
+  if (outfit.publisher.id != get(currentUser)?.id || outfit.id == null) return;
   await UpdateDocument(
     OUTFIT_PATH,
     outfit.id,

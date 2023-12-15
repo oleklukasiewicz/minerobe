@@ -1,6 +1,5 @@
 <script lang="ts">
   import SkinSnapshot from "$lib/render/SkinSnapshot/SkinSnapshot.svelte";
-  import { GetMinerobeUser } from "$src/api/auth";
   import type { MinerobeUser, OutfitPackage } from "$src/data/common";
   import { OUTFIT_TYPE } from "$data/consts";
   import { mergeImages } from "$src/helpers/imageMerger";

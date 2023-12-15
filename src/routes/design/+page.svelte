@@ -52,13 +52,11 @@
   import {
     ExportImageLayers,
     ImportImage,
-    ImportImagePackageJson,
     ImportImagePackageJsonFromFile,
     ImportLayerFromFile,
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
   import { CreateOutfit, GenerateIdForOutfitLayer } from "$src/api/outfits";
-  import { GetAnimationForType } from "$src/helpers/imageDataHelpers";
   import Dialog from "$lib/Dialog/Dialog.svelte";
   import OutfitPicker from "$lib/OutfitPicker/OutfitPicker.svelte";
   import {
@@ -73,6 +71,8 @@
     navigateToWardrobe,
   } from "$src/helpers/navigationHelper";
   import { CreateOutfitSet } from "$src/api/sets";
+  import { withPrevious } from "svelte-previous";
+  import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
 
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
@@ -82,6 +82,16 @@
   const itemModelType: Writable<string> = propertyStore(itemPackage, "model");
   const itemName: Writable<string> = propertyStore(itemPackage, "name");
   const itemPublisher = propertyStore(itemPackage, "publisher");
+
+  const [currentPackageState, previousPackageState] = withPrevious(
+    $itemPackage,
+    {requireChange: false,
+      isEqual: (a, b) => {
+        console.log("isEqual", a?.layers[0]?.variantId , b?.layers[0]?.variantId);
+        return a?.layers[0]?.variantId == b?.layers[0]?.variantId;
+      },
+    }
+  );
 
   const selectedLayer: Writable<OutfitLayer> = writable(null);
 
@@ -98,7 +108,6 @@
   let modelTexture: string = null;
   let loaded = false;
 
-  let updatedLayer: OutfitLayer = null;
   let layersRenderer;
   let isDragging = false;
 
@@ -134,7 +143,6 @@
         let temp = layers[index - 1];
         layers[index - 1] = layers[index];
         layers[index] = temp;
-        updatedLayer = layers[index - 1];
         return layers;
       });
     }
@@ -146,16 +154,12 @@
         let temp = layers[index + 1];
         layers[index + 1] = layers[index];
         layers[index] = temp;
-        updatedLayer = layers[index + 1];
         return layers;
       });
     }
   };
   const removeLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
-    if (index != -1 && index != $itemLayers.length - 1) {
-      updatedLayer = $itemLayers[index + 1];
-    }
     itemLayers.update((layers) => {
       let refresh = false;
 
@@ -202,13 +206,6 @@
       undefined,
       $itemModelType
     );
-    if (updatedLayer) {
-      const anim = GetAnimationForType(updatedLayer[$itemModelType]?.type);
-      if (anim) {
-        await updateAnimation(anim);
-        await updateAnimation(DefaultAnimation);
-      }
-    }
   };
   const addNewRemoteLayer = async function (outfit: OutfitPackage) {
     isOutfitPickerOpen = false;
@@ -238,7 +235,6 @@
       if ($itemModelType == MODEL_TYPE.ALEX)
         newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer, null);
       else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null, null);
-      updatedLayer = newOutfit;
       newOutfit.variantId = GenerateIdForOutfitLayer();
       layers.unshift(newOutfit);
 
@@ -250,21 +246,6 @@
     await ExportImageLayers(rendererLayers, $itemModelType, $itemName);
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
-  };
-
-  const importPackage = async function () {
-    const newPackage = await ImportImagePackageJson($itemPackage);
-    $itemPackage = newPackage;
-
-    const random = Math.random();
-
-    if (random < 0.2) {
-      updateAnimation(HandsUpAnimation);
-    } else {
-      if (random < 0.4) updateAnimation(WavingAnimation);
-      else updateAnimation(ClapAnimation);
-    }
-    updateAnimation(DefaultAnimation);
   };
 
   //sharing / wardrobe
@@ -307,7 +288,6 @@
                   null,
                   null
                 );
-              updatedLayer = newOutfit;
               layers.unshift(newOutfit);
               newOutfit.variantId = GenerateIdForOutfitLayer();
               return layers;
@@ -349,6 +329,9 @@
   //subscribtions
   itemPackage.subscribe((pack) => {
     isPackageInWardrobe = IsItemInWardrobe(pack, $wardrobe);
+    $currentPackageState = pack;
+    if($previousPackageState == null) return;
+    console.log(GetAnimationForPackageChange($previousPackageState, $currentPackageState));
   });
   itemLayers.subscribe((layers) => updateTexture());
   itemModelType.subscribe((model) => updateTexture());
@@ -562,7 +545,8 @@
               isDeleteDialogOpen = false;
             }}
           >
-            {@html CloseIcon} {$_("cancel")}
+            {@html CloseIcon}
+            {$_("cancel")}
           </button>
           <button
             style="flex:1;"
@@ -571,7 +555,8 @@
               deletePackage();
             }}
           >
-            {@html TrashIcon} {$_("delete")}
+            {@html TrashIcon}
+            {$_("delete")}
           </button>
         </div>
       </div></Dialog

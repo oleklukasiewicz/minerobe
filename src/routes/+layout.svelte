@@ -2,7 +2,7 @@
   import { page } from "$app/stores";
   import { browser } from "$app/environment";
   import NavigationItem from "$lib/NavigationItem/NavigationItem.svelte";
-  import "$locales/locales"; // Import to initialize. Important :)
+  import "$locales/locales";
   import { locale, waitLocale, isLoading, _ } from "svelte-i18n";
 
   import MenuIcon from "$src/icons/menu.svg?raw";

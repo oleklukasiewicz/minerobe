@@ -9,3 +9,6 @@ export const navigateToDesign = function (packag: OutfitPackage) {
 export const navigateToWardrobe = function () {
   goto(`/wardrobe`);
 }
+export const navigate= function (path: string) {
+  goto(path);
+}

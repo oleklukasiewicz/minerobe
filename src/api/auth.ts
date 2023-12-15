@@ -41,11 +41,9 @@ export const loginUser = async function () {
     USER_LINK_PATH,
     firebaseUser.uid
   );
-  if (minerobeUserLink) {
-    minerobeUser = await GetDocument(USER_PATH, minerobeUserLink.userId);
-  } else {
-    minerobeUser = await createUser(user);
-  }
+  minerobeUser = minerobeUserLink
+    ? await GetDocument(USER_PATH, minerobeUserLink.userId)
+    : await createUser(user);
 
   currentUser.set(minerobeUser);
 };

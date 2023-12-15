@@ -17,6 +17,7 @@
   export let extended = false;
   export let label = texture?.name || "New outfit";
   export let dense = false;
+  
   let dominantColor = [];
   let variantTexture = null;
   const limit = 2;

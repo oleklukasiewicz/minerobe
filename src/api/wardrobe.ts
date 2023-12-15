@@ -1,4 +1,4 @@
-import { currentUser, wardrobe } from "$src/data/cache";
+import { currentUser } from "$src/data/cache";
 import {
   OutfitPackageLink,
   type OutfitPackage,
@@ -7,8 +7,8 @@ import {
 import { PACKAGE_TYPE } from "$src/data/consts";
 import { GetDocument, SetDocument } from "$src/data/firebase";
 import { get } from "svelte/store";
-import { FetchOutfitSetFromLink, ParseOutfitSetToLocal } from "./sets";
-import { FetchOutfitFromLink, ParseOutfitToLocal } from "./outfits";
+import { FetchOutfitSetFromLink } from "./sets";
+import { FetchOutfitFromLink } from "./outfits";
 
 const WARDROBE_PATH = "wardrobes";
 
@@ -47,9 +47,10 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
   data.outfits = await parsedOutfits;
 
   if (data.studio?.id) {
-    if (data.studio.type == PACKAGE_TYPE.OUTFIT_SET_LINK)
-      data.studio = await FetchOutfitSetFromLink(data.studio);
-    else data.studio = await FetchOutfitFromLink(data.studio);
+    data.studio =
+      data.studio.type == PACKAGE_TYPE.OUTFIT_SET_LINK
+        ? await FetchOutfitSetFromLink(data.studio)
+        : (data.studio = await FetchOutfitFromLink(data.studio));
   }
   return data;
 };

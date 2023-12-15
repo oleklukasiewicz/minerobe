@@ -23,7 +23,6 @@
   import {
     alexModel,
     steveModel,
-    planksTexture,
     currentUser,
     wardrobe,
     appState,

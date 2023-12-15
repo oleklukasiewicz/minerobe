@@ -28,6 +28,7 @@
 		"path": "^0.12.7",
 		"sass": "^1.69.5",
 		"svelte-i18n": "^4.0.0",
+		"svelte-previous": "^2.1.4",
 		"svelte-writable-derived": "^3.1.0",
 		"three": "^0.159.0"
 	}

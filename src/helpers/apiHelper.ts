@@ -26,8 +26,7 @@ export const ShareItem = async function (item) {
 };
 export const AddItemToWardrobe = function (item: OutfitPackage) {
   let wardrobeObj = get(wardrobe);
-  if(!IsItemInWardrobe(item, wardrobeObj))
-  {
+  if (!IsItemInWardrobe(item, wardrobeObj)) {
     AddLike(item.id, item.type);
   }
   if (item.type == PACKAGE_TYPE.OUTFIT_SET) {
@@ -63,7 +62,10 @@ export const RemoveItem = function (item: OutfitPackage) {
         MODEL_TYPE.ALEX,
         [],
         PACKAGE_TYPE.OUTFIT,
-        undefined,null,null,null
+        undefined,
+        null,
+        null,
+        null
       );
       return wardrobe;
     });
@@ -71,5 +73,5 @@ export const RemoveItem = function (item: OutfitPackage) {
   if (item.type == PACKAGE_TYPE.OUTFIT_SET) DeleteOutfitSet(item);
   if (item.type == PACKAGE_TYPE.OUTFIT) DeleteOutfit(item);
   if (IsItemInWardrobe(item, get(wardrobe)))
-  RemoveItemFromWardrobe(item.id, item.type);
+    RemoveItemFromWardrobe(item.id, item.type);
 };

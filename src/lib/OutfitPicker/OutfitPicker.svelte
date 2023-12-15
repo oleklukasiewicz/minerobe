@@ -6,8 +6,7 @@
   import * as THREE from "three";
   import { createEventDispatcher, onMount } from "svelte";
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
-
-  const dispatch = createEventDispatcher();
+  
   export let outfits: OutfitPackage[] = [];
   export let modelName = "";
   export let renderer = null;
@@ -15,6 +14,8 @@
     mapOutfits(outfits, selectedCategory);
   };
 
+  
+  const dispatch = createEventDispatcher();
   let model = null;
   let mappedOutfits: OutfitPackage[] = [];
   let categories = {};
