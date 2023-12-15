@@ -43,8 +43,8 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
     )
   );
 
-  data.sets = await parsedSets;
-  data.outfits = await parsedOutfits;
+  data.sets = (await parsedSets).filter((item) => item != null);
+  data.outfits = (await parsedOutfits).filter((item) => item != null);
 
   if (data.studio?.id) {
     data.studio =

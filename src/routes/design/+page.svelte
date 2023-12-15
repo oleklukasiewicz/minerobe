@@ -329,9 +329,9 @@
   //subscribtions
   itemPackage.subscribe((pack) => {
     isPackageInWardrobe = IsItemInWardrobe(pack, $wardrobe);
-    $currentPackageState = pack;
-    if($previousPackageState == null) return;
-    console.log(GetAnimationForPackageChange($previousPackageState, $currentPackageState));
+    //$currentPackageState = pack;
+    //if($previousPackageState == null) return;
+    // console.log(GetAnimationForPackageChange($previousPackageState, $currentPackageState));
   });
   itemLayers.subscribe((layers) => updateTexture());
   itemModelType.subscribe((model) => updateTexture());
