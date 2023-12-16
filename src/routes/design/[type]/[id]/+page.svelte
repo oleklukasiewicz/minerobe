@@ -194,7 +194,9 @@
       <div class="item-name">
         <SectionTitle
           label={$localPackage.type == PACKAGE_TYPE.OUTFIT
-            ? $_("outfit")
+            ? $itemLayers.length > 0
+              ? $itemLayers[0][$itemModelType].type
+              : $_("outfit")
             : $_("outfit_set")}
           placeholder={!loaded}
         />
@@ -206,9 +208,7 @@
           {/if}
         </div>
         {#if loaded}
-          <span class="label unique"
-            >{$localPackage.publisher.name}</span
-          >
+          <span class="label unique">{$localPackage.publisher.name}</span>
         {/if}
       </div>
 

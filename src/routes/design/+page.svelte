@@ -6,8 +6,9 @@
     writable,
     type Readable,
     type Writable,
+    get,
   } from "svelte/store";
-  import { propertyStore } from "svelte-writable-derived";
+  import writableDerived, { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
@@ -71,7 +72,6 @@
     navigateToWardrobe,
   } from "$src/helpers/navigationHelper";
   import { CreateOutfitSet } from "$src/api/sets";
-  import { withPrevious } from "svelte-previous";
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
 
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -83,17 +83,19 @@
   const itemName: Writable<string> = propertyStore(itemPackage, "name");
   const itemPublisher = propertyStore(itemPackage, "publisher");
 
-  const [currentPackageState, previousPackageState] = withPrevious(
-    $itemPackage,
-    {requireChange: false,
-      isEqual: (a, b) => {
-        console.log("isEqual", a?.layers[0]?.variantId , b?.layers[0]?.variantId);
-        return a?.layers[0]?.variantId == b?.layers[0]?.variantId;
-      },
-    }
-  );
-
   const selectedLayer: Writable<OutfitLayer> = writable(null);
+  const localPackageState: Writable<OutfitPackage> = writableDerived(
+    itemPackage,
+    ($itemPackage) => {
+      return $itemPackage;
+    },
+    (reflecting, object) => {
+		object = reflecting;
+    console.log(object.layers[0]?.name,reflecting.layers[0]?.name)
+    previousPackageState = object;
+		return object; // needed to call objectStore.set with the proper value
+	}
+  );
 
   const isItemSet = derived(
     itemPackage,
@@ -105,6 +107,7 @@
       $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel
   );
 
+  let previousPackageState:OutfitPackage = null;
   let modelTexture: string = null;
   let loaded = false;
 
@@ -139,6 +142,7 @@
   const upLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
     if (index > 0) {
+      previousPackageState= get(itemPackage);
       itemLayers.update((layers) => {
         let temp = layers[index - 1];
         layers[index - 1] = layers[index];
@@ -150,6 +154,7 @@
   const downLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
     if (index < $itemLayers.length - 1) {
+      previousPackageState= get(itemPackage);
       itemLayers.update((layers) => {
         let temp = layers[index + 1];
         layers[index + 1] = layers[index];
@@ -330,8 +335,10 @@
   itemPackage.subscribe((pack) => {
     isPackageInWardrobe = IsItemInWardrobe(pack, $wardrobe);
     //$currentPackageState = pack;
-    //if($previousPackageState == null) return;
-    // console.log(GetAnimationForPackageChange($previousPackageState, $currentPackageState));
+    $localPackageState = pack;
+    if(previousPackageState == null) return;
+    console.log(previousPackageState?.layers[0]);
+    console.log(GetAnimationForPackageChange(previousPackageState, $itemPackage));
   });
   itemLayers.subscribe((layers) => updateTexture());
   itemModelType.subscribe((model) => updateTexture());

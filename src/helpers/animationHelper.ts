@@ -14,7 +14,6 @@ export const GetAnimationForPackageChange = function (
     anims.unshift(NewOutfitBottomAnimation);
     return anims;
   }
-
   if (oldPackage.layers.length >= newPackage.layers.length) {
     oldPackage.layers.forEach((oldLayer, index) => {
       const newLayer = newPackage.layers[index];

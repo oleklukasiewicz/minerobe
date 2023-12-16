@@ -77,7 +77,6 @@ export const UploadOutfit = async function (
   outfit: OutfitPackage,
   isNew: boolean = false
 ) {
-  console.trace();
   if (outfit.publisher.id != get(currentUser)?.id || outfit.id == null) return;
   await UpdateDocument(
     OUTFIT_PATH,

@@ -159,20 +159,16 @@ export const GetAnimationForType = function(type: string) {
     switch (type) {
       case OUTFIT_TYPE.HAT:
        return HatAnimation
-        break;
       case OUTFIT_TYPE.TOP:
       case OUTFIT_TYPE.HOODIE:
         return NewOutfitBottomAnimation
-        break;
       case OUTFIT_TYPE.SHOES:
         return WavingAnimation
-        break;
     }
 }
 export const GetCategoriesFromList = function(list: OutfitPackage[]) {
   let categories = Object.keys(OUTFIT_TYPE).filter(
     (x) =>
-      OUTFIT_TYPE[x] != OUTFIT_TYPE.DEFAULT &&
       OUTFIT_TYPE[x] != OUTFIT_TYPE.OUTFIT_SET
   );
   let categoryCount = {};
