@@ -19,6 +19,7 @@
 
   import {
     APP_STATE,
+    CHANGE_TYPE,
     LAYER_TYPE,
     MODEL_TYPE,
     PACKAGE_TYPE,
@@ -84,18 +85,6 @@
   const itemPublisher = propertyStore(itemPackage, "publisher");
 
   const selectedLayer: Writable<OutfitLayer> = writable(null);
-  const localPackageState: Writable<OutfitPackage> = writableDerived(
-    itemPackage,
-    ($itemPackage) => {
-      return $itemPackage;
-    },
-    (reflecting, object) => {
-		object = reflecting;
-    console.log(object.layers[0]?.name,reflecting.layers[0]?.name)
-    previousPackageState = object;
-		return object; // needed to call objectStore.set with the proper value
-	}
-  );
 
   const isItemSet = derived(
     itemPackage,
@@ -107,7 +96,7 @@
       $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel
   );
 
-  let previousPackageState:OutfitPackage = null;
+  let previousPackageState: OutfitLayer[] = null;
   let modelTexture: string = null;
   let loaded = false;
 
@@ -142,11 +131,16 @@
   const upLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
     if (index > 0) {
-      previousPackageState= get(itemPackage);
       itemLayers.update((layers) => {
         let temp = layers[index - 1];
         layers[index - 1] = layers[index];
         layers[index] = temp;
+        const anims = GetAnimationForPackageChange(
+          $itemPackage,
+          CHANGE_TYPE.LAYER_UP,
+          index - 1
+        );
+        anims.forEach((anim) => updateAnimation(anim));
         return layers;
       });
     }
@@ -154,11 +148,16 @@
   const downLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
     if (index < $itemLayers.length - 1) {
-      previousPackageState= get(itemPackage);
       itemLayers.update((layers) => {
         let temp = layers[index + 1];
         layers[index + 1] = layers[index];
         layers[index] = temp;
+        const anims = GetAnimationForPackageChange(
+          $itemPackage,
+          CHANGE_TYPE.LAYER_DOWN,
+          index
+        );
+        anims.forEach((anim) => updateAnimation(anim));
         return layers;
       });
     }
@@ -171,6 +170,12 @@
       if (!$isItemSet && $selectedLayer.name == layers[index].name) {
         refresh = true;
       }
+      const anims = GetAnimationForPackageChange(
+        $itemPackage,
+        CHANGE_TYPE.LAYER_REMOVE,
+        index
+      );
+      anims.forEach((anim) => updateAnimation(anim));
       layers.splice(index, 1);
       if (refresh) {
         if ($itemLayers.length > 0) $selectedLayer = layers[0];
@@ -189,6 +194,12 @@
       } else {
         layers[index].steve = newLayer;
       }
+      const anims = GetAnimationForPackageChange(
+        $itemPackage,
+        CHANGE_TYPE.LAYER_ADD,
+        index
+      );
+      anims.forEach((anim) => updateAnimation(anim));
       return layers;
     });
     updateAnimation(NewOutfitBottomAnimation);
@@ -228,6 +239,12 @@
       layer.type = LAYER_TYPE.REMOTE;
       const newRemote = layer;
       layers.unshift(newRemote);
+      const anims = GetAnimationForPackageChange(
+        $itemPackage,
+        CHANGE_TYPE.LAYER_ADD,
+        0
+      );
+      anims.forEach((anim) => updateAnimation(anim));
       return layers;
     });
   };
@@ -242,7 +259,12 @@
       else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null, null);
       newOutfit.variantId = GenerateIdForOutfitLayer();
       layers.unshift(newOutfit);
-
+      const anims = GetAnimationForPackageChange(
+        $itemPackage,
+        CHANGE_TYPE.LAYER_ADD,
+        0
+      );
+      anims.forEach((anim) => updateAnimation(anim));
       return layers;
     });
   };
@@ -334,11 +356,6 @@
   //subscribtions
   itemPackage.subscribe((pack) => {
     isPackageInWardrobe = IsItemInWardrobe(pack, $wardrobe);
-    //$currentPackageState = pack;
-    $localPackageState = pack;
-    if(previousPackageState == null) return;
-    console.log(previousPackageState?.layers[0]);
-    console.log(GetAnimationForPackageChange(previousPackageState, $itemPackage));
   });
   itemLayers.subscribe((layers) => updateTexture());
   itemModelType.subscribe((model) => updateTexture());
