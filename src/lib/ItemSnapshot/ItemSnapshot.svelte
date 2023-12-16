@@ -8,6 +8,7 @@
   } from "$src/helpers/imageDataHelpers";
   import { onMount } from "svelte";
   import CloudIcon from "$icons/cloud.svg?raw";
+  import { currentUser } from "$src/data/cache";
 
   export let texture: OutfitPackage = null;
   export let variant: string = null;
@@ -71,7 +72,9 @@
       {/if}
     </div>
     {#if texture.publisher}
+      {#if texture.publisher.id != $currentUser.id}
       <span class="label unique">{texture.publisher.name}</span>
+      {/if}
       <div class="colors">
         {#each dominantColor as color, index}
           <span

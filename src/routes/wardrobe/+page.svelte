@@ -15,7 +15,7 @@
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
   import { CreateOutfitSet } from "$src/api/sets";
   import { CreateOutfit } from "$src/api/outfits";
-  import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
+  import { GetCategoriesFromList, GetOutfitIconFromType } from "$src/helpers/imageDataHelpers";
 
   let layersRenderer: THREE.WebGLRenderer = null;
 
@@ -78,7 +78,7 @@
           <CategoryMenuItem
             label={item}
             selected={currentView == item}
-            icon={AvatarIcon}
+            icon={GetOutfitIconFromType(item)}
             badge={outfitsCount[item]}
             on:click={() => (currentView = item)}
           />

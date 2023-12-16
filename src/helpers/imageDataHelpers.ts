@@ -5,6 +5,12 @@ import HatAnimation from "$src/animation/hat";
 import WavingAnimation from "$src/animation/waving";
 import type { OutfitPackage } from "$src/data/common";
 import { closest } from "color-diff";
+import HatIcon from "$icons/clothes/hat.svg?raw";
+import TopIcon from "$icons/clothes/top.svg?raw";
+import BottomIcon from "$icons/clothes/bottom.svg?raw";
+import ShoesIcon from "$icons/clothes/shoes.svg?raw";
+import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
+
 
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =
@@ -179,4 +185,20 @@ export const GetCategoriesFromList = function(list: OutfitPackage[]) {
     }).length;
   });
   return categoryCount;
+}
+export const GetOutfitIconFromType = function(type: string) {
+  switch (type.toLowerCase()) {
+    case OUTFIT_TYPE.HAT:
+      return HatIcon
+    case OUTFIT_TYPE.TOP:
+      return TopIcon
+    case OUTFIT_TYPE.HOODIE:
+      return HoodieIcon
+    case OUTFIT_TYPE.SHOES:
+      return ShoesIcon
+    case OUTFIT_TYPE.BOTTOM:
+      return BottomIcon
+   default:
+      return TopIcon
+  }
 }

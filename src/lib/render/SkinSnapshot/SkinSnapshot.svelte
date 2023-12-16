@@ -47,7 +47,7 @@
     }
     if (type == OUTFIT_TYPE.BOTTOM) {
       camPozY = -0.7;
-      camPozZ = 1;
+      camPozZ = 1.2;
       return;
     }
     if (type == OUTFIT_TYPE.SHOES) {
