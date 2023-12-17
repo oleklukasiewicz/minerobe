@@ -32,6 +32,7 @@
     currentUser,
     appState,
     baseTexture,
+    defaultRenderer,
     wardrobe,
   } from "$data/cache";
 
@@ -99,8 +100,6 @@
   let previousPackageState: OutfitLayer[] = null;
   let modelTexture: string = null;
   let loaded = false;
-
-  let layersRenderer;
   let isDragging = false;
 
   let isPackageInWardrobe = false;
@@ -112,10 +111,6 @@
   let updateAnimation = function (anim) {};
 
   onMount(async () => {
-    layersRenderer = new THREE.WebGLRenderer({
-      alpha: true,
-      preserveDrawingBuffer: true,
-    });
     appState.subscribe((state) => {
       if (loaded || state != APP_STATE.READY) {
         loaded = false;
@@ -440,7 +435,7 @@
                   model={$itemModel}
                   readonly={$itemPublisher.id != $currentUser?.id}
                   modelName={$itemPackage.model}
-                  renderer={layersRenderer}
+                  renderer={$defaultRenderer}
                   bind:label={item.name}
                   on:addvariant={addImageVariant}
                   on:down={downLayer}
@@ -550,7 +545,7 @@
         </div>
         {#if loaded && isOutfitPickerOpen}
           <OutfitPicker
-            renderer={layersRenderer}
+            renderer={$defaultRenderer}
             outfits={$wardrobe.outfits}
             modelName={$wardrobe.studio.model}
             on:select={(e) => addNewRemoteLayer(e.detail)}

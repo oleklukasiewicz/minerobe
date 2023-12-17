@@ -1,7 +1,7 @@
 <script lang="ts">
   import ItemSetSnapshot from "$lib/ItemSetSnapshot/ItemSetSnapshot.svelte";
   import ItemSnapshot from "$lib/ItemSnapshot/ItemSnapshot.svelte";
-  import { alexModel, appState, currentUser, steveModel, wardrobe } from "$src/data/cache";
+  import { alexModel, appState, currentUser, steveModel, wardrobe,defaultRenderer } from "$src/data/cache";
   import { navigateToDesign } from "$src/helpers/navigationHelper";
   import { onMount } from "svelte";
   import * as THREE from "three";
@@ -17,15 +17,10 @@
   import { CreateOutfit } from "$src/api/outfits";
   import { GetCategoriesFromList, GetOutfitIconFromType } from "$src/helpers/imageDataHelpers";
 
-  let layersRenderer: THREE.WebGLRenderer = null;
 
   let currentView = "sets";
   let loaded = false;
   onMount(() => {
-    layersRenderer = new THREE.WebGLRenderer({
-      alpha: true,
-      preserveDrawingBuffer: true,
-    });
     appState.subscribe((x) => {
       loaded = x == APP_STATE.READY;
     });
@@ -104,7 +99,7 @@
         <div class="sets-list">
           {#each $wardrobe.sets as item (item.id)}
             <ItemSetSnapshot
-              renderer={layersRenderer}
+              renderer={$defaultRenderer}
               outfitPackage={item}
               publisher={item.publisher}
               model={item.model != "alex" ? $steveModel : $alexModel}
@@ -131,7 +126,7 @@
         <div class="outfits-list">
           {#each outfitList as item (item.id)}
             <ItemSnapshot
-              renderer={layersRenderer}
+              renderer={$defaultRenderer}
               texture={item}
               extended={true}
               model={item.model != "alex" ? $steveModel : $alexModel}

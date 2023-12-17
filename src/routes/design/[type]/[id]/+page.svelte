@@ -27,6 +27,7 @@
     wardrobe,
     appState,
     baseTexture,
+    defaultRenderer,
   } from "$data/cache";
   import { APP_STATE, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
 
@@ -85,7 +86,6 @@
   let loaded = false;
   let isGuest = false;
   let updatedLayer: OutfitLayer = null;
-  let layersRenderer;
   let isDragging = false;
   let rendererLayers: FileData[] = [];
 
@@ -93,10 +93,6 @@
   let updateAnimation: (animation: any) => void = () => {};
 
   onMount(async () => {
-    layersRenderer = new THREE.WebGLRenderer({
-      alpha: true,
-      preserveDrawingBuffer: true,
-    });
     let type = $page.params.type;
     let id = $page.params.id;
     let outfitPackage;
@@ -228,7 +224,7 @@
                 controls={$isItemSet}
                 model={$itemModel}
                 modelName={$localPackage.model}
-                renderer={layersRenderer}
+                renderer={$defaultRenderer}
                 bind:label={item.name}
                 readonly={true}
               />
@@ -241,7 +237,7 @@
                 texture={layer[$itemModelType]}
                 model={$itemModel}
                 modelName={$itemModelType}
-                renderer={layersRenderer}
+                renderer={$defaultRenderer}
                 label={layer.name}
                 on:click={() => ($selectedVariant = layer)}
                 selected={$selectedVariant == layer}

@@ -16,15 +16,17 @@ import { propertyStore } from "svelte-writable-derived";
 import { FetchWardrobe, UploadWardrobe } from "$src/api/wardrobe";
 import { UploadOutfitSet } from "$src/api/sets";
 import { UploadOutfit } from "$src/api/outfits";
+import * as THREE from "three";
 
-export let alexModel: Readable<string> = readable(
+export const alexModel: Readable<string> = readable(
   "data:model/gltf+json;base64," + btoa(alexModelData)
 );
-export let steveModel: Readable<string> = readable(
+export const steveModel: Readable<string> = readable(
   "data:model/gltf+json;base64," + btoa(steveModelData)
 );
 
-export let planksTexture: Readable<string> = readable(planksTextureRaw);
+export const planksTexture: Readable<string> = readable(planksTextureRaw);
+export const defaultRenderer: Writable<string> = writable(null);
 
 export const appState: Writable<string> = writable(APP_STATE.LOADING);
 export const currentUser: Writable<MinerobeUser> = writable(null);
@@ -61,6 +63,10 @@ let itemPackageSubscription;
 let wardrobeSubscription;
 
 export const setup = function () {
+  defaultRenderer.set(new THREE.WebGLRenderer({
+    alpha: true,
+    preserveDrawingBuffer: true,
+  }));
   currentUser.subscribe(async (user) => {
     if (user) {
       //settings up account
