@@ -10,7 +10,7 @@
   import AvatarIcon from "$src/icons/avatar.svg?raw";
 
   import { onMount } from "svelte";
-  import { currentUser, setup } from "$src/data/cache";
+  import { currentUser, isMobileView, setup } from "$src/data/cache";
   import { getCurrentUser, loginUser, logoutUser } from "$src/api/auth";
 
   export const load = async () => {
@@ -61,8 +61,22 @@
         viewId="design"
         on:click={() => (isMenuOpened = false)}
       />
+     
+      {#if $isMobileView}
+      <div class="spacer" style="flex:1;" />
+      <button class="dark" style="text-align: left;" on:click={toggleLogin}>
+        {#if $currentUser != null}
+          <img src={$currentUser.avatar} alt="Avatar" />
+        {:else}
+          <span class="icon-small"> {@html AvatarIcon}</span>
+        {/if}
+        {$currentUser?.name}
+      </button>
+      {/if}
     </div>
-    <div class="spacer" style="flex:1;" />
+    {#if !$isMobileView}
+      <div class="spacer" style="flex:1;" />
+      {/if}
     <a href="/wardrobe" class:disabled={$currentUser == null }>
       <button
         class="icon subscribtion-button dark"
@@ -71,6 +85,7 @@
         <span class="icon-small"> {@html SubscriptionIcon}</span>
       </button>
     </a>
+    {#if !$isMobileView}
     <button class="icon avatar-button dark" on:click={toggleLogin}>
       {#if $currentUser != null}
         <img src={$currentUser.avatar} alt="Avatar" />
@@ -78,6 +93,7 @@
         <span class="icon-small"> {@html AvatarIcon}</span>
       {/if}
     </button>
+    {/if}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="nav-filler" on:click={() => (isMenuOpened = false)} />

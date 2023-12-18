@@ -4,6 +4,7 @@ import {
   type Writable,
   type Readable,
   get,
+  readonly,
 } from "svelte/store";
 import { APP_STATE, PACKAGE_TYPE } from "$data/consts";
 import type { MinerobeUser } from "./common";
@@ -17,6 +18,9 @@ import { FetchWardrobe, UploadWardrobe } from "$src/api/wardrobe";
 import { UploadOutfitSet } from "$src/api/sets";
 import { UploadOutfit } from "$src/api/outfits";
 import * as THREE from "three";
+
+const isMobileViewWritable: Writable<boolean> = writable(false);
+export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
 
 export const alexModel: Readable<string> = readable(
   "data:model/gltf+json;base64," + btoa(alexModelData)
@@ -48,8 +52,8 @@ export const wardrobe: Writable<WardrobePackage> = writable({
     },
     social: {
       likes: 0,
-     isFeatured: false,
-    }
+      isFeatured: false,
+    },
   },
 });
 export const baseTexture: Readable<string> = readable(get(planksTexture));
@@ -63,10 +67,17 @@ let itemPackageSubscription;
 let wardrobeSubscription;
 
 export const setup = function () {
-  defaultRenderer.set(new THREE.WebGLRenderer({
-    alpha: true,
-    preserveDrawingBuffer: true,
-  }));
+  defaultRenderer.set(
+    new THREE.WebGLRenderer({
+      alpha: true,
+      preserveDrawingBuffer: true,
+    })
+  );
+  const matcher = window.matchMedia("(max-width: 768px)");
+  isMobileViewWritable.set(matcher.matches);
+  matcher.addEventListener("change", (e) => {
+    isMobileViewWritable.set(e.matches);
+  });
   currentUser.subscribe(async (user) => {
     if (user) {
       //settings up account

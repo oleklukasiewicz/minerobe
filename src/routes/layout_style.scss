@@ -21,8 +21,14 @@
       position: absolute;
       z-index: 5;
     }
+    #nav-title {
+      width: 100%;
+      flex:1;
+      justify-content: center;
+    }
   }
   #nav-title {
+    text-align: center;
     font-size: larger;
     display: flex;
     gap: 16px;

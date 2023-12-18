@@ -163,7 +163,7 @@ button{
     box-sizing: border-box;
     padding: 7px 16px;
 }
-button > svg{
+button > svg,button > .icon,button > img{
     width: 24px;
     height: 24px;
     margin-right: 8px;
