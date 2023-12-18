@@ -37,7 +37,7 @@
 {#if !$isLoading}
   <div id="nav" class:opened={isMenuOpened} class:closed={!isMenuOpened}>
     <button
-      class="icon menu-button"
+      class="icon menu-button dark"
       on:click={() => (isMenuOpened = !isMenuOpened)}
     >
       {@html MenuIcon}
