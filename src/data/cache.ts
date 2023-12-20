@@ -12,11 +12,7 @@ import alexModelData from "$src/model/alex.gltf?raw";
 import steveModelData from "$src/model/steve.gltf?raw";
 import planksTextureRaw from "$src/texture/default_planks.png?url";
 import type { WardrobePackage } from "./common";
-import type { OutfitPackage } from "./common";
-import { propertyStore } from "svelte-writable-derived";
 import { FetchWardrobe, UploadWardrobe } from "$src/api/wardrobe";
-import { UploadOutfitSet } from "$src/api/sets";
-import { UploadOutfit } from "$src/api/outfits";
 import * as THREE from "three";
 
 const isMobileViewWritable: Writable<boolean> = writable(false);
@@ -58,12 +54,6 @@ export const wardrobe: Writable<WardrobePackage> = writable({
 });
 export const baseTexture: Readable<string> = readable(get(planksTexture));
 
-export const itemPackage: Writable<OutfitPackage> = propertyStore(
-  wardrobe,
-  "studio"
-);
-
-let itemPackageSubscription;
 let wardrobeSubscription;
 
 export const setup = function () {
@@ -87,16 +77,12 @@ export const setup = function () {
       if (w != null) {
         wardrobe.set(w);
         console.log("setting wardrobe");
-        if (w.studio != null) itemPackage.set(w.studio);
         appState.set(APP_STATE.READY);
-
-        if (itemPackageSubscription) itemPackageSubscription();
         if (wardrobeSubscription) wardrobeSubscription();
 
         setupSubscriptions();
       }
     } else {
-      if (itemPackageSubscription) itemPackageSubscription();
       if (wardrobeSubscription) wardrobeSubscription();
 
       appState.set(APP_STATE.LOADING);
@@ -104,15 +90,6 @@ export const setup = function () {
   });
 };
 const setupSubscriptions = function () {
-  itemPackageSubscription = itemPackage.subscribe(
-    async (data: OutfitPackage) => {
-      if (data != null && data.id != null) {
-        if (data.type == PACKAGE_TYPE.OUTFIT_SET) {
-          await UploadOutfitSet(data);
-        } else await UploadOutfit(data);
-      }
-    }
-  );
   wardrobeSubscription = wardrobe.subscribe(async (data) => {
     if (get(appState) == APP_STATE.READY && data) await UploadWardrobe(data);
   });

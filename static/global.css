@@ -11,7 +11,7 @@
     --color-theme-font: #222222;
     --color-accent: #3b8526;
     --color-accent-L2: #8be468;
-    --color-accent-L1: #6bc349;
+    --color-accent-L1: rgb(107, 195, 73);
     --color-accent-D1: #2a631c;
     --color-accent-D2: #214717;
     --color-unique: #e79836;
@@ -60,7 +60,7 @@
     }
 }
 ::selection{
-    background-color: var(--color-accent);
+    background-color: rgba(107, 195, 73,0.7);
     color: var(--color-accent-font);
 }
 body{

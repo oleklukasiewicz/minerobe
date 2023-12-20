@@ -20,15 +20,6 @@ export const ParseWardrobeToDatabase = function (pack: WardrobePackage) {
   data.outfits = data.outfits.map(
     (item) => new OutfitPackageLink(item.id, item.model) as OutfitPackage
   );
-  if (data.studio?.id) {
-    data.studio = new OutfitPackageLink(
-      data.studio.id,
-      data.studio.model,
-      data.studio.type == PACKAGE_TYPE.OUTFIT_SET
-        ? PACKAGE_TYPE.OUTFIT_SET_LINK
-        : PACKAGE_TYPE.OUTFIT_LINK
-    ) as OutfitPackage;
-  }
   return data;
 };
 export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
@@ -45,13 +36,6 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
 
   data.sets = (await parsedSets).filter((item) => item != null);
   data.outfits = (await parsedOutfits).filter((item) => item != null);
-
-  if (data.studio?.id) {
-    data.studio =
-      data.studio.type == PACKAGE_TYPE.OUTFIT_SET_LINK
-        ? await FetchOutfitSetFromLink(data.studio)
-        : (data.studio = await FetchOutfitFromLink(data.studio));
-  }
   return data;
 };
 export const FetchWardrobe = async function () {

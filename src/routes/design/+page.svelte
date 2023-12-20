@@ -1,6 +1,5 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import * as THREE from "three";
   import {
     derived,
     writable,
@@ -8,7 +7,7 @@
     type Writable,
     get,
   } from "svelte/store";
-  import writableDerived, { propertyStore } from "svelte-writable-derived";
+  import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
@@ -24,9 +23,13 @@
     MODEL_TYPE,
     PACKAGE_TYPE,
   } from "$data/consts";
-  import { FileData, OutfitLayer, OutfitPackage } from "$data/common";
   import {
-    itemPackage,
+    FileData,
+    MinerobeUser,
+    OutfitLayer,
+    OutfitPackage,
+  } from "$data/common";
+  import {
     alexModel,
     steveModel,
     currentUser,
@@ -34,6 +37,7 @@
     baseTexture,
     defaultRenderer,
     wardrobe,
+    isMobileView,
   } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
@@ -59,7 +63,12 @@
     ImportLayerFromFile,
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
-  import { CreateOutfit, GenerateIdForOutfitLayer } from "$src/api/outfits";
+  import {
+    CreateOutfit,
+    FetchOutfit,
+    GenerateIdForOutfitLayer,
+    UploadOutfit,
+  } from "$src/api/outfits";
   import Dialog from "$lib/Dialog/Dialog.svelte";
   import OutfitPicker from "$lib/OutfitPicker/OutfitPicker.svelte";
   import {
@@ -73,14 +82,26 @@
     navigateToDesign,
     navigateToWardrobe,
   } from "$src/helpers/navigationHelper";
-  import { CreateOutfitSet } from "$src/api/sets";
+  import {
+    CreateOutfitSet,
+    FetchOutfitSet,
+    UploadOutfitSet,
+  } from "$src/api/sets";
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
+  const itemPackage: Writable<OutfitPackage> = writable(
+    new OutfitPackage(
+      "",
+      MODEL_TYPE.ALEX,
+      [],
+      PACKAGE_TYPE.OUTFIT,
+      new MinerobeUser("", "", "")
+    )
+  );
 
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
     "layers"
   );
-
   const itemModelType: Writable<string> = propertyStore(itemPackage, "model");
   const itemName: Writable<string> = propertyStore(itemPackage, "name");
   const itemPublisher = propertyStore(itemPackage, "publisher");
@@ -97,7 +118,6 @@
       $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel
   );
 
-  let previousPackageState: OutfitLayer[] = null;
   let modelTexture: string = null;
   let loaded = false;
   let isDragging = false;
@@ -109,12 +129,16 @@
   let isDeleteDialogOpen = false;
 
   let updateAnimation = function (anim) {};
-
   onMount(async () => {
-    appState.subscribe((state) => {
+    appState.subscribe(async (state) => {
       if (loaded || state != APP_STATE.READY) {
         loaded = false;
         return;
+      }
+      if ($wardrobe.studio.type == PACKAGE_TYPE.OUTFIT_SET_LINK) {
+        $itemPackage = await FetchOutfitSet($wardrobe.studio.id);
+      } else {
+        $itemPackage = await FetchOutfit($wardrobe.studio.id);
       }
       loaded = true;
       isPackageInWardrobe = IsItemInWardrobe($itemPackage, $wardrobe);
@@ -234,6 +258,7 @@
       layer.type = LAYER_TYPE.REMOTE;
       const newRemote = layer;
       layers.unshift(newRemote);
+      $selectedLayer = newRemote;
       const anims = GetAnimationForPackageChange(
         $itemPackage,
         CHANGE_TYPE.LAYER_ADD,
@@ -254,6 +279,7 @@
       else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null, null);
       newOutfit.variantId = GenerateIdForOutfitLayer();
       layers.unshift(newOutfit);
+      $selectedLayer = newOutfit;
       const anims = GetAnimationForPackageChange(
         $itemPackage,
         CHANGE_TYPE.LAYER_ADD,
@@ -355,10 +381,17 @@
   itemLayers.subscribe((layers) => updateTexture());
   itemModelType.subscribe((model) => updateTexture());
   selectedLayer.subscribe((layer) => (!$isItemSet ? updateTexture() : null));
+  itemPackage.subscribe(async (data: OutfitPackage) => {
+    if (data != null && data.id != null) {
+      if (data.type == PACKAGE_TYPE.OUTFIT_SET) {
+        await UploadOutfitSet(data);
+      } else await UploadOutfit(data);
+    }
+  });
 </script>
 
 <div class="item-page">
-  {#if $itemPackage.id != null}
+  {#if $itemPackage?.id != null || loaded == false}
     <div class="render-data">
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
@@ -426,6 +459,32 @@
         />
         <div class="item-layers">
           {#if loaded}
+            {#if $itemPublisher.id == $currentUser?.id && $isMobileView}
+              <form style="display: flex;flex-wrap:wrap;">
+                {#if $isItemSet}
+                  <button
+                    id="import-package-action"
+                    title={$_("importOutfit")}
+                    class:disabled={!loaded}
+                    on:click={() => (isOutfitPickerOpen = true)}
+                    class="secondary"
+                    >{@html AddIcon} {$_("importOutfit")}</button
+                  >
+                {/if}
+                <button
+                  id="add-layer-action"
+                  type="submit"
+                  class="secondary"
+                  class:disabled={!loaded}
+                  on:click={importLayer}
+                  >{@html ImportPackageIcon}
+                  {$isItemSet
+                    ? $_("layersOpt.addLayer")
+                    : $_("layersOpt.addVariant")}</button
+                >
+              </form>
+              <br />
+            {/if}
             {#each $itemLayers as item, index (item.id + item.variantId)}
               <div class="item-layer">
                 <ItemLayer
@@ -449,7 +508,7 @@
               </div>
             {/each}
           {/if}
-          {#if $itemPublisher.id == $currentUser?.id}
+          {#if $itemPublisher.id == $currentUser?.id && !$isMobileView}
             <form style="display: flex;flex-wrap:wrap;">
               {#if $isItemSet}
                 <button

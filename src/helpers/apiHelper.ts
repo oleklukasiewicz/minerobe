@@ -57,16 +57,7 @@ export const RemoveItemFromWardrobe = function (id, type) {
 export const RemoveItem = function (item: OutfitPackage) {
   if (get(wardrobe).studio.id == item.id) {
     wardrobe.update((wardrobe) => {
-      wardrobe.studio = new OutfitPackage(
-        "new outfit",
-        MODEL_TYPE.ALEX,
-        [],
-        PACKAGE_TYPE.OUTFIT,
-        undefined,
-        null,
-        null,
-        null
-      );
+      wardrobe.studio = null;
       return wardrobe;
     });
   }
