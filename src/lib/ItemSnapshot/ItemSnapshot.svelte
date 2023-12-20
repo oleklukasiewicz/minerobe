@@ -18,7 +18,7 @@
   export let extended = false;
   export let label = texture?.name || "New outfit";
   export let dense = false;
-  
+
   let dominantColor = [];
   let variantTexture = null;
   const limit = 2;
@@ -56,13 +56,15 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="item-snapshot" on:click class:dense>
   {#if variantTexture}
-    <SkinSnapshot
-      texture={variantTexture[texture.model].content}
-      {model}
-      {renderer}
-      {modelName}
-      {refreshRender}
-    />
+    <div style="margin: 4px;">
+      <SkinSnapshot
+        texture={variantTexture[texture.model].content}
+        {model}
+        {renderer}
+        {modelName}
+        {refreshRender}
+      />
+    </div>
   {/if}
   <div class="item-snapshot-data">
     <div class="data">
@@ -73,7 +75,7 @@
     </div>
     {#if texture.publisher}
       {#if texture.publisher.id != $currentUser.id}
-      <span class="label unique">{texture.publisher.name}</span>
+        <span class="label unique">{texture.publisher.name}</span>
       {/if}
       <div class="colors">
         {#each dominantColor as color, index}

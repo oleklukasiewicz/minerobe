@@ -7,7 +7,7 @@
     type Readable,
     type Writable,
   } from "svelte/store";
-  import { propertyStore } from "svelte-writable-derived";
+  import writableDerived, { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
@@ -29,7 +29,7 @@
     baseTexture,
     defaultRenderer,
   } from "$data/cache";
-  import { APP_STATE, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
+  import { APP_STATE, COLORS, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
@@ -43,7 +43,11 @@
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
   import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
   import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
-  import { GetAnimationForType } from "$src/helpers/imageDataHelpers";
+  import {
+    ConvertRGBToHSL,
+    GetAnimationForType,
+    GetColorFromImage,
+  } from "$src/helpers/imageDataHelpers";
   import { FetchOutfit } from "$src/api/outfits";
   import { FetchOutfitSet } from "$src/api/sets";
   import {
@@ -82,6 +86,7 @@
 
   const selectedVariant: Writable<OutfitLayer> = writable(null);
 
+  let sortedItemLayers = [];
   let modelTexture: string = null;
   let loaded = false;
   let isGuest = false;
@@ -162,9 +167,23 @@
     isPackageInWardrobe = false;
   };
 
+  const sortLayersByColor = async function () {
+    let hues = [];
+    for (let i = 0; i < $itemLayers.length; i++) {
+      let color = ConvertRGBToHSL(
+        await GetColorFromImage($itemLayers[i][$itemModelType].content)
+      );
+      hues.push({ h: color.h, item: $itemLayers[i] });
+    }
+    sortedItemLayers = hues.sort((a, b) => a.h - b.h).map((x) => x.item);
+  };
+
   //subs
   itemModelType.subscribe((model) => updateTexture());
   selectedVariant.subscribe((variant) => updateTexture());
+  itemLayers.subscribe((layers) => {
+    sortLayersByColor();
+  });
 </script>
 
 <div class="item-page">
@@ -232,7 +251,7 @@
           {/each}
         {:else}
           <div class="item-variants">
-            {#each $itemLayers as layer (layer.id + layer.variantId)}
+            {#each sortedItemLayers as layer (layer.id + layer.variantId)}
               <ItemVariant
                 texture={layer[$itemModelType]}
                 model={$itemModel}

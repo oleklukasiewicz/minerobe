@@ -11,7 +11,6 @@ import BottomIcon from "$icons/clothes/bottom.svg?raw";
 import ShoesIcon from "$icons/clothes/shoes.svg?raw";
 import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
 
-
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =
     GetPixelCountInArea(imageContext, 0, 0, 32, 16) +
@@ -70,7 +69,9 @@ export const GetPixelCountInArea = function (
   width: number,
   height: number
 ) {
-  const imageData = imageContext.getImageData(x, y, width, height,{ willReadFrequently: true });
+  const imageData = imageContext.getImageData(x, y, width, height, {
+    willReadFrequently: true,
+  });
   let nonTransparentPixelsCount = 0;
   for (let i = 0; i < imageData.data.length; i += 4) {
     const alpha = imageData.data[i + 3];
@@ -147,35 +148,58 @@ export const FindClosestColorString = (rgbString: string) => {
 export const FindInColors = (rgb: any) => {
   return Object.keys(COLORS).find((key) => {
     const color = COLORS[key];
-    return (
-      color.r === rgb.r && color.g === rgb.g && color.b === rgb.b && key
-    );
+    return color.r === rgb.r && color.g === rgb.g && color.b === rgb.b && key;
   });
 };
-export const GetColorFromImage=async function(base64: string) {
+export const GetColorFromImage = async function (base64: string) {
   let dominantColor = await GetDominantColorFromImage(base64);
   let closestColor = FindClosestColorString(dominantColor);
   return closestColor;
-}
+};
 export const ConvertRGBToHex = (rgb: any) => {
   const { r, g, b } = rgb;
   return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-}
-export const GetAnimationForType = function(type: string) {
-    switch (type) {
-      case OUTFIT_TYPE.HAT:
-       return HatAnimation
-      case OUTFIT_TYPE.TOP:
-      case OUTFIT_TYPE.HOODIE:
-        return NewOutfitBottomAnimation
-      case OUTFIT_TYPE.SHOES:
-        return WavingAnimation
+};
+export const ConvertRGBToHSL = (rgb: any) => {
+  let r = rgb.r;
+  let g = rgb.g;
+  let b = rgb.b;
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  let max = Math.max(r, g, b);
+  let min = Math.min(r, g, b);
+  let h = 0;
+  let s = 0;
+  let l = (max + min) / 2;
+  if (max != min) {
+    let d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r:
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+      case g:
+        h = ((b - r) / d + 2) / 6;
+      case b:
+        h = ((r - g) / d + 4) / 6;
     }
-}
-export const GetCategoriesFromList = function(list: OutfitPackage[]) {
+  }
+  return { h, s, l };
+};
+export const GetAnimationForType = function (type: string) {
+  switch (type) {
+    case OUTFIT_TYPE.HAT:
+      return HatAnimation;
+    case OUTFIT_TYPE.TOP:
+    case OUTFIT_TYPE.HOODIE:
+      return NewOutfitBottomAnimation;
+    case OUTFIT_TYPE.SHOES:
+      return WavingAnimation;
+  }
+};
+export const GetCategoriesFromList = function (list: OutfitPackage[]) {
   let categories = Object.keys(OUTFIT_TYPE).filter(
-    (x) =>
-      OUTFIT_TYPE[x] != OUTFIT_TYPE.OUTFIT_SET
+    (x) => OUTFIT_TYPE[x] != OUTFIT_TYPE.OUTFIT_SET
   );
   let categoryCount = {};
   categories.forEach((category) => {
@@ -185,20 +209,20 @@ export const GetCategoriesFromList = function(list: OutfitPackage[]) {
     }).length;
   });
   return categoryCount;
-}
-export const GetOutfitIconFromType = function(type: string) {
+};
+export const GetOutfitIconFromType = function (type: string) {
   switch (type.toLowerCase()) {
     case OUTFIT_TYPE.HAT:
-      return HatIcon
+      return HatIcon;
     case OUTFIT_TYPE.TOP:
-      return TopIcon
+      return TopIcon;
     case OUTFIT_TYPE.HOODIE:
-      return HoodieIcon
+      return HoodieIcon;
     case OUTFIT_TYPE.SHOES:
-      return ShoesIcon
+      return ShoesIcon;
     case OUTFIT_TYPE.BOTTOM:
-      return BottomIcon
-   default:
-      return TopIcon
+      return BottomIcon;
+    default:
+      return TopIcon;
   }
-}
+};

@@ -77,6 +77,7 @@
     RemoveItem,
     RemoveItemFromWardrobe,
     ShareItem,
+    UpdateItemInWardrobe,
   } from "$src/helpers/apiHelper";
   import {
     navigateToDesign,
@@ -213,6 +214,7 @@
       } else {
         layers[index].steve = newLayer;
       }
+      $selectedLayer = layers[index];
       const anims = GetAnimationForPackageChange(
         $itemPackage,
         CHANGE_TYPE.LAYER_ADD,
@@ -337,7 +339,14 @@
                   null
                 );
               layers.unshift(newOutfit);
+              $selectedLayer = newOutfit;
               newOutfit.variantId = GenerateIdForOutfitLayer();
+              const anims = GetAnimationForPackageChange(
+                $itemPackage,
+                CHANGE_TYPE.LAYER_ADD,
+                0
+              );
+              anims.forEach((anim) => updateAnimation(anim));
               return layers;
             });
           } else {
@@ -386,6 +395,9 @@
       if (data.type == PACKAGE_TYPE.OUTFIT_SET) {
         await UploadOutfitSet(data);
       } else await UploadOutfit(data);
+    }
+    if (isPackageInWardrobe) {
+      UpdateItemInWardrobe($itemPackage);
     }
   });
 </script>
@@ -502,7 +514,7 @@
                   on:remove={removeLayer}
                   canUp={index != 0}
                   canDown={index != $itemLayers.length - 1}
-                  selected={item?.name == $selectedLayer?.name}
+                  selected={item?.variantId == $selectedLayer?.variantId}
                   on:click={() => ($selectedLayer = item)}
                 />
               </div>

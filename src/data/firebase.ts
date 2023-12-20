@@ -6,6 +6,7 @@ import {
   getDoc,
   setDoc,
   deleteDoc,
+  getDocs,
 } from "firebase/firestore";
 import {
   GoogleAuthProvider,
@@ -143,5 +144,21 @@ export const UpdateRawDocument = async function (
     const dataRef = doc(db, path, documentName);
     await setDoc(dataRef, data, { merge: true });
     return data;
+  }
+}
+export const DeleteCollection = async function (path: string) {
+  if (cUser) {
+    const dataRef = collection(db, path);
+    const dataSnap = await getDocs(dataRef);
+    dataSnap.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
+  }
+}
+export const GetCollection = async function (path: string) {
+  if (cUser) {
+    const dataRef = collection(db, path);
+    const dataSnap = await getDocs(dataRef);
+    return dataSnap.docs.map((doc) => doc.data());
   }
 }

@@ -8,6 +8,7 @@ import {
 } from "$src/data/common";
 import { LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
 import {
+  DeleteCollection,
   DeleteDocument,
   GenerateIdForCollection,
   GetDocument,
@@ -18,22 +19,41 @@ import { GetMinerobeUser } from "./auth";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 
 const OUTFIT_PATH = "outfits";
-const OOUTFIT_LAYER_PATH = "dummy";
+const OUTFIT_LOCAL_PATH = "data";
+const OUTFIT_DATA_PATH = "itemdata";
+const OUTFIT_SOCIAL_PATH = "social";
+const OUTFIT_SNAPSHOT_PATH = "snapshot";
+const OUTFIT_LAYER_PATH = "dummy";
 
 export const GenerateIdForOutfit = () => GenerateIdForCollection(OUTFIT_PATH);
 export const GenerateIdForOutfitLayer = () =>
-  GenerateIdForCollection(OOUTFIT_LAYER_PATH);
+  GenerateIdForCollection(OUTFIT_LAYER_PATH);
 
 const _fetchOutfit = async function (id, bypassSharedFlag = false) {
-  let outfit = await GetDocument(OUTFIT_PATH, id);
+  let outfit = (await GetDocument(
+    OUTFIT_PATH + "/" + id + "/" + OUTFIT_LOCAL_PATH,
+    OUTFIT_DATA_PATH
+  )) as OutfitPackage;
   if (
     outfit == null ||
     (outfit?.publisher?.id != get(currentUser)?.id &&
       (bypassSharedFlag ? false : outfit.isShared == false))
   )
     return null;
-  if (outfit.social == null) outfit.social = new PackageSocialData();
-  await UpdateDocument(OUTFIT_PATH, id, outfit);
+
+  let social = (await GetDocument(
+    OUTFIT_PATH + "/" + id + "/" + OUTFIT_LOCAL_PATH,
+    OUTFIT_SOCIAL_PATH
+  )) as PackageSocialData;
+  outfit.social = social;
+  if (outfit.social == null) {
+    outfit.social = new PackageSocialData();
+    await UpdateDocument(
+      OUTFIT_PATH + "/" + id + "/" + OUTFIT_LOCAL_PATH,
+      OUTFIT_SOCIAL_PATH,
+      outfit.social
+    );
+  }
   return outfit;
 };
 export const ParseOutfitToLocal = async function (pack: OutfitPackage) {
@@ -68,6 +88,7 @@ export const FetchOutfitLayerFromLink = async function (
   let parsed = await _fetchOutfit(link.id, bypassSharredFlag);
   if (parsed == null) return null;
   let layer = parsed.layers.find((layer) => layer.variantId == link.variantId);
+  if (layer == null) return null;
   layer.id = parsed.id;
   layer.type = LAYER_TYPE.REMOTE;
   layer.name = parsed.name + " - " + layer.name;
@@ -78,10 +99,13 @@ export const UploadOutfit = async function (
   isNew: boolean = false
 ) {
   if (outfit.publisher.id != get(currentUser)?.id || outfit.id == null) return;
+  let parsed = ParseOutfitToDatabase(outfit, isNew);
+  delete parsed.social;
+
   await UpdateDocument(
-    OUTFIT_PATH,
-    outfit.id,
-    await ParseOutfitToDatabase(outfit, isNew)
+    OUTFIT_PATH + "/" + outfit.id + "/" + OUTFIT_LOCAL_PATH,
+    OUTFIT_DATA_PATH,
+    parsed
   );
   return outfit;
 };
@@ -107,5 +131,7 @@ export const CreateOutfit = async function (
 };
 export const DeleteOutfit = async function (outfit: OutfitPackage) {
   if (outfit.publisher.id != get(currentUser)?.id) return;
-  await DeleteDocument(OUTFIT_PATH, outfit.id);
+  await DeleteCollection(
+    OUTFIT_PATH + "/" + outfit.id + "/" + OUTFIT_LOCAL_PATH
+  );
 };
