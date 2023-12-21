@@ -73,7 +73,11 @@ export const FetchPackageSnapshot = async function (
 ) {
   let pack = await GetDocument(path, SNAPSHOT_PATH);
   if (pack == null) pack = await GetDocument(path, DATA_PATH);
-  if (pack == null) return null;
+  if (
+    pack == null ||
+    (pack?.publisher?.id != get(currentUser)?.id && pack.isShared == false)
+  )
+    return null;
   return await parser(pack);
 };
 export const UploadPackageSnapshot = async function (

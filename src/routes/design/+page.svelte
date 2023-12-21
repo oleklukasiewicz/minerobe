@@ -76,6 +76,7 @@
     RemoveItem,
     RemoveItemFromWardrobe,
     ShareItem,
+    UnshareItem,
     UpdateItemInWardrobe,
   } from "$src/helpers/apiHelper";
   import {
@@ -143,7 +144,8 @@
       loaded = true;
       isPackageInWardrobe = IsItemInWardrobe($itemPackage, $wardrobe);
       //patching
-      if(!isPackageInWardrobe && $itemPublisher.id == $currentUser?.id) addToWardrobe();
+      if (!isPackageInWardrobe && $itemPublisher.id == $currentUser?.id)
+        addToWardrobe();
       updateTexture();
     });
   });
@@ -304,6 +306,10 @@
     await ShareItem($itemPackage);
     $itemPackage.isShared = true;
   };
+  const unSharePackage = async function () {
+    await UnshareItem($itemPackage);
+    $itemPackage.isShared = false;
+  };
   const addToWardrobe = async function () {
     AddItemToWardrobe($itemPackage);
     isPackageInWardrobe = true;
@@ -323,8 +329,8 @@
           var file = event.dataTransfer.items[i].getAsFile();
           if (file.type.startsWith("image/")) {
             let newLayer = await ImportLayerFromFile(file);
+            let newOutfit;
             itemLayers.update((layers) => {
-              let newOutfit;
               if ($itemModelType == MODEL_TYPE.ALEX)
                 newOutfit = new OutfitLayer(
                   newLayer.fileName,
@@ -341,15 +347,15 @@
                 );
               layers.unshift(newOutfit);
               $selectedLayer = newOutfit;
-              newOutfit.variantId = GenerateIdForOutfitLayer();
-              const anims = GetAnimationForPackageChange(
-                $itemPackage,
-                CHANGE_TYPE.LAYER_ADD,
-                0
-              );
-              anims.forEach((anim) => updateAnimation(anim));
               return layers;
             });
+            newOutfit.variantId = GenerateIdForOutfitLayer();
+            const anims = GetAnimationForPackageChange(
+              $itemPackage,
+              CHANGE_TYPE.LAYER_ADD,
+              0
+            );
+            anims.forEach((anim) => updateAnimation(anim));
           } else {
             let newPackage = await ImportImagePackageJsonFromFile(
               file,
@@ -383,6 +389,27 @@
   const deletePackage = function () {
     navigateToWardrobe();
     RemoveItem($itemPackage);
+  };
+  const addNewDropVariant = async function (e) {
+    const layer = e.detail.texture;
+    const newLayer = await ImportLayerFromFile(e.detail.files[0]);
+    let index = 0;
+    itemLayers.update((layers) => {
+      index = layers.indexOf(layer);
+      if ($itemModelType == MODEL_TYPE.ALEX) {
+        layers[index].alex = newLayer;
+      } else {
+        layers[index].steve = newLayer;
+      }
+      $selectedLayer = layers[index];
+      return layers;
+    });
+    const anims = GetAnimationForPackageChange(
+      $itemPackage,
+      CHANGE_TYPE.LAYER_ADD,
+      index
+    );
+    anims.forEach((anim) => updateAnimation(anim));
   };
   //subscribtions
   itemPackage.subscribe((pack) => {
@@ -513,6 +540,7 @@
                   on:down={downLayer}
                   on:up={upLayer}
                   on:remove={removeLayer}
+                  on:dropvariant={addNewDropVariant}
                   canUp={index != 0}
                   canDown={index != $itemLayers.length - 1}
                   selected={item?.variantId == $selectedLayer?.variantId}
@@ -568,6 +596,13 @@
                   class="secondary"
                   >{@html SpotlightIcon} {$_("goToItemPage")}</button
                 ></a
+              >
+              <button
+                id="share-package-action"
+                on:click={unSharePackage}
+                class:disabled={!loaded}
+                title={$_("unsharepackage")}
+                class="icon secondary">{@html CloseIcon}</button
               >
             {:else}
               <button

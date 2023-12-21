@@ -29,6 +29,15 @@ export const ShareItem = async function (item) {
     await UploadOutfit(item);
   }
 };
+export const UnshareItem = async function (item) {
+  item.isShared = false;
+  if (item.type == PACKAGE_TYPE.OUTFIT_SET) {
+    await UploadOutfitSet(item);
+  }
+  if (item.type == PACKAGE_TYPE.OUTFIT) {
+    await UploadOutfit(item);
+  }
+};
 export const AddItemToWardrobe = function (item: OutfitPackage) {
   let wardrobeObj = get(wardrobe);
   if (!IsItemInWardrobe(item, wardrobeObj)) {

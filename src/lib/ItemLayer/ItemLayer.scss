@@ -8,9 +8,13 @@
   max-width: 100%;
   flex-wrap: wrap;
   gap: 4px;
-  &.disabled
-  {
-    opacity: 1 ;
+  outline: 3px solid transparent;
+  box-sizing: border-box;
+  &.drop-hover {
+    outline-color: var(--color-accent);
+  }
+  &.disabled {
+    opacity: 1;
   }
   .actions {
     display: flex;
@@ -47,7 +51,8 @@
       background-color: var(--color-theme-D3);
     }
     &.selected {
-      & .icon,input {
+      & .icon,
+      input {
         color: var(--color-accent-font);
       }
       background-color: var(--color-accent);

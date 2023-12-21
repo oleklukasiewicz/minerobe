@@ -110,6 +110,7 @@ export const FetchOutfitSet = async (id: string) =>
   );
 export const FetchOutfitSetFromLink = async function (link: OutfitPackageLink) {
   let data = await FetchOutfitSet(link.id);
+  if (data == null) return null;
   data.model = link.model;
   return data;
 };
@@ -152,6 +153,7 @@ export const FetchOutfitSetSnapshotFromLink = async function (
   link: OutfitPackageLink
 ) {
   let data = await FetchOutfitSetSnapshot(link.id);
+  if (data == null) return null;
   data.model = link.model;
   return data;
 };

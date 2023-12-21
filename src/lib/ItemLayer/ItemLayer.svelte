@@ -28,6 +28,7 @@
 
   let dispatch = createEventDispatcher();
 
+  let isDragging = false;
   let up = function () {
     dispatch("up", {
       texture: texture,
@@ -39,6 +40,28 @@
       texture: texture,
       model: model,
     });
+  };
+  let handleDrop = function (event) {
+    event.preventDefault();
+    if (multiVariant && texture.type != LAYER_TYPE.REMOTE) {
+      const files = event.dataTransfer.files;
+      isDragging = false;
+      dispatch("dropvariant", {
+        files: files,
+        texture: texture,
+        model: model,
+      });
+    }
+  };
+  const handleRenderDragOver = function (event) {
+    event.preventDefault();
+    isDragging = true;
+  };
+  const handleRenderDragEnter = function (event) {
+    isDragging = true;
+  };
+  const handleRenderDragLeave = function (event) {
+    isDragging = false;
   };
   let down = function () {
     dispatch("down", {
@@ -68,9 +91,16 @@
   class:selected
   class:selectable
   class:disabled={readonly}
+  class:drop-hover={isDragging &&
+    multiVariant &&
+    texture.type != LAYER_TYPE.REMOTE}
   on:click
   in:fadeInScale={{ duration: 300 }}
   out:fadeInScale={{ duration: 300 }}
+  on:drop={handleDrop}
+  on:dragenter={handleRenderDragEnter}
+  on:dragleave={handleRenderDragLeave}
+  on:dragover={handleRenderDragOver}
 >
   <div class="data">
     <div class="render">
