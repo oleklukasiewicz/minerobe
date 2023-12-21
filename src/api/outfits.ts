@@ -38,7 +38,7 @@ export const ParseOutfitSnapshotToDatabase = async function (
   pack: OutfitPackage
 ) {
   let parsed = Object.assign({}, pack);
-  pack.layers = pack.layers.slice(0, 3);
+  parsed.layers = parsed.layers.slice(0, 3);
   parsed.publisher = new MinerobeUser(parsed.publisher.id, null, null);
   return parsed;
 };
