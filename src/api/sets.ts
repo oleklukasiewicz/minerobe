@@ -1,68 +1,39 @@
 import { currentUser } from "$src/data/cache";
 import {
   OutfitPackage,
-  type OutfitLayer,
+  OutfitLayer,
   OutfitPackageLink,
   MinerobeUser,
   OutfitLayerLink,
   PackageSocialData,
+  FileData,
 } from "$src/data/common";
 import { LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
-import {
-  DeleteCollection,
-  GenerateIdForCollection,
-  GetDocument,
-  UpdateDocument,
-} from "$src/data/firebase";
-import { AddItemToWardrobe, CreateItemSnapshot } from "$src/helpers/apiHelper";
+import { GenerateIdForCollection } from "$src/data/firebase";
 import { GetMinerobeUser } from "./auth";
 import { FetchOutfitLayerFromLink } from "./outfits";
 import { get } from "svelte/store";
+import {
+  CreatePackage,
+  DeletePackage,
+  FetchPackage,
+  FetchPackageSnapshot,
+  UploadPackage,
+  UploadPackageSnapshot,
+  _FetchPackage,
+} from "./pack";
+import { mergeImages } from "$src/helpers/imageMerger";
 
 const SETS_PATH = "sets";
 const SETS_LOCAL_PATH = "data";
 
-const SETS_DATA_PATH = "itemdata";
-const SETS_SOCIAL_PATH = "social";
-const SETS_SNAPSHOT_PATH = "snapshot";
-
 export const GenerateIdForOutfitSet = () => GenerateIdForCollection(SETS_PATH);
-
-const _fetchOutfitSet = async function (id: string): Promise<OutfitPackage> {
-  let outfitSet = (await GetDocument(
-    SETS_PATH + "/" + id + "/" + SETS_LOCAL_PATH,
-    SETS_DATA_PATH
-  )) as OutfitPackage;
-
-  if (
-    outfitSet == null ||
-    (outfitSet?.publisher?.id != get(currentUser)?.id &&
-      outfitSet.isShared == false)
-  )
-    return null;
-  let social = (await GetDocument(
-    SETS_PATH + "/" + id + "/" + SETS_LOCAL_PATH,
-    SETS_SOCIAL_PATH
-  )) as PackageSocialData;
-  outfitSet.social = social;
-
-  if (outfitSet.social == null) {
-    outfitSet.social = new PackageSocialData();
-    await UpdateDocument(
-      SETS_PATH + "/" + id + "/" + SETS_LOCAL_PATH,
-      SETS_SOCIAL_PATH,
-      outfitSet.social
-    );
-  }
-
-  return outfitSet;
-};
 
 export const ParseOutfitSetToLocal = async function (data: OutfitPackage) {
   data.layers = await Promise.all(
     data.layers.map(async (item) =>
       item.type == LAYER_TYPE.REMOTE
-        ? await FetchOutfitLayerFromLink(item, true)
+        ? await FetchOutfitLayerFromLink(item)
         : item
     )
   );
@@ -84,31 +55,63 @@ export const ParseOutfitSetToDatabase = function (
   data.publisher = new MinerobeUser(data.publisher.id, null, null);
   return data;
 };
+export const ParseOutfitSetSnapshotToDatabase = async function (
+  pack: OutfitPackage
+) {
+  let item = Object.assign({}, pack) as OutfitPackage;
+  let firstLayer = item.layers[0];
+  if (firstLayer == null) return item;
+  let mergedLayersALEX = await mergeImages(
+    item.layers.map((x) => x[MODEL_TYPE.ALEX].content).reverse(),
+    undefined,
+    item.model
+  );
+  let mergedLayersSTEVE = await mergeImages(
+    item.layers.map((x) => x[MODEL_TYPE.STEVE].content).reverse(),
+    undefined,
+    item.model
+  );
+  item.layers = [
+    new OutfitLayer(
+      firstLayer.name,
+      new FileData(
+        firstLayer.steve.fileName,
+        mergedLayersSTEVE,
+        firstLayer.steve.type
+      ),
+      new FileData(
+        firstLayer.alex.fileName,
+        mergedLayersALEX,
+        firstLayer.alex.type
+      ),
+      firstLayer.variantId
+    ),
+  ];
+  delete item.social;
+  item.publisher = new MinerobeUser(item.publisher.id, null, null);
+  return item;
+};
 export const UploadOutfitSet = async function (
   data: OutfitPackage,
   isNew = false
 ) {
-  if (data.publisher.id != get(currentUser)?.id || data.id == null) return;
-  let parsed = ParseOutfitSetToDatabase(data, isNew);
-  delete parsed.social;
-  await UpdateDocument(
+  return await UploadPackage(
     SETS_PATH + "/" + data.id + "/" + SETS_LOCAL_PATH,
-    SETS_DATA_PATH,
-    parsed
+    data,
+    isNew,
+    ParseOutfitSetToDatabase,
+    ParseOutfitSetSnapshotToDatabase
   );
-  await UploadOutfitSetSnapshot(data);
-  return data;
 };
-export const FetchOutfitSet = async function (id: string) {
-  let data = await _fetchOutfitSet(id);
-  if (data == null) return null;
-  return ParseOutfitSetToLocal(data);
-};
+export const FetchOutfitSet = async (id: string) =>
+  await FetchPackage(
+    SETS_PATH + "/" + id + "/" + SETS_LOCAL_PATH,
+    ParseOutfitSetToLocal
+  );
 export const FetchOutfitSetFromLink = async function (link: OutfitPackageLink) {
-  let data = await _fetchOutfitSet(link.id);
-  if (data == null) return null;
+  let data = await FetchOutfitSet(link.id);
   data.model = link.model;
-  return ParseOutfitSetToLocal(data);
+  return data;
 };
 export const CreateOutfitSet = async function (
   addToWardrobe: boolean = false,
@@ -124,38 +127,39 @@ export const CreateOutfitSet = async function (
     isShared,
     new PackageSocialData()
   );
-  await UploadOutfitSet(data, true);
-  if (addToWardrobe) {
-    await AddItemToWardrobe(data);
-  }
+  await CreatePackage(
+    data,
+    SETS_PATH + "/" + data.id + "/" + SETS_LOCAL_PATH,
+    ParseOutfitSetToDatabase,
+    ParseOutfitSetToDatabase,
+    addToWardrobe
+  );
   return data;
 };
 export const DeleteOutfitSet = async function (outfit: OutfitPackage) {
-  if (outfit.publisher.id != get(currentUser)?.id) return;
-  await DeleteCollection(SETS_PATH + "/" + outfit.id + "/" + SETS_LOCAL_PATH);
+  await DeletePackage(
+    outfit,
+    SETS_PATH + "/" + outfit.id + "/" + SETS_LOCAL_PATH
+  );
 };
 export const FetchOutfitSetSnapshot = async function (id: string) {
-  let data = await GetDocument(
+  return await FetchPackageSnapshot(
     SETS_PATH + "/" + id + "/" + SETS_LOCAL_PATH,
-    SETS_SNAPSHOT_PATH
+    ParseOutfitSetToLocal
   );
-  data.publisher = await GetMinerobeUser(data.publisher.id);
-  return data;
 };
 export const FetchOutfitSetSnapshotFromLink = async function (
   link: OutfitPackageLink
 ) {
   let data = await FetchOutfitSetSnapshot(link.id);
-  if (data == null) return null;
   data.model = link.model;
   return data;
 };
 
 export const UploadOutfitSetSnapshot = async function (pack) {
-  let snapshot = ParseOutfitSetToDatabase(await CreateItemSnapshot(pack));
-  await UpdateDocument(
+  return await UploadPackageSnapshot(
     SETS_PATH + "/" + pack.id + "/" + SETS_LOCAL_PATH,
-    SETS_SNAPSHOT_PATH,
-    snapshot
+    pack,
+    ParseOutfitSetToDatabase
   );
 };

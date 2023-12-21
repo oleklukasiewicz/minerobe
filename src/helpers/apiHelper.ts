@@ -85,35 +85,3 @@ export const UpdateItemInWardrobe = function (item: OutfitPackage) {
   }
   wardrobe.set(wardrobeObj);
 };
-export const CreateItemSnapshot = async function (pack: OutfitPackage) {
-  let item = Object.assign({}, pack) as OutfitPackage;
-  let firstLayer = item.layers[0];
-  if (firstLayer == null) return item;
-  let mergedLayersALEX = await mergeImages(
-    item.layers.map((x) => x[MODEL_TYPE.ALEX].content).reverse(),
-    undefined,
-    item.model
-  );
-  let mergedLayersSTEVE = await mergeImages(
-    item.layers.map((x) => x[MODEL_TYPE.STEVE].content).reverse(),
-    undefined,
-    item.model
-  );
-  item.layers = [
-    new OutfitLayer(
-      firstLayer.name,
-      new FileData(
-        firstLayer.steve.fileName,
-        mergedLayersSTEVE,
-        firstLayer.steve.type
-      ),
-      new FileData(
-        firstLayer.alex.fileName,
-        mergedLayersALEX,
-        firstLayer.alex.type
-      ),
-      firstLayer.variantId
-    ),
-  ];
-  return item;
-};

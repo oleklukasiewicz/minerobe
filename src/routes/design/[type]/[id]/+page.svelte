@@ -1,13 +1,12 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import * as THREE from "three";
   import {
     derived,
     writable,
     type Readable,
     type Writable,
   } from "svelte/store";
-  import writableDerived, { propertyStore } from "svelte-writable-derived";
+  import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
   import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
@@ -29,7 +28,7 @@
     baseTexture,
     defaultRenderer,
   } from "$data/cache";
-  import { APP_STATE, COLORS, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
+  import { APP_STATE, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
@@ -103,6 +102,10 @@
     let outfitPackage;
 
     appState.subscribe(async (state) => {
+      if (loaded || state != APP_STATE.READY) {
+        loaded = false;
+        return;
+      }
       isGuest = state == APP_STATE.LOADING;
       if (!loaded) {
         outfitPackage =
@@ -114,10 +117,17 @@
         }
         loaded = true;
         updateTexture();
-      }
-      if (!isGuest) {
-        isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
-        $selectedVariant = $itemLayers[0];
+
+        if (!isGuest) {
+          isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
+          $selectedVariant = $itemLayers[0];
+          //patching
+          if (
+            !isPackageInWardrobe &&
+            outfitPackage.publisher.id == $currentUser?.id
+          )
+            addToWardrobe();
+        }
       }
     });
   });
@@ -181,9 +191,7 @@
   //subs
   itemModelType.subscribe((model) => updateTexture());
   selectedVariant.subscribe((variant) => updateTexture());
-  itemLayers.subscribe((layers) => {
-    sortLayersByColor();
-  });
+  itemLayers.subscribe((layers) => sortLayersByColor());
 </script>
 
 <div class="item-page">

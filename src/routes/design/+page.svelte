@@ -5,7 +5,6 @@
     writable,
     type Readable,
     type Writable,
-    get,
   } from "svelte/store";
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
@@ -143,6 +142,8 @@
       }
       loaded = true;
       isPackageInWardrobe = IsItemInWardrobe($itemPackage, $wardrobe);
+      //patching
+      if(!isPackageInWardrobe && $itemPublisher.id == $currentUser?.id) addToWardrobe();
       updateTexture();
     });
   });
