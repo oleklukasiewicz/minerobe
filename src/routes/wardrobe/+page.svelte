@@ -1,7 +1,15 @@
 <script lang="ts">
   import ItemSetSnapshot from "$lib/ItemSetSnapshot/ItemSetSnapshot.svelte";
   import ItemSnapshot from "$lib/ItemSnapshot/ItemSnapshot.svelte";
-  import { alexModel, appState, currentUser, steveModel, wardrobe,defaultRenderer } from "$src/data/cache";
+  import {
+    alexModel,
+    appState,
+    currentUser,
+    steveModel,
+    wardrobe,
+    defaultRenderer,
+    isMobileView,
+  } from "$src/data/cache";
   import { navigateToDesign } from "$src/helpers/navigationHelper";
   import { onMount } from "svelte";
   import * as THREE from "three";
@@ -15,8 +23,10 @@
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
   import { CreateOutfitSet } from "$src/api/sets";
   import { CreateOutfit } from "$src/api/outfits";
-  import { GetCategoriesFromList, GetOutfitIconFromType } from "$src/helpers/imageDataHelpers";
-
+  import {
+    GetCategoriesFromList,
+    GetOutfitIconFromType,
+  } from "$src/helpers/imageDataHelpers";
 
   let currentView = "sets";
   let loaded = false;
@@ -45,40 +55,52 @@
   };
   $: setOutfitsList(currentView);
   wardrobe.subscribe((x) => {
-    outfitsCount= GetCategoriesFromList(x.outfits);
+    outfitsCount = GetCategoriesFromList(x.outfits);
     setOutfitsList(currentView);
   });
 </script>
 
-<div class="wardrobe-view">
-  <div class="filler" style="width:300px"></div>
+<div class="wardrobe-view" class:mobile={$isMobileView}>
+  <div class="filler"></div>
   <div class="wardrobe-categories">
-    <CategoryMenu label="Wardrobe">
+    <CategoryMenu
+      label={"Wardrobe" + (OUTFIT_TYPE[currentView] != "ALL" && OUTFIT_TYPE[currentView]!= null && currentView != "sets"
+        ? " - "+OUTFIT_TYPE[currentView]
+        : "")}
+      horizontal={$isMobileView}
+    >
       <CategoryMenuItem
         label="Sets"
+        minimal={$isMobileView}
         selected={currentView == "sets"}
         icon={AnimationIcon}
         on:click={() => (currentView = "sets")}
       />
       <CategoryMenuItem
         label="Outfits"
+        minimal={$isMobileView}
         selected={currentView == "outfit"}
         icon={ShoppingBagIcon}
         on:click={() => (currentView = "outfit")}
       />
-      <span class="separator horizontal" />
+      <span
+        class="separator"
+        class:horizontal={!$isMobileView}
+        class:vertical={$isMobileView}
+      />
       {#if $currentUser}
-      {#each Object.keys(outfitsCount) as item, index}
-        {#if outfitsCount[item] > 0}
-          <CategoryMenuItem
-            label={item}
-            selected={currentView == item}
-            icon={GetOutfitIconFromType(item)}
-            badge={outfitsCount[item]}
-            on:click={() => (currentView = item)}
-          />
-        {/if}
-      {/each}
+        {#each Object.keys(outfitsCount) as item, index}
+          {#if outfitsCount[item] > 0}
+            <CategoryMenuItem
+              label={item}
+              minimal={$isMobileView}
+              selected={currentView == item}
+              icon={GetOutfitIconFromType(item)}
+              badge={outfitsCount[item]}
+              on:click={() => (currentView = item)}
+            />
+          {/if}
+        {/each}
       {/if}
     </CategoryMenu>
   </div>

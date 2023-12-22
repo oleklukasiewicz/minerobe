@@ -59,7 +59,7 @@
       const canvas = skinRenderNode;
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
-      let delt = clock.getDelta();
+      const delt = clock.getDelta();
       const timeDelta = delt > 1 ? 1 : delt;
       const elapsedTime = clock.elapsedTime;
       if (!onlyRenderSnapshot) requestAnimationFrame(render);

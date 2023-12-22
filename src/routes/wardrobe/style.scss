@@ -24,9 +24,36 @@
   grid-template-rows: auto;
   height: calc(100vh - 60px);
   box-sizing: border-box;
-}
-.wardrobe-categories
-{
-  position: fixed;
-  height: calc(100vh - 60px);
+
+  &.mobile {
+    grid-template-columns: 1fr;
+    grid-template-rows: 0px auto 1fr;
+    .wardrobe-categories {
+      position: static;
+      height: auto !important;
+      width: 100vw;
+    }
+    .outfits-list,
+    .sets-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .outfits {
+      padding: 8px;
+    }
+    .filler {
+      width: 100vw;
+      height: 0px;
+    }
+  }
+  .wardrobe-categories {
+    position: fixed;
+    z-index: 5;
+    height: calc(100vh - 60px);
+  }
+  .filler {
+    width: 300px;
+  }
 }

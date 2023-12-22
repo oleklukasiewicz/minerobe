@@ -1,5 +1,11 @@
 .category-menu-item {
-  width: 100%;
+  height: 100%;
+  &.minimal
+  {
+    height: 40px;
+    width: 40px;
+    padding: 6px 8px;
+  }
   text-align: left;
   &.tertiary {
     color: var(--color-accent-font);
