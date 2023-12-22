@@ -50,10 +50,6 @@
   import PlusIcon from "$icons/plus.svg?raw";
 
   import DefaultAnimation from "$animation/default";
-  import NewOutfitBottomAnimation from "$animation/bottom";
-  import ClapAnimation from "$animation/clap";
-  import HandsUpAnimation from "$animation/handsup";
-  import WavingAnimation from "$animation/waving";
 
   import {
     ExportImageLayers,
@@ -104,7 +100,6 @@
     "layers"
   );
   const itemModelType: Writable<string> = propertyStore(itemPackage, "model");
-  const itemName: Writable<string> = propertyStore(itemPackage, "name");
   const itemPublisher = propertyStore(itemPackage, "publisher");
 
   const selectedLayer: Writable<OutfitLayer> = writable(null);
@@ -130,6 +125,7 @@
   let isDeleteDialogOpen = false;
 
   let updateAnimation = function (anim) {};
+
   onMount(async () => {
     appState.subscribe(async (state) => {
       if (loaded || state != APP_STATE.READY) {
@@ -206,7 +202,6 @@
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
       return layers;
     });
-    updateAnimation(NewOutfitBottomAnimation);
   };
   const updateTexture = async () => {
     if (!loaded) return;
@@ -248,6 +243,14 @@
       return layers;
     });
   };
+  const applyAnimations = function (
+    pack: OutfitPackage,
+    changeType,
+    layerIndex: number
+  ) {
+    const anims = GetAnimationForPackageChange(pack, changeType, layerIndex);
+    anims.forEach((anim) => updateAnimation(anim));
+  };
 
   //imports / export
   const importLayer = async function () {
@@ -264,9 +267,8 @@
       return layers;
     });
   };
-
   const downloadImage = async () => {
-    await ExportImageLayers(rendererLayers, $itemModelType, $itemName);
+    await ExportImageLayers(rendererLayers, $itemModelType, $itemPackage.name);
     const anims = GetAnimationForPackageChange(
       $itemPackage,
       CHANGE_TYPE.DOWNLOAD,
@@ -275,14 +277,6 @@
     anims.forEach((anim) => updateAnimation(anim));
   };
 
-  const applyAnimations = function (
-    pack: OutfitPackage,
-    changeType,
-    layerIndex: number
-  ) {
-    const anims = GetAnimationForPackageChange(pack, changeType, layerIndex);
-    anims.forEach((anim) => updateAnimation(anim));
-  };
   //sharing / wardrobe
   const sharePackage = async function () {
     await ShareItem($itemPackage);
@@ -300,6 +294,10 @@
   const removeFromWardrobe = async function () {
     await RemoveItemFromWardrobe($itemPackage.id, $itemPackage.type);
     isPackageInWardrobe = false;
+  };
+  const deletePackage = function () {
+    navigateToWardrobe();
+    RemoveItem($itemPackage);
   };
 
   //drag and drop
@@ -355,10 +353,6 @@
   const handleRenderDragLeave = function (event) {
     isDragging = false;
   };
-  const deletePackage = function () {
-    navigateToWardrobe();
-    RemoveItem($itemPackage);
-  };
   const addNewDropVariant = async function (e) {
     const layer = e.detail.texture;
     const newLayer = await ImportLayerFromFile(e.detail.files[0]);
@@ -378,9 +372,8 @@
   //subscribtions
   itemPackage.subscribe((pack) => {
     isPackageInWardrobe = IsItemInWardrobe(pack, $wardrobe);
+    updateTexture();
   });
-  itemLayers.subscribe((layers) => updateTexture());
-  itemModelType.subscribe((model) => updateTexture());
   selectedLayer.subscribe((layer) => (!$isItemSet ? updateTexture() : null));
   itemPackage.subscribe(async (data: OutfitPackage) => {
     if (data != null && data.id != null) {
