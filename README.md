@@ -24,7 +24,7 @@ It will create copy of the repository on your local machine.
 
 ### 2. Setup firebase
 
-Minerobe uses **Firebase Firestore** as database and **Firebase Authentication**.
+Minerobe uses **Firebase Firestore** as database and **Firebase Authentication**.</br>
 To test all features of application you need to setup authentication and firestore with this structure inside:
 
 ```
