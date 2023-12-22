@@ -158,12 +158,7 @@
         let temp = layers[index - 1];
         layers[index - 1] = layers[index];
         layers[index] = temp;
-        const anims = GetAnimationForPackageChange(
-          $itemPackage,
-          CHANGE_TYPE.LAYER_UP,
-          index - 1
-        );
-        anims.forEach((anim) => updateAnimation(anim));
+        applyAnimations($itemPackage, CHANGE_TYPE.LAYER_UP, index - 1);
         return layers;
       });
     }
@@ -175,12 +170,7 @@
         let temp = layers[index + 1];
         layers[index + 1] = layers[index];
         layers[index] = temp;
-        const anims = GetAnimationForPackageChange(
-          $itemPackage,
-          CHANGE_TYPE.LAYER_DOWN,
-          index
-        );
-        anims.forEach((anim) => updateAnimation(anim));
+        applyAnimations($itemPackage, CHANGE_TYPE.LAYER_DOWN, index+1);
         return layers;
       });
     }
@@ -193,12 +183,7 @@
       if (!$isItemSet && $selectedLayer.name == layers[index].name) {
         refresh = true;
       }
-      const anims = GetAnimationForPackageChange(
-        $itemPackage,
-        CHANGE_TYPE.LAYER_REMOVE,
-        index
-      );
-      anims.forEach((anim) => updateAnimation(anim));
+      applyAnimations($itemPackage, CHANGE_TYPE.LAYER_REMOVE, index);
       layers.splice(index, 1);
       if (refresh) {
         if ($itemLayers.length > 0) $selectedLayer = layers[0];
@@ -218,12 +203,7 @@
         layers[index].steve = newLayer;
       }
       $selectedLayer = layers[index];
-      const anims = GetAnimationForPackageChange(
-        $itemPackage,
-        CHANGE_TYPE.LAYER_ADD,
-        index
-      );
-      anims.forEach((anim) => updateAnimation(anim));
+      applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
       return layers;
     });
     updateAnimation(NewOutfitBottomAnimation);
@@ -264,12 +244,7 @@
       const newRemote = layer;
       layers.unshift(newRemote);
       $selectedLayer = newRemote;
-      const anims = GetAnimationForPackageChange(
-        $itemPackage,
-        CHANGE_TYPE.LAYER_ADD,
-        0
-      );
-      anims.forEach((anim) => updateAnimation(anim));
+      applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
       return layers;
     });
   };
@@ -285,26 +260,34 @@
       newOutfit.variantId = GenerateIdForOutfitLayer();
       layers.unshift(newOutfit);
       $selectedLayer = newOutfit;
-      const anims = GetAnimationForPackageChange(
-        $itemPackage,
-        CHANGE_TYPE.LAYER_ADD,
-        0
-      );
-      anims.forEach((anim) => updateAnimation(anim));
+      applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
       return layers;
     });
   };
 
   const downloadImage = async () => {
     await ExportImageLayers(rendererLayers, $itemModelType, $itemName);
-    await updateAnimation(HandsUpAnimation);
-    await updateAnimation(DefaultAnimation);
+    const anims = GetAnimationForPackageChange(
+      $itemPackage,
+      CHANGE_TYPE.DOWNLOAD,
+      0
+    );
+    anims.forEach((anim) => updateAnimation(anim));
   };
 
+  const applyAnimations = function (
+    pack: OutfitPackage,
+    changeType,
+    layerIndex: number
+  ) {
+    const anims = GetAnimationForPackageChange(pack, changeType, layerIndex);
+    anims.forEach((anim) => updateAnimation(anim));
+  };
   //sharing / wardrobe
   const sharePackage = async function () {
     await ShareItem($itemPackage);
     $itemPackage.isShared = true;
+    applyAnimations($itemPackage, CHANGE_TYPE.SHARE, 0);
   };
   const unSharePackage = async function () {
     await UnshareItem($itemPackage);
@@ -349,28 +332,14 @@
               $selectedLayer = newOutfit;
               return layers;
             });
-            newOutfit.variantId = GenerateIdForOutfitLayer();
-            const anims = GetAnimationForPackageChange(
-              $itemPackage,
-              CHANGE_TYPE.LAYER_ADD,
-              0
-            );
-            anims.forEach((anim) => updateAnimation(anim));
+            applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
           } else {
             let newPackage = await ImportImagePackageJsonFromFile(
               file,
               $itemPackage
             );
             $itemPackage = newPackage;
-            const random = Math.random();
-
-            if (random < 0.2) {
-              updateAnimation(HandsUpAnimation);
-            } else {
-              if (random < 0.4) updateAnimation(WavingAnimation);
-              else updateAnimation(ClapAnimation);
-            }
-            updateAnimation(DefaultAnimation);
+            applyAnimations($itemPackage, CHANGE_TYPE.PACKAGE_IMPORT, 0);
           }
         }
       }
@@ -404,12 +373,7 @@
       $selectedLayer = layers[index];
       return layers;
     });
-    const anims = GetAnimationForPackageChange(
-      $itemPackage,
-      CHANGE_TYPE.LAYER_ADD,
-      index
-    );
-    anims.forEach((anim) => updateAnimation(anim));
+    applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
   };
   //subscribtions
   itemPackage.subscribe((pack) => {
@@ -590,19 +554,25 @@
             {#if $itemPackage.isShared}
               <a href={"/design/" + $itemPackage.type + "/" + $itemPackage.id}>
                 <button
-                  style="min-width:100px"
+                  style="min-width:100px;"
                   id="share-package-action"
                   title={$_("goToItemPage")}
                   class="secondary"
-                  >{@html SpotlightIcon} {$_("goToItemPage")}</button
-                ></a
+                  >{@html SpotlightIcon}
+
+                  {$_("goToItemPage")}
+                </button></a
               >
               <button
-                id="share-package-action"
+                id="unshare-package-action"
                 on:click={unSharePackage}
                 class:disabled={!loaded}
                 title={$_("unsharepackage")}
-                class="icon secondary">{@html CloseIcon}</button
+                class="secondary"
+                class:icon={!$isMobileView}
+                >{@html CloseIcon}
+                {#if $isMobileView}
+                  {$_("unsharepackage")}{/if}</button
               >
             {:else}
               <button

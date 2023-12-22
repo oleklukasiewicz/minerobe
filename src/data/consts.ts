@@ -114,4 +114,8 @@ export const CHANGE_TYPE = {
   LAYER_REMOVE: "layer_remove",
   LAYER_ADD: "layer_add",
   MODEL_TYPE_CHANGE: "model_type_change",
+  PACKAGE_IMPORT: "package_import",
+  PACKAGE_EXPORT: "package_export",
+  DOWNLOAD: "download",
+  SHARE: "share",
 };
