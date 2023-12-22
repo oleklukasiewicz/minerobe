@@ -76,7 +76,9 @@
 </script>
 
 <div class="wardrobe-view" class:mobile={$isMobileView}>
+  {#if !$isMobileView}
   <div class="filler"></div>
+  {/if}
   <div class="wardrobe-categories">
     <CategoryMenu
       label={"Wardrobe" +

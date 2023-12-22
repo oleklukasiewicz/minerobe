@@ -19,7 +19,6 @@
 }
 .wardrobe-view {
   display: grid;
-  width: 100%;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto;
   height: calc(100vh - 60px);
@@ -28,12 +27,12 @@
     width: 300px;
   }
   &.mobile {
-    grid-template-columns: 1fr;
-    grid-template-rows: 0px auto 1fr;
+    display: flex;
+    flex-direction: column;
     .wardrobe-categories {
       position: static;
       height: auto !important;
-      min-width: 100vw;
+     
     }
     .outfits-list,
     .sets-list {
@@ -42,14 +41,11 @@
       gap: 8px;
     }
     .search-btn {
-      width: 100vw;
+      width: 100%;
+      min-width: 90vw;
     }
     .outfits {
       padding: 8px;
-    }
-    .filler {
-      width: 100vw;
-      height: 0px;
     }
   }
   .wardrobe-categories {
