@@ -12,12 +12,10 @@
   } from "$src/data/cache";
   import { navigateToDesign } from "$src/helpers/navigationHelper";
   import { onMount } from "svelte";
-  import * as THREE from "three";
   import PlusIcon from "$icons/plus.svg?raw";
   import CategoryMenu from "$lib/CategoryMenu/CategoryMenu.svelte";
   import CategoryMenuItem from "$lib/CategoryMenuItem/CategoryMenuItem.svelte";
   import AnimationIcon from "$icons/animation.svg?raw";
-  import AvatarIcon from "$icons/avatar.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import { APP_STATE, OUTFIT_TYPE } from "$src/data/consts";
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
@@ -27,6 +25,7 @@
     GetCategoriesFromList,
     GetOutfitIconFromType,
   } from "$src/helpers/imageDataHelpers";
+  import Search from "$lib/Search/Search.svelte";
 
   let currentView = "sets";
   let loaded = false;
@@ -44,6 +43,7 @@
     navigateToDesign(newSet);
   };
   let outfitList = [];
+  let setsList = [];
   let outfitsCount = {};
   const setOutfitsList = function (view) {
     if (view == "outfit") outfitList = $wardrobe.outfits;
@@ -53,8 +53,23 @@
         return x.layers[0]["steve"].type == OUTFIT_TYPE[currentView];
       });
   };
+  const filterOutfits = function (e) {
+    const value = e.detail;
+    if (currentView == "sets")
+      setsList = $wardrobe.sets.filter((x) => {
+        return x.name.toLowerCase().includes(value.toLowerCase());
+      });
+    else
+    {
+      setOutfitsList(currentView);
+      outfitList = outfitList.filter((x) => {
+        return x.name.toLowerCase().includes(value.toLowerCase());
+      });
+    }
+  };
   $: setOutfitsList(currentView);
   wardrobe.subscribe((x) => {
+    setsList = x.sets;
     outfitsCount = GetCategoriesFromList(x.outfits);
     setOutfitsList(currentView);
   });
@@ -64,9 +79,12 @@
   <div class="filler"></div>
   <div class="wardrobe-categories">
     <CategoryMenu
-      label={"Wardrobe" + (OUTFIT_TYPE[currentView] != "ALL" && OUTFIT_TYPE[currentView]!= null && currentView != "sets"
-        ? " - "+OUTFIT_TYPE[currentView]
-        : "")}
+      label={"Wardrobe" +
+        (OUTFIT_TYPE[currentView] != "ALL" &&
+        OUTFIT_TYPE[currentView] != null &&
+        currentView != "sets"
+          ? " - " + OUTFIT_TYPE[currentView]
+          : "")}
       horizontal={$isMobileView}
     >
       <CategoryMenuItem
@@ -107,19 +125,25 @@
   <div class="outfits">
     {#if loaded}
       {#if currentView == "sets"}
-        <div>
-          <h1 class="inline">Sets</h1>
+        <div style="display: flex;gap:8px;max-width:100vw; flex-wrap:wrap;">
+          <h1 class="inline" style="margin: 0;">Sets</h1>
           <button
             id="new-outfit"
             class="small icon-small"
+            style="min-width: 120px;"
             on:click={() => addNewSet()}
           >
             {@html PlusIcon}
             <span>New set</span></button
           >
+          <div style="flex:1;">
+            <div style="float: right; margin-top:4px;" class="search-btn">
+              <Search on:search={filterOutfits} on:input={filterOutfits} />
+            </div>
+          </div>
         </div>
         <div class="sets-list">
-          {#each $wardrobe.sets as item (item.id)}
+          {#each setsList as item (item.id)}
             <ItemSetSnapshot
               renderer={$defaultRenderer}
               outfitPackage={item}
@@ -134,16 +158,22 @@
         </div>
       {/if}
       {#if currentView != "sets"}
-        <div>
-          <h1 class="inline">Outfits</h1>
+        <div style="display: flex;gap:8px; flex-wrap:wrap;max-width:100vw">
+          <h1 class="inline" style="margin: 0;">Outfits</h1>
           <button
             id="new-set"
             class="small icon-small"
+            style="min-width: 120px;"
             on:click={() => addNewOutfit()}
           >
             {@html PlusIcon}
             <span>New outfit</span></button
           >
+          <div style="flex:1;">
+            <div style="float: right; margin-top:4px;" class="search-btn">
+              <Search on:search={filterOutfits} on:input={filterOutfits} />
+            </div>
+          </div>
         </div>
         <div class="outfits-list">
           {#each outfitList as item (item.id)}

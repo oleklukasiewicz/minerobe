@@ -183,6 +183,11 @@ button.icon{
 button.small{
     padding: 3px 8px 2px;
 }
+button.icon.small{
+    width: 36px;
+    height: 36px;
+    padding: 3px 6px;
+}
 button.secondary{
     background-color: transparent;
     border-color: transparent;
