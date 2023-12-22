@@ -166,7 +166,7 @@
         let temp = layers[index + 1];
         layers[index + 1] = layers[index];
         layers[index] = temp;
-        applyAnimations($itemPackage, CHANGE_TYPE.LAYER_DOWN, index+1);
+        applyAnimations($itemPackage, CHANGE_TYPE.LAYER_DOWN, index + 1);
         return layers;
       });
     }
@@ -326,6 +326,7 @@
                   null,
                   null
                 );
+              newOutfit.variantId = GenerateIdForOutfitLayer();
               layers.unshift(newOutfit);
               $selectedLayer = newOutfit;
               return layers;
