@@ -1,8 +1,6 @@
-![logo](https://github.com/oleklukasiewicz/minerobe/assets/69370471/f9277a21-f817-47bd-b242-0770ed38f14a)
+ ![logo](https://github.com/oleklukasiewicz/minerobe/assets/69370471/f9277a21-f817-47bd-b242-0770ed38f14a)
 
 <h1 align="center">Digital wardrobe for minecraft skins</h1>
-
-Minerobe - Digital Wardrobe for Minecraft Skins
 
 Minerobe is a project that allows for the customization of Minecraft skins through an advanced digital wardrobe. Designed with ease of sharing and combining different clothing items in mind, this program opens up new possibilities for the Minecraft community.
 
