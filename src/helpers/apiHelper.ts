@@ -1,12 +1,8 @@
-import { DeleteOutfit, UploadOutfit } from "$src/api/outfits";
+import { DeleteOutfit, FetchOutfit, UploadOutfit } from "$src/api/outfits";
 import { DeleteOutfitSet, UploadOutfitSet } from "$src/api/sets";
 import { AddLike, RemoveLike } from "$src/api/social";
 import { wardrobe } from "$src/data/cache";
-import {
-  FileData,
-  OutfitLayer,
-  OutfitPackage,
-} from "$src/data/common";
+import { FileData, OutfitLayer, OutfitPackage } from "$src/data/common";
 import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
 import { get } from "svelte/store";
 import { mergeImages } from "./imageMerger";
@@ -93,4 +89,12 @@ export const UpdateItemInWardrobe = function (item: OutfitPackage) {
     );
   }
   wardrobe.set(wardrobeObj);
+};
+export const FetchFullWardrobe = async function () {
+  let wardrobeObj = get(wardrobe);
+  for (let i = 0; i < wardrobeObj.outfits.length; i++) {
+    let outfit = await FetchOutfit(wardrobeObj.outfits[i].id);
+    wardrobeObj.outfits[i] = outfit;
+  };
+  return wardrobeObj;
 };

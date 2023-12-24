@@ -68,6 +68,7 @@
   import OutfitPicker from "$lib/OutfitPicker/OutfitPicker.svelte";
   import {
     AddItemToWardrobe,
+    FetchFullWardrobe,
     IsItemInWardrobe,
     RemoveItem,
     RemoveItemFromWardrobe,
@@ -120,6 +121,7 @@
 
   let isPackageInWardrobe = false;
   let rendererLayers: FileData[] = [];
+  let pickerOutfits = [];
 
   let isOutfitPickerOpen = false;
   let isDeleteDialogOpen = false;
@@ -302,7 +304,10 @@
     navigateToWardrobe();
     RemoveItem($itemPackage);
   };
-
+  const openOutfitPicker = async function () {
+    isOutfitPickerOpen = true;
+    pickerOutfits = (await FetchFullWardrobe()).outfits;
+  };
   //drag and drop
   const handleRenderDrop = async function (event) {
     event.preventDefault();
@@ -516,7 +521,7 @@
                   id="import-package-action"
                   title={$_("importOutfit")}
                   class:disabled={!loaded}
-                  on:click={() => (isOutfitPickerOpen = true)}
+                  on:click={openOutfitPicker}
                   class="secondary">{@html AddIcon} {$_("importOutfit")}</button
                 >
               {/if}
@@ -619,7 +624,7 @@
         {#if loaded && isOutfitPickerOpen}
           <OutfitPicker
             renderer={$defaultRenderer}
-            outfits={$wardrobe.outfits}
+            outfits={pickerOutfits}
             modelName={$wardrobe.studio.model}
             on:select={(e) => addNewRemoteLayer(e.detail)}
           />
