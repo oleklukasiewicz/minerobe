@@ -15,6 +15,7 @@ import {
   DeletePackage,
   FetchPackage,
   FetchPackageSnapshot,
+  FetchRawPackage,
   UploadPackage,
   UploadPackageSnapshot,
 } from "./pack";
@@ -29,7 +30,9 @@ export const GenerateIdForOutfitLayer = () =>
 
 export const ParseOutfitToLocal = async function (pack: OutfitPackage) {
   let parsed = Object.assign({}, pack);
-  parsed.publisher = await GetMinerobeUser(parsed.publisher.id);
+  if (parsed.publisher.id == get(currentUser)?.id)
+    parsed.publisher = get(currentUser);
+  else parsed.publisher = await GetMinerobeUser(parsed.publisher.id);
   return parsed;
 };
 export const ParseOutfitSnapshotToDatabase = async function (
@@ -141,4 +144,11 @@ export const UploadOutfitSnapshot = async function (pack) {
     pack,
     ParseOutfitSnapshotToDatabase
   );
+};
+export const FetchRawOutfit = async function (id: string) {
+  let data = await FetchRawPackage(
+    OUTFIT_PATH + "/" + id + "/" + OUTFIT_LOCAL_PATH,
+    ParseOutfitToLocal
+  );
+  return data;
 };

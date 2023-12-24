@@ -84,6 +84,7 @@ export const GetDocument = async function (
   path: string,
   documentName: string
 ): Promise<any> {
+  console.log(path, documentName);
     const dataRef = doc(db, path, documentName);
     const dataSnap = await getDoc(dataRef);
     return dataSnap.data();
@@ -102,6 +103,7 @@ export const SetDocument = async function (
   data: any
 ): Promise<any> {
   if (cUser) {
+    console.log("update",path, documentName, data);
     const dataRef = doc(db, path, documentName);
     const dataJson = JSON.parse(JSON.stringify(data));
     await setDoc(dataRef, dataJson);
@@ -114,6 +116,7 @@ export const UpdateDocument = async function (
   data: any
 ): Promise<any> {
   if (cUser) {
+    console.log("update",path, documentName, data);
     const dataRef = doc(db, path, documentName);
     const dataJson = JSON.parse(JSON.stringify(data));
     await setDoc(dataRef, dataJson, { merge: true });

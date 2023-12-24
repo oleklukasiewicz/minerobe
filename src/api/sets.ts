@@ -38,7 +38,9 @@ export const ParseOutfitSetToLocal = async function (data: OutfitPackage) {
     )
   );
   data.layers = data.layers.filter((item) => item != null);
-  data.publisher = await GetMinerobeUser(data.publisher.id);
+  if (data.publisher.id == get(currentUser)?.id)
+    data.publisher = get(currentUser);
+  else data.publisher = await GetMinerobeUser(data.publisher.id);
   return data;
 };
 export const ParseOutfitSetToDatabase = function (

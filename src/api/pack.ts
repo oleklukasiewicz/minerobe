@@ -11,7 +11,7 @@ import { get } from "svelte/store";
 const SOCIAL_PATH = "social";
 const DATA_PATH = "itemdata";
 const SNAPSHOT_PATH = "snapshot";
-export const _FetchPackage = async function (path: string) {
+export const _FetchPackage = async function (path: string, onlyData = false) {
   let pack = (await GetDocument(path, DATA_PATH)) as OutfitPackage;
   if (
     pack == null ||
@@ -19,6 +19,7 @@ export const _FetchPackage = async function (path: string) {
   )
     return null;
 
+  if (onlyData) return pack;
   pack.social = await GetDocument(path, SOCIAL_PATH);
 
   if (pack.social == null) {
@@ -40,7 +41,7 @@ export const UploadPackage = async function (
   let parsed = await parser(pack, isNew);
   delete parsed.social;
   await UpdateDocument(path, DATA_PATH, parsed);
-  await UploadPackageSnapshot(path, Object.assign({},pack), snapshotParser);
+  await UploadPackageSnapshot(path, Object.assign({}, pack), snapshotParser);
 };
 export const FetchPackage = async function (path: string, parser = (x) => x) {
   let pack = await _FetchPackage(path);
@@ -88,4 +89,12 @@ export const UploadPackageSnapshot = async function (
   if (pack.publisher.id != get(currentUser)?.id || pack.id == null) return;
   let parsed = await parser(pack);
   await UpdateDocument(path, SNAPSHOT_PATH, parsed);
+};
+export const FetchRawPackage = async function (
+  path: string,
+  parser = (x) => x
+) {
+  let pack = await _FetchPackage(path, true);
+  if (pack == null) return null;
+  return await parser(pack);
 };
