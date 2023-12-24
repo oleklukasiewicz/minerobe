@@ -49,7 +49,8 @@
     if (view == "outfit") outfitList = $wardrobe.outfits;
     else
       outfitList = $wardrobe.outfits.filter((x) => {
-        if (x.layers.length == 0) return false;
+        if (x.layers.length == 0 || x.layers[0] == null) return false;
+
         return x.layers[0]["steve"].type == OUTFIT_TYPE[currentView];
       });
   };
@@ -59,8 +60,7 @@
       setsList = $wardrobe.sets.filter((x) => {
         return x.name.toLowerCase().includes(value.toLowerCase());
       });
-    else
-    {
+    else {
       setOutfitsList(currentView);
       outfitList = outfitList.filter((x) => {
         return x.name.toLowerCase().includes(value.toLowerCase());
@@ -77,7 +77,7 @@
 
 <div class="wardrobe-view" class:mobile={$isMobileView}>
   {#if !$isMobileView}
-  <div class="filler"></div>
+    <div class="filler"></div>
   {/if}
   <div class="wardrobe-categories">
     <CategoryMenu

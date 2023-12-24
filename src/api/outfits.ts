@@ -7,9 +7,7 @@ import {
   PackageSocialData,
 } from "$src/data/common";
 import { LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
-import {
-  GenerateIdForCollection,
-} from "$src/data/firebase";
+import { GenerateIdForCollection } from "$src/data/firebase";
 import { get } from "svelte/store";
 import { GetMinerobeUser } from "./auth";
 import {
@@ -38,7 +36,11 @@ export const ParseOutfitSnapshotToDatabase = async function (
   pack: OutfitPackage
 ) {
   let parsed = Object.assign({}, pack);
-  parsed.layers = parsed.layers.slice(0, 3);
+  let length = parsed.layers.length;
+  const toSnaphot = parsed.layers.slice(0, 2);
+  parsed.layers = new Array(length);
+  toSnaphot.forEach((layer, index) => (parsed.layers[index] = layer));
+
   parsed.publisher = new MinerobeUser(parsed.publisher.id, null, null);
   return parsed;
 };
@@ -62,7 +64,7 @@ export const FetchOutfitFromLink = async function (link: OutfitPackageLink) {
   return parsed;
 };
 export const FetchOutfit = async function (id: string) {
-  let data= await FetchPackage(
+  let data = await FetchPackage(
     OUTFIT_PATH + "/" + id + "/" + OUTFIT_LOCAL_PATH,
     ParseOutfitToLocal
   );
@@ -128,7 +130,7 @@ export const FetchOutfitSnapshotFromLink = async function (
   link: OutfitPackageLink
 ) {
   let data = await FetchOutfitSnapshot(link.id);
-  if(data == null) return null;
+  if (data == null) return null;
   data.model = link.model;
   return data;
 };

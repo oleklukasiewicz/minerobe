@@ -40,7 +40,7 @@ export const UploadPackage = async function (
   let parsed = await parser(pack, isNew);
   delete parsed.social;
   await UpdateDocument(path, DATA_PATH, parsed);
-  await UploadPackageSnapshot(path, pack, snapshotParser);
+  await UploadPackageSnapshot(path, Object.assign({},pack), snapshotParser);
 };
 export const FetchPackage = async function (path: string, parser = (x) => x) {
   let pack = await _FetchPackage(path);

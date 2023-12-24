@@ -190,7 +190,7 @@
   };
   const addImageVariant = async function (data) {
     const layer = data.detail.texture;
-    const newLayer = await ImportImage();
+    const newLayer = await ImportImage()[0];
     itemLayers.update((layers) => {
       const index = layers.indexOf(layer);
       if ($itemModelType == MODEL_TYPE.ALEX) {
@@ -254,14 +254,17 @@
 
   //imports / export
   const importLayer = async function () {
-    const newLayer = await ImportImage();
+    const newLayers = await ImportImage();
     itemLayers.update((layers) => {
       let newOutfit;
-      if ($itemModelType == MODEL_TYPE.ALEX)
-        newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer, null);
-      else newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null, null);
-      newOutfit.variantId = GenerateIdForOutfitLayer();
-      layers.unshift(newOutfit);
+      newLayers.forEach((newLayer) => {
+        if ($itemModelType == MODEL_TYPE.ALEX)
+          newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer, null);
+        else
+          newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null, null);
+        newOutfit.variantId = GenerateIdForOutfitLayer();
+        layers.unshift(newOutfit);
+      });
       $selectedLayer = newOutfit;
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
       return layers;
@@ -305,43 +308,42 @@
     event.preventDefault();
 
     if (event.dataTransfer.items) {
-      for (var i = 0; i < event.dataTransfer.items.length; i++) {
-        if (event.dataTransfer.items[i].kind === "file") {
-          var file = event.dataTransfer.items[i].getAsFile();
-          if (file.type.startsWith("image/")) {
-            let newLayer = await ImportLayerFromFile(file);
-            let newOutfit;
-            itemLayers.update((layers) => {
-              if ($itemModelType == MODEL_TYPE.ALEX)
-                newOutfit = new OutfitLayer(
-                  newLayer.fileName,
-                  null,
-                  newLayer,
-                  null
-                );
-              else
-                newOutfit = new OutfitLayer(
-                  newLayer.fileName,
-                  newLayer,
-                  null,
-                  null
-                );
-              newOutfit.variantId = GenerateIdForOutfitLayer();
-              layers.unshift(newOutfit);
-              $selectedLayer = newOutfit;
-              return layers;
-            });
-            applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
-          } else {
-            let newPackage = await ImportImagePackageJsonFromFile(
-              file,
-              $itemPackage
+      const items = Array.from(event.dataTransfer.items) as any[];
+      // Filter out non-file items
+      const files = items
+        .filter((item) => item.kind === "file")
+        .map((item) => item.getAsFile());
+
+      let newLayers = [];
+      for (var i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.type.startsWith("image/")) {
+          let newLayer = await ImportLayerFromFile(file);
+          let newOutfit;
+          if ($itemModelType == MODEL_TYPE.ALEX)
+            newOutfit = new OutfitLayer(
+              newLayer.fileName,
+              null,
+              newLayer,
+              null
             );
-            $itemPackage = newPackage;
-            applyAnimations($itemPackage, CHANGE_TYPE.PACKAGE_IMPORT, 0);
-          }
+          else
+            newOutfit = new OutfitLayer(
+              newLayer.fileName,
+              newLayer,
+              null,
+              null
+            );
+          newOutfit.variantId = GenerateIdForOutfitLayer();
+          newLayers.unshift(newOutfit);
+          $selectedLayer = newOutfit;
         }
       }
+      itemLayers.update((layers) => {
+        layers = newLayers.concat(layers);
+        return layers;
+      });
+      applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
     }
     isDragging = false;
   };

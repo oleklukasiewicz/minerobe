@@ -83,13 +83,15 @@ export const ImportImage = async function () {
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
+  input.multiple=true;
   input.click();
 
-  return new Promise<FileData>((resolve) => {
+  return new Promise<FileData[]>((resolve) => {
     input.onchange = (event: any) => {
-      let file = event.target.files[0];
+      let files = Array.from(event.target.files) as any[];
       event.target.value = null;
-      resolve(ImportLayerFromFile(file));
+      const promises=Promise.all([...files].map(async (file) => await ImportLayerFromFile(file)));
+      resolve(promises);
     };
   });
 };

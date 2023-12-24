@@ -205,6 +205,7 @@ export const GetCategoriesFromList = function (list: OutfitPackage[]) {
   categories.forEach((category) => {
     categoryCount[category] = list.filter((outfit) => {
       if (outfit.layers.length == 0) return false;
+      if (outfit.layers[0] == null) return false;
       return outfit.layers[0]["steve"].type == OUTFIT_TYPE[category];
     }).length;
   });

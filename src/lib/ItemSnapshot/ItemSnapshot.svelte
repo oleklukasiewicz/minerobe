@@ -9,6 +9,7 @@
   import { onMount } from "svelte";
   import CloudIcon from "$icons/cloud.svg?raw";
   import { currentUser } from "$src/data/cache";
+  import { text } from "@sveltejs/kit";
 
   export let texture: OutfitPackage = null;
   export let variant: string = null;
@@ -33,12 +34,12 @@
       ];
     } else {
       dominantColor = await Promise.all(
-        texture.layers.map(async (x) => {
+        texture.layers.slice(0,limit).map(async (x) => {
           return await GetColorFromImage(x[texture.model].content);
         })
       );
-      if (dominantColor.length > limit) {
-        aboveLimit = dominantColor.length - limit;
+      if (texture.layers.length > limit) {
+        aboveLimit = texture.layers.length - limit;
         dominantColor = dominantColor.slice(0, limit);
       }
     }
