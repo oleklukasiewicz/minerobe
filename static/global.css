@@ -296,3 +296,13 @@ input:hover{
 {
     transform: scale(1.3)
 }
+textarea{
+   font-family: Arial, Helvetica, sans-serif;
+   background-color: transparent;
+   border: 2px solid var(--color-theme-D4);
+   outline: none;
+   resize: none;
+   padding: 8px;
+   box-sizing: border-box;
+   color: var(--color-theme-font);
+}

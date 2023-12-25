@@ -3,7 +3,7 @@ import { COLORS, COLORS_ARRAY } from "$data/consts";
 import NewOutfitBottomAnimation from "$src/animation/bottom";
 import HatAnimation from "$src/animation/hat";
 import WavingAnimation from "$src/animation/waving";
-import type { OutfitPackage } from "$src/data/common";
+import type { FileData, OutfitPackage } from "$src/data/common";
 import { closest } from "color-diff";
 import HatIcon from "$icons/clothes/hat.svg?raw";
 import TopIcon from "$icons/clothes/top.svg?raw";
@@ -121,6 +121,28 @@ export const GetDominantColorFromImage = async function (base64) {
   );
   return dominantColor;
 };
+export const GetDominantColorFromImageContext = async function (ctx) {
+  const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+  const colorMap = {};
+  for (let i = 0; i < imageData.data.length; i += 4) {
+    const r = imageData.data[i];
+    const g = imageData.data[i + 1];
+    const b = imageData.data[i + 2];
+    const a = imageData.data[i + 3]; // Alpha channel
+    if (a === 0) continue; // Skip transparent pixels
+    const rgb = `${r},${g},${b}`;
+    if (colorMap[rgb]) {
+      colorMap[rgb]++;
+    } else {
+      colorMap[rgb] = 1;
+    }
+  }
+
+  const dominantColor = Object.keys(colorMap).reduce((a, b) =>
+    colorMap[a] > colorMap[b] ? a : b
+  );
+  return dominantColor;
+};
 export const hexToRgb = (hex: string) => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
@@ -151,8 +173,10 @@ export const FindInColors = (rgb: any) => {
     return color.r === rgb.r && color.g === rgb.g && color.b === rgb.b && key;
   });
 };
-export const GetColorFromImage = async function (base64: string) {
-  let dominantColor = await GetDominantColorFromImage(base64);
+export const GetColorFromFileData = async function (fileData: FileData) {
+  let dominantColor: any;
+  dominantColor =
+    fileData.color || (await GetDominantColorFromImage(fileData.content));
   let closestColor = FindClosestColorString(dominantColor);
   return closestColor;
 };

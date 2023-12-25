@@ -1,5 +1,5 @@
 import { FileData, OutfitPackage, OutfitLayer } from "$src/data/common";
-import { GetContextFromBase64, GetOutfitType } from "./imageDataHelpers";
+import { GetContextFromBase64, GetDominantColorFromImageContext, GetOutfitType } from "./imageDataHelpers";
 import { mergeImages } from "./imageMerger";
 
 export const ExportImage = async function (
@@ -119,10 +119,12 @@ export const ImportLayerFromFile = async function (file: File) {
       const base64Data: any = event.target.result;
       var context = await GetContextFromBase64(base64Data);
       const outfitType = GetOutfitType(context);
+      const color = await GetDominantColorFromImageContext(context);
       var newLayer = new FileData(
         file.name.replace(/\.[^/.]+$/, ""),
         base64Data,
-        outfitType
+        outfitType,
+        color
       );
       resolve(newLayer);
     };

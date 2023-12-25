@@ -61,8 +61,8 @@
       return;
     }
     if (type == OUTFIT_TYPE.SUIT) {
-      camPozY = -0.2;
-      camPozZ = 1.8;
+      camPozY = -0;
+      camPozZ = 2.1;
       return;
     }
     if (type == OUTFIT_TYPE.OUTFIT_SET) {

@@ -7,7 +7,7 @@
     position: sticky;
     top: 90px;
     @media (max-width: 768px) {
-      max-height: 100vw;;
+      max-height: 100vw;
     }
     .render {
       max-height: 100%;
@@ -48,6 +48,18 @@
         }
       }
     }
+    #item-description {
+      width: 100%;
+      min-height: 60px;
+      max-height: 400px;
+      text-align: justify;
+      color: var(--color-theme-D6);
+      font-size: var(--size-font-base);
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      box-sizing: border-box;
+      letter-spacing: 0.1px;
+    }
     .item-actions {
       display: flex;
       gap: 8px;
@@ -64,8 +76,7 @@
 }
 .outfit-picker-dialog {
   margin: 16px;
-  div
-  {
+  div {
     display: flex;
     flex-direction: row;
   }
@@ -92,15 +103,14 @@
     display: grid;
     grid-template-rows: 1fr 1fr;
     grid-template-columns: 1fr;
-    
-    a,#share-package-action
-    {
+
+    a,
+    #share-package-action {
       width: 100%;
     }
   }
 }
-.item-view-placeholder
-{
+.item-view-placeholder {
   display: flex;
   width: 100%;
   gap: 30px;

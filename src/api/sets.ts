@@ -61,6 +61,7 @@ export const ParseOutfitSetSnapshotToDatabase = async function (
   pack: OutfitPackage
 ) {
   let item = Object.assign({}, pack) as OutfitPackage;
+  item.description = null;
   let firstLayer = item.layers[0];
   if (firstLayer == null) return item;
   let mergedLayersALEX = await mergeImages(
@@ -79,12 +80,14 @@ export const ParseOutfitSetSnapshotToDatabase = async function (
       new FileData(
         firstLayer.steve.fileName,
         mergedLayersSTEVE,
-        firstLayer.steve.type
+        firstLayer.steve.type,
+        firstLayer.steve.color
       ),
       new FileData(
         firstLayer.alex.fileName,
         mergedLayersALEX,
-        firstLayer.alex.type
+        firstLayer.alex.type,
+        firstLayer.alex.color
       ),
       firstLayer.variantId
     ),

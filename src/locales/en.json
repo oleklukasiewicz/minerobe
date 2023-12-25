@@ -42,5 +42,6 @@
     "confirmDeleteItem": "Do you want to delete this item?"
   },
   "cancel": "Cancel",
-  "unsharepackage": "unshare"
+  "unsharepackage": "unshare",
+  "description": "Description"
 }

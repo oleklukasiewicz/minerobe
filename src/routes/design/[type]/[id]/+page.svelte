@@ -45,7 +45,7 @@
   import {
     ConvertRGBToHSL,
     GetAnimationForType,
-    GetColorFromImage,
+    GetColorFromFileData,
   } from "$src/helpers/imageDataHelpers";
   import { FetchOutfit } from "$src/api/outfits";
   import { FetchOutfitSet } from "$src/api/sets";
@@ -181,7 +181,7 @@
     let hues = [];
     for (let i = 0; i < $itemLayers.length; i++) {
       let color = ConvertRGBToHSL(
-        await GetColorFromImage($itemLayers[i][$itemModelType].content)
+        await GetColorFromFileData($itemLayers[i][$itemModelType])
       );
       hues.push({ h: color.h, item: $itemLayers[i] });
     }
@@ -234,7 +234,6 @@
           <span class="label unique">{$localPackage.publisher.name}</span>
         {/if}
       </div>
-
       <br />
       <SectionTitle
         label={$isItemSet ? $_("layers") : $_("variants")}
@@ -272,6 +271,17 @@
             {/each}
           </div>
         {/if}
+      {/if}
+      {#if $localPackage.description != null && $localPackage.description.trim().length > 0}
+        <br />
+        <SectionTitle label={$_("description")} placeholder={!loaded} />
+        <div id="item-description" class="description">
+          {#if loaded}
+            {$localPackage.description}
+          {:else}
+            <Placeholder style="height:48px;margin-bottom:8px;" />
+          {/if}
+        </div>
       {/if}
       <br />
       <SectionTitle label={$_("model")} placeholder={!loaded} />

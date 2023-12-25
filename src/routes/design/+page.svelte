@@ -543,6 +543,19 @@
         <SectionTitle label={$_("model")} placeholder={!loaded} />
         <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
         <br />
+        <SectionTitle label={$_("description")} placeholder={!loaded} />
+        {#if !loaded}
+          <Placeholder style="height:48px;margin-bottom:8px;" />
+        {:else}
+          <textarea
+            id="item-description"
+            class:disabled={$itemPublisher.id != $currentUser?.id}
+            class="description-input"
+            bind:value={$itemPackage.description}
+            placeholder={$_("description")}
+          ></textarea>
+        {/if}
+        <br />
         <br />
         <div class="item-actions">
           <button

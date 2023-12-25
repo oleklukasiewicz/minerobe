@@ -4,12 +4,11 @@
   import {
     ConvertRGBToHex,
     FindInColors,
-    GetColorFromImage,
+    GetColorFromFileData,
   } from "$src/helpers/imageDataHelpers";
   import { onMount } from "svelte";
   import CloudIcon from "$icons/cloud.svg?raw";
   import { currentUser } from "$src/data/cache";
-  import { text } from "@sveltejs/kit";
 
   export let texture: OutfitPackage = null;
   export let variant: string = null;
@@ -30,12 +29,12 @@
     if (!variantTexture) return;
     if (!extended) {
       dominantColor = [
-        await GetColorFromImage(variantTexture[texture.model].content),
+        await GetColorFromFileData(variantTexture[texture.model]),
       ];
     } else {
       dominantColor = await Promise.all(
         texture.layers.slice(0,limit).map(async (x) => {
-          return await GetColorFromImage(x[texture.model].content);
+          return await GetColorFromFileData(x[texture.model]);
         })
       );
       if (texture.layers.length > limit) {

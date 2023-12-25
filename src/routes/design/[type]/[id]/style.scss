@@ -36,6 +36,15 @@
       gap: 8px;
       max-width: 100%;
     }
+    #item-description {
+      text-align: justify;
+      color: var(--color-theme-D6);
+      font-size: var(--size-font-base);
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      box-sizing: border-box;
+      letter-spacing: 0.1px;
+    }
     .item-name {
       #item-title {
         margin: 4px 0px 10px;

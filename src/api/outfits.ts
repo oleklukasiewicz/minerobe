@@ -19,6 +19,7 @@ import {
   UploadPackage,
   UploadPackageSnapshot,
 } from "./pack";
+import { GetDominantColorFromImage } from "$src/helpers/imageDataHelpers";
 
 const OUTFIT_PATH = "outfits";
 const OUTFIT_LOCAL_PATH = "data";
@@ -39,19 +40,39 @@ export const ParseOutfitSnapshotToDatabase = async function (
   pack: OutfitPackage
 ) {
   let parsed = Object.assign({}, pack);
+  parsed.description = null;
   let length = parsed.layers.length;
   const toSnaphot = parsed.layers.slice(0, 2);
   parsed.layers = new Array(length);
   toSnaphot.forEach((layer, index) => (parsed.layers[index] = layer));
-
+  for (let i = 0; i < toSnaphot.length; i++) {
+    if (parsed.layers[i].steve.color == null)
+      parsed.layers[i].steve.color = await GetDominantColorFromImage(
+        parsed.layers[i].steve.content
+      );
+    if (parsed.layers[i].alex.color == null)
+      parsed.layers[i].alex.color = await GetDominantColorFromImage(
+        parsed.layers[i].alex.content
+      );
+  }
   parsed.publisher = new MinerobeUser(parsed.publisher.id, null, null);
   return parsed;
 };
-export const ParseOutfitToDatabase = function (
+export const ParseOutfitToDatabase = async function (
   outfit: OutfitPackage,
   isNew: boolean = false
 ) {
   let data = Object.assign({}, outfit);
+  for (let i = 0; i < data.layers.length; i++) {
+    if (data.layers[i].steve.color == null)
+      data.layers[i].steve.color = await GetDominantColorFromImage(
+        data.layers[i].steve.content
+      );
+    if (data.layers[i].alex.color == null)
+      data.layers[i].alex.color = await GetDominantColorFromImage(
+        data.layers[i].alex.content
+      );
+  }
   if (!isNew) delete data.social;
   data.publisher = new MinerobeUser(data.publisher.id, null, null);
   return data;

@@ -7,14 +7,17 @@ export class FileData {
   fileName: string;
   content: string;
   type: string;
+  color: string;
   constructor(
     fileName: string,
     content: string,
-    type: string = OUTFIT_TYPE.DEFAULT
+    type: string = OUTFIT_TYPE.DEFAULT,
+    color: string = null
   ) {
     this.fileName = fileName;
     this.content = content;
     this.type = type;
+    this.color = color;
   }
 }
 export class OutfitLayer {
@@ -78,6 +81,7 @@ export class OutfitPackage {
   type: string;
   layers: OutfitLayer[];
   publisher: MinerobeUser;
+  description: string;
   id: string;
   isShared: boolean;
   social: PackageSocialData;
@@ -89,7 +93,8 @@ export class OutfitPackage {
     publisher: MinerobeUser = get(currentUser),
     id: string = GenerateIdForCollection("dummy"),
     isShared: boolean = false,
-    social: PackageSocialData = new PackageSocialData()
+    social: PackageSocialData = new PackageSocialData(),
+    description: string = ""
   ) {
     this.name = name;
     this.model = model;
@@ -99,6 +104,7 @@ export class OutfitPackage {
     this.id = id;
     this.isShared = isShared;
     this.social = social;
+    this.description = description;
   }
 }
 export class WardrobePackage {
