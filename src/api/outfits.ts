@@ -10,6 +10,7 @@ import { LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
 import {
   FetchDocsFromQuery,
   GenerateIdForCollection,
+  QueryWhere,
 } from "$src/data/firebase";
 import { get } from "svelte/store";
 import { GetMinerobeUser } from "./auth";
@@ -18,6 +19,7 @@ import {
   DeletePackage,
   FetchPackage,
   FetchPackageSnapshot,
+  FetchPackagesByFilter,
   FetchRawPackage,
   UploadPackage,
   UploadPackageSnapshot,
@@ -179,19 +181,15 @@ export const FetchRawOutfit = async function (id: string) {
   );
   return data;
 };
-export const FetchOutfitsFromQuery = async function (
-  query: Query<DocumentData, DocumentData>[],
-  parser = ParseOutfitToLocal
+export const FetchOutfitByFilter = async function (
+  outfitsIds: string[],
+  filters: QueryWhere[]
 ) {
-  const docs = (await FetchDocsFromQuery(query)) as any[];
-  let parsedDocs = [];
-  for (let i = 0; i < docs.length; i++) {
-    const docsArr = docs[i];
-    for (let j = 0; j < docsArr.length; j++) {
-      const doc = docsArr[j];
-      if (doc == null) continue;
-      parsedDocs.push(await parser(doc));
-    }
-  }
-  return parsedDocs;
+  return await FetchPackagesByFilter(
+    outfitsIds,
+    OUTFIT_PATH,
+    OUTFIT_LOCAL_PATH,
+    filters,
+    ParseOutfitToLocal
+  );
 };

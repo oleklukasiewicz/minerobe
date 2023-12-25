@@ -1,12 +1,14 @@
 import { currentUser } from "$src/data/cache";
 import { PackageSocialData, type OutfitPackage } from "$src/data/common";
 import {
+  BuildQuery,
   DeleteCollection,
+  FetchDocsFromQuery,
   GetDocument,
   UpdateDocument,
 } from "$src/data/firebase";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
-import { GetOutfitType } from "$src/helpers/imageDataHelpers";
+import type { DocumentData, Query } from "firebase/firestore";
 import { get } from "svelte/store";
 
 const SOCIAL_PATH = "social";
@@ -22,21 +24,9 @@ export const _FetchPackage = async function (path: string, onlyData = false) {
 
   if (onlyData) return pack;
   pack.social = await GetDocument(path, SOCIAL_PATH);
-  let reqUpdate = false;
-  if (
-    pack.outfitType == null &&
-    pack.layers != null &&
-    pack.layers.length > 0
-  ) {
-    pack.outfitType = pack.layers[0].steve?.type;
-    if (pack.outfitType != null) reqUpdate = true;
-  }
 
   if (pack.social == null) {
     pack.social = new PackageSocialData();
-    reqUpdate = true;
-  }
-  if (reqUpdate) {
     await UpdateDocument(path, SOCIAL_PATH, pack.social);
   }
   return pack;
@@ -110,4 +100,29 @@ export const FetchRawPackage = async function (
   let pack = await _FetchPackage(path, true);
   if (pack == null) return null;
   return await parser(pack);
+};
+export const FetchPackageFromQuery = async function (
+  query: Query<DocumentData, DocumentData>[],
+  parser = (x) => x
+) {
+  const docs = (await FetchDocsFromQuery(query)) as any[];
+  let parsedDocs = [];
+  for (let i = 0; i < docs.length; i++) {
+    const docsArr = docs[i];
+    for (let j = 0; j < docsArr.length; j++) {
+      const doc = docsArr[j];
+      if (doc != null) parsedDocs.push(await parser(doc));
+    }
+  }
+  return parsedDocs;
+};
+export const FetchPackagesByFilter = async function (
+  packsIds,
+  path,
+  localPath,
+  filter,
+  parser = (x) => x
+) {
+  let query = await BuildQuery(path,localPath, DATA_PATH, packsIds, filter);
+  return await FetchPackageFromQuery(query,parser);
 };

@@ -4,7 +4,8 @@
   import * as THREE from "three";
   import { createEventDispatcher, onMount } from "svelte";
   import { MODEL_TYPE } from "$src/data/consts";
-  import { alexModel,steveModel } from "$src/data/cache";
+  import { alexModel, steveModel } from "$src/data/cache";
+  import { SplitOutfitPackages } from "$src/helpers/apiHelper";
 
   export let outfits: OutfitPackage[] = [];
   export let categories = ["ALL"];
@@ -12,7 +13,6 @@
   export let renderer = null;
 
   const dispatch = createEventDispatcher();
-  let model = null;
   let selectedCategory = "ALL";
   const selectOutfit = function (outfit) {
     //emity event
@@ -47,7 +47,7 @@
     {/each}
   </div>
   <div class="list">
-    {#each outfits as outfit (outfit.id + outfit.layers[0].variantId)}
+    {#each SplitOutfitPackages(outfits) as outfit (outfit.id + outfit.layers[0].variantId)}
       <!-- svelte-ignore missing-declaration -->
       <!-- svelte-ignore missing-declaration -->
       <ItemSnapshot

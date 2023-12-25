@@ -1,7 +1,6 @@
 import {
   DeleteOutfit,
-  FetchOutfit,
-  FetchOutfitsFromQuery,
+  FetchOutfitByFilter,
   FetchRawOutfit,
   UploadOutfit,
 } from "$src/api/outfits";
@@ -10,7 +9,7 @@ import { AddLike, RemoveLike } from "$src/api/social";
 import { wardrobe } from "$src/data/cache";
 import { OutfitPackage } from "$src/data/common";
 import { PACKAGE_TYPE } from "$src/data/consts";
-import { CallQuery, QueryWhere } from "$src/data/firebase";
+import { QueryWhere } from "$src/data/firebase";
 import { get } from "svelte/store";
 
 //sharing
@@ -110,21 +109,27 @@ export const IsItemInWardrobe = function (item, wardrobe) {
   return false;
 };
 export const FetchWardrobeOutfitsByCategory = async function (category) {
-  const categoryQuery = await CallQuery(
-    "outfits",
-    get(wardrobe).outfits.map((outfit) => outfit.id),
-    category != "ALL"
-      ? [new QueryWhere("outfitType", "==", category.toLowerCase())]
-      : []
-  );
-  const fetched = await FetchOutfitsFromQuery(categoryQuery);
-  let mapped = [];
-  fetched.forEach((x) => {
-    x.layers.forEach((y) => {
-      const tempPackage = { ...x };
-      tempPackage.layers = [y];
-      mapped.push(tempPackage);
-    });
-  });
-  return mapped;
+  let outfitsIds = get(wardrobe).outfits.map((outfit) => outfit.id);
+  let clauses =
+    category == "ALL"
+      ? []
+      : [new QueryWhere("outfitType", "==", category.toLowerCase())];
+  let outfits = await FetchOutfitByFilter(outfitsIds, clauses);
+  return outfits;
 };
+export const SplitOutfitPackage = function (pack: OutfitPackage) {
+  let splited = [];
+  pack.layers.forEach((layer) => {
+    let outfit = Object.assign({}, pack);
+    outfit.layers = [layer];
+    splited.push(outfit);
+  });
+  return splited;
+};
+export const SplitOutfitPackages = function (packs: OutfitPackage[]) {
+  let splited = [];
+  packs.forEach((pack) => {
+    splited = splited.concat(SplitOutfitPackage(pack));
+  });
+  return splited;
+};  

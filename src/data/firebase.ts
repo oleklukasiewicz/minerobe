@@ -168,8 +168,10 @@ export const GetCollection = async function (path: string) {
     return dataSnap.docs.map((doc) => doc.data());
   }
 };
-export const CallQuery = async function (
+export const BuildQuery = async function (
   path: string,
+  localPath: string,
+  docName: string,
   docIds: string[],
   clauses: QueryWhere[]
 ) {
@@ -177,10 +179,10 @@ export const CallQuery = async function (
     const queries: Query<DocumentData>[] = [];
 
     docIds.forEach(async (id) => {
-      const subCollectionRef = collection(db, `${path}/${id}/data`);
+      const subCollectionRef = collection(db, `${path}/${id}/${localPath}`);
       const subCollectionQuery = query(
         subCollectionRef,
-        where(documentId(), "==", "itemdata"),
+        where(documentId(), "==", docName),
         ...clauses.map((clause) =>
           where(clause.field, clause.operator as WhereFilterOp, clause.value)
         )
