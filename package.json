@@ -29,6 +29,6 @@
 		"sass": "^1.69.5",
 		"svelte-i18n": "^4.0.0",
 		"svelte-writable-derived": "^3.1.0",
-		"three": "^0.159.0"
+		"three": "^0.160.0"
 	}
 }
