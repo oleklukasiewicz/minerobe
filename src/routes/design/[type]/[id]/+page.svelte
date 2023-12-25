@@ -42,11 +42,6 @@
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
   import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
   import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
-  import {
-    ConvertRGBToHSL,
-    GetAnimationForType,
-    GetColorFromFileData,
-  } from "$src/helpers/imageDataHelpers";
   import { FetchOutfit } from "$src/api/outfits";
   import { FetchOutfitSet } from "$src/api/sets";
   import {
@@ -54,6 +49,8 @@
     IsItemInWardrobe,
     RemoveItemFromWardrobe,
   } from "$src/helpers/apiHelper";
+  import { GetAnimationForType } from "$src/helpers/animationHelper";
+  import { ConvertRGBToHSL, GetColorFromFileData } from "$src/helpers/colorHelper";
 
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(

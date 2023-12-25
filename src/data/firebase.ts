@@ -7,6 +7,12 @@ import {
   setDoc,
   deleteDoc,
   getDocs,
+  query,
+  where,
+  documentId,
+  type WhereFilterOp,
+  Query,
+  type DocumentData,
 } from "firebase/firestore";
 import {
   GoogleAuthProvider,
@@ -84,9 +90,9 @@ export const GetDocument = async function (
   path: string,
   documentName: string
 ): Promise<any> {
-    const dataRef = doc(db, path, documentName);
-    const dataSnap = await getDoc(dataRef);
-    return dataSnap.data();
+  const dataRef = doc(db, path, documentName);
+  const dataSnap = await getDoc(dataRef);
+  return dataSnap.data();
 };
 export const IsDocumentExist = async function (
   path: string,
@@ -119,7 +125,7 @@ export const UpdateDocument = async function (
     await setDoc(dataRef, dataJson, { merge: true });
     return data;
   }
-}
+};
 export const DeleteDocument = async function (
   path: string,
   documentName: string
@@ -128,7 +134,7 @@ export const DeleteDocument = async function (
     const dataRef = doc(db, path, documentName);
     await deleteDoc(dataRef);
   }
-}
+};
 export const GenerateIdForCollection = function (collectionName: string) {
   if (cUser) {
     const dataRef: any = collection(db, collectionName);
@@ -145,7 +151,7 @@ export const UpdateRawDocument = async function (
     await setDoc(dataRef, data, { merge: true });
     return data;
   }
-}
+};
 export const DeleteCollection = async function (path: string) {
   if (cUser) {
     const dataRef = collection(db, path);
@@ -154,11 +160,56 @@ export const DeleteCollection = async function (path: string) {
       await deleteDoc(doc.ref);
     });
   }
-}
+};
 export const GetCollection = async function (path: string) {
   if (cUser) {
     const dataRef = collection(db, path);
     const dataSnap = await getDocs(dataRef);
     return dataSnap.docs.map((doc) => doc.data());
+  }
+};
+export const CallQuery = async function (
+  path: string,
+  docIds: string[],
+  clauses: QueryWhere[]
+) {
+  if (cUser) {
+    const queries: Query<DocumentData>[] = [];
+
+    docIds.forEach(async (id) => {
+      const subCollectionRef = collection(db, `${path}/${id}/data`);
+      const subCollectionQuery = query(
+        subCollectionRef,
+        where(documentId(), "==", "itemdata"),
+        ...clauses.map((clause) =>
+          where(clause.field, clause.operator as WhereFilterOp, clause.value)
+        )
+      );
+      queries.push(subCollectionQuery);
+    });
+    return queries;
+  }
+  return null;
+};
+export const FetchDocsFromQuery = async function (queries: Query[]) {
+  if (cUser) {
+    const docs = await Promise.all(
+      queries.map(async (query) => {
+        const dataSnap = await getDocs(query);
+        return dataSnap.docs.map((doc) => doc.data());
+      })
+    );
+    return docs;
+  }
+  return null;
+}
+export class QueryWhere {
+  field: string;
+  operator: string;
+  value: any;
+  constructor(field: string, operator: string, value: any) {
+    this.field = field;
+    this.operator = operator;
+    this.value = value;
   }
 }

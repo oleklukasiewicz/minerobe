@@ -6,6 +6,7 @@ import {
   UpdateDocument,
 } from "$src/data/firebase";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
+import { GetOutfitType } from "$src/helpers/imageDataHelpers";
 import { get } from "svelte/store";
 
 const SOCIAL_PATH = "social";
@@ -21,9 +22,21 @@ export const _FetchPackage = async function (path: string, onlyData = false) {
 
   if (onlyData) return pack;
   pack.social = await GetDocument(path, SOCIAL_PATH);
+  let reqUpdate = false;
+  if (
+    pack.outfitType == null &&
+    pack.layers != null &&
+    pack.layers.length > 0
+  ) {
+    pack.outfitType = pack.layers[0].steve?.type;
+    if (pack.outfitType != null) reqUpdate = true;
+  }
 
   if (pack.social == null) {
     pack.social = new PackageSocialData();
+    reqUpdate = true;
+  }
+  if (reqUpdate) {
     await UpdateDocument(path, SOCIAL_PATH, pack.social);
   }
   return pack;

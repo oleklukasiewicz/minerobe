@@ -85,6 +85,7 @@ export class OutfitPackage {
   id: string;
   isShared: boolean;
   social: PackageSocialData;
+  outfitType: string;
   constructor(
     name: string,
     model: string,
@@ -94,7 +95,8 @@ export class OutfitPackage {
     id: string = GenerateIdForCollection("dummy"),
     isShared: boolean = false,
     social: PackageSocialData = new PackageSocialData(),
-    description: string = ""
+    description: string = "",
+    outfitType: string = OUTFIT_TYPE.DEFAULT
   ) {
     this.name = name;
     this.model = model;
@@ -105,6 +107,7 @@ export class OutfitPackage {
     this.isShared = isShared;
     this.social = social;
     this.description = description;
+    this.outfitType = outfitType;
   }
 }
 export class WardrobePackage {

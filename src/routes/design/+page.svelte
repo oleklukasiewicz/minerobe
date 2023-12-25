@@ -69,6 +69,7 @@
   import {
     AddItemToWardrobe,
     FetchFullWardrobe,
+    FetchWardrobeOutfitsByCategory,
     IsItemInWardrobe,
     RemoveItem,
     RemoveItemFromWardrobe,
@@ -86,6 +87,7 @@
     UploadOutfitSet,
   } from "$src/api/sets";
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
+  import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
       "",
@@ -122,6 +124,7 @@
   let isPackageInWardrobe = false;
   let rendererLayers: FileData[] = [];
   let pickerOutfits = [];
+  let pickerCategories = ["ALL"];
 
   let isOutfitPickerOpen = false;
   let isDeleteDialogOpen = false;
@@ -140,6 +143,10 @@
         $itemPackage = await FetchOutfit($wardrobe.studio.id);
       }
       loaded = true;
+      const categoryCounts = GetCategoriesFromList($wardrobe.outfits);
+      pickerCategories = Object.keys(categoryCounts).filter(
+        (x) => categoryCounts[x] > 0
+      );
       isPackageInWardrobe = IsItemInWardrobe($itemPackage, $wardrobe);
       //patching
       if (!isPackageInWardrobe && $itemPublisher.id == $currentUser?.id)
@@ -306,7 +313,10 @@
   };
   const openOutfitPicker = async function () {
     isOutfitPickerOpen = true;
-    pickerOutfits = (await FetchFullWardrobe()).outfits;
+    pickerOutfits = await FetchWardrobeOutfitsByCategory("ALL");
+  };
+  const fetchByCategory = async function (e) {
+    pickerOutfits = await FetchWardrobeOutfitsByCategory(e.detail);
   };
   //drag and drop
   const handleRenderDrop = async function (event) {
@@ -639,6 +649,8 @@
             renderer={$defaultRenderer}
             outfits={pickerOutfits}
             modelName={$wardrobe.studio.model}
+            categories={pickerCategories}
+            on:category={fetchByCategory}
             on:select={(e) => addNewRemoteLayer(e.detail)}
           />
         {/if}

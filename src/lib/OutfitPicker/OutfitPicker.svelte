@@ -1,45 +1,19 @@
 <script lang="ts">
   import ItemSnapshot from "$lib/ItemSnapshot/ItemSnapshot.svelte";
-  import { alexModel, steveModel } from "$src/data/cache";
   import type { OutfitPackage } from "$src/data/common";
-  import { MODEL_TYPE, OUTFIT_TYPE } from "$src/data/consts";
   import * as THREE from "three";
   import { createEventDispatcher, onMount } from "svelte";
-  import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
-  
+  import { MODEL_TYPE } from "$src/data/consts";
+  import { alexModel,steveModel } from "$src/data/cache";
+
   export let outfits: OutfitPackage[] = [];
+  export let categories = ["ALL"];
   export let modelName = "";
   export let renderer = null;
-  export const updateRenderer = () => {
-    mapOutfits(outfits, selectedCategory);
-  };
 
-  
   const dispatch = createEventDispatcher();
   let model = null;
-  let mappedOutfits: OutfitPackage[] = [];
-  let categories = {};
   let selectedCategory = "ALL";
-
-  const mapOutfits = function (list: OutfitPackage[], category: string) {
-    mappedOutfits = [];
-    categories = GetCategoriesFromList(list);
-
-    model = modelName == MODEL_TYPE.ALEX ? $alexModel : $steveModel;
-    let filteredList = list;
-    if (selectedCategory != "ALL")
-      filteredList = list.filter((x) => {
-        if (x.layers.length == 0) return false;
-        return x.layers[0]["steve"].type == OUTFIT_TYPE[selectedCategory];
-      });
-    filteredList.forEach((x) => {
-      x.layers.forEach((y) => {
-        const tempPackage = { ...x };
-        tempPackage.layers = [y];
-        mappedOutfits.push(tempPackage);
-      });
-    });
-  };
   const selectOutfit = function (outfit) {
     //emity event
     dispatch("select", outfit);
@@ -47,29 +21,39 @@
 
   onMount(() => {
     if (renderer == null) renderer = new THREE.WebGLRenderer({ alpha: true });
-    mapOutfits(outfits, selectedCategory);
   });
-  $: mapOutfits(outfits, selectedCategory);
+
+  const selectCategory = function (category) {
+    selectedCategory = category;
+    dispatch("category", category);
+  };
 </script>
 
 <div class="outfit-picker">
   <div>
-    <button class="small" class:secondary={selectedCategory!="ALL"}   on:click={() => (selectedCategory = "ALL")}
-      >ALL</button
+    <button
+      class="small"
+      class:secondary={selectedCategory != "ALL"}
+      on:click={() => selectCategory("ALL")}>ALL</button
     >
     &nbsp;
-    {#each Object.keys(categories).filter((x) => categories[x] > 0) as category}
-      <button class="small" class:secondary={selectedCategory!=category} style="margin-left:4px" on:click={() => (selectedCategory = category)}
-        >{category}</button
+    {#each categories as category}
+      <button
+        class="small"
+        class:secondary={selectedCategory != category}
+        style="margin-left:4px"
+        on:click={() => selectCategory(category)}>{category}</button
       >
     {/each}
   </div>
   <div class="list">
-    {#each mappedOutfits as outfit (outfit.id+outfit.layers[0].variantId)}
+    {#each outfits as outfit (outfit.id + outfit.layers[0].variantId)}
+      <!-- svelte-ignore missing-declaration -->
+      <!-- svelte-ignore missing-declaration -->
       <ItemSnapshot
         texture={outfit}
         dense={true}
-        {model}
+        model={modelName == MODEL_TYPE.ALEX ? $alexModel : $steveModel}
         {renderer}
         {modelName}
         on:click={() => selectOutfit(outfit)}

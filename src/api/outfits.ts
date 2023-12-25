@@ -7,7 +7,10 @@ import {
   PackageSocialData,
 } from "$src/data/common";
 import { LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
-import { GenerateIdForCollection } from "$src/data/firebase";
+import {
+  FetchDocsFromQuery,
+  GenerateIdForCollection,
+} from "$src/data/firebase";
 import { get } from "svelte/store";
 import { GetMinerobeUser } from "./auth";
 import {
@@ -19,7 +22,8 @@ import {
   UploadPackage,
   UploadPackageSnapshot,
 } from "./pack";
-import { GetDominantColorFromImage } from "$src/helpers/imageDataHelpers";
+import { GetDominantColorFromImage } from "$src/helpers/colorHelper";
+import type { DocumentData, Query } from "firebase/firestore";
 
 const OUTFIT_PATH = "outfits";
 const OUTFIT_LOCAL_PATH = "data";
@@ -55,6 +59,7 @@ export const ParseOutfitSnapshotToDatabase = async function (
         parsed.layers[i].alex.content
       );
   }
+  parsed.outfitType = parsed.layers[0].steve.type;
   parsed.publisher = new MinerobeUser(parsed.publisher.id, null, null);
   return parsed;
 };
@@ -73,6 +78,7 @@ export const ParseOutfitToDatabase = async function (
         data.layers[i].alex.content
       );
   }
+  data.outfitType = data.layers[0].steve.type;
   if (!isNew) delete data.social;
   data.publisher = new MinerobeUser(data.publisher.id, null, null);
   return data;
@@ -172,4 +178,20 @@ export const FetchRawOutfit = async function (id: string) {
     ParseOutfitToLocal
   );
   return data;
+};
+export const FetchOutfitsFromQuery = async function (
+  query: Query<DocumentData, DocumentData>[],
+  parser = ParseOutfitToLocal
+) {
+  const docs = (await FetchDocsFromQuery(query)) as any[];
+  let parsedDocs = [];
+  for (let i = 0; i < docs.length; i++) {
+    const docsArr = docs[i];
+    for (let j = 0; j < docsArr.length; j++) {
+      const doc = docsArr[j];
+      if (doc == null) continue;
+      parsedDocs.push(await parser(doc));
+    }
+  }
+  return parsedDocs;
 };

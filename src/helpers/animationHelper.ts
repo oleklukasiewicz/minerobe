@@ -2,12 +2,11 @@ import NewOutfitBottomAnimation from "$src/animation/bottom";
 import ClapAnimation from "$src/animation/clap";
 import DefaultAnimation from "$src/animation/default";
 import HandsUpAnimation from "$src/animation/handsup";
-import JumpAnimation from "$src/animation/jump";
+import HatAnimation from "$src/animation/hat";
 import WavingAnimation from "$src/animation/waving";
 import type { RenderAnimation } from "$src/data/animation";
 import type { OutfitPackage } from "$src/data/common";
-import { CHANGE_TYPE } from "$src/data/consts";
-import { GetAnimationForType } from "./imageDataHelpers";
+import { CHANGE_TYPE, OUTFIT_TYPE } from "$src/data/consts";
 
 export const GetAnimationForPackageChange = function (
   itempackage: OutfitPackage,
@@ -59,4 +58,15 @@ export const GetAnimationForPackageChange = function (
     return [HandsUpAnimation,DefaultAnimation];
   }
   return [];
+};
+export const GetAnimationForType = function (type: string) {
+  switch (type) {
+    case OUTFIT_TYPE.HAT:
+      return HatAnimation;
+    case OUTFIT_TYPE.TOP:
+    case OUTFIT_TYPE.HOODIE:
+      return NewOutfitBottomAnimation;
+    case OUTFIT_TYPE.SHOES:
+      return WavingAnimation;
+  }
 };
