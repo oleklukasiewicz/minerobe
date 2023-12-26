@@ -6,11 +6,13 @@
   import { MODEL_TYPE } from "$src/data/consts";
   import { alexModel, steveModel } from "$src/data/cache";
   import { SplitOutfitPackages } from "$src/helpers/apiHelper";
+  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
 
   export let outfits: OutfitPackage[] = [];
   export let categories = ["ALL"];
   export let modelName = "";
   export let renderer = null;
+  export let loading = false;
 
   const dispatch = createEventDispatcher();
   let selectedCategory = "ALL";
@@ -47,6 +49,7 @@
     {/each}
   </div>
   <div class="list">
+    {#if !loading}
     {#each SplitOutfitPackages(outfits) as outfit (outfit.id + outfit.layers[0].variantId)}
       <!-- svelte-ignore missing-declaration -->
       <!-- svelte-ignore missing-declaration -->
@@ -59,9 +62,16 @@
         on:click={() => selectOutfit(outfit)}
       />
     {/each}
+    {/if}
+    {#if loading}
+      {#each Array(64) as _}
+       <Placeholder style="height:85px" />
+      {/each}
+    {/if}
   </div>
 </div>
 
 <style lang="scss">
   @import "OutfitPicker.scss";
 </style>
+/

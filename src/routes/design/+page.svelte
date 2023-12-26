@@ -54,7 +54,6 @@
   import {
     ExportImageLayers,
     ImportImage,
-    ImportImagePackageJsonFromFile,
     ImportLayerFromFile,
   } from "$helpers/imageOperations";
   import { mergeImages } from "$helpers/imageMerger";
@@ -68,7 +67,6 @@
   import OutfitPicker from "$lib/OutfitPicker/OutfitPicker.svelte";
   import {
     AddItemToWardrobe,
-    FetchFullWardrobe,
     FetchWardrobeOutfitsByCategory,
     IsItemInWardrobe,
     RemoveItem,
@@ -125,6 +123,7 @@
   let rendererLayers: FileData[] = [];
   let pickerOutfits = [];
   let pickerCategories = ["ALL"];
+  let isPickerLoading = true;
 
   let isOutfitPickerOpen = false;
   let isDeleteDialogOpen = false;
@@ -311,13 +310,20 @@
     navigateToWardrobe();
     RemoveItem($itemPackage);
   };
+
+  //picker
   const openOutfitPicker = async function () {
     isOutfitPickerOpen = true;
+    isPickerLoading = true;
     pickerOutfits = await FetchWardrobeOutfitsByCategory("ALL");
+    isPickerLoading = false;
   };
   const fetchByCategory = async function (e) {
+    isPickerLoading = true;
     pickerOutfits = await FetchWardrobeOutfitsByCategory(e.detail);
+    isPickerLoading = false;
   };
+
   //drag and drop
   const handleRenderDrop = async function (event) {
     event.preventDefault();
@@ -646,6 +652,7 @@
         </div>
         {#if loaded && isOutfitPickerOpen}
           <OutfitPicker
+            bind:loading={isPickerLoading}
             renderer={$defaultRenderer}
             outfits={pickerOutfits}
             modelName={$wardrobe.studio.model}

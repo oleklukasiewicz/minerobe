@@ -6,22 +6,28 @@
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   let outfits = [];
   let categories = ["ALL"];
+  let isPickerLoading = true;
   appState.subscribe(async (state) => {
     if (state == APP_STATE.READY) {
-    const categoryCounts = GetCategoriesFromList($wardrobe.outfits);
+      const categoryCounts = GetCategoriesFromList($wardrobe.outfits);
       categories = Object.keys(categoryCounts).filter(
-        (x) =>categoryCounts[x] > 0
+        (x) => categoryCounts[x] > 0
       );
+      outfits = await FetchWardrobeOutfitsByCategory("ALL");
+      isPickerLoading = false;
     }
   });
   const fetchByCategory = async function (e) {
-    outfits= await FetchWardrobeOutfitsByCategory(e.detail);
+    isPickerLoading = true;
+    outfits = await FetchWardrobeOutfitsByCategory(e.detail);
+    isPickerLoading = false;
   };
 </script>
 
 <h1 id="view-title">Explore new outfits</h1>
 {#if $appState == APP_STATE.READY}
   <OutfitPicker
+    bind:loading={isPickerLoading}
     {outfits}
     modelName={$wardrobe.studio.model}
     {categories}
