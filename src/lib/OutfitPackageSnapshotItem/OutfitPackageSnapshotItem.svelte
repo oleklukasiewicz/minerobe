@@ -16,6 +16,7 @@
     FindStringInColors,
     FindStringInColorsAsHex,
   } from "$src/helpers/colorHelper";
+  import { mergeImages } from "$src/helpers/imageMerger";
 
   export let item: OutfitPackage = null;
   export let dense = false;
@@ -27,6 +28,7 @@
   let renderNode: HTMLImageElement;
   let tempNode: HTMLDivElement;
   let snapshot: RenderSnapshot;
+  let isSet = false;
 
   onMount(async () => {
     if (renderProvider == null) return;
@@ -38,6 +40,16 @@
     snapshot.node = renderNode;
     snapshot.tempNode = tempNode;
     snapshot.texture = item.layers[0][item.model].content;
+    if (item.type == OUTFIT_TYPE.OUTFIT_SET) {
+      //merge layers
+      isSet = true;
+      let mergedLayers = await mergeImages(
+        item.layers.map((x) => x[item.model].content).reverse(),
+        undefined,
+        item.model
+      );
+      snapshot.texture = mergedLayers;
+    }
     snapshot.cameraOptions = GetCameraConfigForType(
       item.type != OUTFIT_TYPE.OUTFIT_SET ? item.outfitType : item.type
     );
@@ -72,14 +84,14 @@
       <div class="share-icon icon-small">{@html CloudIcon}</div>
     </div>
     <div class="title-row">
-      {#if item.publisher.id != $currentUser.id}
-        <div style="flex:1;">
+      <div style="flex:1;">
+        {#if item.publisher.id != $currentUser.id}
           <span class="label unique" class:dense>{item.publisher.name}</span>
-        </div>
-      {/if}
+        {/if}
+      </div>
       {#if multiple > 0}
         {#each item.layers
-          .slice(0, multiple)
+          .slice(0,!isSet?multiple:1)
           .filter((x) => x[item.model].color != null) as layer (layer.variantId)}
           <span
             class="color-view"
@@ -90,7 +102,7 @@
             )}; margin-left:4px;"
           ></span>
         {/each}
-        {#if aboveLimit > 0}
+        {#if aboveLimit > 0 & !isSet}
           <span class="above-limit" style="margin-left:4px;">
             +{aboveLimit}
           </span>
