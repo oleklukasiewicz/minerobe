@@ -6,7 +6,12 @@ import {
   OutfitLayerLink,
   PackageSocialData,
 } from "$src/data/common";
-import { LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+import {
+  LAYER_TYPE,
+  MODEL_TYPE,
+  OUTFIT_TYPE,
+  PACKAGE_TYPE,
+} from "$src/data/consts";
 import {
   FetchDocsFromQuery,
   GenerateIdForCollection,
@@ -61,7 +66,8 @@ export const ParseOutfitSnapshotToDatabase = async function (
         parsed.layers[i].alex.content
       );
   }
-  parsed.outfitType = parsed.layers[0].steve.type;
+  parsed.outfitType =
+    parsed.layers.length > 0 ? parsed.layers[0]?.steve.type : OUTFIT_TYPE.DEFAULT;
   parsed.publisher = new MinerobeUser(parsed.publisher.id, null, null);
   return parsed;
 };
@@ -80,7 +86,9 @@ export const ParseOutfitToDatabase = async function (
         data.layers[i].alex.content
       );
   }
-  data.outfitType = data.layers[0].steve.type;
+
+  data.outfitType =
+    data.layers.length > 0 ? data.layers[0]?.steve.type : OUTFIT_TYPE.DEFAULT;
   if (!isNew) delete data.social;
   data.publisher = new MinerobeUser(data.publisher.id, null, null);
   return data;
