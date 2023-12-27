@@ -96,7 +96,7 @@
           <span
             class="color-view"
             title={FindStringInColors(layer[item.model].color)}
-            on:click={() => updateRender(layer)}
+            on:click|stopPropagation={() => updateRender(layer)}
             style="background-color: {FindStringInColorsAsHex(
               layer[item.model].color
             )}; margin-left:4px;"
