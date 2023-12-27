@@ -96,6 +96,11 @@ br{
     user-select: none;
     text-align: end;
 }
+.label.dense
+{
+    padding: 1px 6px;
+    font-size: var(--size-font-caption);
+}
 .label.unique{
     background: linear-gradient(var(--color-unique),var(--color-unique-A1));
 }

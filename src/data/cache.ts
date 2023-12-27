@@ -57,12 +57,15 @@ export const baseTexture: Readable<string> = readable(get(planksTexture));
 let wardrobeSubscription;
 
 export const setup = function () {
-  defaultRenderer.set(
-    new THREE.WebGLRenderer({
+  defaultRenderer.update((renderer: any) => {
+    renderer = new THREE.WebGLRenderer({
       alpha: true,
-      preserveDrawingBuffer: true,
-    })
-  );
+    });
+    renderer.shadowMap.enabled = true;
+    renderer.outputEncoding = 1;
+    return renderer;
+  });
+
   const matcher = window.matchMedia("(max-width: 768px)");
   isMobileViewWritable.set(matcher.matches);
   matcher.addEventListener("change", (e) => {

@@ -1,9 +1,12 @@
 .outfit-picker {
   .list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     margin-top: 8px;
-    gap: 4px;
+    .placeholders {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      margin-top: 8px;
+      gap: 4px;
+    }
   }
   max-width: 100%;
 }

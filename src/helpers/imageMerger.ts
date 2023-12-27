@@ -119,10 +119,14 @@ let replaceLowerLayer = function (
   width,
   height
 ) {
-  let imageData = imgContext.getImageData(sourceX, sourceY, width, height);
+  let imageData = imgContext.getImageData(sourceX, sourceY, width, height,{
+    willReadFrequently: true,
+  });
   let sourcePixels = imageData.data;
 
-  let destData = lowerLayerContext.getImageData(x, y, width, height);
+  let destData = lowerLayerContext.getImageData(x, y, width, height,{
+    willReadFrequently: true,
+  });
   let destPixels = destData.data;
   for (let i = 0; i < sourcePixels.length; i += 4) {
     const r = sourcePixels[i];

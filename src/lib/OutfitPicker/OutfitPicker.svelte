@@ -1,12 +1,10 @@
 <script lang="ts">
-  import ItemSnapshot from "$lib/ItemSnapshot/ItemSnapshot.svelte";
   import type { OutfitPackage } from "$src/data/common";
   import * as THREE from "three";
   import { createEventDispatcher, onMount } from "svelte";
-  import { MODEL_TYPE } from "$src/data/consts";
-  import { alexModel, steveModel } from "$src/data/cache";
   import { SplitOutfitPackages } from "$src/helpers/apiHelper";
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
+  import OutfitPackageSnapshotList from "$lib/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
 
   export let outfits: OutfitPackage[] = [];
   export let categories = ["ALL"];
@@ -16,13 +14,18 @@
 
   const dispatch = createEventDispatcher();
   let selectedCategory = "ALL";
-  const selectOutfit = function (outfit) {
+  const selectOutfit = function (e) {
     //emity event
+    const outfit = e.detail;
     dispatch("select", outfit);
   };
 
-  onMount(() => {
+  onMount(async () => {
+    loading = true;
     if (renderer == null) renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.shadowMap.enabled = true;
+    renderer.outputEncoding = 1;
+    loading = false;
   });
 
   const selectCategory = function (category) {
@@ -50,23 +53,18 @@
   </div>
   <div class="list">
     {#if !loading}
-    {#each SplitOutfitPackages(outfits) as outfit (outfit.id + outfit.layers[0].variantId)}
-      <!-- svelte-ignore missing-declaration -->
-      <!-- svelte-ignore missing-declaration -->
-      <ItemSnapshot
-        texture={outfit}
-        dense={true}
-        model={modelName == MODEL_TYPE.ALEX ? $alexModel : $steveModel}
+      <OutfitPackageSnapshotList
         {renderer}
-        {modelName}
-        on:click={() => selectOutfit(outfit)}
+        items={SplitOutfitPackages(outfits)}
+        on:select={selectOutfit}
       />
-    {/each}
     {/if}
     {#if loading}
-      {#each Array(64) as _}
-       <Placeholder style="height:85px" />
-      {/each}
+      <div class="placeholders">
+        {#each Array(64) as _}
+          <Placeholder style="height:85px" />
+        {/each}
+      </div>
     {/if}
   </div>
 </div>
@@ -74,4 +72,3 @@
 <style lang="scss">
   @import "OutfitPicker.scss";
 </style>
-/

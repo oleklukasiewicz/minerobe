@@ -1,11 +1,7 @@
 <script lang="ts">
-  import ItemSetSnapshot from "$lib/ItemSetSnapshot/ItemSetSnapshot.svelte";
-  import ItemSnapshot from "$lib/ItemSnapshot/ItemSnapshot.svelte";
   import {
-    alexModel,
     appState,
     currentUser,
-    steveModel,
     wardrobe,
     defaultRenderer,
     isMobileView,
@@ -26,6 +22,7 @@
     GetOutfitIconFromType,
   } from "$src/helpers/imageDataHelpers";
   import Search from "$lib/Search/Search.svelte";
+  import OutfitPackageSnapshotList from "$lib/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
 
   let currentView = "sets";
   let loaded = false;
@@ -145,18 +142,12 @@
           </div>
         </div>
         <div class="sets-list">
-          {#each setsList as item (item.id)}
-            <ItemSetSnapshot
-              renderer={$defaultRenderer}
-              outfitPackage={item}
-              publisher={item.publisher}
-              model={item.model != "alex" ? $steveModel : $alexModel}
-              modelName={item.model}
-              on:click={() => {
-                navigateToDesign(item);
-              }}
-            />
-          {/each}
+          <OutfitPackageSnapshotList
+            dense={false}
+            renderer={$defaultRenderer}
+            items={setsList}
+            on:select={(e) => navigateToDesign(e.detail)}
+          />
         </div>
       {/if}
       {#if currentView != "sets"}
@@ -178,22 +169,16 @@
           </div>
         </div>
         <div class="outfits-list">
-          {#each outfitList as item (item.id)}
-            <ItemSnapshot
-              renderer={$defaultRenderer}
-              texture={item}
-              extended={true}
-              model={item.model != "alex" ? $steveModel : $alexModel}
-              modelName={item.model}
-              on:click={() => {
-                navigateToDesign(item);
-              }}
-            />
-          {/each}
+          <OutfitPackageSnapshotList
+            dense={false}
+            renderer={$defaultRenderer}
+            items={outfitList}
+            on:select={(e) => navigateToDesign(e.detail)}
+          />
         </div>
       {/if}
     {:else}
-      <div class="sets-list">
+      <div class="placeholders">
         {#each new Array(25) as item, index}
           <Placeholder style="width:200px;height:268px;" />
         {/each}

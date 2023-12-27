@@ -34,7 +34,9 @@ export const ConvertRGBToHex = (rgb: any) => {
   };
   export const GetDominantColorFromImage = async function (base64) {
     const ctx = (await GetContextFromBase64(base64)) as any;
-    const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+    const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height,{
+      willReadFrequently: true,
+    });
     const colorMap = {};
     for (let i = 0; i < imageData.data.length; i += 4) {
       const r = imageData.data[i];
@@ -56,7 +58,9 @@ export const ConvertRGBToHex = (rgb: any) => {
     return dominantColor;
   };
   export const GetDominantColorFromImageContext = async function (ctx) {
-    const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+    const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height,{
+      willReadFrequently: true,
+    });
     const colorMap = {};
     for (let i = 0; i < imageData.data.length; i += 4) {
       const r = imageData.data[i];
@@ -107,6 +111,14 @@ export const ConvertRGBToHex = (rgb: any) => {
       return color.r === rgb.r && color.g === rgb.g && color.b === rgb.b && key;
     });
   };
+  export const FindStringInColors=function(rgbString: string) {
+    const cr= FindClosestColorString(rgbString);
+    return FindInColors(cr);
+  }
+  export const FindStringInColorsAsHex=function(rgbString: string) {
+    const cr= FindClosestColorString(rgbString);
+    return ConvertRGBToHex(cr);
+  }
   export const GetColorFromFileData = async function (fileData: FileData) {
     let dominantColor: any;
     dominantColor =
