@@ -102,7 +102,7 @@
             )}; margin-left:4px;"
           ></span>
         {/each}
-        {#if aboveLimit > 0 & !isSet}
+        {#if aboveLimit > 0 && !isSet}
           <span class="above-limit" style="margin-left:4px;">
             +{aboveLimit}
           </span>
