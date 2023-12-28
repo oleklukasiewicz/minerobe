@@ -76,6 +76,7 @@ export const RenderFromSnapshot = async function (snapshot: RenderSnapshot) {
   const canvas = node;
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
+  if(width==0 || height==0) return false;
 
   renderer.setPixelRatio(window.devicePixelRatio);
   const canvasSizeMultiplier = 2; // Adjust this value as needed
@@ -86,6 +87,7 @@ export const RenderFromSnapshot = async function (snapshot: RenderSnapshot) {
   tempNode.appendChild(renderer.domElement);
   renderer.render(scene, camera);
   node.src = renderer.domElement.toDataURL();
+  return true;
 };
 export const PrepareSceneForRender = async function (model: string) {
   let scene = new THREE.Scene();

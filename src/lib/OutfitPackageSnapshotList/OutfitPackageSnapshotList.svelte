@@ -5,10 +5,7 @@
   import { createEventDispatcher, onMount } from "svelte";
   import {
     CreateDefaultRenderProvider,
-    PrepareSceneForRender,
-    RenderProvider,
   } from "$src/data/render";
-  import { alexModel, steveModel } from "$src/data/cache";
   import { MODEL_TYPE } from "$src/data/consts";
 
   export let items: OutfitPackage[] = [];
@@ -18,8 +15,8 @@
 
   const dispatch = createEventDispatcher();
 
-  let steveListProvider = new RenderProvider();
-  let alexListProvider = new RenderProvider();
+  let steveListProvider =null;
+  let alexListProvider = null;
 
   onMount(async () => {
     if (renderer == null) {
