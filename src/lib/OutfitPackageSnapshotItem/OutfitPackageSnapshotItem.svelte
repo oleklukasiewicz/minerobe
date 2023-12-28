@@ -1,5 +1,4 @@
 <script lang="ts">
-  import * as THREE from "three";
   import type { OutfitPackage } from "$src/data/common";
   import { OUTFIT_TYPE } from "$src/data/consts";
   import {
@@ -7,55 +6,27 @@
     RenderProvider,
     RenderSnapshot,
   } from "$src/data/render";
-  import { GetCameraConfigForType } from "$src/helpers/renderHelper";
   import CloudIcon from "$icons/cloud.svg?raw";
-
-  import { onMount } from "svelte";
   import { currentUser } from "$src/data/cache";
   import {
     FindStringInColors,
     FindStringInColorsAsHex,
   } from "$src/helpers/colorHelper";
-  import { mergeImages } from "$src/helpers/imageMerger";
+  import OutfitPackageSnapshotRender from "$lib/render/OutfitPackageSnapshotRender.svelte";
+  import { onMount } from "svelte";
 
   export let item: OutfitPackage = null;
   export let dense = false;
-  export let renderProvider: RenderProvider;
+  export let renderProvider: RenderProvider=null;
   export let multiple = 2;
 
   let aboveLimit = 0;
-
-  let renderNode: HTMLImageElement;
-  let tempNode: HTMLDivElement;
   let snapshot: RenderSnapshot;
   let isSet = false;
 
   onMount(async () => {
-    if (renderProvider == null || item.layers.length == 0) return;
-
-    snapshot = new RenderSnapshot();
-    snapshot.provider = renderProvider;
-    snapshot.provider.camera = new THREE.OrthographicCamera();
-
-    snapshot.node = renderNode;
-    snapshot.tempNode = tempNode;
-    snapshot.texture = item.layers[0][item.model].content;
-    if (item.type == OUTFIT_TYPE.OUTFIT_SET) {
-      //merge layers
-      isSet = true;
-      let mergedLayers = await mergeImages(
-        item.layers.map((x) => x[item.model].content).reverse(),
-        undefined,
-        item.model
-      );
-      snapshot.texture = mergedLayers;
-    }
-    snapshot.cameraOptions = GetCameraConfigForType(
-      item.type != OUTFIT_TYPE.OUTFIT_SET ? item.outfitType : item.type
-    );
-    await RenderFromSnapshot(snapshot);
+    isSet = item.type == OUTFIT_TYPE.OUTFIT_SET;
   });
-
   const updateRender = async function (layer) {
     snapshot.texture = layer[item.model].content;
     await RenderFromSnapshot(snapshot);
@@ -75,14 +46,13 @@
 >
   <div class="render-area">
     <!-- svelte-ignore a11y-missing-attribute -->
-    <img bind:this={renderNode} />
-    <div class="temp-render-node" bind:this={tempNode}></div>
+    <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />
   </div>
   <div class="data-area">
     <div class="title-row">
       <b class="name">{item.name}</b>
       {#if item.isShared}
-      <div class="share-icon icon-small">{@html CloudIcon}</div>
+        <div class="share-icon icon-small">{@html CloudIcon}</div>
       {/if}
     </div>
     <div class="title-row">

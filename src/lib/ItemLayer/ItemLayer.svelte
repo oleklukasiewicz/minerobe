@@ -1,8 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { cubicOut } from "svelte/easing";
-  import SkinSnapshot from "$lib/render/SkinSnapshot/SkinSnapshot.svelte";
-  import type { FileData, OutfitLayer } from "$src/data/common";
+  import type { OutfitLayer } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
 
   import UpIcon from "$src/icons/chevron-up.svg?raw";
@@ -10,13 +9,14 @@
   import DeleteIcon from "$src/icons/close.svg?raw";
   import UserPlusIcon from "$src/icons/user-plus.svg?raw";
   import { LAYER_TYPE } from "$src/data/consts";
+  import OutfitLayerRender from "$lib/render/OutfitLayerRender.svelte";
+  import { RenderProvider } from "$src/data/render";
 
-  export let texture: OutfitLayer = null;
-  export let model = null;
+  export let item: OutfitLayer;
+  export let renderProvider: RenderProvider = new RenderProvider();
   export let modelName = "";
   export let canUp = true;
   export let canDown = true;
-  export let renderer = undefined;
   export let readonly = false;
   export let controls = true;
   export let selected = false;
@@ -24,32 +24,29 @@
   export let multiVariant = true;
   export let showLabels = true;
   export let label =
-    texture?.name || texture[modelName]?.fileName || "New layer";
+    item?.name || item[modelName]?.fileName || "New layer";
 
   let dispatch = createEventDispatcher();
 
   let isDragging = false;
   let up = function () {
     dispatch("up", {
-      texture: texture,
-      model: model,
+      texture: item
     });
   };
   let addVariant = function () {
     dispatch("addvariant", {
-      texture: texture,
-      model: model,
+      texture: item
     });
   };
   let handleDrop = function (event) {
     event.preventDefault();
-    if (multiVariant && texture.type != LAYER_TYPE.REMOTE) {
+    if (multiVariant && item.type != LAYER_TYPE.REMOTE) {
       const files = event.dataTransfer.files;
       isDragging = false;
       dispatch("dropvariant", {
         files: files,
-        texture: texture,
-        model: model,
+        texture: item
       });
     }
   };
@@ -65,14 +62,12 @@
   };
   let down = function () {
     dispatch("down", {
-      texture: texture,
-      model: model,
+      texture: item
     });
   };
   let remove = function () {
     dispatch("remove", {
-      texture: texture,
-      model: model,
+      texture: item
     });
   };
   function fadeInScale(node, { duration }) {
@@ -93,7 +88,7 @@
   class:disabled={readonly}
   class:drop-hover={isDragging &&
     multiVariant &&
-    texture.type != LAYER_TYPE.REMOTE}
+    item.type != LAYER_TYPE.REMOTE}
   on:click
   in:fadeInScale={{ duration: 300 }}
   out:fadeInScale={{ duration: 300 }}
@@ -104,22 +99,16 @@
 >
   <div class="data">
     <div class="render">
-      <SkinSnapshot
-        texture={texture[modelName].content}
-        {model}
-        {renderer}
-        {modelName}
-        type={texture[modelName].type}
-      />
+      <OutfitLayerRender {item} {renderProvider} {modelName} />
     </div>
     <span
       ><input
         bind:value={label}
-        class:disabled={texture.type == LAYER_TYPE.REMOTE}
+        class:disabled={item.type == LAYER_TYPE.REMOTE}
       />
-      <br /><span class="label common">{texture[modelName].type}</span>
+      <br /><span class="label common">{item[modelName].type}</span>
       {#if showLabels}
-        {#if texture.type == LAYER_TYPE.REMOTE}
+        {#if item.type == LAYER_TYPE.REMOTE}
           <span class="label rare" style="margin-left:8px;"
             >{$_("layerType.remote")}</span
           >
@@ -129,7 +118,7 @@
   </div>
   {#if !readonly}
     <div class="actions">
-      {#if multiVariant && texture.type != LAYER_TYPE.REMOTE}
+      {#if multiVariant && item.type != LAYER_TYPE.REMOTE}
         <button
           class="secondary icon"
           title={$_("newLayerVariant")}
@@ -138,7 +127,7 @@
           {@html UserPlusIcon}</button
         >
       {/if}
-      {#if controls && multiVariant && texture.type != LAYER_TYPE.REMOTE}
+      {#if controls && multiVariant && item.type != LAYER_TYPE.REMOTE}
         <div class="separator vertical" />
       {/if}
       {#if controls}

@@ -3,6 +3,7 @@
   margin: 30px;
   .render-data {
     flex: 1;
+    display: block;
     max-height: calc(100vh - 120px);
     position: sticky;
     top: 90px;
@@ -11,6 +12,7 @@
     }
     .render {
       max-height: 100%;
+      max-width: 100%;
       transition: var(--time);
       aspect-ratio: 1/1;
       outline: 3px solid transparent;
@@ -22,6 +24,7 @@
   }
   .item-data {
     flex: 1;
+    display: block;
     margin: 40px auto;
     padding: 24px;
     box-sizing: border-box;

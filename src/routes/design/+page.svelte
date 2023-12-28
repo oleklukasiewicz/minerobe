@@ -9,11 +9,11 @@
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
-  import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
   import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
   import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
+  import DynamicRender from "$lib/render/DynamicRender.svelte";
 
   import {
     APP_STATE,
@@ -86,6 +86,7 @@
   } from "$src/api/sets";
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
+  import { CreateDefaultRenderProvider } from "$src/data/render";
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
       "",
@@ -128,6 +129,8 @@
   let isOutfitPickerOpen = false;
   let isDeleteDialogOpen = false;
 
+  let defaultProvider = null;
+
   let updateAnimation = function (anim) {};
 
   onMount(async () => {
@@ -136,6 +139,7 @@
         loaded = false;
         return;
       }
+      defaultProvider = await CreateDefaultRenderProvider($defaultRenderer);
       if ($wardrobe.studio == null) navigateToWardrobe();
       if ($wardrobe.studio.type == PACKAGE_TYPE.OUTFIT_SET_LINK) {
         $itemPackage = await FetchOutfitSet($wardrobe.studio.id);
@@ -425,13 +429,12 @@
         on:dragleave={handleRenderDragLeave}
       >
         {#if loaded}
-          <SkinRender
+          <DynamicRender
             texture={modelTexture}
             model={$itemModel}
             modelName={$itemPackage.model}
-            onlyRenderSnapshot={false}
-            animation={DefaultAnimation}
-            bind:changeAnimation={updateAnimation}
+            defaultAnimation={DefaultAnimation}
+            bind:addAnimation={updateAnimation}
           />
         {:else}
           <Placeholder />
@@ -510,13 +513,14 @@
             {#each $itemLayers as item, index (item.id + item.variantId)}
               <div class="item-layer">
                 <ItemLayer
-                  texture={item}
+                  renderProvider={$itemModelType == MODEL_TYPE.STEVE
+                    ? defaultProvider.steve
+                    : defaultProvider.alex}
                   selectable={!$isItemSet}
                   controls={$isItemSet}
-                  model={$itemModel}
                   readonly={$itemPublisher.id != $currentUser?.id}
                   modelName={$itemPackage.model}
-                  renderer={$defaultRenderer}
+                  {item}
                   bind:label={item.name}
                   on:addvariant={addImageVariant}
                   on:down={downLayer}
@@ -656,7 +660,6 @@
             bind:loading={isPickerLoading}
             renderer={$defaultRenderer}
             outfits={pickerOutfits}
-            modelName={$wardrobe.studio.model}
             categories={pickerCategories}
             on:category={fetchByCategory}
             on:select={(e) => addNewRemoteLayer(e.detail)}

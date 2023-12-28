@@ -3,7 +3,11 @@
   import OutfitPackageSnapshotItem from "$lib/OutfitPackageSnapshotItem/OutfitPackageSnapshotItem.svelte";
   import type { OutfitPackage } from "$src/data/common";
   import { createEventDispatcher, onMount } from "svelte";
-  import { PrepareSceneForRender, RenderProvider } from "$src/data/render";
+  import {
+    CreateDefaultRenderProvider,
+    PrepareSceneForRender,
+    RenderProvider,
+  } from "$src/data/render";
   import { alexModel, steveModel } from "$src/data/cache";
   import { MODEL_TYPE } from "$src/data/consts";
 
@@ -13,7 +17,7 @@
   export let ready = false;
 
   const dispatch = createEventDispatcher();
-  
+
   let steveListProvider = new RenderProvider();
   let alexListProvider = new RenderProvider();
 
@@ -24,17 +28,9 @@
       renderer.outputEncoding = 1;
     }
 
-    steveListProvider.renderer = renderer;
-    steveListProvider.textureLoader = new THREE.TextureLoader();
-    let steveScene = await PrepareSceneForRender($steveModel);
-    steveListProvider.scene = steveScene.scene;
-    steveListProvider.camera = steveScene.camera;
-
-    alexListProvider.renderer = renderer;
-    alexListProvider.textureLoader = new THREE.TextureLoader();
-    let alexScene = await PrepareSceneForRender($alexModel);
-    alexListProvider.scene = alexScene.scene;
-    alexListProvider.camera = alexScene.camera;
+    const providers = await CreateDefaultRenderProvider(renderer);
+    steveListProvider = providers.steve;
+    alexListProvider = providers.alex;
 
     ready = true;
   });

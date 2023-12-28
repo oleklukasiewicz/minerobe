@@ -9,9 +9,9 @@
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
-  import SkinRender from "$lib/render/SkinRender/SkinRender.svelte";
   import ItemVariant from "$lib/ItemVariant/ItemVariant.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
+  import DynamicRender from "$lib/render/DynamicRender.svelte";
 
   import {
     FileData,
@@ -50,7 +50,11 @@
     RemoveItemFromWardrobe,
   } from "$src/helpers/apiHelper";
   import { GetAnimationForType } from "$src/helpers/animationHelper";
-  import { ConvertRGBToHSL, GetColorFromFileData } from "$src/helpers/colorHelper";
+  import {
+    ConvertRGBToHSL,
+    GetColorFromFileData,
+  } from "$src/helpers/colorHelper";
+  import { CreateDefaultRenderProvider } from "$src/data/render";
 
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -89,6 +93,7 @@
   let updatedLayer: OutfitLayer = null;
   let isDragging = false;
   let rendererLayers: FileData[] = [];
+  let defaultRenderProvider;
 
   let isPackageInWardrobe = false;
   let updateAnimation: (animation: any) => void = () => {};
@@ -112,6 +117,8 @@
         if (outfitPackage) {
           localPackage.set(outfitPackage);
         }
+        defaultRenderProvider =
+          await CreateDefaultRenderProvider($defaultRenderer);
         loaded = true;
         updateTexture();
 
@@ -196,13 +203,12 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="render" class:drop-hover={isDragging}>
       {#if loaded}
-        <SkinRender
+        <DynamicRender
           texture={modelTexture}
           model={$itemModel}
-          modelName={$itemModelType}
-          onlyRenderSnapshot={false}
-          animation={DefaultAnimation}
-          bind:changeAnimation={updateAnimation}
+          modelName={$localPackage.model}
+          defaultAnimation={DefaultAnimation}
+          bind:addAnimation={updateAnimation}
         />
       {:else}
         <Placeholder />
@@ -241,13 +247,14 @@
           {#each $itemLayers as item (item.id + item.variantId)}
             <div class="item-layer">
               <ItemLayer
-                texture={item}
+                {item}
+                renderProvider={$itemModelType == MODEL_TYPE.STEVE
+                  ? defaultRenderProvider.steve
+                  : defaultRenderProvider.alex}
                 showLabels={false}
                 selectable={!$isItemSet}
                 controls={$isItemSet}
-                model={$itemModel}
                 modelName={$localPackage.model}
-                renderer={$defaultRenderer}
                 bind:label={item.name}
                 readonly={true}
               />
@@ -257,10 +264,11 @@
           <div class="item-variants">
             {#each sortedItemLayers as layer (layer.id + layer.variantId)}
               <ItemVariant
-                texture={layer[$itemModelType]}
-                model={$itemModel}
+                item={layer}
+                renderProvider={$itemModelType == MODEL_TYPE.STEVE
+                  ? defaultRenderProvider.steve
+                  : defaultRenderProvider.alex}
                 modelName={$itemModelType}
-                renderer={$defaultRenderer}
                 label={layer.name}
                 on:click={() => ($selectedVariant = layer)}
                 selected={$selectedVariant == layer}

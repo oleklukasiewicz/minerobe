@@ -129,7 +129,7 @@
               Sets
             </h1>{/if}
           <div style="flex:1;">
-            <div style="float: right; margin-top:4px;" class="search-btn">
+            <div style="float: right;" class="search-btn">
               <Search on:search={filterOutfits} on:input={filterOutfits} />
             </div>
           </div>
@@ -155,7 +155,7 @@
               Outfits
             </h1>{/if}
           <div style="flex:1;">
-            <div style="float: right; margin-top:4px;" class="search-btn">
+            <div style="float: right;" class="search-btn">
               <Search on:search={filterOutfits} on:input={filterOutfits} />
             </div>
           </div>
