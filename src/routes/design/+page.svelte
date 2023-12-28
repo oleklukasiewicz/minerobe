@@ -77,6 +77,7 @@
   } from "$src/helpers/apiHelper";
   import {
     navigateToDesign,
+    navigateToOutfitPackage,
     navigateToWardrobe,
   } from "$src/helpers/navigationHelper";
   import {
@@ -382,6 +383,9 @@
   const handleRenderDragLeave = function (event) {
     isDragging = false;
   };
+  const goToItemPage = function () {
+    navigateToOutfitPackage($itemPackage, $isItemSet?null:$selectedLayer.variantId);
+  };
   const addNewDropVariant = async function (e) {
     const layer = e.detail.texture;
     const newLayer = await ImportLayerFromFile(e.detail.files[0]);
@@ -587,17 +591,18 @@
           >
           {#if $itemPublisher.id == $currentUser?.id}
             {#if $itemPackage.isShared}
-              <a href={"/design/" + $itemPackage.type + "/" + $itemPackage.id}>
+              <div>
                 <button
                   style="min-width:100px;"
-                  id="share-package-action"
+                  id="item-page-action"
+                  on:click={goToItemPage}
                   title={$_("goToItemPage")}
                   class="secondary"
                   >{@html SpotlightIcon}
 
                   {$_("goToItemPage")}
-                </button></a
-              >
+                </button>
+              </div>
               <button
                 id="unshare-package-action"
                 on:click={unSharePackage}

@@ -107,8 +107,9 @@
     grid-template-rows: 1fr 1fr;
     grid-template-columns: 1fr;
 
-    a,
-    #share-package-action {
+    div,
+    #share-package-action,
+    #item-page-action {
       width: 100%;
     }
   }

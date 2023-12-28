@@ -101,6 +101,7 @@
   onMount(async () => {
     let type = $page.params.type;
     let id = $page.params.id;
+    let variantId = $page.params.variantId;
     let outfitPackage;
 
     appState.subscribe(async (state) => {
@@ -119,12 +120,21 @@
         }
         defaultRenderProvider =
           await CreateDefaultRenderProvider($defaultRenderer);
+
         loaded = true;
         updateTexture();
 
         if (!isGuest) {
           isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
-          $selectedVariant = $itemLayers[0];
+          const varaint = outfitPackage.layers.find(
+            (x) => x.variantId == variantId
+          );
+          if (varaint) {
+            selectedVariant.set(varaint);
+          } else {
+            $selectedVariant = $itemLayers[0];
+          }
+          updateTexture();
           //patching
           if (
             !isPackageInWardrobe &&
