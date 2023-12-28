@@ -1,5 +1,8 @@
 .outfit-picker {
   .list {
+    .hidden {
+      display: none;
+    }
     margin-top: 8px;
     .placeholders {
       display: grid;

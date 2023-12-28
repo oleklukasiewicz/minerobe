@@ -31,7 +31,7 @@
   let isSet = false;
 
   onMount(async () => {
-    if (renderProvider == null) return;
+    if (renderProvider == null || item.layers.length == 0) return;
 
     snapshot = new RenderSnapshot();
     snapshot.provider = renderProvider;
@@ -81,7 +81,9 @@
   <div class="data-area">
     <div class="title-row">
       <b class="name">{item.name}</b>
+      {#if item.isShared}
       <div class="share-icon icon-small">{@html CloudIcon}</div>
+      {/if}
     </div>
     <div class="title-row">
       <div style="flex:1;">
@@ -91,7 +93,7 @@
       </div>
       {#if multiple > 0}
         {#each item.layers
-          .slice(0,!isSet?multiple:1)
+          .slice(0, !isSet ? multiple : 1)
           .filter((x) => x[item.model].color != null) as layer (layer.variantId)}
           <span
             class="color-view"

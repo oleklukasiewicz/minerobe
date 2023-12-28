@@ -8,9 +8,10 @@
 
   export let outfits: OutfitPackage[] = [];
   export let categories = ["ALL"];
-  export let modelName = "";
   export let renderer = null;
   export let loading = false;
+
+  let listReady = false;
 
   const dispatch = createEventDispatcher();
   let selectedCategory = "ALL";
@@ -25,7 +26,6 @@
     if (renderer == null) renderer = new THREE.WebGLRenderer({ alpha: true });
     renderer.shadowMap.enabled = true;
     renderer.outputEncoding = 1;
-    loading = false;
   });
 
   const selectCategory = function (category) {
@@ -52,13 +52,14 @@
     {/each}
   </div>
   <div class="list">
-    {#if !loading}
+    <div class:hidden={loading || !listReady}>
       <OutfitPackageSnapshotList
         {renderer}
+        bind:ready={listReady}
         items={SplitOutfitPackages(outfits)}
         on:select={selectOutfit}
       />
-    {/if}
+    </div>
     {#if loading}
       <div class="placeholders">
         {#each Array(64) as _}

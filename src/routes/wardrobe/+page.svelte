@@ -125,22 +125,21 @@
     {#if loaded}
       {#if currentView == "sets"}
         <div style="display: flex;gap:8px;max-width:100vw; flex-wrap:wrap;">
-          <h1 class="inline" style="margin: 0;">Sets</h1>
-          <button
-            id="new-outfit"
-            class="small icon-small"
-            style="min-width: 120px;"
-            on:click={() => addNewSet()}
-          >
-            {@html PlusIcon}
-            <span>New set</span></button
-          >
+          {#if !$isMobileView}<h1 class="inline" style="margin: 0;">
+              Sets
+            </h1>{/if}
           <div style="flex:1;">
             <div style="float: right; margin-top:4px;" class="search-btn">
               <Search on:search={filterOutfits} on:input={filterOutfits} />
             </div>
           </div>
         </div>
+        <button class="fab dynamic" on:click={() => addNewSet()}>
+          <div>
+            {@html PlusIcon}
+            <span>Create set</span>
+          </div></button
+        >
         <div class="sets-list">
           <OutfitPackageSnapshotList
             dense={false}
@@ -152,22 +151,24 @@
       {/if}
       {#if currentView != "sets"}
         <div style="display: flex;gap:8px; flex-wrap:wrap;max-width:100vw">
-          <h1 class="inline" style="margin: 0;">Outfits</h1>
-          <button
-            id="new-set"
-            class="small icon-small"
-            style="min-width: 120px;"
-            on:click={() => addNewOutfit()}
-          >
-            {@html PlusIcon}
-            <span>New outfit</span></button
-          >
+          {#if !$isMobileView}<h1 class="inline" style="margin: 0;">
+              Outfits
+            </h1>{/if}
           <div style="flex:1;">
             <div style="float: right; margin-top:4px;" class="search-btn">
               <Search on:search={filterOutfits} on:input={filterOutfits} />
             </div>
           </div>
         </div>
+        <button
+          class="fab dynamic"
+          on:click={() => addNewOutfit()}
+        >
+        <div>
+          {@html PlusIcon}
+          <span>New outfit</span>
+        </div></button
+        >
         <div class="outfits-list">
           <OutfitPackageSnapshotList
             dense={false}

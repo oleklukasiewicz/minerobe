@@ -10,13 +10,13 @@
   export let items: OutfitPackage[] = [];
   export let renderer = null;
   export let dense = true;
+  export let ready = false;
 
   const dispatch = createEventDispatcher();
-
+  
   let steveListProvider = new RenderProvider();
   let alexListProvider = new RenderProvider();
 
-  let ready = false;
   onMount(async () => {
     if (renderer == null) {
       renderer = new THREE.WebGLRenderer({ alpha: true });
@@ -26,29 +26,29 @@
 
     steveListProvider.renderer = renderer;
     steveListProvider.textureLoader = new THREE.TextureLoader();
-
-    alexListProvider = steveListProvider;
-
     let steveScene = await PrepareSceneForRender($steveModel);
-    let alexScene = await PrepareSceneForRender($alexModel);
-
     steveListProvider.scene = steveScene.scene;
     steveListProvider.camera = steveScene.camera;
 
+    alexListProvider.renderer = renderer;
+    alexListProvider.textureLoader = new THREE.TextureLoader();
+    let alexScene = await PrepareSceneForRender($alexModel);
     alexListProvider.scene = alexScene.scene;
     alexListProvider.camera = alexScene.camera;
+
     ready = true;
   });
 
   const selectOutfit = function (item) {
-   dispatch("select",item);
+    dispatch("select", item);
   };
 </script>
 
 <div class="outfit-package-list" class:dense>
   {#if ready}
-    {#each items as item (item.id+item.layers[0].variantId)}
-      <OutfitPackageSnapshotItem on:click={()=>selectOutfit(item)}
+    {#each items as item (item.id + item.layers[0]?.variantId)}
+      <OutfitPackageSnapshotItem
+        on:click={() => selectOutfit(item)}
         {item}
         {dense}
         renderProvider={item.model == MODEL_TYPE.STEVE
@@ -62,7 +62,7 @@
 <style lang="scss">
   .outfit-package-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 4px;
     max-width: 100%;
     &.dense {

@@ -10,7 +10,7 @@
   margin-top: 4px;
 }
 .outfits {
-  padding: 16px;
+  padding: 8px;
   box-sizing: border-box;
 }
 .wardrobe-view {
@@ -30,18 +30,12 @@
       height: auto !important;
      
     }
-    .outfits-list,
-    .sets-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
-      gap: 8px;
-    }
     .search-btn {
       width: 100%;
       min-width: 90vw;
     }
     .outfits {
-      padding: 8px;
+      padding: 4px;
     }
   }
   .wardrobe-categories {

@@ -52,8 +52,9 @@ export const GetCameraConfigForType = function (type: string): CameraConfig {
       };
       break;
     case OUTFIT_TYPE.SHOES:
-      cameraOptions.lookAt = new THREE.Vector3(0, -1, 0);
-      izometricvalue = 0.9;
+      cameraOptions.lookAt = new THREE.Vector3(0, -0.8, 0);
+      izometricvalue = 4;
+      cameraOptions.fov=2
       cameraOptions.position = {
         x: -1 * izometricvalue,
         y: izometricvalue,
@@ -72,7 +73,7 @@ export const GetCameraConfigForType = function (type: string): CameraConfig {
       break;
     case OUTFIT_TYPE.OUTFIT_SET:
       cameraOptions.position = { x: -0.7, y: 0.3, z: -0.7 };
-      cameraOptions.lookAt = new THREE.Vector3(0, 0, 0);
+      cameraOptions.lookAt = new THREE.Vector3(0, 0.05, 0);
       cameraOptions.fov = 0.9;
       cameraOptions.lookAtEnabled = true;
       break;

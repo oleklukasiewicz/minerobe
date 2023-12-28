@@ -136,6 +136,7 @@
         loaded = false;
         return;
       }
+      if ($wardrobe.studio == null) navigateToWardrobe();
       if ($wardrobe.studio.type == PACKAGE_TYPE.OUTFIT_SET_LINK) {
         $itemPackage = await FetchOutfitSet($wardrobe.studio.id);
       } else {

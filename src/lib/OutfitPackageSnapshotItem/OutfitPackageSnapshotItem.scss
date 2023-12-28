@@ -19,6 +19,9 @@
     transition: var(--time);
     background-color: var(--color-theme-D1);
     cursor: pointer;
+    & > .data-area {
+      padding-right: 5px;
+    }
   }
   & > .render-area {
     aspect-ratio: 1/1;
@@ -42,6 +45,7 @@
     padding: 8px;
     box-sizing: border-box;
     & .name {
+      height: 28px;
       font-family: minecraft;
       flex: 1;
       margin-right: 8px;
