@@ -21,6 +21,7 @@ export let CreateQueryDataFromPackage = async (pack: OutfitPackage) => {
     qd.isShared = pack.isShared;
     qd.variantId = "none";
     qd.model = pack.model;
+    qd.publisherId = pack.publisher.id;
     return [qd];
   }
   if (pack.type == PACKAGE_TYPE.OUTFIT) {
@@ -37,6 +38,7 @@ export let CreateQueryDataFromPackage = async (pack: OutfitPackage) => {
     qd.isShared = pack.isShared;
     qd.model = pack.model;
     qd.variantId = "none";
+    qd.publisherId = pack.publisher.id;
     qds.push(qd);
     for (const l of pack.layers) {
       const qdl = new OutfitPackageQueryData();
@@ -52,6 +54,8 @@ export let CreateQueryDataFromPackage = async (pack: OutfitPackage) => {
       qdl.variantId = l.variantId;
       qdl.isShared = pack.isShared;
       qdl.model = pack.model;
+      qdl.publisherId = pack.publisher.id;
+      
       qds.push(qdl);
     }
     return qds;

@@ -185,4 +185,5 @@ export class OutfitPackageQueryData {
   name: string;
   isShared: boolean;
   model: string;
+  publisherId : string;
 }
