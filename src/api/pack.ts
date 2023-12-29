@@ -11,6 +11,7 @@ import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 import type { DocumentData, Query } from "firebase/firestore";
 import { get } from "svelte/store";
 import { FetchSocial } from "./social";
+import { UploadQueryData } from "./query";
 
 const DATA_PATH = "itemdata";
 const SNAPSHOT_PATH = "snapshot";
@@ -40,6 +41,7 @@ export const UploadPackage = async function (
   delete parsed.social;
   await UpdateDocument(path, DATA_PATH, parsed);
   await UploadPackageSnapshot(path, Object.assign({}, pack), snapshotParser);
+  await UploadQueryData(pack);
 };
 export const FetchPackage = async function (path: string, parser = (x) => x) {
   let pack = await _FetchPackage(path);

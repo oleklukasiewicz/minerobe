@@ -55,10 +55,10 @@ export class OutfitLayerLink {
   id: string;
   type: string;
   variantId: string;
-  constructor(id: string, variantId: string) {
+  constructor(id: string, variantId: string = null, type: string = LAYER_TYPE.REMOTE) {
     this.id = id;
     this.variantId = variantId;
-    this.type = LAYER_TYPE.REMOTE;
+    this.type = type;
   }
 }
 export class OutfitPackageLink {
@@ -157,17 +157,31 @@ export class PackageSocialData {
 export class LandingPageData {
   createdAt: Date;
   banner: string;
-  featured: OutfitPackage[];
-  mostLiked: OutfitPackage[];
+  featured: OutfitLayerLink[];
+  mostLiked: OutfitLayerLink[];
   constructor(
     createdAt: Date,
     banner: string,
-    featured: OutfitPackage[],
-    mostLiked: OutfitPackage[]
+    featured: OutfitLayerLink[],
+    mostLiked: OutfitLayerLink[]
   ) {
     this.createdAt = createdAt;
     this.banner = banner;
     this.featured = featured;
     this.mostLiked = mostLiked;
   }
+}
+export class OutfitPackageQueryData {
+  id: string;
+  variantId: string;
+  color: string;
+  normalizedColor: string;
+  description: string;
+  type: string;
+  outfitType: string;
+  variantCount: number;
+  likes: number;
+  isFeatured: boolean;
+  name: string;
+  isShared: boolean;
 }

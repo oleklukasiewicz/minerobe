@@ -13,6 +13,8 @@ import {
   type WhereFilterOp,
   Query,
   type DocumentData,
+  orderBy,
+  limitToLast,
 } from "firebase/firestore";
 import {
   GoogleAuthProvider,
@@ -110,8 +112,7 @@ export const SetDocument = async function (
   if (cUser) {
     const dataRef = doc(db, path, documentName);
     const dataJson = JSON.parse(JSON.stringify(data));
-    await setDoc(dataRef, dataJson);
-    return data;
+    return await setDoc(dataRef, dataJson);
   }
 };
 export const UpdateDocument = async function (
@@ -122,8 +123,7 @@ export const UpdateDocument = async function (
   if (cUser) {
     const dataRef = doc(db, path, documentName);
     const dataJson = JSON.parse(JSON.stringify(data));
-    await setDoc(dataRef, dataJson, { merge: true });
-    return data;
+    return await setDoc(dataRef, dataJson, { merge: true });
   }
 };
 export const DeleteDocument = async function (
@@ -148,8 +148,7 @@ export const UpdateRawDocument = async function (
 ): Promise<any> {
   if (cUser) {
     const dataRef = doc(db, path, documentName);
-    await setDoc(dataRef, data, { merge: true });
-    return data;
+    return await setDoc(dataRef, data, { merge: true });
   }
 };
 export const DeleteCollection = async function (path: string) {
@@ -183,37 +182,65 @@ export const BuildQuery = async function (
   localPath: string,
   docName: string,
   docIds: string[],
-  clauses: QueryWhere[]
+  clauses: QueryWhere[],
+  orderByClauses: QueryOrderBy[] = [],
+  limit: number = 0
 ) {
-  if (cUser) {
-    const queries: Query<DocumentData>[] = [];
+  const queries: Query<DocumentData>[] = [];
 
-    docIds.forEach(async (id) => {
-      const subCollectionRef = collection(db, `${path}/${id}/${localPath}`);
-      const subCollectionQuery = query(
-        subCollectionRef,
-        where(documentId(), "==", docName),
-        ...clauses.map((clause) =>
-          where(clause.field, clause.operator as WhereFilterOp, clause.value)
-        )
-      );
-      queries.push(subCollectionQuery);
-    });
-    return queries;
-  }
-  return null;
+  docIds.forEach(async (id) => {
+    const subCollectionRef = collection(db, `${path}/${id}/${localPath}`);
+    const subCollectionQuery = query(
+      subCollectionRef,
+      where(documentId(), "==", docName),
+      ...clauses.map((clause) =>
+        where(clause.field, clause.operator as WhereFilterOp, clause.value)
+      ),
+      ...orderByClauses.map((clause) =>
+        orderBy(clause.field, clause.direction == "desc" ? "desc" : "asc")
+      ),
+      ...(limit > 0 ? [limitToLast(limit)] : [])
+    );
+    queries.push(subCollectionQuery);
+  });
+  return queries;
+};
+export const BuildCollectionQuery = async function (
+  path: string,
+  clauses: QueryWhere[] = [],
+  orderByClauses: QueryOrderBy[] = [],
+  limit: number = 0
+) {
+  const subCollectionRef = collection(db, path);
+  const subCollectionQuery = query(
+    subCollectionRef,
+    ...clauses.map((clause) =>
+      where(clause.field, clause.operator as WhereFilterOp, clause.value)
+    ),
+    ...orderByClauses.map((clause) =>
+      orderBy(clause.field, clause.direction == "desc" ? "desc" : "asc")
+    ),
+    ...(limit > 0 ? [limitToLast(limit)] : [])
+  );
+  return subCollectionQuery;
 };
 export const FetchDocsFromQuery = async function (queries: Query[]) {
-  if (cUser) {
-    const docs = await Promise.all(
-      queries.map(async (query) => {
-        const dataSnap = await getDocs(query);
-        return dataSnap.docs.map((doc) => doc.data());
-      })
-    );
-    return docs;
-  }
-  return null;
+  const docs = await Promise.all(
+    queries.map(async (query) => {
+      const dataSnap = await getDocs(query);
+      return dataSnap.docs.map((doc) => doc.data());
+    })
+  );
+  return docs;
+};
+export const FetchDocsNamesFromQuery = async function (queries: Query[]) {
+  const docs = await Promise.all(
+    queries.map(async (query) => {
+      const dataSnap = await getDocs(query);
+      return dataSnap.docs.map((doc) => doc.id);
+    })
+  );
+  return docs;
 };
 export class QueryWhere {
   field: string;
@@ -223,5 +250,13 @@ export class QueryWhere {
     this.field = field;
     this.operator = operator;
     this.value = value;
+  }
+}
+export class QueryOrderBy {
+  field: string;
+  direction: string;
+  constructor(field: string, direction: string) {
+    this.field = field;
+    this.direction = direction;
   }
 }
