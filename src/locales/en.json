@@ -43,5 +43,6 @@
   },
   "cancel": "Cancel",
   "unsharepackage": "unshare",
-  "description": "Description"
+  "description": "Description",
+  "shareinfo": "Social info"
 }

@@ -154,3 +154,20 @@ export class PackageSocialData {
     this.isFeatured = isFeatured;
   }
 }
+export class LandingPageData {
+  createdAt: Date;
+  banner: string;
+  featured: OutfitPackage[];
+  mostLiked: OutfitPackage[];
+  constructor(
+    createdAt: Date,
+    banner: string,
+    featured: OutfitPackage[],
+    mostLiked: OutfitPackage[]
+  ) {
+    this.createdAt = createdAt;
+    this.banner = banner;
+    this.featured = featured;
+    this.mostLiked = mostLiked;
+  }
+}

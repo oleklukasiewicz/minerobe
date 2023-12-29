@@ -168,6 +168,16 @@ export const GetCollection = async function (path: string) {
     return dataSnap.docs.map((doc) => doc.data());
   }
 };
+export const SetDocumentAnonymous = async function (
+  path: string,
+  documentName: string,
+  data: any
+) {
+  const dataRef = doc(db, path, documentName);
+  const dataJson = JSON.parse(JSON.stringify(data));
+  await setDoc(dataRef, dataJson);
+  return data;
+};
 export const BuildQuery = async function (
   path: string,
   localPath: string,
@@ -204,7 +214,7 @@ export const FetchDocsFromQuery = async function (queries: Query[]) {
     return docs;
   }
   return null;
-}
+};
 export class QueryWhere {
   field: string;
   operator: string;

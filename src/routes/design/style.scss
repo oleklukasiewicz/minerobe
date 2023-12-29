@@ -77,7 +77,7 @@
     }
   }
 }
-.outfit-picker-dialog {
+.outfit-picker-dialog,.social-dialog {
   margin: 16px;
   div {
     display: flex;
@@ -103,13 +103,13 @@
     }
   }
   .item-actions {
-    display: grid;
+    display: grid !important;
     grid-template-rows: 1fr 1fr;
     grid-template-columns: 1fr;
 
     div,
     #share-package-action,
-    #item-page-action {
+    #item-page-action,#shared-info-action {
       width: 100%;
     }
   }

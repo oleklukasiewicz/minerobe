@@ -10,8 +10,8 @@ import {
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 import type { DocumentData, Query } from "firebase/firestore";
 import { get } from "svelte/store";
+import { FetchSocial } from "./social";
 
-const SOCIAL_PATH = "social";
 const DATA_PATH = "itemdata";
 const SNAPSHOT_PATH = "snapshot";
 export const _FetchPackage = async function (path: string, onlyData = false) {
@@ -23,12 +23,7 @@ export const _FetchPackage = async function (path: string, onlyData = false) {
     return null;
 
   if (onlyData) return pack;
-  pack.social = await GetDocument(path, SOCIAL_PATH);
-
-  if (pack.social == null) {
-    pack.social = new PackageSocialData();
-    await UpdateDocument(path, SOCIAL_PATH, pack.social);
-  }
+  pack.social = await FetchSocial(path);
   return pack;
 };
 

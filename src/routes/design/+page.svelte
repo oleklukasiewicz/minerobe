@@ -48,6 +48,7 @@
   import CloseIcon from "$icons/close.svg?raw";
   import TrashIcon from "$icons/trash.svg?raw";
   import PlusIcon from "$icons/plus.svg?raw";
+  import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
 
   import DefaultAnimation from "$animation/default";
 
@@ -129,6 +130,7 @@
 
   let isOutfitPickerOpen = false;
   let isDeleteDialogOpen = false;
+  let isShareDialogOpen = false;
 
   let defaultProvider = null;
 
@@ -595,36 +597,22 @@
           >
           {#if $itemPublisher.id == $currentUser?.id}
             {#if $itemPackage.isShared}
-              <div>
-                <button
-                  style="min-width:100px;"
-                  id="item-page-action"
-                  on:click={goToItemPage}
-                  title={$_("goToItemPage")}
-                  class="secondary"
-                  >{@html SpotlightIcon}
-
-                  {$_("goToItemPage")}
-                </button>
-              </div>
               <button
-                id="unshare-package-action"
-                on:click={unSharePackage}
-                class:disabled={!loaded}
-                title={$_("unsharepackage")}
+                on:click={() => (isShareDialogOpen = true)}
+                id="shared-info-action"
                 class="secondary"
                 class:icon={!$isMobileView}
-                >{@html CloseIcon}
-                {#if $isMobileView}
-                  {$_("unsharepackage")}{/if}</button
               >
+                {@html MoreHorizontalIcon}{#if $isMobileView}
+                  {$_("shareinfo")}{/if}
+              </button>
             {:else}
               <button
                 id="share-package-action"
                 on:click={sharePackage}
                 class:disabled={!loaded}
                 title={$_("sharePackage")}
-                class="icon tertiary">{@html CloudIcon}</button
+                class="icon secondary">{@html CloudIcon}</button
               >
             {/if}
           {/if}
@@ -635,7 +623,7 @@
                 on:click={addToWardrobe}
                 title="Add to wardrobe"
                 class:disabled={!loaded}
-                class="icon tertiary">{@html HearthIcon}</button
+                class="icon secondary">{@html HearthIcon}</button
               >
             {:else}
               <button
@@ -703,6 +691,47 @@
         </div>
       </div></Dialog
     >
+    <Dialog bind:open={isShareDialogOpen}>
+      <div class="social-dialog">
+        <div>
+          <h1 style="flex:1;margin-top:0px;margin-bottom:0;">Social info</h1>
+          <button
+            style="margin: 0px"
+            class="icon tertiary"
+            on:click={() => {
+              isShareDialogOpen = false;
+            }}
+          >
+            {@html CloseIcon}
+          </button>
+        </div>
+       <div style="font-family: minecraft;margin:8px;" class="icon-small">
+        {@html HearthIcon}<div style="margin-top:2px;margin-left:4px;">{$itemPackage.social.likes}</div>
+       </div>
+        <div style="display:flex;gap:8px">
+          <button
+            style="flex:1;"
+            id="item-page-action"
+            on:click={goToItemPage}
+            title={$_("goToItemPage")}
+            class="secondary"
+            >{@html SpotlightIcon}
+
+            {$_("goToItemPage")}
+          </button>
+          <button
+            style="flex:1;"
+            id="unshare-package-action"
+            on:click={unSharePackage}
+            class:disabled={!loaded}
+            title={$_("unsharepackage")}
+            class="secondary"
+            >{@html CloseIcon}
+            {$_("unsharepackage")}</button
+          >
+        </div>
+      </div>
+    </Dialog>
   {:else}
     <div class="item-view-placeholder">
       <!-- svelte-ignore missing-declaration -->
