@@ -263,6 +263,7 @@
     layerIndex: number
   ) {
     const anims = GetAnimationForPackageChange(pack, changeType, layerIndex);
+    if (anims.filter((x) => x).length == 1) return;
     anims.forEach((anim) => updateAnimation(anim));
   };
 
@@ -384,7 +385,10 @@
     isDragging = false;
   };
   const goToItemPage = function () {
-    navigateToOutfitPackage($itemPackage, $isItemSet?null:$selectedLayer.variantId);
+    navigateToOutfitPackage(
+      $itemPackage,
+      $isItemSet ? null : $selectedLayer.variantId
+    );
   };
   const addNewDropVariant = async function (e) {
     const layer = e.detail.texture;
@@ -495,7 +499,7 @@
                     id="import-package-action"
                     title={$_("importOutfit")}
                     class:disabled={!loaded}
-                    on:click={() => (isOutfitPickerOpen = true)}
+                    on:click={openOutfitPicker}
                     class="secondary"
                     >{@html AddIcon} {$_("importOutfit")}</button
                   >
@@ -660,7 +664,7 @@
             {@html CloseIcon}
           </button>
         </div>
-        {#if loaded && isOutfitPickerOpen}
+        {#if isOutfitPickerOpen}
           <OutfitPicker
             bind:loading={isPickerLoading}
             renderer={$defaultRenderer}

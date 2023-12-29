@@ -197,9 +197,9 @@ button.small{
     padding: 3px 8px 2px;
 }
 button.icon.small{
-    width: 36px;
-    height: 36px;
-    padding: 3px 6px;
+    width: 32px;
+    height: 32px;
+    padding: 3px 5px;
 }
 button.secondary{
     background-color: transparent;
