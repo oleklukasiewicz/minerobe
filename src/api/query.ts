@@ -19,6 +19,8 @@ export let CreateQueryDataFromPackage = async (pack: OutfitPackage) => {
     qd.isFeatured = pack.social.isFeatured;
     qd.outfitType = pack.outfitType;
     qd.isShared = pack.isShared;
+    qd.variantId = "none";
+    qd.model = pack.model;
     return [qd];
   }
   if (pack.type == PACKAGE_TYPE.OUTFIT) {
@@ -33,6 +35,8 @@ export let CreateQueryDataFromPackage = async (pack: OutfitPackage) => {
     qd.outfitType = pack.outfitType;
     qd.variantCount = pack.layers.length;
     qd.isShared = pack.isShared;
+    qd.model = pack.model;
+    qd.variantId = "none";
     qds.push(qd);
     for (const l of pack.layers) {
       const qdl = new OutfitPackageQueryData();
@@ -47,6 +51,7 @@ export let CreateQueryDataFromPackage = async (pack: OutfitPackage) => {
       qdl.normalizedColor = FindStringInColors(l.steve.color);
       qdl.variantId = l.variantId;
       qdl.isShared = pack.isShared;
+      qdl.model = pack.model;
       qds.push(qdl);
     }
     return qds;
@@ -58,7 +63,7 @@ export const UploadQueryData = async (pack: OutfitPackage) => {
   for (const qd of qds) {
     await SetDocument(
       QUERY_PATH,
-      prefix + pack.id + (qd.variantId ? "-" + qd.variantId : ""),
+      prefix + pack.id + (qd.variantId!="none" ? "-" + qd.variantId : ""),
       qd
     );
   }

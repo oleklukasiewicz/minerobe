@@ -157,13 +157,13 @@ export class PackageSocialData {
 export class LandingPageData {
   createdAt: Date;
   banner: string;
-  featured: OutfitLayerLink[];
-  mostLiked: OutfitLayerLink[];
+  featured: OutfitPackageLink[];
+  mostLiked: OutfitPackageLink[];
   constructor(
     createdAt: Date,
     banner: string,
-    featured: OutfitLayerLink[],
-    mostLiked: OutfitLayerLink[]
+    featured: OutfitPackageLink[],
+    mostLiked: OutfitPackageLink[]
   ) {
     this.createdAt = createdAt;
     this.banner = banner;
@@ -184,4 +184,5 @@ export class OutfitPackageQueryData {
   isFeatured: boolean;
   name: string;
   isShared: boolean;
+  model: string;
 }

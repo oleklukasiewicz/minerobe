@@ -1,13 +1,11 @@
 import {
   LandingPageData,
   OutfitLayerLink,
-  OutfitPackageQueryData,
+  OutfitPackageLink,
 } from "$src/data/common";
 import {
   BuildCollectionQuery,
-  BuildQuery,
   FetchDocsFromQuery,
-  FetchDocsNamesFromQuery,
   QueryOrderBy,
   QueryWhere,
   SetDocumentAnonymous,
@@ -26,7 +24,10 @@ export const GET = async (event) => {
   }
   const q = await BuildCollectionQuery(
     "query",
-    [new QueryWhere("isShared", "==", true)],
+    [
+      new QueryWhere("isShared", "==", true),
+      new QueryWhere("variantId", "==", "none"),
+    ],
     [new QueryOrderBy("likes", "desc")],
     100
   );
@@ -35,7 +36,7 @@ export const GET = async (event) => {
     new Date(),
     "banner",
     [],
-    docs.map((d) => new OutfitLayerLink(d.id,d.variantId,d.type))
+    docs.map((d) => new OutfitPackageLink(d.id,d.model, d.type))
   );
 
   await SetDocumentAnonymous("public", "landing", landingPage);
