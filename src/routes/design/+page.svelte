@@ -32,11 +32,11 @@
     alexModel,
     steveModel,
     currentUser,
-    appState,
     baseTexture,
     defaultRenderer,
     wardrobe,
     isMobileView,
+    isReadyForData,
   } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
@@ -137,13 +137,16 @@
   let updateAnimation = function (anim) {};
 
   onMount(async () => {
-    appState.subscribe(async (state) => {
-      if (loaded || state != APP_STATE.READY) {
+    isReadyForData.subscribe(async (readyness) => {
+      if (loaded || !readyness) {
         loaded = false;
         return;
       }
       defaultProvider = await CreateDefaultRenderProvider($defaultRenderer);
-      if ($wardrobe.studio == null) navigateToWardrobe();
+      if ($wardrobe.studio == null || readyness == true) {
+        navigateToWardrobe();
+        return;
+      }
       if ($wardrobe.studio.type == PACKAGE_TYPE.OUTFIT_SET_LINK) {
         $itemPackage = await FetchOutfitSet($wardrobe.studio.id);
       } else {
@@ -705,9 +708,12 @@
             {@html CloseIcon}
           </button>
         </div>
-       <div style="font-family: minecraft;margin:8px;" class="icon-small">
-        {@html HearthIcon}<div style="margin-top:2px;margin-left:4px;">{$itemPackage.social.likes}</div>
-       </div>
+        <div style="font-family: minecraft;margin:8px;" class="icon-small">
+          {@html HearthIcon}
+          <div style="margin-top:2px;margin-left:4px;">
+            {$itemPackage.social.likes}
+          </div>
+        </div>
         <div style="display:flex;gap:8px">
           <button
             style="flex:1;"

@@ -1,14 +1,13 @@
 <script lang="ts">
   import {
-    appState,
     currentUser,
     wardrobe,
     defaultRenderer,
     isMobileView,
+    isReadyForData,
   } from "$src/data/cache";
   import {
     navigateToDesign,
-    navigateToOutfitPackage,
   } from "$src/helpers/navigationHelper";
   import { onMount } from "svelte";
   import PlusIcon from "$icons/plus.svg?raw";
@@ -16,7 +15,7 @@
   import CategoryMenuItem from "$lib/CategoryMenuItem/CategoryMenuItem.svelte";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
-  import { APP_STATE, OUTFIT_TYPE } from "$src/data/consts";
+  import {OUTFIT_TYPE } from "$src/data/consts";
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
   import { CreateOutfitSet } from "$src/api/sets";
   import { CreateOutfit } from "$src/api/outfits";
@@ -30,8 +29,8 @@
   let currentView = "sets";
   let loaded = false;
   onMount(() => {
-    appState.subscribe((x) => {
-      loaded = x == APP_STATE.READY;
+    isReadyForData.subscribe((readyness) => {
+      loaded = readyness != false;
     });
   });
   const addNewSet = async function () {

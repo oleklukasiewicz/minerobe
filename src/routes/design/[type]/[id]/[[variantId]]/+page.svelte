@@ -25,9 +25,9 @@
     steveModel,
     currentUser,
     wardrobe,
-    appState,
     baseTexture,
     defaultRenderer,
+    isReadyForData,
   } from "$data/cache";
   import { APP_STATE, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
 
@@ -106,14 +106,11 @@
     let variantId = $page.params.variantId;
     let outfitPackage;
 
-    appState.subscribe(async (state) => {
-      if (
-        loaded ||
-        (state != APP_STATE.READY && state != APP_STATE.GUEST_READY)
-      ) {
+    isReadyForData.subscribe(async (readyness) => {
+      if (loaded || !readyness) {
         loaded = false;
       }
-      isGuest = state == APP_STATE.GUEST_READY;
+      isGuest = readyness.user == null;
       if (!loaded) {
         outfitPackage =
           type == PACKAGE_TYPE.OUTFIT

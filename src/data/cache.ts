@@ -5,6 +5,7 @@ import {
   type Readable,
   get,
   readonly,
+  derived,
 } from "svelte/store";
 import { APP_STATE, PACKAGE_TYPE } from "$data/consts";
 import type { MinerobeUser } from "./common";
@@ -97,3 +98,21 @@ const setupSubscriptions = function () {
     if (get(appState) == APP_STATE.READY && data) await UploadWardrobe(data);
   });
 };
+
+export const isReadyForData: Readable<any> = derived(
+  appState,
+  ($appState) => {
+    let result: any = false;
+    if ($appState == APP_STATE.READY)
+      result = {
+        wardrobe: get(wardrobe),
+        user: get(currentUser),
+      };
+    if ($appState == APP_STATE.USER_READY)
+      result = {
+        user: get(currentUser),
+      };
+    if ($appState == APP_STATE.GUEST_READY) result = true;
+    return result;
+  }
+);
