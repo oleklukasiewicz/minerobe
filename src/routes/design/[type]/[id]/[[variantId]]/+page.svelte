@@ -257,13 +257,13 @@
         label={$isItemSet ? $_("layers") : $_("variants")}
         placeholder={!loaded}
       />
-      {#if $localPackage?.local?.warnings?.find((x) => x == "missingLayer")}
-        <InfoLabel
-          label={"Missing outfit"}
-          description={"Certain outfits were not loaded successfully."}
-        />
-      {/if}
       {#if loaded}
+        {#if $localPackage?.local?.warnings?.find((x) => x == "missingLayer")}
+          <InfoLabel
+            label={"Missing outfit"}
+            description={"Certain outfits were not loaded successfully."}
+          />
+        {/if}
         {#if $isItemSet}
           {#each $itemLayers as item (item.id + item.variantId)}
             <div class="item-layer">

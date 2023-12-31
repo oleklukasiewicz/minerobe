@@ -202,7 +202,7 @@ button.small{
 button.icon.small{
     width: 32px;
     height: 32px;
-    padding: 3px 5px;
+    padding: 3px 4px;
 }
 button.secondary{
     background-color: transparent;
