@@ -37,7 +37,14 @@ export const ParseOutfitSetToLocal = async function (data: OutfitPackage) {
         : item
     )
   );
+  const remotelayersCount = data.layers.length;
   data.layers = data.layers.filter((item) => item != null);
+  data.local = {};
+  if (data.layers.length != remotelayersCount) {
+    Object.assign(data.local, {
+      warnings: ["missingLayer"],
+    });
+  }
   if (data.publisher.id == get(currentUser)?.id)
     data.publisher = get(currentUser);
   else data.publisher = await GetMinerobeUser(data.publisher.id);

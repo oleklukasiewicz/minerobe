@@ -6,7 +6,10 @@
     defaultRenderer,
     isMobileView,
   } from "$src/data/cache";
-  import { navigateToDesign } from "$src/helpers/navigationHelper";
+  import {
+    navigateToDesign,
+    navigateToOutfitPackage,
+  } from "$src/helpers/navigationHelper";
   import { onMount } from "svelte";
   import PlusIcon from "$icons/plus.svg?raw";
   import CategoryMenu from "$lib/CategoryMenu/CategoryMenu.svelte";
@@ -64,6 +67,12 @@
       });
     }
   };
+  const onItemSelect = function (e) {
+    const item = e.detail.item;
+    const variant = e.detail.layer;
+    navigateToDesign(item);
+  };
+
   $: setOutfitsList(currentView);
   wardrobe.subscribe((x) => {
     setsList = x.sets;
@@ -145,7 +154,7 @@
             dense={false}
             renderer={$defaultRenderer}
             items={setsList}
-            on:select={(e) => navigateToDesign(e.detail)}
+            on:innerselect={onItemSelect}
           />
         </div>
       {/if}
@@ -160,21 +169,18 @@
             </div>
           </div>
         </div>
-        <button
-          class="fab dynamic"
-          on:click={() => addNewOutfit()}
-        >
-        <div>
-          {@html PlusIcon}
-          <span>New outfit</span>
-        </div></button
+        <button class="fab dynamic" on:click={() => addNewOutfit()}>
+          <div>
+            {@html PlusIcon}
+            <span>New outfit</span>
+          </div></button
         >
         <div class="outfits-list">
           <OutfitPackageSnapshotList
             dense={false}
             renderer={$defaultRenderer}
             items={outfitList}
-            on:select={(e) => navigateToDesign(e.detail)}
+            on:innerselect={onItemSelect}
           />
         </div>
       {/if}

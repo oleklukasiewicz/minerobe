@@ -1,5 +1,5 @@
 import { currentUser } from "$src/data/cache";
-import { PackageSocialData, type OutfitPackage } from "$src/data/common";
+import {type OutfitPackage } from "$src/data/common";
 import {
   BuildQuery,
   DeleteCollection,
@@ -39,6 +39,7 @@ export const UploadPackage = async function (
 
   let parsed = await parser(pack, isNew);
   delete parsed.social;
+  delete parsed.local;
   await UpdateDocument(path, DATA_PATH, parsed);
   await UploadPackageSnapshot(path, Object.assign({}, pack), snapshotParser);
   await UploadQueryData(pack);

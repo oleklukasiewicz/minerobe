@@ -86,6 +86,7 @@ export class OutfitPackage {
   isShared: boolean;
   social: PackageSocialData;
   outfitType: string;
+  local:any;
   constructor(
     name: string,
     model: string,

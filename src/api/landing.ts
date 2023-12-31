@@ -24,7 +24,7 @@ export const FetchLandingPage = async () => {
       else mostDownloadedpackages.push(await FetchOutfitSnapshotFromLink(link));
     })
   );
-  obj.mostLiked = mostLikedpackages;
-  obj.mostDownloaded = mostDownloadedpackages;
+  obj.mostLiked = mostLikedpackages.filter((item) => item != null);
+  obj.mostDownloaded = mostDownloadedpackages.filter((item) => item != null);
   return obj;
 };

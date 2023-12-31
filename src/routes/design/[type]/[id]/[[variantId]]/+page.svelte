@@ -12,6 +12,7 @@
   import ItemVariant from "$lib/ItemVariant/ItemVariant.svelte";
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
   import DynamicRender from "$lib/render/DynamicRender.svelte";
+  import InfoLabel from "$lib/InfoLabel/InfoLabel.svelte";
 
   import {
     FileData,
@@ -110,10 +111,7 @@
         loaded ||
         (state != APP_STATE.READY && state != APP_STATE.GUEST_READY)
       ) {
-        if (!isGuest) {
-          loaded = false;
-          return;
-        }
+        loaded = false;
       }
       isGuest = state == APP_STATE.GUEST_READY;
       if (!loaded) {
@@ -259,6 +257,12 @@
         label={$isItemSet ? $_("layers") : $_("variants")}
         placeholder={!loaded}
       />
+      {#if $localPackage?.local?.warnings?.find((x) => x == "missingLayer")}
+        <InfoLabel
+          label={"Missing outfit"}
+          description={"Certain outfits were not loaded successfully."}
+        />
+      {/if}
       {#if loaded}
         {#if $isItemSet}
           {#each $itemLayers as item (item.id + item.variantId)}
