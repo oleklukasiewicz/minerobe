@@ -20,7 +20,8 @@ export const navigateToWardrobe = function () {
   goto(`/wardrobe`);
 };
 export const navigateToOutfitPackage = function (packag: OutfitPackage,variantId?:string) {
-  goto(`/design/${packag.type==OUTFIT_TYPE.OUTFIT_SET? PACKAGE_TYPE.OUTFIT_SET:PACKAGE_TYPE.OUTFIT}/${packag.id}/${variantId?variantId:packag.layers[0].variantId}`);
+  const varaint=variantId?variantId:packag.layers[0].variantId
+  goto(`/design/${packag.type==OUTFIT_TYPE.OUTFIT_SET? PACKAGE_TYPE.OUTFIT_SET:PACKAGE_TYPE.OUTFIT}/${packag.id}/${varaint||""}`);
 }
 export const navigate = function (path: string) {
   goto(path);

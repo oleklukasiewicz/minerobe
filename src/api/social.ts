@@ -37,6 +37,20 @@ export const RemoveLike = async (id: string, type: string) => {
     likes: increment(-1),
   });
 };
+export const AddDownload = async (id: string, type: string) => {
+  const dir =
+    type == PACKAGE_TYPE.OUTFIT
+      ? "outfits" + "/" + id + "/" + "data"
+      : "sets" + "/" + id + "/" + "data";
+  const isExist = await IsDocumentExist(dir, SOCIAL_PATH);
+  if (!isExist) return;
+  const res=await UpdateRawDocument(dir, SOCIAL_PATH, {
+    downloads: increment(1),
+  });
+  await UploadPartialQueryDataRaw(id, type, {
+    downloads: increment(1),
+  });
+}
 export const FetchSocial = async (path: string) => {
   let obj = await GetDocument(path, SOCIAL_PATH);
 

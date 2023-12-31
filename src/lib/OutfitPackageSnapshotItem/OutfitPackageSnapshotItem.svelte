@@ -57,7 +57,7 @@
     </div>
     <div class="title-row">
       <div style="flex:1;">
-        {#if item.publisher.id != $currentUser.id}
+        {#if item.publisher.id != $currentUser?.id}
           <span class="label unique" class:dense>{item.publisher.name}</span>
         {/if}
       </div>

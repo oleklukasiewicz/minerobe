@@ -180,8 +180,8 @@
       {/if}
     {:else}
       <div class="placeholders">
-        {#each new Array(25) as item, index}
-          <Placeholder style="width:200px;height:268px;" />
+        {#each new Array(36) as item, index}
+          <Placeholder style="min-width:175px;height:268px;" />
         {/each}
       </div>
     {/if}

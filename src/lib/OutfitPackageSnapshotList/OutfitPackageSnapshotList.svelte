@@ -3,19 +3,18 @@
   import OutfitPackageSnapshotItem from "$lib/OutfitPackageSnapshotItem/OutfitPackageSnapshotItem.svelte";
   import type { OutfitPackage } from "$src/data/common";
   import { createEventDispatcher, onMount } from "svelte";
-  import {
-    CreateDefaultRenderProvider,
-  } from "$src/data/render";
+  import { CreateDefaultRenderProvider } from "$src/data/render";
   import { MODEL_TYPE } from "$src/data/consts";
 
   export let items: OutfitPackage[] = [];
   export let renderer = null;
   export let dense = true;
   export let ready = false;
+  export let minItemWidth = 175;
 
   const dispatch = createEventDispatcher();
 
-  let steveListProvider =null;
+  let steveListProvider = null;
   let alexListProvider = null;
 
   onMount(async () => {
@@ -37,7 +36,11 @@
   };
 </script>
 
-<div class="outfit-package-list" class:dense>
+<div
+  class="outfit-package-list"
+  class:dense
+  style=" grid-template-columns: repeat(auto-fill, minmax({minItemWidth}px, 1fr));"
+>
   {#if ready}
     {#each items as item (item.id + item.layers[0]?.variantId)}
       <OutfitPackageSnapshotItem

@@ -149,9 +149,11 @@ export class MinerobeUserLink {
 export class PackageSocialData {
   likes: number;
   isFeatured: boolean;
-  constructor(likes: number = 1, isFeatured: boolean = false) {
+  downloads: number;
+  constructor(likes: number = 1, isFeatured: boolean = false, downloads: number = 0) {
     this.likes = likes;
     this.isFeatured = isFeatured;
+    this.downloads = downloads;
   }
 }
 export class LandingPageData {
@@ -159,16 +161,19 @@ export class LandingPageData {
   banner: string;
   featured: OutfitPackageLink[];
   mostLiked: OutfitPackageLink[];
+  mostDownloaded: OutfitPackageLink[];
   constructor(
     createdAt: Date,
     banner: string,
     featured: OutfitPackageLink[],
-    mostLiked: OutfitPackageLink[]
+    mostLiked: OutfitPackageLink[],
+    mostDownloaded: OutfitPackageLink[]
   ) {
     this.createdAt = createdAt;
     this.banner = banner;
     this.featured = featured;
     this.mostLiked = mostLiked;
+    this.mostDownloaded = mostDownloaded;
   }
 }
 export class OutfitPackageQueryData {
@@ -186,4 +191,5 @@ export class OutfitPackageQueryData {
   isShared: boolean;
   model: string;
   publisherId : string;
+  downloads: number;
 }

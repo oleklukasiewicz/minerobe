@@ -88,7 +88,7 @@ export const setup = function () {
     } else {
       if (wardrobeSubscription) wardrobeSubscription();
 
-      appState.set(APP_STATE.LOADING);
+      appState.set(APP_STATE.GUEST_READY);
     }
   });
 };

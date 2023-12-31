@@ -55,6 +55,7 @@
     GetColorFromFileData,
   } from "$src/helpers/colorHelper";
   import { CreateDefaultRenderProvider } from "$src/data/render";
+  import { AddDownload } from "$src/api/social";
 
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -105,11 +106,16 @@
     let outfitPackage;
 
     appState.subscribe(async (state) => {
-      if (loaded || state != APP_STATE.READY) {
-        loaded = false;
-        return;
+      if (
+        loaded ||
+        (state != APP_STATE.READY && state != APP_STATE.GUEST_READY)
+      ) {
+        if (!isGuest) {
+          loaded = false;
+          return;
+        }
       }
-      isGuest = state == APP_STATE.LOADING;
+      isGuest = state == APP_STATE.GUEST_READY;
       if (!loaded) {
         outfitPackage =
           type == PACKAGE_TYPE.OUTFIT
@@ -151,6 +157,7 @@
     await ExportImageLayers(rendererLayers, $itemModelType, $itemName);
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
+    await AddDownload($localPackage.id, $localPackage.type);
   };
 
   //texture

@@ -11,7 +11,7 @@ import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 import type { DocumentData, Query } from "firebase/firestore";
 import { get } from "svelte/store";
 import { FetchSocial } from "./social";
-import { UploadQueryData } from "./query";
+import { DeleteQueryData, UploadQueryData } from "./query";
 
 const DATA_PATH = "itemdata";
 const SNAPSHOT_PATH = "snapshot";
@@ -67,6 +67,7 @@ export const DeletePackage = async function (
 ) {
   if (pack.publisher.id != get(currentUser)?.id) return;
   await DeleteCollection(path);
+  await DeleteQueryData(pack);
 };
 export const FetchPackageSnapshot = async function (
   path: string,

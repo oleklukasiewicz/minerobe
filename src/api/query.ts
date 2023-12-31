@@ -1,6 +1,7 @@
 import { OutfitPackageQueryData, type OutfitPackage } from "$src/data/common";
 import { PACKAGE_TYPE } from "$src/data/consts";
 import {
+  DeleteDocument,
   SetDocument,
   UpdateDocument,
   UpdateRawDocument,
@@ -17,6 +18,7 @@ export let CreateQueryDataFromPackage = async (pack: OutfitPackage) => {
     qd.type = pack.type;
     qd.likes = pack.social.likes;
     qd.isFeatured = pack.social.isFeatured;
+    qd.downloads = pack.social.downloads || 0;
     qd.outfitType = pack.outfitType;
     qd.isShared = pack.isShared;
     qd.variantId = "none";
@@ -33,6 +35,7 @@ export let CreateQueryDataFromPackage = async (pack: OutfitPackage) => {
     qd.type = pack.type;
     qd.likes = pack.social.likes;
     qd.isFeatured = pack.social.isFeatured;
+    qd.downloads = pack.social.downloads || 0;
     qd.outfitType = pack.outfitType;
     qd.variantCount = pack.layers.length;
     qd.isShared = pack.isShared;
@@ -49,6 +52,7 @@ export let CreateQueryDataFromPackage = async (pack: OutfitPackage) => {
       qdl.type = pack.type;
       qdl.likes = pack.social.likes;
       qdl.isFeatured = pack.social.isFeatured;
+      qdl.downloads = pack.social.downloads || 0;
       qdl.outfitType = pack.outfitType;
       qdl.normalizedColor = FindStringInColors(l.steve.color);
       qdl.variantId = l.variantId;
@@ -80,6 +84,16 @@ export const UploadPartialQueryData = async function (
   const prefix = (type == PACKAGE_TYPE.OUTFIT_SET ? "1" : "0") + "-";
   const res = await UpdateDocument(QUERY_PATH, prefix + id, data);
 };
+export const DeleteQueryData = async (pack: OutfitPackage) => {
+  const qds = await CreateQueryDataFromPackage(pack);
+  const prefix = (pack.type == PACKAGE_TYPE.OUTFIT_SET ? "1" : "0") + "-";
+  for (const qd of qds) {
+    await DeleteDocument(
+      QUERY_PATH,
+      prefix + pack.id + (qd.variantId!="none" ? "-" + qd.variantId : "")
+    );
+  }
+}
 export const UploadPartialQueryDataRaw = async function (
   id: string,
   type: string,
