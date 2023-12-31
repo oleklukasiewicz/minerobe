@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { OutfitPackage } from "$src/data/common";
+  import type { OutfitLayer, OutfitPackage } from "$src/data/common";
   import { OUTFIT_TYPE } from "$src/data/consts";
   import {
     RenderFromSnapshot,
@@ -13,32 +13,43 @@
     FindStringInColorsAsHex,
   } from "$src/helpers/colorHelper";
   import OutfitPackageSnapshotRender from "$lib/render/OutfitPackageSnapshotRender.svelte";
-  import { onMount } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
 
   export let item: OutfitPackage = null;
   export let dense = false;
-  export let renderProvider: RenderProvider=null;
+  export let renderProvider: RenderProvider = null;
   export let multiple = 2;
 
+  const dispatch = createEventDispatcher();
   let aboveLimit = 0;
   let snapshot: RenderSnapshot;
+  let currentLayer: OutfitLayer;
   let isSet = false;
 
   onMount(async () => {
     isSet = item.type == OUTFIT_TYPE.OUTFIT_SET;
+    currentLayer = item.layers[0];
   });
   const updateRender = async function (layer) {
+    currentLayer = layer;
     snapshot.texture = layer[item.model].content;
     await RenderFromSnapshot(snapshot);
   };
 
   $: aboveLimit = item.layers.length - multiple;
+
+  const onClick = function () {
+    dispatch("select", {
+      item,
+      layer: currentLayer,
+    });
+  };
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-  on:click
+  on:click={onClick}
   class="outfit-package-item"
   class:outfit-set={item.type == OUTFIT_TYPE.OUTFIT_SET}
   class:outfit={item.type != OUTFIT_TYPE.OUTFIT_SET}

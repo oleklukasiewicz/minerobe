@@ -34,6 +34,10 @@
   const selectOutfit = function (item) {
     dispatch("select", item);
   };
+  const selectRenderedOutfit = function (e) {
+    dispatch("innerselect", e.detail);
+    selectOutfit(e.detail.item);
+  };
 </script>
 
 <div
@@ -44,7 +48,7 @@
   {#if ready}
     {#each items as item (item.id + item.layers[0]?.variantId)}
       <OutfitPackageSnapshotItem
-        on:click={() => selectOutfit(item)}
+        on:select={selectRenderedOutfit}
         {item}
         {dense}
         renderProvider={item.model == MODEL_TYPE.STEVE

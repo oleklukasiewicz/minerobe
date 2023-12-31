@@ -16,8 +16,9 @@
     landingLoaded = true;
   });
   const goToItemPage = (e) => {
-    const item = e.detail;
-    navigateToOutfitPackage(item);
+    const item = e.detail.item;
+    const variant= e.detail.layer;
+    navigateToOutfitPackage(item, variant.variantId);
   };
 </script>
 
@@ -35,7 +36,7 @@
       items={mostLiked}
       renderer={$defaultRenderer}
       dense={false}
-      on:select={goToItemPage}
+      on:innerselect={goToItemPage}
       minItemWidth={175}
     />
     <h2 class="list-title">Most Downloaded</h2>
@@ -44,7 +45,7 @@
       renderer={$defaultRenderer}
       minItemWidth={175}
       dense={false}
-      on:select={goToItemPage}
+      on:innerselect={goToItemPage}
     />
   {:else}
     <br />
