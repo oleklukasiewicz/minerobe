@@ -7,17 +7,19 @@
   import { onMount } from "svelte";
 
   let mostLiked = [];
+  let mostRecent = [];
   let mostDownloaded = [];
   let landingLoaded = false;
   onMount(async () => {
     let landing = await FetchLandingPage();
     mostLiked = landing.mostLiked;
     mostDownloaded = landing.mostDownloaded;
+    mostRecent = landing.mostRecent;
     landingLoaded = true;
   });
   const goToItemPage = (e) => {
     const item = e.detail.item;
-    const variant= e.detail.layer;
+    const variant = e.detail.layer;
     navigateToOutfitPackage(item, variant.variantId);
   };
 </script>
@@ -31,6 +33,14 @@
     </p>
   </div>
   {#if landingLoaded}
+    <h2 class="list-title">Most Recent</h2>
+    <OutfitPackageSnapshotList
+      items={mostRecent}
+      renderer={$defaultRenderer}
+      dense={false}
+      on:innerselect={goToItemPage}
+      minItemWidth={175}
+    />
     <h2 class="list-title">Most Liked</h2>
     <OutfitPackageSnapshotList
       items={mostLiked}
@@ -48,6 +58,13 @@
       on:innerselect={goToItemPage}
     />
   {:else}
+    <br />
+    <Placeholder style="height:48px;margin-bottom:8px;" />
+    <div class="placeholders">
+      {#each Array(10) as _}
+        <Placeholder style="min-width:175px;height:268px;" />
+      {/each}
+    </div>
     <br />
     <Placeholder style="height:48px;margin-bottom:8px;" />
     <div class="placeholders">

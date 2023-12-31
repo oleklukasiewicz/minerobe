@@ -143,7 +143,11 @@
         return;
       }
       defaultProvider = await CreateDefaultRenderProvider($defaultRenderer);
-      if ($wardrobe.studio == null || readyness == true) {
+      if (
+        $wardrobe.studio == null ||
+        readyness == true ||
+        readyness.wardrobe == null
+      ) {
         navigateToWardrobe();
         return;
       }
@@ -413,6 +417,7 @@
   };
   //subscribtions
   itemPackage.subscribe((pack) => {
+    if (pack == null) return;
     isPackageInWardrobe = IsItemInWardrobe(pack, $wardrobe);
     updateTexture();
   });

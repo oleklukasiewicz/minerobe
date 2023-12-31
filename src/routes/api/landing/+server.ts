@@ -46,13 +46,24 @@ export const GET = async (event) => {
   );
   const mostDownloaded = (await FetchDocsFromQuery([q2]))[0] as any[];
 
+  const q3 = await BuildCollectionQuery(
+    "query",
+    [
+      new QueryWhere("isShared", "==", true),
+      new QueryWhere("variantId", "==", "none"),
+    ],
+    [new QueryOrderBy("createdAt", "desc")],
+    100
+  );
+  const mostRecent = (await FetchDocsFromQuery([q3]))[0] as any[];
 
   const landingPage = new LandingPageData(
     new Date(),
     "banner",
     [],
     mostLiked.map((d) => new OutfitPackageLink(d.id,d.model, d.type)),
-    mostDownloaded.map((d) => new OutfitPackageLink(d.id,d.model, d.type))
+    mostDownloaded.map((d) => new OutfitPackageLink(d.id,d.model, d.type)),
+    mostRecent.map((d) => new OutfitPackageLink(d.id,d.model, d.type))
   );
 
   await SetDocumentAnonymous("public", "landing", landingPage);

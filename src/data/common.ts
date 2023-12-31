@@ -87,6 +87,8 @@ export class OutfitPackage {
   social: PackageSocialData;
   outfitType: string;
   local:any;
+  createdAt:Date;
+  modifiedAt:Date;
   constructor(
     name: string,
     model: string,
@@ -109,6 +111,7 @@ export class OutfitPackage {
     this.social = social;
     this.description = description;
     this.outfitType = outfitType;
+    this.createdAt = new Date();
   }
 }
 export class WardrobePackage {
@@ -163,18 +166,21 @@ export class LandingPageData {
   featured: OutfitPackageLink[];
   mostLiked: OutfitPackageLink[];
   mostDownloaded: OutfitPackageLink[];
+  mostRecent: OutfitPackageLink[];
   constructor(
     createdAt: Date,
     banner: string,
     featured: OutfitPackageLink[],
     mostLiked: OutfitPackageLink[],
-    mostDownloaded: OutfitPackageLink[]
+    mostDownloaded: OutfitPackageLink[],
+    mostRecent: OutfitPackageLink[]
   ) {
     this.createdAt = createdAt;
     this.banner = banner;
     this.featured = featured;
     this.mostLiked = mostLiked;
     this.mostDownloaded = mostDownloaded;
+    this.mostRecent = mostRecent;
   }
 }
 export class OutfitPackageQueryData {
@@ -193,4 +199,6 @@ export class OutfitPackageQueryData {
   model: string;
   publisherId : string;
   downloads: number;
+  createdAt: Date;
+  modifiedAt: Date;
 }

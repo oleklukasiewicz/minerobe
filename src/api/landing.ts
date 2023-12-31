@@ -8,6 +8,7 @@ export const FetchLandingPage = async () => {
   const obj = (await GetDocument("public", "landing")) as LandingPageData;
   const mostLikedpackages = [];
   const mostDownloadedpackages = [];
+  const mostrecentpackages = [];
   await Promise.all(
     obj.mostLiked.map(async (o) => {
       const link: OutfitPackageLink = o;
@@ -24,6 +25,15 @@ export const FetchLandingPage = async () => {
       else mostDownloadedpackages.push(await FetchOutfitSnapshotFromLink(link));
     })
   );
+  await Promise.all(
+    obj.mostRecent.map(async (o) => {
+      const link: OutfitPackageLink = o;
+      if (link.type == PACKAGE_TYPE.OUTFIT_SET)
+      mostrecentpackages.push(await FetchOutfitSetSnapshotFromLink(link));
+      else mostrecentpackages.push(await FetchOutfitSnapshotFromLink(link));
+    })
+  );
+  obj.mostRecent = mostrecentpackages.filter((item) => item != null);
   obj.mostLiked = mostLikedpackages.filter((item) => item != null);
   obj.mostDownloaded = mostDownloadedpackages.filter((item) => item != null);
   return obj;

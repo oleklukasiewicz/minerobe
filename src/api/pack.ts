@@ -1,5 +1,5 @@
 import { currentUser } from "$src/data/cache";
-import {type OutfitPackage } from "$src/data/common";
+import { type OutfitPackage } from "$src/data/common";
 import {
   BuildQuery,
   DeleteCollection,
@@ -36,7 +36,8 @@ export const UploadPackage = async function (
   snapshotParser = (x) => x
 ) {
   if (pack.publisher.id != get(currentUser)?.id || pack.id == null) return;
-
+  pack.modifiedAt = new Date();
+  if (pack.createdAt == null) pack.createdAt = new Date();
   let parsed = await parser(pack, isNew);
   delete parsed.social;
   delete parsed.local;
@@ -122,6 +123,6 @@ export const FetchPackagesByFilter = async function (
   filter,
   parser = (x) => x
 ) {
-  let query = await BuildQuery(path,localPath, DATA_PATH, packsIds, filter);
-  return await FetchPackageFromQuery(query,parser);
+  let query = await BuildQuery(path, localPath, DATA_PATH, packsIds, filter);
+  return await FetchPackageFromQuery(query, parser);
 };
