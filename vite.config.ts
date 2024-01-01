@@ -11,7 +11,5 @@ export default defineConfig({
     "process.env": import.meta.env,
   },
   server: {
-    /*here*/
-    hmr: { overlay: false, },
   },
 });

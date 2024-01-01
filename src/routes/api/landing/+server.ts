@@ -1,6 +1,5 @@
 import {
   LandingPageData,
-  OutfitLayerLink,
   OutfitPackageLink,
 } from "$src/data/common";
 import {
@@ -34,7 +33,7 @@ export const GET = async (event) => {
     100
   );
   const mostLiked = (await FetchDocsFromQuery([q]))[0] as any[];
-    //most downlaoded
+  //most downlaoded
   const q2 = await BuildCollectionQuery(
     "query",
     [
@@ -61,9 +60,10 @@ export const GET = async (event) => {
     new Date(),
     "banner",
     [],
-    mostLiked.map((d) => new OutfitPackageLink(d.id,d.model, d.type)),
-    mostDownloaded.map((d) => new OutfitPackageLink(d.id,d.model, d.type)),
-    mostRecent.map((d) => new OutfitPackageLink(d.id,d.model, d.type))
+    mostLiked.map((d) => new OutfitPackageLink(d.id, d.model, d.type)) || [],
+    mostDownloaded.map((d) => new OutfitPackageLink(d.id, d.model, d.type)) ||
+      [],
+    mostRecent.map((d) => new OutfitPackageLink(d.id, d.model, d.type)) || []
   );
 
   await SetDocumentAnonymous("public", "landing", landingPage);
