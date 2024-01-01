@@ -313,6 +313,7 @@
   const unSharePackage = async function () {
     await UnshareItem($itemPackage);
     $itemPackage.isShared = false;
+    isShareDialogOpen = false;
   };
   const addToWardrobe = async function () {
     AddItemToWardrobe($itemPackage);
@@ -714,10 +715,25 @@
           </button>
         </div>
         <div style="font-family: minecraft;margin:8px;" class="icon-small">
-          {@html HearthIcon}
-          <div style="margin-top:2px;margin-left:4px;">
-            {$itemPackage.social.likes}
+          <div>
+            {@html HearthIcon}
+            <div style="margin-top:2px;margin-left:4px;">
+              {$itemPackage.social.likes}
+            </div>
           </div>
+          &nbsp;&nbsp;&nbsp;
+          <div>
+            {@html DownloadIcon}
+            <div style="margin-top:2px;margin-left:4px;">
+              {$itemPackage.social.downloads || 0}
+            </div>
+          </div>
+          &nbsp;&nbsp;&nbsp;
+          {#if $itemPackage.isShared}
+              <span class="label rare" style="margin-left:8px"
+                >{$_("shared")}</span
+              >
+            {/if}
         </div>
         <div style="display:flex;gap:8px">
           <button
