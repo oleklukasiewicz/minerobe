@@ -12,9 +12,9 @@
   let landingLoaded = false;
   onMount(async () => {
     let landing = await FetchLandingPage();
-    mostLiked = landing.mostLiked;
-    mostDownloaded = landing.mostDownloaded;
-    mostRecent = landing.mostRecent;
+    mostLiked = landing.mostLiked.slice(0, 10);
+    mostDownloaded = landing.mostDownloaded.slice(0, 10);
+    mostRecent = landing.mostRecent.slice(0, 10);
     landingLoaded = true;
   });
   const goToItemPage = (e) => {
