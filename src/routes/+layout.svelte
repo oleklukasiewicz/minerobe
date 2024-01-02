@@ -98,7 +98,7 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="nav-filler" on:click={() => (isMenuOpened = false)} />
   </div>
-  <div id="content">
+  <div id="view">
     <slot />
   </div>
 {/if}

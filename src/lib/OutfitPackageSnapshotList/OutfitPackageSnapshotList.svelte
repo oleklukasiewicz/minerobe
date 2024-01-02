@@ -10,7 +10,7 @@
   export let renderer = null;
   export let dense = true;
   export let ready = false;
-  export let minItemWidth = 175;
+  export let minItemWidth = 165;
 
   const dispatch = createEventDispatcher();
 

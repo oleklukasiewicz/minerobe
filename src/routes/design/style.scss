@@ -4,6 +4,8 @@
   .render-data {
     flex: 1;
     display: block;
+    min-height: 100px;
+    min-width: 100px;
     max-height: calc(100vh - 120px);
     position: sticky;
     top: 90px;

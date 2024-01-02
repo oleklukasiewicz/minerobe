@@ -35,23 +35,7 @@ export const wardrobe: Writable<WardrobePackage> = writable({
   id: null,
   outfits: [],
   sets: [],
-  studio: {
-    id: "default",
-    model: "alex",
-    type: PACKAGE_TYPE.OUTFIT,
-    isShared: false,
-    name: "alex",
-    layers: [],
-    publisher: {
-      id: "",
-      name: "",
-      avatar: "",
-    },
-    social: {
-      likes: 0,
-      isFeatured: false,
-    },
-  },
+  studio: null,
 });
 export const baseTexture: Readable<string> = readable(get(planksTexture));
 

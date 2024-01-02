@@ -39,7 +39,6 @@
       renderer={$defaultRenderer}
       dense={false}
       on:innerselect={goToItemPage}
-      minItemWidth={175}
     />
     <h2 class="list-title">Most Liked</h2>
     <OutfitPackageSnapshotList
@@ -47,13 +46,11 @@
       renderer={$defaultRenderer}
       dense={false}
       on:innerselect={goToItemPage}
-      minItemWidth={175}
     />
     <h2 class="list-title">Most Downloaded</h2>
     <OutfitPackageSnapshotList
       items={mostDownloaded}
       renderer={$defaultRenderer}
-      minItemWidth={175}
       dense={false}
       on:innerselect={goToItemPage}
     />

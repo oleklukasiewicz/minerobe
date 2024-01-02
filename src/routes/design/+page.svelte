@@ -143,29 +143,27 @@
         return;
       }
       defaultProvider = await CreateDefaultRenderProvider($defaultRenderer);
-      if (
-        $wardrobe.studio == null ||
-        readyness == true ||
-        readyness.wardrobe == null
-      ) {
+      if (readyness.wardrobe && $wardrobe?.studio == null) {
         navigateToWardrobe();
         return;
       }
-      if ($wardrobe.studio.type == PACKAGE_TYPE.OUTFIT_SET_LINK) {
-        $itemPackage = await FetchOutfitSet($wardrobe.studio.id);
-      } else {
-        $itemPackage = await FetchOutfit($wardrobe.studio.id);
+      if ($wardrobe?.studio != null) {
+        if ($wardrobe.studio.type == PACKAGE_TYPE.OUTFIT_SET_LINK) {
+          $itemPackage = await FetchOutfitSet($wardrobe.studio.id);
+        } else {
+          $itemPackage = await FetchOutfit($wardrobe.studio.id);
+        }
+        loaded = true;
+        const categoryCounts = GetCategoriesFromList($wardrobe.outfits);
+        pickerCategories = Object.keys(categoryCounts).filter(
+          (x) => categoryCounts[x] > 0
+        );
+        isPackageInWardrobe = IsItemInWardrobe($itemPackage, $wardrobe);
+        //patching
+        if (!isPackageInWardrobe && $itemPublisher.id == $currentUser?.id)
+          addToWardrobe();
+        updateTexture();
       }
-      loaded = true;
-      const categoryCounts = GetCategoriesFromList($wardrobe.outfits);
-      pickerCategories = Object.keys(categoryCounts).filter(
-        (x) => categoryCounts[x] > 0
-      );
-      isPackageInWardrobe = IsItemInWardrobe($itemPackage, $wardrobe);
-      //patching
-      if (!isPackageInWardrobe && $itemPublisher.id == $currentUser?.id)
-        addToWardrobe();
-      updateTexture();
     });
   });
 
@@ -730,10 +728,10 @@
           </div>
           &nbsp;&nbsp;&nbsp;
           {#if $itemPackage.isShared}
-              <span class="label rare" style="margin-left:8px"
-                >{$_("shared")}</span
-              >
-            {/if}
+            <span class="label rare" style="margin-left:8px"
+              >{$_("shared")}</span
+            >
+          {/if}
         </div>
         <div style="display:flex;gap:8px">
           <button

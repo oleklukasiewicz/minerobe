@@ -6,6 +6,8 @@
     display: block;
     max-height: calc(100vh - 120px);
     position: sticky;
+    min-height: 100px;
+    min-width: 100px;
     top: 90px;
     @media (max-width: 768px) {
       max-height: 100vw;
