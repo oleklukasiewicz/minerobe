@@ -8,7 +8,7 @@ import {
   derived,
 } from "svelte/store";
 import { APP_STATE } from "$data/consts";
-import type { MinerobeUser, MinerobeUserSettings } from "./common";
+import { MinerobeUserSettings, type MinerobeUser } from "./common";
 import alexModelData from "$src/model/alex.gltf?raw";
 import steveModelData from "$src/model/steve.gltf?raw";
 import planksTextureRaw from "$src/texture/default_planks.png?url";
@@ -53,7 +53,7 @@ export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
   if ($appState == APP_STATE.GUEST_READY) result = true;
   return result;
 });
-export const userSettings: Writable<MinerobeUserSettings> = writable(null);
+export const userSettings: Writable<MinerobeUserSettings> = writable(new MinerobeUserSettings("","",null));
 
 let wardrobeSubscription, settingsSubscription;
 

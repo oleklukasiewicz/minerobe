@@ -1,5 +1,5 @@
 import { get } from "svelte/store";
-import { LAYER_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "./consts";
+import { LAYER_TYPE, MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "./consts";
 import { GenerateIdForCollection } from "./firebase";
 import { currentUser } from "./cache";
 
@@ -214,6 +214,7 @@ export class OutfitPackageQueryData {
 export class MinerobeUserSettings {
   userId: string;
   baseTexture: string;
+  model: string;
   theme: string;
   constructor(
     baseTexture: string,
@@ -223,5 +224,6 @@ export class MinerobeUserSettings {
     this.baseTexture = baseTexture;
     this.theme = theme;
     this.userId = userId;
+    this.model = MODEL_TYPE.STEVE;
   }
 }
