@@ -28,6 +28,7 @@
     baseTexture,
     defaultRenderer,
     isReadyForData,
+    userSettings,
   } from "$data/cache";
   import { MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
 
@@ -155,6 +156,7 @@
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
     await AddDownload($localPackage.id, $localPackage.type);
+    $localPackage.social.downloads++;
   };
 
   //texture
@@ -172,7 +174,11 @@
     }
 
     modelTexture = await mergeImages(
-      [...rendererLayers.map((x) => x.content), $baseTexture].reverse(),
+      [
+        ...rendererLayers.map((x) => x.content),
+        $isItemSet == true ? $userSettings?.baseTexture : null,
+        $baseTexture,
+      ].reverse().filter((x) => x != null),
       undefined,
       $itemModelType
     );

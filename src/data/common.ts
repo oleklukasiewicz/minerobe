@@ -55,7 +55,11 @@ export class OutfitLayerLink {
   id: string;
   type: string;
   variantId: string;
-  constructor(id: string, variantId: string = null, type: string = LAYER_TYPE.REMOTE) {
+  constructor(
+    id: string,
+    variantId: string = null,
+    type: string = LAYER_TYPE.REMOTE
+  ) {
     this.id = id;
     this.variantId = variantId;
     this.type = type;
@@ -86,9 +90,9 @@ export class OutfitPackage {
   isShared: boolean;
   social: PackageSocialData;
   outfitType: string;
-  local:any;
-  createdAt:Date;
-  modifiedAt:Date;
+  local: any;
+  createdAt: Date;
+  modifiedAt: Date;
   constructor(
     name: string,
     model: string,
@@ -154,7 +158,11 @@ export class PackageSocialData {
   likes: number;
   isFeatured: boolean;
   downloads: number;
-  constructor(likes: number = 1, isFeatured: boolean = false, downloads: number = 0) {
+  constructor(
+    likes: number = 1,
+    isFeatured: boolean = false,
+    downloads: number = 0
+  ) {
     this.likes = likes;
     this.isFeatured = isFeatured;
     this.downloads = downloads;
@@ -197,8 +205,23 @@ export class OutfitPackageQueryData {
   name: string;
   isShared: boolean;
   model: string;
-  publisherId : string;
+  publisherId: string;
   downloads: number;
   createdAt: Date;
   modifiedAt: Date;
+}
+
+export class MinerobeUserSettings {
+  userId: string;
+  baseTexture: string;
+  theme: string;
+  constructor(
+    baseTexture: string,
+    theme: string,
+    userId: string = get(currentUser).id
+  ) {
+    this.baseTexture = baseTexture;
+    this.theme = theme;
+    this.userId = userId;
+  }
 }

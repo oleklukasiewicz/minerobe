@@ -5,17 +5,16 @@
     defaultRenderer,
     isMobileView,
     isReadyForData,
+    userSettings,
   } from "$src/data/cache";
-  import {
-    navigateToDesign,
-  } from "$src/helpers/navigationHelper";
+  import { navigateToDesign } from "$src/helpers/navigationHelper";
   import { onMount } from "svelte";
   import PlusIcon from "$icons/plus.svg?raw";
   import CategoryMenu from "$lib/CategoryMenu/CategoryMenu.svelte";
   import CategoryMenuItem from "$lib/CategoryMenuItem/CategoryMenuItem.svelte";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
-  import {OUTFIT_TYPE } from "$src/data/consts";
+  import { OUTFIT_TYPE } from "$src/data/consts";
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
   import { CreateOutfitSet } from "$src/api/sets";
   import { CreateOutfit } from "$src/api/outfits";
@@ -30,7 +29,7 @@
   let loaded = false;
   onMount(() => {
     isReadyForData.subscribe((readyness) => {
-      loaded = readyness != false;
+      loaded = readyness?.wardrobe != null;
     });
   });
   const addNewSet = async function () {
@@ -153,6 +152,8 @@
             dense={false}
             renderer={$defaultRenderer}
             items={setsList}
+            withBaseTexture={$userSettings?.baseTexture != null}
+            baseTexture={$userSettings?.baseTexture}
             on:innerselect={onItemSelect}
           />
         </div>

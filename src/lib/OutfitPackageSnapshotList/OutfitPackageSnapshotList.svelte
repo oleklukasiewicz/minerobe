@@ -4,18 +4,22 @@
   import type { OutfitPackage } from "$src/data/common";
   import { createEventDispatcher, onMount } from "svelte";
   import { CreateDefaultRenderProvider } from "$src/data/render";
-  import { MODEL_TYPE } from "$src/data/consts";
+  import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+  import { mergeImages } from "$src/helpers/imageMerger";
 
   export let items: OutfitPackage[] = [];
   export let renderer = null;
   export let dense = true;
   export let ready = false;
   export let minItemWidth = 165;
+  export let withBaseTexture = false;
+  export let baseTexture = null;
 
   const dispatch = createEventDispatcher();
 
   let steveListProvider = null;
   let alexListProvider = null;
+  let normalizedItems = [];
 
   onMount(async () => {
     if (renderer == null) {
@@ -31,6 +35,20 @@
     ready = true;
   });
 
+  const normalizeItems = async function (itemsToNormalize) {
+    for (let i = 0; i < itemsToNormalize.length; i++) {
+      let item = itemsToNormalize[i];
+      if (item.type == PACKAGE_TYPE.OUTFIT_SET && withBaseTexture) {
+        item.layers[0][item.model].content = await mergeImages(
+          [baseTexture,item.layers[0][item.model].content],
+          undefined,
+          item.model
+        );
+      }
+    }
+    normalizedItems = itemsToNormalize;
+  };
+
   const selectOutfit = function (item) {
     dispatch("select", item);
   };
@@ -38,6 +56,8 @@
     dispatch("innerselect", e.detail);
     selectOutfit(e.detail.item);
   };
+
+  $: normalizeItems(items);
 </script>
 
 <div
@@ -46,7 +66,7 @@
   style=" grid-template-columns: repeat(auto-fill, minmax({minItemWidth}px, 1fr));"
 >
   {#if ready}
-    {#each items as item (item.id + item.layers[0]?.variantId)}
+    {#each normalizedItems as item (item.id + item.layers[0]?.variantId)}
       <OutfitPackageSnapshotItem
         on:select={selectRenderedOutfit}
         {item}

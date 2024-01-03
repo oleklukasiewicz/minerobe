@@ -37,6 +37,7 @@
     wardrobe,
     isMobileView,
     isReadyForData,
+    userSettings,
   } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
@@ -239,7 +240,13 @@
     }
 
     modelTexture = await mergeImages(
-      [...rendererLayers.map((x) => x.content), $baseTexture].reverse(),
+      [
+        ...rendererLayers.map((x) => x.content),
+        $isItemSet == true ? $userSettings?.baseTexture : null,
+        $baseTexture,
+      ]
+        .reverse()
+        .filter((x) => x),
       undefined,
       $itemModelType
     );
@@ -729,9 +736,7 @@
           </div>
           &nbsp;&nbsp;&nbsp;
           {#if $itemPackage.isShared}
-            <Label variant="rare" style="margin-left:8px"
-              >{$_("shared")}</Label
-            >
+            <Label variant="rare" style="margin-left:8px">{$_("shared")}</Label>
           {/if}
         </div>
         <div style="display:flex;gap:8px">

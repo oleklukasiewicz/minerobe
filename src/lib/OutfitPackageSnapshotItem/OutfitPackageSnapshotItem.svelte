@@ -38,7 +38,7 @@
   };
 
   $: aboveLimit = item.layers.length - multiple;
-
+  
   const onClick = function () {
     dispatch("select", {
       item,

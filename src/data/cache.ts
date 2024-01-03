@@ -7,14 +7,15 @@ import {
   readonly,
   derived,
 } from "svelte/store";
-import { APP_STATE, PACKAGE_TYPE } from "$data/consts";
-import type { MinerobeUser } from "./common";
+import { APP_STATE } from "$data/consts";
+import type { MinerobeUser, MinerobeUserSettings } from "./common";
 import alexModelData from "$src/model/alex.gltf?raw";
 import steveModelData from "$src/model/steve.gltf?raw";
 import planksTextureRaw from "$src/texture/default_planks.png?url";
 import type { WardrobePackage } from "./common";
 import { FetchWardrobe, UploadWardrobe } from "$src/api/wardrobe";
 import * as THREE from "three";
+import { FetchSettings, UploadSettings } from "$src/api/settings";
 
 const isMobileViewWritable: Writable<boolean> = writable(false);
 export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
@@ -38,8 +39,23 @@ export const wardrobe: Writable<WardrobePackage> = writable({
   studio: null,
 });
 export const baseTexture: Readable<string> = readable(get(planksTexture));
+export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
+  let result: any = false;
+  if ($appState == APP_STATE.READY)
+    result = {
+      wardrobe: get(wardrobe),
+      user: get(currentUser),
+    };
+  if ($appState == APP_STATE.USER_READY)
+    result = {
+      user: get(currentUser),
+    };
+  if ($appState == APP_STATE.GUEST_READY) result = true;
+  return result;
+});
+export const userSettings: Writable<MinerobeUserSettings> = writable(null);
 
-let wardrobeSubscription;
+let wardrobeSubscription, settingsSubscription;
 
 export const setup = function () {
   defaultRenderer.update((renderer: any) => {
@@ -61,17 +77,21 @@ export const setup = function () {
       //settings up account
       if (get(appState) == APP_STATE.LOADING)
         appState.set(APP_STATE.USER_READY);
+      let settings = await FetchSettings(user.id);
+      if (settings != null) userSettings.set(settings);
       let w = await FetchWardrobe();
       if (w != null) {
         wardrobe.set(w);
         console.log("setting wardrobe");
         appState.set(APP_STATE.READY);
         if (wardrobeSubscription) wardrobeSubscription();
+        if (settingsSubscription) settingsSubscription();
 
         setupSubscriptions();
       }
     } else {
       if (wardrobeSubscription) wardrobeSubscription();
+      if (settingsSubscription) settingsSubscription();
 
       appState.set(APP_STATE.GUEST_READY);
     }
@@ -81,22 +101,7 @@ const setupSubscriptions = function () {
   wardrobeSubscription = wardrobe.subscribe(async (data) => {
     if (get(appState) == APP_STATE.READY && data) await UploadWardrobe(data);
   });
+  settingsSubscription = userSettings.subscribe(async (data) => {
+    if (get(appState) == APP_STATE.READY && data) await UploadSettings(data);
+  });
 };
-
-export const isReadyForData: Readable<any> = derived(
-  appState,
-  ($appState) => {
-    let result: any = false;
-    if ($appState == APP_STATE.READY)
-      result = {
-        wardrobe: get(wardrobe),
-        user: get(currentUser),
-      };
-    if ($appState == APP_STATE.USER_READY)
-      result = {
-        user: get(currentUser),
-      };
-    if ($appState == APP_STATE.GUEST_READY) result = true;
-    return result;
-  }
-);
