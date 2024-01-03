@@ -89,6 +89,7 @@
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
+  import Label from "$lib/Label/Label.svelte";
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
       "",
@@ -481,14 +482,14 @@
             <Placeholder style="height:48px;margin-bottom:8px;" />
           {/if}
           {#if loaded}
-            <span class="label common"
+            <Label variant="common"
               >{$itemPackage.type == PACKAGE_TYPE.OUTFIT
                 ? $_("outfit")
-                : $_("outfit_set")}</span
+                : $_("outfit_set")}</Label
             >
             {#if $itemPackage.isShared}
-              <span class="label rare" style="margin-left:8px"
-                >{$_("shared")}</span
+              <Label variant="rare" style="margin-left:8px"
+                >{$_("shared")}</Label
               >
             {/if}
             <br />
@@ -728,8 +729,8 @@
           </div>
           &nbsp;&nbsp;&nbsp;
           {#if $itemPackage.isShared}
-            <span class="label rare" style="margin-left:8px"
-              >{$_("shared")}</span
+            <Label variant="rare" style="margin-left:8px"
+              >{$_("shared")}</Label
             >
           {/if}
         </div>

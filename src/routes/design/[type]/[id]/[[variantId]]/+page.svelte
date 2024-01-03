@@ -29,7 +29,7 @@
     defaultRenderer,
     isReadyForData,
   } from "$data/cache";
-  import { APP_STATE, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
+  import { MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
@@ -57,6 +57,8 @@
   } from "$src/helpers/colorHelper";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
+  import Label from "$lib/Label/Label.svelte";
+  import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
 
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -245,8 +247,13 @@
             <Placeholder style="height:48px;margin-bottom:8px;" />
           {/if}
         </div>
+
         {#if loaded}
-          <span class="label unique">{$localPackage.publisher.name}</span>
+          <div style="display: flex;gap:4px;height:24px">
+            <Label variant="unique">{$localPackage.publisher.name}</Label>
+            &nbsp;
+            <SocialInfo data={$localPackage.social} />
+          </div>
         {/if}
       </div>
       <br />

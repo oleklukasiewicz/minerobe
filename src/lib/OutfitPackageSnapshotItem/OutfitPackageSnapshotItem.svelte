@@ -14,6 +14,7 @@
   } from "$src/helpers/colorHelper";
   import OutfitPackageSnapshotRender from "$lib/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
+  import Label from "$lib/Label/Label.svelte";
 
   export let item: OutfitPackage = null;
   export let dense = false;
@@ -69,7 +70,7 @@
     <div class="title-row">
       <div style="flex:1;">
         {#if item.publisher.id != $currentUser?.id}
-          <span class="label unique" class:dense>{item.publisher.name}</span>
+          <Label variant="unique" {dense}>{item.publisher.name}</Label>
         {/if}
       </div>
       {#if multiple > 0}

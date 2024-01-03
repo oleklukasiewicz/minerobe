@@ -11,6 +11,7 @@
   import { LAYER_TYPE } from "$src/data/consts";
   import OutfitLayerRender from "$lib/render/OutfitLayerRender.svelte";
   import { RenderProvider } from "$src/data/render";
+  import Label from "$lib/Label/Label.svelte";
 
   export let item: OutfitLayer;
   export let renderProvider: RenderProvider = new RenderProvider();
@@ -23,20 +24,19 @@
   export let selectable = false;
   export let multiVariant = true;
   export let showLabels = true;
-  export let label =
-    item?.name || item[modelName]?.fileName || "New layer";
+  export let label = item?.name || item[modelName]?.fileName || "New layer";
 
   let dispatch = createEventDispatcher();
 
   let isDragging = false;
   let up = function () {
     dispatch("up", {
-      texture: item
+      texture: item,
     });
   };
   let addVariant = function () {
     dispatch("addvariant", {
-      texture: item
+      texture: item,
     });
   };
   let handleDrop = function (event) {
@@ -46,7 +46,7 @@
       isDragging = false;
       dispatch("dropvariant", {
         files: files,
-        texture: item
+        texture: item,
       });
     }
   };
@@ -62,12 +62,12 @@
   };
   let down = function () {
     dispatch("down", {
-      texture: item
+      texture: item,
     });
   };
   let remove = function () {
     dispatch("remove", {
-      texture: item
+      texture: item,
     });
   };
   function fadeInScale(node, { duration }) {
@@ -106,11 +106,11 @@
         bind:value={label}
         class:disabled={item.type == LAYER_TYPE.REMOTE}
       />
-      <br /><span class="label common">{item[modelName].type}</span>
+      <br /><Label variant="common">{item[modelName].type}</Label>
       {#if showLabels}
         {#if item.type == LAYER_TYPE.REMOTE}
-          <span class="label rare" style="margin-left:8px;"
-            >{$_("layerType.remote")}</span
+          <Label variant="rare" style="margin-left:8px;"
+            >{$_("layerType.remote")}</Label
           >
         {/if}
       {/if}

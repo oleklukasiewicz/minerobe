@@ -356,3 +356,7 @@ textarea{
    box-sizing: border-box;
    color: var(--color-theme-font);
 }
+.mc-font
+{
+    font-family: minecraft;
+}
