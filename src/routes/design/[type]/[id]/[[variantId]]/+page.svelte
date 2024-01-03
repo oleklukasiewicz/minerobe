@@ -172,13 +172,14 @@
         rendererLayers = [];
       }
     }
-
     modelTexture = await mergeImages(
       [
         ...rendererLayers.map((x) => x.content),
         $isItemSet == true ? $userSettings?.baseTexture : null,
         $baseTexture,
-      ].reverse().filter((x) => x != null),
+      ]
+        .reverse()
+        .filter((x) => x != null&& x.length > 0),
       undefined,
       $itemModelType
     );

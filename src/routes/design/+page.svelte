@@ -246,7 +246,7 @@
         $baseTexture,
       ]
         .reverse()
-        .filter((x) => x),
+        .filter((x) => x && x.length > 0),
       undefined,
       $itemModelType
     );

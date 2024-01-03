@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as THREE from "three";
   import OutfitPackageSnapshotItem from "$lib/OutfitPackageSnapshotItem/OutfitPackageSnapshotItem.svelte";
-  import type { OutfitPackage } from "$src/data/common";
+  import { FileData, OutfitLayer, type OutfitPackage } from "$src/data/common";
   import { createEventDispatcher, onMount } from "svelte";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
@@ -38,11 +38,21 @@
   const normalizeItems = async function (itemsToNormalize) {
     for (let i = 0; i < itemsToNormalize.length; i++) {
       let item = itemsToNormalize[i];
-      if (item.type == PACKAGE_TYPE.OUTFIT_SET && withBaseTexture) {
-        item.layers[0][item.model].content = await mergeImages(
-          [baseTexture,item.layers[0][item.model].content],
-          undefined,
-          item.model
+      if (
+        item.type == PACKAGE_TYPE.OUTFIT_SET &&
+        withBaseTexture &&
+        baseTexture &&
+        baseTexture.length > 0
+      ) {
+        item.layers.push(
+          new OutfitLayer(
+            "base",
+            new FileData("base", baseTexture, ""),
+            new FileData("base", baseTexture, ""),
+            null,
+            null,
+            null
+          )
         );
       }
     }
