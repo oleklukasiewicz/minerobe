@@ -53,7 +53,12 @@ export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
   if ($appState == APP_STATE.GUEST_READY) result = true;
   return result;
 });
-export const userSettings: Writable<MinerobeUserSettings> = writable(new MinerobeUserSettings("","",null));
+export const userSettings: Writable<MinerobeUserSettings> = writable({
+  userId: null,
+  model: "alex",
+  baseTexture: "",
+  theme: "",
+});
 
 let wardrobeSubscription, settingsSubscription;
 
