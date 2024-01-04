@@ -27,7 +27,7 @@
   .item-data {
     flex: 1;
     display: block;
-    margin: 40px auto;
+    margin: 40px auto 20px;
     padding: 24px;
     box-sizing: border-box;
     max-width: 75vw;
@@ -49,6 +49,7 @@
       -webkit-font-smoothing: antialiased;
       box-sizing: border-box;
       letter-spacing: 0.1px;
+      line-height: 1.2rem;
     }
     .item-name {
       #item-title {

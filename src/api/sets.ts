@@ -99,7 +99,6 @@ export const ParseOutfitSetSnapshotToDatabase = async function (
       firstLayer.variantId
     ),
   ];
-  delete item.social;
   item.publisher = new MinerobeUser(item.publisher.id, null, null);
   return item;
 };

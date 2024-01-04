@@ -5,6 +5,7 @@
     writable,
     type Readable,
     type Writable,
+    readable,
   } from "svelte/store";
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
@@ -79,10 +80,7 @@
   const itemModelType: Writable<string> = propertyStore(localPackage, "model");
   const itemName: Writable<string> = propertyStore(localPackage, "name");
 
-  const isItemSet = derived(
-    localPackage,
-    ($localPackage) => $localPackage.type == PACKAGE_TYPE.OUTFIT_SET
-  );
+  const isItemSet = readable($page.params.type == PACKAGE_TYPE.OUTFIT_SET);
   const itemModel: Readable<string> = derived(
     itemModelType,
     ($itemModelType) =>
@@ -179,7 +177,7 @@
         $baseTexture,
       ]
         .reverse()
-        .filter((x) => x != null&& x.length > 0),
+        .filter((x) => x != null && x.length > 0),
       undefined,
       $itemModelType
     );
@@ -251,7 +249,7 @@
           {#if loaded}
             {$itemName}
           {:else}
-            <Placeholder style="height:48px;margin-bottom:8px;" />
+            <Placeholder style="height:42px;" />
           {/if}
         </div>
 
@@ -261,6 +259,8 @@
             &nbsp;
             <SocialInfo data={$localPackage.social} />
           </div>
+        {:else}
+          <Placeholder style="height:24px;max-width:100px;" />
         {/if}
       </div>
       <br />
@@ -308,50 +308,72 @@
             {/each}
           </div>
         {/if}
+        <br />
+      {:else if $isItemSet}
+        <Placeholder style="height:66px;margin-bottom:12px;" />
+      {:else}
+        <div style="display:flex;flex-wrap:wrap;margin-bottom:22px;">
+          {#each new Array(8) as _}
+            <Placeholder
+              style="height:68px;width:68px;margin-bottom:8px;margin-right:8px;"
+            />
+          {/each}
+        </div>
       {/if}
       {#if $localPackage.description != null && $localPackage.description.trim().length > 0}
-        <br />
         <SectionTitle label={$_("description")} placeholder={!loaded} />
         <div id="item-description" class="description">
           {#if loaded}
             {$localPackage.description}
+            <br />
           {:else}
             <Placeholder style="height:48px;margin-bottom:8px;" />
           {/if}
+          <br />
         </div>
       {/if}
-      <br />
       <SectionTitle label={$_("model")} placeholder={!loaded} />
-      <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
-      <br />
-      <br />
-      <div class="item-actions">
-        <button
-          id="download-action"
-          on:click={downloadImage}
-          class:disabled={(!$isItemSet ? $selectedVariant == null : false) ||
-            !loaded}>{@html DownloadIcon}{$_("download")}</button
-        >
-        {#if $localPackage.publisher?.id != $currentUser?.id && $currentUser != null}
-          {#if isPackageInWardrobe == false || isGuest}
-            <button
-              id="add-to-wardrobe"
-              on:click={addToWardrobe}
-              title="Add to wardrobe"
-              class:disabled={!loaded || isGuest}
-              class="icon tertiary">{@html HearthIcon}</button
-            >
-          {:else}
-            <button
-              id="remove-from-wardrobe"
-              title="Already in wardrobe"
-              class:disabled={!loaded || isGuest}
-              on:click={removeFromWardrobe}
-              class="icon">{@html HearthIcon}</button
-            >
+      {#if loaded}
+        <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
+        <br />
+        <br />
+      {:else}
+        <Placeholder style="height:48px;margin-bottom:8px;" />
+      {/if}
+      {#if loaded}
+        <div class="item-actions">
+          <button
+            id="download-action"
+            on:click={downloadImage}
+            class:disabled={(!$isItemSet ? $selectedVariant == null : false) ||
+              !loaded}>{@html DownloadIcon}{$_("download")}</button
+          >
+          {#if $localPackage.publisher?.id != $currentUser?.id && $currentUser != null}
+            {#if isPackageInWardrobe == false || isGuest}
+              <button
+                id="add-to-wardrobe"
+                on:click={addToWardrobe}
+                title="Add to wardrobe"
+                class:disabled={!loaded || isGuest}
+                class="icon tertiary">{@html HearthIcon}</button
+              >
+            {:else}
+              <button
+                id="remove-from-wardrobe"
+                title="Already in wardrobe"
+                class:disabled={!loaded || isGuest}
+                on:click={removeFromWardrobe}
+                class="icon">{@html HearthIcon}</button
+              >
+            {/if}
           {/if}
-        {/if}
-      </div>
+        </div>
+      {:else}
+        <div style="display: flex; gap:8px; margin-top:36px;">
+          <Placeholder style="height:42px;margin-bottom:8px;" />
+          <Placeholder style="height:42px;margin-bottom:8px;" />
+        </div>
+      {/if}
     </div>
   </div>
 </div>

@@ -486,7 +486,7 @@
               >
             </div>
           {:else}
-            <Placeholder style="height:48px;margin-bottom:8px;" />
+            <Placeholder style="height:46px;margin-bottom:16px;" />
           {/if}
           {#if loaded}
             <Label variant="common"
@@ -500,8 +500,10 @@
               >
             {/if}
             <br />
-            <br />
+          {:else}
+            <Placeholder style="height:24px;max-width:100px;" />
           {/if}
+          <br />
         </div>
         <SectionTitle
           label={$isItemSet ? $_("layers") : $_("variants")}
@@ -533,7 +535,7 @@
                     ? $_("layersOpt.addLayer")
                     : $_("layersOpt.addVariant")}</button
                 >
-                  </div>
+              </div>
               <br />
             {/if}
             {#each $itemLayers as item, index (item.id + item.variantId)}
@@ -560,7 +562,10 @@
                 />
               </div>
             {/each}
-          {/if}
+          {:else}
+            <Placeholder style="height:66px;margin-bottom:4px;" />
+            <Placeholder style="height:66px;margin-bottom:4px;" />
+            {/if}
           {#if $itemPublisher.id == $currentUser?.id && !$isMobileView}
             <div style="display: flex;flex-wrap:wrap;">
               {#if $isItemSet}
@@ -584,16 +589,20 @@
                   ? $_("layersOpt.addLayer")
                   : $_("layersOpt.addVariant")}</button
               >
-                </div>
+            </div>
           {/if}
         </div>
         <br />
         <SectionTitle label={$_("model")} placeholder={!loaded} />
-        <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
+        {#if loaded}
+          <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
+        {:else}
+          <Placeholder style="height:48px;margin-bottom:8px;" />
+        {/if}
         <br />
         <SectionTitle label={$_("description")} placeholder={!loaded} />
         {#if !loaded}
-          <Placeholder style="height:48px;margin-bottom:8px;" />
+          <Placeholder style="height:64px;margin-bottom:8px;" />
         {:else}
           <textarea
             id="item-description"
@@ -605,56 +614,63 @@
         {/if}
         <br />
         <br />
-        <div class="item-actions">
-          <button
-            id="download-action"
-            on:click={downloadImage}
-            class:disabled={$itemLayers.length == 0 || !loaded}
-            >{@html DownloadIcon}{$_("download")}</button
-          >
-          {#if $itemPublisher.id == $currentUser?.id}
-            {#if $itemPackage.isShared}
-              <button
-                on:click={() => (isShareDialogOpen = true)}
-                id="shared-info-action"
-                class="secondary"
-                class:icon={!$isMobileView}
-              >
-                {@html MoreHorizontalIcon}{#if $isMobileView}
-                  {$_("shareinfo")}{/if}
-              </button>
-            {:else}
-              <button
-                id="share-package-action"
-                on:click={sharePackage}
-                class:disabled={!loaded}
-                title={$_("sharePackage")}
-                class="icon secondary"
-                >{@html CloudIcon}{#if $isMobileView}
-                  {$_("sharePackage")}{/if}</button
-              >
+        {#if loaded}
+          <div class="item-actions">
+            <button
+              id="download-action"
+              on:click={downloadImage}
+              class:disabled={$itemLayers.length == 0 || !loaded}
+              >{@html DownloadIcon}{$_("download")}</button
+            >
+            {#if $itemPublisher.id == $currentUser?.id}
+              {#if $itemPackage.isShared}
+                <button
+                  on:click={() => (isShareDialogOpen = true)}
+                  id="shared-info-action"
+                  class="secondary"
+                  class:icon={!$isMobileView}
+                >
+                  {@html MoreHorizontalIcon}{#if $isMobileView}
+                    {$_("shareinfo")}{/if}
+                </button>
+              {:else}
+                <button
+                  id="share-package-action"
+                  on:click={sharePackage}
+                  class:disabled={!loaded}
+                  title={$_("sharePackage")}
+                  class="icon secondary"
+                  >{@html CloudIcon}{#if $isMobileView}
+                    {$_("sharePackage")}{/if}</button
+                >
+              {/if}
             {/if}
-          {/if}
-          {#if $itemPublisher.id != $currentUser?.id}
-            {#if isPackageInWardrobe == false}
-              <button
-                id="add-to-wardrobe"
-                on:click={addToWardrobe}
-                title="Add to wardrobe"
-                class:disabled={!loaded}
-                class="icon secondary">{@html HearthIcon}</button
-              >
-            {:else}
-              <button
-                on:click={removeFromWardrobe}
-                id="add-to-wardrobe"
-                class:disabled={!loaded}
-                title="Already in wardrobe"
-                class="icon">{@html HearthIcon}</button
-              >
+            {#if $itemPublisher.id != $currentUser?.id}
+              {#if isPackageInWardrobe == false}
+                <button
+                  id="add-to-wardrobe"
+                  on:click={addToWardrobe}
+                  title="Add to wardrobe"
+                  class:disabled={!loaded}
+                  class="icon secondary">{@html HearthIcon}</button
+                >
+              {:else}
+                <button
+                  on:click={removeFromWardrobe}
+                  id="add-to-wardrobe"
+                  class:disabled={!loaded}
+                  title="Already in wardrobe"
+                  class="icon">{@html HearthIcon}</button
+                >
+              {/if}
             {/if}
-          {/if}
-        </div>
+          </div>
+        {:else}
+          <div style="display: flex; gap:8px;">
+            <Placeholder style="height:48px;margin-bottom:8px;" />
+            <Placeholder style="height:48px;margin-bottom:8px;" />
+          </div>
+        {/if}
       </div>
     </div>
     <Dialog bind:open={isOutfitPickerOpen}>

@@ -15,6 +15,7 @@
   import OutfitPackageSnapshotRender from "$lib/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
   import Label from "$lib/Label/Label.svelte";
+  import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
 
   export let item: OutfitPackage = null;
   export let dense = false;
@@ -38,7 +39,7 @@
   };
 
   $: aboveLimit = item.layers.length - multiple;
-  
+
   const onClick = function () {
     dispatch("select", {
       item,
@@ -63,15 +64,18 @@
   <div class="data-area">
     <div class="title-row">
       <b class="name">{item.name}</b>
-      {#if item.isShared}
+      {#if item.isShared && item.publisher.id == $currentUser?.id}
         <div class="share-icon icon-small">{@html CloudIcon}</div>
       {/if}
     </div>
     <div class="title-row">
       <div style="flex:1;">
-        {#if item.publisher.id != $currentUser?.id}
+        <!-- {#if item.publisher.id != $currentUser?.id}
           <Label variant="unique" {dense}>{item.publisher.name}</Label>
-        {/if}
+        {/if} -->
+        <div class="item-social-info">
+          <SocialInfo data={item.social} dense />
+        </div>
       </div>
       {#if multiple > 0}
         {#each item.layers
@@ -83,7 +87,7 @@
             on:click|stopPropagation={() => updateRender(layer)}
             style="background-color: {FindStringInColorsAsHex(
               layer[item.model].color
-            )}; margin-left:4px;"
+            )};"
           ></span>
         {/each}
         {#if aboveLimit > 0 && !isSet}
