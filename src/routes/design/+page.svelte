@@ -510,11 +510,12 @@
         <div class="item-layers">
           {#if loaded}
             {#if $itemPublisher.id == $currentUser?.id && $isMobileView}
-              <form style="display: flex;flex-wrap:wrap;">
+              <div style="display: flex;">
                 {#if $isItemSet}
                   <button
                     id="import-package-action"
                     title={$_("importOutfit")}
+                    style="flex:1;"
                     class:disabled={!loaded}
                     on:click={openOutfitPicker}
                     class="secondary"
@@ -523,7 +524,7 @@
                 {/if}
                 <button
                   id="add-layer-action"
-                  type="submit"
+                  style="flex:1;"
                   class="secondary"
                   class:disabled={!loaded}
                   on:click={importLayer}
@@ -532,7 +533,7 @@
                     ? $_("layersOpt.addLayer")
                     : $_("layersOpt.addVariant")}</button
                 >
-              </form>
+                  </div>
               <br />
             {/if}
             {#each $itemLayers as item, index (item.id + item.variantId)}
@@ -561,11 +562,12 @@
             {/each}
           {/if}
           {#if $itemPublisher.id == $currentUser?.id && !$isMobileView}
-            <form style="display: flex;flex-wrap:wrap;">
+            <div style="display: flex;flex-wrap:wrap;">
               {#if $isItemSet}
                 <button
                   id="import-package-action"
                   title={$_("importOutfit")}
+                  style="flex:1;"
                   class:disabled={!loaded}
                   on:click={openOutfitPicker}
                   class="secondary">{@html AddIcon} {$_("importOutfit")}</button
@@ -573,8 +575,8 @@
               {/if}
               <button
                 id="add-layer-action"
-                type="submit"
                 class="secondary"
+                style="flex:1;"
                 class:disabled={!loaded}
                 on:click={importLayer}
                 >{@html ImportPackageIcon}
@@ -582,7 +584,7 @@
                   ? $_("layersOpt.addLayer")
                   : $_("layersOpt.addVariant")}</button
               >
-            </form>
+                </div>
           {/if}
         </div>
         <br />
@@ -627,7 +629,9 @@
                 on:click={sharePackage}
                 class:disabled={!loaded}
                 title={$_("sharePackage")}
-                class="icon secondary">{@html CloudIcon}</button
+                class="icon secondary"
+                >{@html CloudIcon}{#if $isMobileView}
+                  {$_("sharePackage")}{/if}</button
               >
             {/if}
           {/if}

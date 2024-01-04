@@ -117,7 +117,7 @@
       </div>
     {/if}
   </div>
-  {#if itemsPerPage != -1 && pagedItems.length > 0}
+  {#if itemsPerPage != -1 && pagedItems.length > 0 && pagesCount > 1}
     <div style="font-family:minecraft; text-align:right; margin-top:8px;">
       <button
         class="small icon"

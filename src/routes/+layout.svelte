@@ -11,7 +11,8 @@
 
   import { onMount } from "svelte";
   import { currentUser, isMobileView, setup } from "$src/data/cache";
-  import { getCurrentUser, loginUser, logoutUser } from "$src/api/auth";
+  import { getCurrentUser, loginUser } from "$src/api/auth";
+  import { navigateToProfile } from "$src/helpers/navigationHelper";
 
   export const load = async () => {
     if (browser) {
@@ -23,10 +24,10 @@
     setup();
     await getCurrentUser();
   });
-
-  const toggleLogin = async () => {
+  const profileAction = async () => {
     if ($currentUser) {
-      await logoutUser();
+     navigateToProfile();
+     isMenuOpened = false;
     } else {
       await loginUser();
     }
@@ -64,7 +65,7 @@
      
       {#if $isMobileView}
       <div class="spacer" style="flex:1;" />
-      <button class="dark" style="text-align: left;" on:click={toggleLogin}>
+      <button class="dark" style="text-align: left;" on:click={profileAction}>
         {#if $currentUser != null}
           <img src={$currentUser.avatar} alt="Avatar" />
         {:else}
@@ -86,7 +87,7 @@
       </button>
     </a>
     {#if !$isMobileView}
-    <button class="icon avatar-button dark" on:click={toggleLogin}>
+    <button class="icon avatar-button dark" on:click={profileAction}>
       {#if $currentUser != null}
         <img src={$currentUser.avatar} alt="Avatar" />
       {:else}

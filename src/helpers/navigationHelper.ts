@@ -26,3 +26,9 @@ export const navigateToOutfitPackage = function (packag: OutfitPackage,variantId
 export const navigate = function (path: string) {
   goto(path);
 };
+export const navigateToProfile = function () {
+  goto(`/profile`);
+};
+export const navigateToHome = function () {
+  goto(`/`);
+};
