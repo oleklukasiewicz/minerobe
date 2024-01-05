@@ -1,4 +1,6 @@
 import NewOutfitBottomAnimation from "$src/animation/bottom";
+import NewOutfitBottomAltAnimation from "$src/animation/bottomAlt";
+import NewOutfitBottomAlt2Animation from "$src/animation/bottomAlt2";
 import ClapAnimation from "$src/animation/clap";
 import DefaultAnimation from "$src/animation/default";
 import HandsUpAnimation from "$src/animation/handsup";
@@ -60,6 +62,7 @@ export const GetAnimationForPackageChange = function (
   return [];
 };
 export const GetAnimationForType = function (type: string) {
+  const random = Math.random();
   switch (type) {
     case OUTFIT_TYPE.HAT:
       return HatAnimation;
@@ -67,6 +70,16 @@ export const GetAnimationForType = function (type: string) {
     case OUTFIT_TYPE.HOODIE:
       return NewOutfitBottomAnimation;
     case OUTFIT_TYPE.SHOES:
-      return WavingAnimation;
+      if (random < 0.5) {
+        return NewOutfitBottomAlt2Animation;
+      } else {
+       return WavingAnimation;
+      }
+    case OUTFIT_TYPE.BOTTOM:
+      if (random < 0.5) {
+        return NewOutfitBottomAlt2Animation;
+      } else {
+       return NewOutfitBottomAltAnimation;
+      }
   }
 };
