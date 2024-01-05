@@ -161,11 +161,9 @@ export const DeleteCollection = async function (path: string) {
   }
 };
 export const GetCollection = async function (path: string) {
-  if (cUser) {
     const dataRef = collection(db, path);
     const dataSnap = await getDocs(dataRef);
     return dataSnap.docs.map((doc) => doc.data());
-  }
 };
 export const SetDocumentAnonymous = async function (
   path: string,
@@ -209,11 +207,13 @@ export const BuildCollectionQuery = async function (
   path: string,
   clauses: QueryWhere[] = [],
   orderByClauses: QueryOrderBy[] = [],
-  limit: number = 0
+  limit: number = 0,
+  docname:string[]=[]
 ) {
   const subCollectionRef = collection(db, path);
   const subCollectionQuery = query(
     subCollectionRef,
+    ...docname.map((doc)=>where(documentId(), "==", doc)),
     ...clauses.map((clause) =>
       where(clause.field, clause.operator as WhereFilterOp, clause.value)
     ),
