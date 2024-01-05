@@ -30,7 +30,7 @@
   let outfitList = [];
   let setsList = [];
   let outfitsCount = {};
-  
+
   onMount(() => {
     isReadyForData.subscribe((readyness) => {
       loaded = readyness?.wardrobe != null;
@@ -86,10 +86,12 @@
   <div class="wardrobe-categories">
     <CategoryMenu
       label={"Wardrobe" +
-        (OUTFIT_TYPE[currentView] != "ALL" &&
-        OUTFIT_TYPE[currentView] != null &&
-        currentView != "sets"
-          ? " - " + OUTFIT_TYPE[currentView]
+        ($isMobileView
+          ? OUTFIT_TYPE[currentView] != "ALL" &&
+            OUTFIT_TYPE[currentView] != null &&
+            currentView != "sets"
+            ? " - " + OUTFIT_TYPE[currentView]
+            : ""
           : "")}
       horizontal={$isMobileView}
     >
@@ -137,7 +139,11 @@
             </h1>{/if}
           <div style="flex:1;">
             <div style="float: right;" class="search-btn">
-              <Search on:search={filterOutfits} on:input={filterOutfits} />
+              <Search
+                dense={false}
+                on:search={filterOutfits}
+                on:input={filterOutfits}
+              />
             </div>
           </div>
         </div>
@@ -161,11 +167,19 @@
       {#if currentView != "sets"}
         <div style="display: flex;gap:8px; flex-wrap:wrap;max-width:100vw">
           {#if !$isMobileView}<h1 class="inline" style="margin: 0;">
-              Outfits
+              Outfits {OUTFIT_TYPE[currentView] != "ALL" &&
+              OUTFIT_TYPE[currentView] != null &&
+              currentView != "sets"
+                ? " - " + OUTFIT_TYPE[currentView]
+                : ""}
             </h1>{/if}
           <div style="flex:1;">
             <div style="float: right;" class="search-btn">
-              <Search on:search={filterOutfits} on:input={filterOutfits} />
+              <Search
+                dense={false}
+                on:search={filterOutfits}
+                on:input={filterOutfits}
+              />
             </div>
           </div>
         </div>

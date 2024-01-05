@@ -27,6 +27,7 @@
   import { ImportImage } from "$src/helpers/imageOperations";
   import { logoutUser } from "$src/api/auth";
   import { navigateToHome } from "$src/helpers/navigationHelper";
+  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
 
   const userModel = propertyStore(userSettings, "model");
 
@@ -67,29 +68,36 @@
     });
   };
   const logout = async () => {
-   navigateToHome();
-   await logoutUser();
+    navigateToHome();
+    await logoutUser();
   };
 </script>
 
 <div id="profile-view" class:mobile={$isMobileView}>
   <div class="render-area">
-    {#if !loading}
-      {#if !$isMobileView}
-        <SectionTitle label="base texture" placeholder={loading} />
-      {/if}
-      <div class="render">
+    <div class="render">
+      {#if !loading}
         <DynamicRender
           defaultAnimation={DefaultAnimation}
           model={$userModel == MODEL_TYPE.STEVE ? $steveModel : $alexModel}
           {texture}
           modelName={$userModel}
         />
-      </div>
-      <div class="render-actions">
+      {:else}
+        <Placeholder />
+      {/if}
+    </div>
+    <div class="render-actions">
+      {#if !loading}
         <ModelSelection bind:group={$userModel} />
-        <div class="render-opt">
-          <button class="secondary" class:disabled={loading}
+      {:else}
+        <Placeholder style="height:52px" />
+      {/if}
+      <div class="render-opt">
+        {#if !loading}
+          <button
+            class="secondary"
+            class:disabled={loading}
             on:click={importBaseImage}
             >{@html ImportPackageIcon}
             {$_("layersOpt.addLayer")}</button
@@ -99,15 +107,20 @@
             class:disabled={loading}
             on:click={resetImage}>{@html CloseIcon} Reset</button
           >
-        </div>
+        {:else}
+          <Placeholder style="height:42px" />
+          <Placeholder style="height:42px" />
+        {/if}
       </div>
-    {/if}
+    </div>
   </div>
   <div class="data-area">
     <SectionTitle label="Profile" placeholder={loading} />
     {#if !loading}
       <h1>{$currentUser?.name}</h1>
       <button on:click={logout}>Logout</button>
+    {:else}
+      <Placeholder style="height:46px;margin-bottom:16px;" />
     {/if}
   </div>
 </div>

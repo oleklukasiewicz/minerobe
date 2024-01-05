@@ -3,6 +3,7 @@
   import { createEventDispatcher } from "svelte";
 
   export let value = null;
+  export let dense = true;
 
   const dispatch = createEventDispatcher();
 
@@ -14,9 +15,15 @@
   };
 </script>
 
-<div class="search">
-  <input type="text" placeholder="Search" bind:value class="search-input" on:input={onInput} />
-  <button class="icon small icon-small" on:click={onSearch}>
+<div class="search" class:dense>
+  <input
+    type="text"
+    placeholder="Search"
+    bind:value
+    class="search-input"
+    on:input={onInput}
+  />
+  <button class="icon icon-small" class:small={dense} on:click={onSearch}>
     {@html SearchIcon}
   </button>
 </div>

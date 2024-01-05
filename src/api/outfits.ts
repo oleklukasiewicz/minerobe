@@ -13,7 +13,6 @@ import {
   PACKAGE_TYPE,
 } from "$src/data/consts";
 import {
-  FetchDocsFromQuery,
   GenerateIdForCollection,
   QueryWhere,
 } from "$src/data/firebase";
@@ -30,7 +29,6 @@ import {
   UploadPackageSnapshot,
 } from "./pack";
 import { GetDominantColorFromImage } from "$src/helpers/colorHelper";
-import type { DocumentData, Query } from "firebase/firestore";
 
 const OUTFIT_PATH = "outfits";
 const OUTFIT_LOCAL_PATH = "data";

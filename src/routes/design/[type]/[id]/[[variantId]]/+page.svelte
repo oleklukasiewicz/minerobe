@@ -36,7 +36,7 @@
     isReadyForData,
     userSettings,
   } from "$data/cache";
-  import {MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
+  import { MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
@@ -150,7 +150,9 @@
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
     await AddDownload($localPackage.id, $localPackage.type);
-    $localPackage.social.downloads++;
+    if ($localPackage.social.downloads == null)
+      $localPackage.social.downloads = 0;
+    $localPackage.social.downloads += 1;
   };
 
   //texture

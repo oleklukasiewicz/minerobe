@@ -5,16 +5,19 @@
   width: 100%;
   input {
     transition: var(--time);
-    background-color:var(--color-theme-D2) ;
-    padding-left: 8px;
+    background-color: var(--color-theme-D2);
+    padding-left: 12px;
     max-width: 100vw;
-    &:hover
-    {
-        background-color:var(--color-theme-D3);
+    &:hover {
+      background-color: var(--color-theme-D3);
     }
-    &:active
-    {
-        background-color:var(--color-theme-D1);
+    &:active {
+      background-color: var(--color-theme-D1);
+    }
+  }
+  &.dense {
+    input {
+      padding-left: 8px;
     }
   }
 }
