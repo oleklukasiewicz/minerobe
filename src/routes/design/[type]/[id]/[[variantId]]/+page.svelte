@@ -14,6 +14,11 @@
   import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
   import DynamicRender from "$lib/render/DynamicRender.svelte";
   import InfoLabel from "$lib/InfoLabel/InfoLabel.svelte";
+  import Label from "$lib/Label/Label.svelte";
+  import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
+  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
+  import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
+  import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
 
   import {
     FileData,
@@ -31,7 +36,7 @@
     isReadyForData,
     userSettings,
   } from "$data/cache";
-  import { MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
+  import {MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
@@ -40,28 +45,19 @@
   import HandsUpAnimation from "$animation/handsup";
 
   import { ExportImageLayers } from "$helpers/imageOperations";
+  import { sortOutfitLayersByColor } from "$src/helpers/imageDataHelpers.js";
   import { mergeImages } from "$helpers/imageMerger";
-  import { page } from "$app/stores";
-  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
-  import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
-  import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
-  import { FetchOutfit } from "$src/api/outfits";
-  import { FetchOutfitSet } from "$src/api/sets";
   import {
     AddItemToWardrobe,
     IsItemInWardrobe,
     RemoveItemFromWardrobe,
   } from "$src/helpers/apiHelper";
-  import { GetAnimationForType } from "$src/helpers/animationHelper";
-  import {
-    ConvertRGBToHSL,
-    GetColorFromFileData,
-  } from "$src/helpers/colorHelper";
+
+  import { FetchOutfit } from "$src/api/outfits";
+  import { FetchOutfitSet } from "$src/api/sets";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
-  import Label from "$lib/Label/Label.svelte";
-  import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
-
+  export let data;
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
       "New skin",
@@ -80,7 +76,7 @@
   const itemModelType: Writable<string> = propertyStore(localPackage, "model");
   const itemName: Writable<string> = propertyStore(localPackage, "name");
 
-  const isItemSet = readable($page.params.type == PACKAGE_TYPE.OUTFIT_SET);
+  const isItemSet = readable(data.type == PACKAGE_TYPE.OUTFIT_SET);
   const itemModel: Readable<string> = derived(
     itemModelType,
     ($itemModelType) =>
@@ -93,7 +89,6 @@
   let modelTexture: string = null;
   let loaded = false;
   let isGuest = false;
-  let updatedLayer: OutfitLayer = null;
   let isDragging = false;
   let rendererLayers: FileData[] = [];
   let defaultRenderProvider;
@@ -102,9 +97,9 @@
   let updateAnimation: (animation: any) => void = () => {};
 
   onMount(async () => {
-    let type = $page.params.type;
-    let id = $page.params.id;
-    let variantId = $page.params.variantId;
+    let type = data.type;
+    let id = data.id;
+    let variantId = data.variantId;
     let outfitPackage;
 
     isReadyForData.subscribe(async (readyness) => {
@@ -112,7 +107,7 @@
         loaded = false;
       }
       isGuest = readyness.user == null;
-      if (!loaded) {
+      if (!loaded && readyness.fullReadyness) {
         outfitPackage =
           type == PACKAGE_TYPE.OUTFIT
             ? await FetchOutfit(id)
@@ -124,8 +119,6 @@
           await CreateDefaultRenderProvider($defaultRenderer);
 
         loaded = true;
-        updateTexture();
-
         if (!isGuest) {
           isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
           const varaint = outfitPackage.layers.find(
@@ -143,7 +136,10 @@
             outfitPackage.publisher.id == $currentUser?.id
           )
             addToWardrobe();
+        } else {
+          updateTexture();
         }
+        if (!$isItemSet) sortLayersByColor();
       }
     });
   });
@@ -181,40 +177,27 @@
       undefined,
       $itemModelType
     );
-    if (updatedLayer) {
-      const anim = GetAnimationForType(updatedLayer[$itemModelType]?.type);
-      if (anim) {
-        await updateAnimation(anim);
-        await updateAnimation(DefaultAnimation);
-      }
-    }
+  };
+  const sortLayersByColor = async function () {
+    sortedItemLayers = await sortOutfitLayersByColor(
+      $itemLayers,
+      $itemModelType
+    );
   };
 
   //sharing
   const addToWardrobe = async function () {
-    await AddItemToWardrobe($localPackage);
-    isPackageInWardrobe = true;
+    isPackageInWardrobe = await AddItemToWardrobe($localPackage);
   };
   const removeFromWardrobe = async function () {
-    await RemoveItemFromWardrobe($localPackage.id, $localPackage.type);
-    isPackageInWardrobe = false;
+    isPackageInWardrobe = await RemoveItemFromWardrobe(
+      $localPackage.id,
+      $localPackage.type
+    );
   };
-
-  const sortLayersByColor = async function () {
-    let hues = [];
-    for (let i = 0; i < $itemLayers.length; i++) {
-      let color = ConvertRGBToHSL(
-        await GetColorFromFileData($itemLayers[i][$itemModelType])
-      );
-      hues.push({ h: color.h, item: $itemLayers[i] });
-    }
-    sortedItemLayers = hues.sort((a, b) => a.h - b.h).map((x) => x.item);
-  };
-
   //subs
   itemModelType.subscribe((model) => updateTexture());
   selectedVariant.subscribe((variant) => updateTexture());
-  itemLayers.subscribe((layers) => sortLayersByColor());
 </script>
 
 <div class="item-page">

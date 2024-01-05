@@ -81,6 +81,7 @@ export const AddItemToWardrobe = function (item: OutfitPackage) {
     wardrobeObj.outfits.push(item);
   }
   wardrobe.set(wardrobeObj);
+  return true;
 };
 export const RemoveItemFromWardrobe = function (id, type) {
   let wardrobeObj = get(wardrobe);
@@ -91,6 +92,7 @@ export const RemoveItemFromWardrobe = function (id, type) {
     wardrobeObj.outfits = wardrobeObj.outfits.filter(
       (outfit) => outfit?.id != id
     );
+    return false;
   }
   RemoveLike(id, type);
   wardrobe.update((wardrobe) => {
@@ -132,4 +134,4 @@ export const SplitOutfitPackages = function (packs: OutfitPackage[]) {
     splited = splited.concat(SplitOutfitPackage(pack));
   });
   return splited;
-};  
+};

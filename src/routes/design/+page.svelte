@@ -14,9 +14,11 @@
   import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
   import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
   import DynamicRender from "$lib/render/DynamicRender.svelte";
+  import Dialog from "$lib/Dialog/Dialog.svelte";
+  import OutfitPicker from "$lib/OutfitPicker/OutfitPicker.svelte";
+  import Label from "$lib/Label/Label.svelte";
 
   import {
-    APP_STATE,
     CHANGE_TYPE,
     LAYER_TYPE,
     MODEL_TYPE,
@@ -65,14 +67,11 @@
     GenerateIdForOutfitLayer,
     UploadOutfit,
   } from "$src/api/outfits";
-  import Dialog from "$lib/Dialog/Dialog.svelte";
-  import OutfitPicker from "$lib/OutfitPicker/OutfitPicker.svelte";
   import {
     AddItemToWardrobe,
     FetchWardrobeOutfitsByCategory,
     IsItemInWardrobe,
     RemoveItem,
-    RemoveItemFromWardrobe,
     ShareItem,
     UnshareItem,
     UpdateItemInWardrobe,
@@ -90,7 +89,7 @@
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
-  import Label from "$lib/Label/Label.svelte";
+
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
       "",
@@ -124,7 +123,6 @@
   let loaded = false;
   let isDragging = false;
 
-  let isPackageInWardrobe = false;
   let rendererLayers: FileData[] = [];
   let pickerOutfits = [];
   let pickerCategories = ["ALL"];
@@ -160,10 +158,10 @@
         pickerCategories = Object.keys(categoryCounts).filter(
           (x) => categoryCounts[x] > 0
         );
-        isPackageInWardrobe = IsItemInWardrobe($itemPackage, $wardrobe);
+        let isPackageInWardrobe = IsItemInWardrobe($itemPackage, $wardrobe);
         //patching
         if (!isPackageInWardrobe && $itemPublisher.id == $currentUser?.id)
-          addToWardrobe();
+          AddItemToWardrobe($itemPackage);
         updateTexture();
       }
     });
@@ -302,12 +300,7 @@
   };
   const downloadImage = async () => {
     await ExportImageLayers(rendererLayers, $itemModelType, $itemPackage.name);
-    const anims = GetAnimationForPackageChange(
-      $itemPackage,
-      CHANGE_TYPE.DOWNLOAD,
-      0
-    );
-    anims.forEach((anim) => updateAnimation(anim));
+    applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
   };
 
   //sharing / wardrobe
@@ -320,14 +313,6 @@
     await UnshareItem($itemPackage);
     $itemPackage.isShared = false;
     isShareDialogOpen = false;
-  };
-  const addToWardrobe = async function () {
-    AddItemToWardrobe($itemPackage);
-    isPackageInWardrobe = true;
-  };
-  const removeFromWardrobe = async function () {
-    await RemoveItemFromWardrobe($itemPackage.id, $itemPackage.type);
-    isPackageInWardrobe = false;
   };
   const deletePackage = function () {
     navigateToWardrobe();
@@ -424,8 +409,6 @@
   };
   //subscribtions
   itemPackage.subscribe((pack) => {
-    if (pack == null) return;
-    isPackageInWardrobe = IsItemInWardrobe(pack, $wardrobe);
     updateTexture();
   });
   selectedLayer.subscribe((layer) => (!$isItemSet ? updateTexture() : null));
@@ -435,9 +418,7 @@
         await UploadOutfitSet(data);
       } else await UploadOutfit(data);
     }
-    if (isPackageInWardrobe) {
-      UpdateItemInWardrobe($itemPackage);
-    }
+    UpdateItemInWardrobe($itemPackage);
   });
 </script>
 
@@ -565,7 +546,7 @@
           {:else}
             <Placeholder style="height:66px;margin-bottom:4px;" />
             <Placeholder style="height:66px;margin-bottom:4px;" />
-            {/if}
+          {/if}
           {#if $itemPublisher.id == $currentUser?.id && !$isMobileView}
             <div style="display: flex;flex-wrap:wrap;">
               {#if $isItemSet}
@@ -642,25 +623,6 @@
                   class="icon secondary"
                   >{@html CloudIcon}{#if $isMobileView}
                     {$_("sharePackage")}{/if}</button
-                >
-              {/if}
-            {/if}
-            {#if $itemPublisher.id != $currentUser?.id}
-              {#if isPackageInWardrobe == false}
-                <button
-                  id="add-to-wardrobe"
-                  on:click={addToWardrobe}
-                  title="Add to wardrobe"
-                  class:disabled={!loaded}
-                  class="icon secondary">{@html HearthIcon}</button
-                >
-              {:else}
-                <button
-                  on:click={removeFromWardrobe}
-                  id="add-to-wardrobe"
-                  class:disabled={!loaded}
-                  title="Already in wardrobe"
-                  class="icon">{@html HearthIcon}</button
                 >
               {/if}
             {/if}

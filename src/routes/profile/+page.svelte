@@ -26,7 +26,7 @@
   import { mergeImages } from "$src/helpers/imageMerger";
   import { ImportImage } from "$src/helpers/imageOperations";
   import { logoutUser } from "$src/api/auth";
-  import { navigate, navigateToHome } from "$src/helpers/navigationHelper";
+  import { navigateToHome } from "$src/helpers/navigationHelper";
 
   const userModel = propertyStore(userSettings, "model");
 

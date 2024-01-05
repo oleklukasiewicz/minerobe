@@ -43,14 +43,8 @@
     .item-layers {
       display: flex;
       flex-direction: column;
-      form {
-        margin-top: 8px;
-        gap: 8px;
-        button {
-          flex: 1;
-          min-width: 200px;
-          font-size: larger;
-        }
+      button{
+        font-size:medium;
       }
     }
     #item-description {

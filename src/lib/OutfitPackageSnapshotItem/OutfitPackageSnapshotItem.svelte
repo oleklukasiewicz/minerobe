@@ -74,7 +74,9 @@
           <Label variant="unique" {dense}>{item.publisher.name}</Label>
         {/if} -->
         <div class="item-social-info">
+          {#if item.isShared}
           <SocialInfo data={item.social} dense />
+          {/if}
         </div>
       </div>
       {#if multiple > 0}

@@ -1,7 +1,7 @@
 <script lang="ts">
   import OutfitPicker from "$lib/OutfitPicker/OutfitPicker.svelte";
   import { appState, wardrobe } from "$src/data/cache";
-  import { APP_STATE, MODEL_TYPE } from "$src/data/consts";
+  import { APP_STATE } from "$src/data/consts";
   import { FetchWardrobeOutfitsByCategory } from "$src/helpers/apiHelper";
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   let outfits = [];
@@ -29,7 +29,6 @@
   <OutfitPicker
     bind:loading={isPickerLoading}
     {outfits}
-    modelName={$wardrobe?.studio?.model || MODEL_TYPE.ALEX}
     {categories}
     on:category={fetchByCategory}
   />

@@ -45,10 +45,15 @@ export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
     result = {
       wardrobe: get(wardrobe),
       user: get(currentUser),
+      state: $appState,
+      userReadyness: $appState == APP_STATE.READY|| $appState == APP_STATE.GUEST_READY,
+      fullReadyness: true,
     };
   if ($appState == APP_STATE.USER_READY)
     result = {
       user: get(currentUser),
+      state: $appState,
+      userReadyness: $appState == APP_STATE.READY|| $appState == APP_STATE.GUEST_READY,
     };
   if ($appState == APP_STATE.GUEST_READY) result = true;
   return result;

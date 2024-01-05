@@ -27,6 +27,10 @@
 
   let currentView = "sets";
   let loaded = false;
+  let outfitList = [];
+  let setsList = [];
+  let outfitsCount = {};
+  
   onMount(() => {
     isReadyForData.subscribe((readyness) => {
       loaded = readyness?.wardrobe != null;
@@ -40,9 +44,6 @@
     const newSet = await CreateOutfit(true);
     navigateToDesign(newSet);
   };
-  let outfitList = [];
-  let setsList = [];
-  let outfitsCount = {};
   const setOutfitsList = function (view) {
     if (view == "outfit") outfitList = $wardrobe.outfits;
     else
@@ -67,7 +68,6 @@
   };
   const onItemSelect = function (e) {
     const item = e.detail.item;
-    const variant = e.detail.layer;
     navigateToDesign(item);
   };
 
