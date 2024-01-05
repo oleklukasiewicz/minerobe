@@ -5,13 +5,12 @@
   import { createEventDispatcher, onMount } from "svelte";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
-  import { mergeImages } from "$src/helpers/imageMerger";
 
   export let items: OutfitPackage[] = [];
   export let renderer = null;
   export let dense = true;
   export let ready = false;
-  export let minItemWidth = 165;
+  export let minItemWidth = 175;
   export let withBaseTexture = false;
   export let baseTexture = null;
 
