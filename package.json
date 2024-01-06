@@ -10,6 +10,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
+		"@born05/sveltekit-proxy": "^1.1.1",
 		"@sveltejs/adapter-auto": "^3.0.1",
 		"@sveltejs/kit": "^2.0.6",
 		"svelte": "^4.2.8",
@@ -20,6 +21,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@xmcl/user": "^4.0.1",
 		"color-diff": "^1.4.0",
 		"dotenv": "^16.3.1",
 		"firebase": "^10.7.1",

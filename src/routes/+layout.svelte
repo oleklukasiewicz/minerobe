@@ -11,7 +11,7 @@
 
   import { onMount } from "svelte";
   import { currentUser, isMobileView, setup } from "$src/data/cache";
-  import { getCurrentUser, loginUser } from "$src/api/auth";
+  import { getCurrentUser, loginUser, logoutUser } from "$src/api/auth";
   import { navigateToProfile } from "$src/helpers/navigationHelper";
 
   export const load = async () => {
@@ -23,11 +23,14 @@
   onMount(async () => {
     setup();
     await getCurrentUser();
+    if ($currentUser == null) {
+      await logoutUser();
+    }
   });
   const profileAction = async () => {
     if ($currentUser) {
-     navigateToProfile();
-     isMenuOpened = false;
+      navigateToProfile();
+      isMenuOpened = false;
     } else {
       await loginUser();
     }
@@ -62,23 +65,23 @@
         viewId="design"
         on:click={() => (isMenuOpened = false)}
       />
-     
+
       {#if $isMobileView}
-      <div class="spacer" style="flex:1;" />
-      <button class="dark" style="text-align: left;" on:click={profileAction}>
-        {#if $currentUser != null}
-          <img src={$currentUser.avatar} alt="Avatar" />
-        {:else}
-          <span class="icon-small"> {@html AvatarIcon}</span>
-        {/if}
-        {$currentUser?.name}
-      </button>
+        <div class="spacer" style="flex:1;" />
+        <button class="dark" style="text-align: left;" on:click={profileAction}>
+          {#if $currentUser != null}
+            <img src={$currentUser.avatar} alt="Avatar" />
+          {:else}
+            <span class="icon-small"> {@html AvatarIcon}</span>
+          {/if}
+          {$currentUser?.name}
+        </button>
       {/if}
     </div>
     {#if !$isMobileView}
       <div class="spacer" style="flex:1;" />
-      {/if}
-    <a href="/wardrobe" class:disabled={$currentUser == null }>
+    {/if}
+    <a href="/wardrobe" class:disabled={$currentUser == null}>
       <button
         class="icon subscribtion-button dark"
         class:selected={$page.route.id == "/wardrobe"}
@@ -87,13 +90,13 @@
       </button>
     </a>
     {#if !$isMobileView}
-    <button class="icon avatar-button dark" on:click={profileAction}>
-      {#if $currentUser != null}
-        <img src={$currentUser.avatar} alt="Avatar" />
-      {:else}
-        <span class="icon-small"> {@html AvatarIcon}</span>
-      {/if}
-    </button>
+      <button class="icon avatar-button dark" on:click={profileAction}>
+        {#if $currentUser != null}
+          <img src={$currentUser.avatar} alt="Avatar" />
+        {:else}
+          <span class="icon-small"> {@html AvatarIcon}</span>
+        {/if}
+      </button>
     {/if}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->

@@ -11,5 +11,18 @@ export default defineConfig({
     "process.env": import.meta.env,
   },
   server: {
+    proxy: {
+      "/mcskinapi": {
+        target: "https://api.minecraftservices.com/minecraft/profile/skins",
+        secure: false,
+        changeOrigin: true,
+      },
+      "/xboxlive": {
+        target: "https://user.auth.xboxlive.com",
+        secure: false,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/xboxlive/, ""),
+      },
+    },
   },
 });

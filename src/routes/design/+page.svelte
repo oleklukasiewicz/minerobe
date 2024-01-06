@@ -89,6 +89,7 @@
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
+  import { ChangeSkin } from "$src/services/minecraftservice";
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -300,8 +301,9 @@
     });
   };
   const downloadImage = async () => {
-    await ExportImageLayers(rendererLayers, $itemModelType, $itemPackage.name);
-    applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
+    await ChangeSkin($itemPackage.id,$itemModelType);
+    //await ExportImageLayers(rendererLayers, $itemModelType, $itemPackage.name);
+    //applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
   };
 
   //sharing / wardrobe
