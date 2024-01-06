@@ -3,54 +3,28 @@ import {
   lerp,
   lerpOutCubic,
   isPoseReady,
+  isNextStepReady,
 } from "$data/animation";
 import { MODEL_TYPE } from "$data/consts";
+import { CreateModelAnimationData, RemoveModelAnimationData } from "$src/helpers/animationHelper";
 const NewOutfitBottomAltAnimation = new RenderAnimation(
   function (scene, keepData = false, modelName) {
-    let data: any = {
-      head: scene.getObjectByName("Head"),
-      body: scene.getObjectByName("Body"),
-      leftarm: scene.getObjectByName("LeftArm"),
-      rightarm: scene.getObjectByName("RightArm"),
-      leftleg: scene.getObjectByName("LeftLeg"),
-      rightleg: scene.getObjectByName("RightLeg"),
-    };
-    data.head.parent.remove(data.head);
-
-    data.body.add(data.head);
-    data.head.position.set(0, 0, 0);
-
-    data.leftarm.parent.remove(data.leftarm);
-    data.rightarm.parent.remove(data.rightarm);
-
-    data.body.add(data.leftarm);
-    data.body.add(data.rightarm);
-
-    const armDistanceX = 0.31; // Adjust this value to change the distance of the arms from the body in the x direction
-    const armDistanceZ = 0.0; // Adjust this value to change the distance of
-    // Set the position of the arms relative to the body
-    if (modelName == MODEL_TYPE.STEVE) {
-      data.leftarm.position.set(-armDistanceX, -0.12, -armDistanceZ);
-      data.rightarm.position.set(armDistanceX, -0.12, armDistanceZ);
-    } else {
-      data.leftarm.position.set(-armDistanceX, -0.15, -armDistanceZ);
-      data.rightarm.position.set(armDistanceX, -0.15, armDistanceZ);
-    }
+    let data: any = CreateModelAnimationData(scene);
 
     if (keepData) {
       return data;
     } else {
-      data.isRotatingDown = true;
-      data.downRotation = -30 * (Math.PI / 180);
-      data.bodyDownRotation = 10 * (Math.PI / 180);
+      data.isLookingRight = true;
       data.isLookingLeft = false;
-      data.isLookingRight = false;
-      data.leftRotation = 30 * (Math.PI / 180);
-      data.rightRotation = -30 * (Math.PI / 180);
-      data.armRot = (Math.random() * 10 + 5) * (Math.PI / 180);
-      data.speed = 1;
-      data.angle = 0;
-      data.returnSpeed = 0.01;
+      data.rotationRight = 0.2;
+      data.rotationLeft = -0.2;
+      data.armRotationRight = -0.2;
+      data.armRotationLeft = 0.2;
+      data.bodyPositionLeft = 0.15;
+      data.bodyPositionRight = -0.15;
+      data.headRotationRight = 0.4;
+      data.headRotationLeft = -0.4;
+      data.headRotationDown = -0.9;
     }
     return data;
   },
@@ -62,248 +36,253 @@ const NewOutfitBottomAltAnimation = new RenderAnimation(
     const epsilon = 0.01; // Adjust this value to change the precision of the equality check
     const amplitude = 0.025;
     const elapsedTime = clock;
-
     const cSin = 1 * Math.sin(clock);
     if (data.head) {
-      if (data.isRotatingDown || data.isLookingLeft || data.isLookingRight) {
-        data.rightleg.rotation.x = lerpOutCubic(
+      if (data.isLookingRight) {
+        data.leftLegPivot.rotation.z = lerpOutCubic(
           clock,
-          data.rightleg.rotation.x,
-          -0.2 + 0.06 * cSin,
-          data.returnSpeed
-        );
-        data.rightleg.position.z = lerpOutCubic(
-          clock,
-          data.rightleg.position.z,
-          -0.02 + 0.04 * cSin,
-          data.returnSpeed
-        );
-        const delay = 0.5; // Adjust this value to change the delay
-
-        data.leftleg.rotation.x = lerpOutCubic(
-          clock,
-          data.leftleg.rotation.x,
-          0 + 0.03 * Math.sin(elapsedRenderTime + delay),
-          data.returnSpeed
-        );
-        data.leftleg.position.z = lerpOutCubic(
-          clock,
-          data.leftleg.position.z,
-          0 + 0.03 * Math.sin(elapsedRenderTime + delay),
-          data.returnSpeed
-        );
-      }
-      if (data.isRotatingDown) {
-        data.isLookingLeft = true;
-        // Interpolate between the current rotation and the down rotation
-        data.leftleg.rotation.x = lerpOutCubic(
-          clock,
-          data.leftleg.rotation.x,
-          0.01,
+          data.leftLegPivot.rotation.z,
+          data.rotationRight,
           resetSpeed
         );
-        data.head.rotation.x = lerpOutCubic(
+        data.rightLegPivot.rotation.z = lerpOutCubic(
           clock,
-          data.head.rotation.x,
-          data.downRotation,
+          data.rightLegPivot.rotation.z,
+          data.rotationRight,
           resetSpeed
         );
-        data.leftarm.rotation.z = lerpOutCubic(
+        data.rightArmPivot.rotation.z = lerpOutCubic(
           clock,
-          data.leftarm.rotation.z,
-          data.armRot * -1,
+          data.rightArmPivot.rotation.z,
+          data.armRotationRight,
           resetSpeed
         );
-
-        data.rightarm.rotation.z = lerpOutCubic(
+        data.leftArmPivot.rotation.z = lerpOutCubic(
           clock,
-          data.rightarm.rotation.z,
-          data.armRot,
+          data.leftArmPivot.rotation.z,
+          data.armRotationRight,
           resetSpeed
         );
-
-        // If the head is close enough to the down rotation, set the rotation to the down rotation
-        if (Math.abs(data.head.rotation.x - data.downRotation) < epsilon) {
-          data.head.rotation.x = data.downRotation;
-          data.isRotatingDown = false;
-        }
-      }
-      if (data.isLookingLeft) {
-        // Interpolate between the current rotation and the left rotation
-        data.head.rotation.y = lerpOutCubic(
-          clock,
-          data.head.rotation.y,
-          data.leftRotation,
-          resetSpeed
-        );
-        data.body.rotation.z = lerpOutCubic(
-          clock,
-          data.body.rotation.z,
-          data.bodyDownRotation,
-          resetSpeed
-        );
-        data.leftleg.rotation.z = lerpOutCubic(
-          clock,
-          data.leftleg.rotation.z,
-          data.bodyDownRotation * -1,
-          resetSpeed
-        );
-        data.leftleg.position.x = lerpOutCubic(
-          clock,
-          data.leftleg.position.x,
-          0.1,
-          resetSpeed
-        );
-        data.rightleg.position.x = lerpOutCubic(
-          clock,
-          data.rightleg.position.x,
-          0.34,
-          resetSpeed
-        );
-        data.rightleg.rotation.z = lerpOutCubic(
-          clock,
-          data.rightleg.rotation.z,
-          data.bodyDownRotation * -1,
-          resetSpeed
-        );
-        // If the head is close enough to the left rotation, set the rotation to the left rotation
-        if (Math.abs(data.head.rotation.y - data.leftRotation) < epsilon) {
-          data.head.rotation.y = data.leftRotation;
-          data.isLookingLeft = false;
-          data.isLookingRight = true;
-        }
-      } else if (data.isLookingRight) {
-        // Interpolate between the current rotation and the right rotation
-        data.head.rotation.y = lerpOutCubic(
-          clock,
-          data.head.rotation.y,
-          data.rightRotation,
-          resetSpeed
-        );
-        data.body.rotation.z = lerpOutCubic(
-          clock,
-          data.body.rotation.z,
-          data.bodyDownRotation * -1,
-          resetSpeed
-        );
-        data.leftleg.rotation.z = lerpOutCubic(
-          clock,
-          data.leftleg.rotation.z,
-          data.bodyDownRotation,
-          resetSpeed
-        );
-        data.leftleg.position.x = lerpOutCubic(
-          clock,
-          data.leftleg.position.x,
-          -0.21,
-          resetSpeed
-        );
-        data.rightleg.position.x = lerpOutCubic(
-          clock,
-          data.rightleg.position.x,
-          0.03,
-          resetSpeed
-        );
-        data.rightleg.rotation.z = lerpOutCubic(
-          clock,
-          data.rightleg.rotation.z,
-          data.bodyDownRotation,
-          resetSpeed
-        );
-        // If the head is close enough to the right rotation, set the rotation to the right rotation
-        if (Math.abs(data.head.rotation.y - data.rightRotation) < epsilon) {
-          data.head.rotation.y = data.rightRotation;
-          data.isLookingRight = false;
-        }
-      } else {
-        // Interpolate between the current rotation and 0
-        data.head.rotation.x = lerpOutCubic(
-          clock,
-          data.head.rotation.x,
-          0,
-          resetSpeed
-        );
-        data.body.rotation.z = lerpOutCubic(
-          clock,
-          data.body.rotation.z,
-          0,
-          resetSpeed
-        );
-        data.head.rotation.z = lerpOutCubic(
-          clock,
-          data.head.rotation.z,
-          0,
-          resetSpeed
-        );
-        data.leftleg.position.x = lerpOutCubic(
-          clock,
-          data.leftleg.position.x,
-          -0.11,
-          data.returnSpeed
-        );
-        data.rightleg.position.x = lerpOutCubic(
-          clock,
-          data.rightleg.position.x,
-          0.13,
-          data.returnSpeed
-        );
-        data.head.rotation.y = lerpOutCubic(
-          clock,
-          data.head.rotation.y,
-          0,
-          resetSpeed
-        );
-
-        data.leftarm.rotation.z = lerpOutCubic(
-          clock,
-          data.leftarm.rotation.z,
-          0,
-          resetSpeed
-        );
-        data.leftleg.rotation.z = lerpOutCubic(
-          clock,
-          data.leftleg.rotation.z,
-          0,
-          resetSpeed
-        );
-        data.rightleg.rotation.z = lerpOutCubic(
-          clock,
-          data.rightleg.rotation.z,
-          0,
-          resetSpeed
-        );
-        data.rightarm.rotation.z = lerpOutCubic(
-          clock,
-          data.rightarm.rotation.z,
-          0,
-          resetSpeed
-        );
-
-        data.body.position.y = lerpOutCubic(
-          clock,
-          data.body.position.y,
-          1.47,
-          resetSpeed
-        );
-        // If the head is close enough to 0, set the rotation to 0
+          data.bodyPivot.position.x = lerpOutCubic(
+            clock,
+            data.bodyPivot.position.x,
+            data.bodyPositionRight,
+            resetSpeed
+          );
+          data.headPivot.rotation.y = lerpOutCubic(
+            clock,
+            data.headPivot.rotation.y,
+            data.headRotationRight,
+            resetSpeed
+          );
+          data.headPivot.rotation.x = lerpOutCubic(
+            clock,
+            data.headPivot.rotation.x,
+            data.headRotationDown,
+            resetSpeed
+          );
         if (
-          isPoseReady([
-            { value: data.head.rotation.x, target: 0 },
-            { value: data.body.rotation.z, target: 0 },
-            { value: data.head.rotation.y, target: 0 },
-            { value: data.head.rotation.z, target: 0 },
-            { value: data.leftleg.rotation.z, target: 0 },
-            { value: data.rightleg.rotation.z, target: 0 },
-            { value: data.leftleg.position.x, target: 0 },
-            { value: data.leftarm.rotation.z, target: 0 },
-            { value: data.rightarm.rotation.z, target: 0 },
-          ])
+          isNextStepReady(
+            [
+              {
+                value: data.leftLegPivot.rotation.z,
+                target: data.rotationRight,
+              },
+              {
+                value: data.rightLegPivot.rotation.z,
+                target: data.rotationRight,
+              },
+              {
+                value: data.rightArmPivot.rotation.z,
+                target: data.armRotationRight,
+              },
+              {
+                value: data.leftArmPivot.rotation.z,
+                target: data.armRotationRight,
+              },
+              {
+                value: data.bodyPivot.position.x,
+                target: data.bodyPositionRight,
+              },
+              {
+                value: data.headPivot.rotation.y,
+                target: data.headRotationRight,
+              },
+              {
+                value: data.headPivot.rotation.x,
+                target: data.headRotationDown,
+              },
+            ],epsilon
+          )
         ) {
+          data.rightLegPivot.rotation.z = data.rotationRight;
+          data.leftLegPivot.rotation.z = data.rotationRight;
+          data.rightArmPivot.rotation.z = data.armRotationRight;
+          data.leftArmPivot.rotation.z = data.armRotationRight;
+          data.bodyPivot.position.x = data.bodyPositionRight;
+          data.headPivot.rotation.y = data.headRotationRight;
+          data.headPivot.rotation.x = data.headRotationDown;
+          data.isLookingRight = false;
+          data.isLookingLeft = true;
+        }
+      }
+      if(data.isLookingLeft){
+        data.leftLegPivot.rotation.z = lerpOutCubic(
+          clock,
+          data.leftLegPivot.rotation.z,
+          data.rotationLeft,
+          resetSpeed
+        );
+        data.rightLegPivot.rotation.z = lerpOutCubic(
+          clock,
+          data.rightLegPivot.rotation.z,
+          data.rotationLeft,
+          resetSpeed
+        );
+        data.rightArmPivot.rotation.z = lerpOutCubic(
+          clock,
+          data.rightArmPivot.rotation.z,
+          data.armRotationLeft,
+          resetSpeed
+        );
+        data.leftArmPivot.rotation.z = lerpOutCubic(
+          clock,
+          data.leftArmPivot.rotation.z,
+          data.armRotationLeft,
+          resetSpeed
+        );
+        data.bodyPivot.position.x = lerpOutCubic(
+          clock,
+          data.bodyPivot.position.x,
+          data.bodyPositionLeft,
+          resetSpeed
+        );
+        data.headPivot.rotation.y = lerpOutCubic(
+          clock,
+          data.headPivot.rotation.y,
+          data.headRotationLeft,
+          resetSpeed
+        );
+        if (
+          isNextStepReady(
+            [
+              {
+                value: data.leftLegPivot.rotation.z,
+                target: data.rotationLeft,
+              },
+              {
+                value: data.rightLegPivot.rotation.z,
+                target: data.rotationLeft1,
+              },
+              {
+                value: data.rightArmPivot.rotation.z,
+                target: data.armRotationLeft,
+              },
+              {
+                value: data.leftArmPivot.rotation.z,
+                target: data.armRotationLeft,
+              },
+              {
+                value: data.bodyPivot.position.x,
+                target: data.bodyPositionLeft,
+              },
+              {
+                value: data.headPivot.rotation.y,
+                target: data.headRotationLeft,
+              },
+            ],epsilon
+          )
+        ) {
+          data.rightLegPivot.rotation.z =data.rotationLeft;
+          data.leftLegPivot.rotation.z = data.rotationLeft;
+          data.rightArmPivot.rotation.z = data.armRotationLeft;
+          data.leftArmPivot.rotation.z = data.armRotationLeft;
+          data.bodyPivot.position.x = data.bodyPositionLeft;
+          data.headPivot.rotation.y = data.headRotationLeft;
+          data.isLookingRight = false;
+          data.isLookingLeft = false;
+        }
+      }
+      if(data.isLookingRight == false && data.isLookingLeft == false){
+        data.leftLegPivot.rotation.z = lerpOutCubic(
+          clock,
+          data.leftLegPivot.rotation.z,
+          0,
+          resetSpeed
+        );
+        data.rightLegPivot.rotation.z = lerpOutCubic(
+          clock,
+          data.rightLegPivot.rotation.z,
+          0,
+          resetSpeed
+        );
+        data.rightArmPivot.rotation.z = lerpOutCubic(
+          clock,
+          data.rightArmPivot.rotation.z,
+          0,
+          resetSpeed
+        );
+        data.leftArmPivot.rotation.z = lerpOutCubic(
+          clock,
+          data.leftArmPivot.rotation.z,
+          0,
+          resetSpeed
+        );
+        data.bodyPivot.position.x = lerpOutCubic(
+          clock,
+          data.bodyPivot.position.x,
+          0,
+          resetSpeed
+        );
+        data.headPivot.rotation.y = lerpOutCubic(
+          clock,
+          data.headPivot.rotation.y,
+          0,
+          resetSpeed
+        );
+        data.headPivot.rotation.x = lerpOutCubic(
+          clock,
+          data.headPivot.rotation.x,
+          0,
+          resetSpeed
+        );
+        if( isNextStepReady(
+          [{
+            value: data.leftLegPivot.rotation.z,
+            target: 0,
+          },
+          {
+            value: data.rightLegPivot.rotation.z,
+            target: 0,
+          },
+          {
+            value: data.rightArmPivot.rotation.z,
+            target: 0,
+          },
+          {
+            value: data.leftArmPivot.rotation.z,
+            target: 0,
+          },
+          {
+            value: data.bodyPivot.position.x,
+            target: 0,
+          },
+          {
+            value: data.headPivot.rotation.y,
+            target: 0,
+          },
+          {
+            value: data.headPivot.rotation.x,
+            target: 0,
+          }],epsilon
+        ))
+        {
+          RemoveModelAnimationData(data);
           return true;
         }
-        return false;
       }
     }
-  }
+    return false;
+  },
 );
 export default NewOutfitBottomAltAnimation;

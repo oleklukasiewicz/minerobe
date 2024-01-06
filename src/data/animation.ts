@@ -26,3 +26,12 @@ export function isPoseReady(poses, epsilon = 0.003) {
   });
   return isPoseReady;
 }
+export function isNextStepReady(poses, epsilon = 0.003) {
+  let isPoseReady = true;
+  poses.forEach((pose) => {
+    if (Math.abs( pose.value - pose.target) > epsilon) {
+      isPoseReady = false;
+    }
+  });
+  return isPoseReady;
+}
