@@ -100,6 +100,7 @@ export const RemoveItemFromWardrobe = function (id, type) {
     wardrobe.outfits = wardrobeObj.outfits;
     return wardrobe;
   });
+  return false;
 };
 export const IsItemInWardrobe = function (item, wardrobe) {
   if (item.type == PACKAGE_TYPE.OUTFIT_SET) {

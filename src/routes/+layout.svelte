@@ -62,6 +62,7 @@
         on:click={() => (isMenuOpened = false)}
       />
       <NavigationItem
+        disabled={$currentUser == null}
         label={$_("navigation.design")}
         viewId="design"
         on:click={() => (isMenuOpened = false)}

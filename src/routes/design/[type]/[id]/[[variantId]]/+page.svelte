@@ -190,12 +190,14 @@
   //sharing
   const addToWardrobe = async function () {
     isPackageInWardrobe = await AddItemToWardrobe($localPackage);
+    $localPackage.social.likes += 1;
   };
   const removeFromWardrobe = async function () {
     isPackageInWardrobe = await RemoveItemFromWardrobe(
       $localPackage.id,
       $localPackage.type
     );
+    $localPackage.social.likes -= 1;
   };
   //subs
   itemModelType.subscribe((model) => updateTexture());

@@ -7,7 +7,10 @@
     isReadyForData,
     userSettings,
   } from "$src/data/cache";
-  import { navigateToDesign } from "$src/helpers/navigationHelper";
+  import {
+    navigateToDesign,
+    navigateToOutfitPackage,
+  } from "$src/helpers/navigationHelper";
   import { onMount } from "svelte";
   import PlusIcon from "$icons/plus.svg?raw";
   import CategoryMenu from "$lib/CategoryMenu/CategoryMenu.svelte";
@@ -68,7 +71,8 @@
   };
   const onItemSelect = function (e) {
     const item = e.detail.item;
-    navigateToDesign(item);
+    if (item.publisher.id != $currentUser.id) navigateToOutfitPackage(item);
+    else navigateToDesign(item);
   };
 
   $: setOutfitsList(currentView);

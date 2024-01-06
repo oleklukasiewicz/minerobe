@@ -1,5 +1,5 @@
 import { get } from "svelte/store";
-import { currentUser } from "../data/cache";
+import { currentUser, userSettings } from "../data/cache";
 import {
   GenerateIdForCollection,
   GetDocument,
@@ -50,6 +50,7 @@ export const loginUser = async function () {
 export const logoutUser = async function () {
   await logout();
   currentUser.set(null);
+  userSettings.set(null);
 };
 const createUser = async function (user: any): Promise<MinerobeUser> {
   const userID = GenerateIdForCollection(USER_PATH);
