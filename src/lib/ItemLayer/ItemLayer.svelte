@@ -8,6 +8,7 @@
   import DownIcon from "$src/icons/chevron-down.svg?raw";
   import DeleteIcon from "$src/icons/close.svg?raw";
   import UserPlusIcon from "$src/icons/user-plus.svg?raw";
+  import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
   import { LAYER_TYPE } from "$src/data/consts";
   import OutfitLayerRender from "$lib/render/OutfitLayerRender.svelte";
   import { RenderProvider } from "$src/data/render";
@@ -24,6 +25,7 @@
   export let selectable = false;
   export let multiVariant = true;
   export let showLabels = true;
+  export let link = null;
   export let label = item?.name || item[modelName]?.fileName || "New layer";
 
   let dispatch = createEventDispatcher();
@@ -85,7 +87,6 @@
   class="item-layer"
   class:selected
   class:selectable
-  class:disabled={readonly}
   class:drop-hover={isDragging &&
     multiVariant &&
     item.type != LAYER_TYPE.REMOTE}
@@ -104,7 +105,7 @@
     <span
       ><input
         bind:value={label}
-        class:disabled={item.type == LAYER_TYPE.REMOTE}
+        class:disabled={item.type == LAYER_TYPE.REMOTE || readonly}
       />
       <br /><Label variant="common">{item[modelName].type}</Label>
       {#if showLabels}
@@ -116,11 +117,22 @@
       {/if}
     </span>
   </div>
+  {#if link}
+    <a href={link} target="_blank">
+      <button
+      style="margin: 10px;"
+        class="secondary icon icon-small"
+        title={"Go to outfit page"}
+      >
+        {@html ExternalLinkIcon}</button
+      >
+    </a>
+  {/if}
   {#if !readonly}
-    <div class="actions">
+    <div class="actions" >
       {#if multiVariant && item.type != LAYER_TYPE.REMOTE}
         <button
-          class="secondary icon"
+          class="secondary icon icon-small"
           title={$_("newLayerVariant")}
           on:click|stopPropagation={addVariant}
         >
@@ -132,7 +144,7 @@
       {/if}
       {#if controls}
         <button
-          class="tertiary icon"
+          class="tertiary icon icon-small"
           title={$_("up")}
           on:click|stopPropagation={up}
           class:disabled={!canUp}
@@ -140,7 +152,7 @@
           {@html UpIcon}</button
         >
         <button
-          class="tertiary icon"
+          class="tertiary icon icon-small"
           title={$_("down")}
           on:click|stopPropagation={down}
           class:disabled={!canDown}>{@html DownIcon}</button
@@ -148,7 +160,7 @@
       {/if}
       <div class="separator vertical" />
       <button
-        class="tertiary icon"
+        class="tertiary icon icon-small"
         title={$_("remove")}
         on:click|stopPropagation={remove}
       >

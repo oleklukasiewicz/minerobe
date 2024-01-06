@@ -36,7 +36,7 @@
     isReadyForData,
     userSettings,
   } from "$data/cache";
-  import { MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
+  import { LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
@@ -274,6 +274,9 @@
                 selectable={!$isItemSet}
                 controls={$isItemSet}
                 modelName={$localPackage.model}
+                link={item.type == LAYER_TYPE.REMOTE
+                  ? "/design/outfit/" + item.id + "/" + item.variantId
+                  : null}
                 bind:label={item.name}
                 readonly={true}
               />
