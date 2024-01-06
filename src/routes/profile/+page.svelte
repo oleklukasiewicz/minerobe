@@ -13,6 +13,7 @@
     planksTexture,
     steveModel,
     userSettings,
+    wardrobe,
   } from "$src/data/cache";
   import { MODEL_TYPE } from "$src/data/consts";
   import {
@@ -28,6 +29,7 @@
   import { logoutUser } from "$src/api/auth";
   import { navigateToHome } from "$src/helpers/navigationHelper";
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
+  import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
 
   const userModel = propertyStore(userSettings, "model");
 
@@ -88,6 +90,7 @@
       {/if}
     </div>
     <div class="render-actions">
+      <SectionTitle label="model" placeholder={loading} />
       {#if !loading}
         <ModelSelection bind:group={$userModel} />
       {:else}
@@ -118,6 +121,17 @@
     <SectionTitle label="Profile" placeholder={loading} />
     {#if !loading}
       <h1>{$currentUser?.name}</h1>
+      <div>
+        <SectionTitle label="Total" placeholder={loading} />
+        <SocialInfo
+          data={{
+            likes: $wardrobe.local.totalLikes,
+            downloads: $wardrobe.local.totalDownloads,
+            isFeatured: false,
+          }}
+        />
+        <br />
+      </div>
       <button on:click={logout}>Logout</button>
     {:else}
       <Placeholder style="height:46px;margin-bottom:16px;" />

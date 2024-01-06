@@ -3,6 +3,66 @@ import { LAYER_TYPE, MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "./consts";
 import { GenerateIdForCollection } from "./firebase";
 import { currentUser } from "./cache";
 
+//base
+export class OutfitPackage {
+  name: string;
+  model: string;
+  type: string;
+  layers: OutfitLayer[];
+  publisher: MinerobeUser;
+  description: string;
+  id: string;
+  isShared: boolean;
+  social: PackageSocialData;
+  outfitType: string;
+  local: any;
+  createdAt: Date;
+  modifiedAt: Date;
+  constructor(
+    name: string,
+    model: string,
+    layers: OutfitLayer[],
+    type: string = PACKAGE_TYPE.OUTFIT,
+    publisher: MinerobeUser = get(currentUser),
+    id: string = GenerateIdForCollection("dummy"),
+    isShared: boolean = false,
+    social: PackageSocialData = new PackageSocialData(),
+    description: string = "",
+    outfitType: string = OUTFIT_TYPE.DEFAULT
+  ) {
+    this.name = name;
+    this.model = model;
+    this.layers = layers;
+    this.type = type;
+    this.publisher = publisher;
+    this.id = id;
+    this.isShared = isShared;
+    this.social = social;
+    this.description = description;
+    this.outfitType = outfitType;
+    this.createdAt = new Date();
+  }
+}
+export class WardrobePackage {
+  id: string;
+  outfits: OutfitPackage[];
+  sets: OutfitPackage[];
+  studio: OutfitPackageLink;
+  local: any;
+  constructor(
+    id: string,
+    outfits: OutfitPackage[],
+    sets: OutfitPackage[] = [],
+    studio: OutfitPackageLink = null
+  ) {
+    this.id = id;
+    this.outfits = outfits;
+    this.studio = studio;
+    this.sets = sets;
+  }
+}
+
+//layers and files
 export class FileData {
   fileName: string;
   content: string;
@@ -51,6 +111,7 @@ export class OutfitLayer {
     }
   }
 }
+//links
 export class OutfitLayerLink {
   id: string;
   type: string;
@@ -79,81 +140,8 @@ export class OutfitPackageLink {
     this.type = type;
   }
 }
-export class OutfitPackage {
-  name: string;
-  model: string;
-  type: string;
-  layers: OutfitLayer[];
-  publisher: MinerobeUser;
-  description: string;
-  id: string;
-  isShared: boolean;
-  social: PackageSocialData;
-  outfitType: string;
-  local: any;
-  createdAt: Date;
-  modifiedAt: Date;
-  constructor(
-    name: string,
-    model: string,
-    layers: OutfitLayer[],
-    type: string = PACKAGE_TYPE.OUTFIT,
-    publisher: MinerobeUser = get(currentUser),
-    id: string = GenerateIdForCollection("dummy"),
-    isShared: boolean = false,
-    social: PackageSocialData = new PackageSocialData(),
-    description: string = "",
-    outfitType: string = OUTFIT_TYPE.DEFAULT
-  ) {
-    this.name = name;
-    this.model = model;
-    this.layers = layers;
-    this.type = type;
-    this.publisher = publisher;
-    this.id = id;
-    this.isShared = isShared;
-    this.social = social;
-    this.description = description;
-    this.outfitType = outfitType;
-    this.createdAt = new Date();
-  }
-}
-export class WardrobePackage {
-  id: string;
-  outfits: OutfitPackage[];
-  sets: OutfitPackage[];
-  studio: OutfitPackageLink;
-  constructor(
-    id: string,
-    outfits: OutfitPackage[],
-    sets: OutfitPackage[] = [],
-    studio: OutfitPackageLink = null
-  ) {
-    this.id = id;
-    this.outfits = outfits;
-    this.studio = studio;
-    this.sets = sets;
-  }
-}
-export class MinerobeUser {
-  id: string;
-  name: string;
-  avatar: string;
-  constructor(id: string, name: string, avatar: string) {
-    this.id = id;
-    this.name = name;
-    this.avatar = avatar;
-  }
-}
-export class MinerobeUserLink {
-  id: string;
-  userId: string;
-  constructor(id: string, userId: string) {
-    this.id = id;
-    this.userId = userId;
-  }
-}
 
+//social
 export class PackageSocialData {
   likes: number;
   isFeatured: boolean;
@@ -168,6 +156,7 @@ export class PackageSocialData {
     this.downloads = downloads;
   }
 }
+//view
 export class LandingPageData {
   createdAt: Date;
   banner: string;
@@ -191,6 +180,7 @@ export class LandingPageData {
     this.mostRecent = mostRecent;
   }
 }
+//query
 export class OutfitPackageQueryData {
   id: string;
   variantId: string;
@@ -211,6 +201,26 @@ export class OutfitPackageQueryData {
   modifiedAt: Date;
 }
 
+//user
+export class MinerobeUser {
+  id: string;
+  name: string;
+  avatar: string;
+  constructor(id: string, name: string, avatar: string) {
+    this.id = id;
+    this.name = name;
+    this.avatar = avatar;
+  }
+}
+export class MinerobeUserLink {
+  id: string;
+  userId: string;
+  constructor(id: string, userId: string) {
+    this.id = id;
+    this.userId = userId;
+  }
+}
+//settings
 export class MinerobeUserSettings {
   userId: string;
   baseTexture: string;

@@ -1,5 +1,5 @@
 #profile-view {
-  height: 100vh;
+  height: 100%;
   max-width: 100vw;
   display: grid;
     grid-template-columns: auto 1fr;
@@ -40,6 +40,8 @@
   .data-area {
     padding: 30px;
     box-sizing: border-box;
+    min-height:  calc(100vh - 240px);
+    display: table;
   }
   &.mobile {
     grid-template-columns: auto;

@@ -22,7 +22,8 @@
     "explore": "Explore",
     "design": "Design",
     "appname": "Minerobe",
-    "home": "Home"
+    "home": "Home",
+    "login": "Log in"
   },
   "package": "Package",
   "importPackage": "Import package",

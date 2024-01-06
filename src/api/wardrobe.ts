@@ -6,8 +6,8 @@ import {
 } from "$src/data/common";
 import { GetDocument, SetDocument } from "$src/data/firebase";
 import { get } from "svelte/store";
-import {FetchOutfitSetSnapshotFromLink } from "./sets";
-import {FetchOutfitSnapshotFromLink } from "./outfits";
+import { FetchOutfitSetSnapshotFromLink } from "./sets";
+import { FetchOutfitSnapshotFromLink } from "./outfits";
 
 const WARDROBE_PATH = "wardrobes";
 
@@ -19,12 +19,14 @@ export const ParseWardrobeToDatabase = function (pack: WardrobePackage) {
   data.outfits = data.outfits.map(
     (item) => new OutfitPackageLink(item.id, item.model) as OutfitPackage
   );
+  delete data.local;
   return data;
 };
 export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
   const parsedSets = Promise.all(
     data.sets.map(
-      async (item: OutfitPackageLink) => await FetchOutfitSetSnapshotFromLink(item)
+      async (item: OutfitPackageLink) =>
+        await FetchOutfitSetSnapshotFromLink(item)
     )
   );
   const parsedOutfits = Promise.all(
@@ -35,6 +37,22 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
 
   data.sets = (await parsedSets).filter((item) => item != null);
   data.outfits = (await parsedOutfits).filter((item) => item != null);
+  let totalLikes = 0;
+  let totalDownloads = 0;
+  data.outfits.forEach((item) => {
+    totalLikes += item.social.likes;
+    totalDownloads += item.social.downloads || 0;
+  });
+  data.sets.forEach((item) => {
+    totalLikes += item.social.likes;
+    totalDownloads += item.social.downloads || 0;
+  });
+  const local = {
+    totalLikes,
+    totalDownloads,
+  };
+  data.local = local;
+
   return data;
 };
 export const FetchWardrobe = async function () {

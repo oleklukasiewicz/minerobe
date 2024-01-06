@@ -33,6 +33,7 @@
       isMenuOpened = false;
     } else {
       await loginUser();
+      isMenuOpened = false;
     }
   };
   let isMenuOpened = false;
@@ -71,10 +72,15 @@
         <button class="dark" style="text-align: left;" on:click={profileAction}>
           {#if $currentUser != null}
             <img src={$currentUser.avatar} alt="Avatar" />
+            {$currentUser?.name}
           {:else}
             <span class="icon-small"> {@html AvatarIcon}</span>
+            <span
+              style="vertical-align: top;
+            margin-top: 4px;
+            display: inline-block;">{$_("navigation.login")}</span
+            >
           {/if}
-          {$currentUser?.name}
         </button>
       {/if}
     </div>
