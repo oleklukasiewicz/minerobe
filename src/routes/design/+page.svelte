@@ -301,9 +301,9 @@
     });
   };
   const downloadImage = async () => {
-    await ChangeSkin($itemPackage.id,$itemModelType);
-    //await ExportImageLayers(rendererLayers, $itemModelType, $itemPackage.name);
-    //applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
+    //await ChangeSkin($itemPackage.id,$itemModelType);
+    await ExportImageLayers(rendererLayers, $itemModelType, $itemPackage.name);
+    applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
   };
 
   //sharing / wardrobe
