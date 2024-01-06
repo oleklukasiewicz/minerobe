@@ -20,17 +20,15 @@
   onMount(async () => {
     if (renderProvider == null) return;
     snapshot.provider = renderProvider;
-    snapshot.provider.camera = new THREE.OrthographicCamera();
 
     snapshot.node = renderNode;
     snapshot.tempNode = tempNode;
-    snapshot.texture = item[modelName].content;
-    if (snapshot.texture == null || snapshot.node == null) return;
-    await RenderFromSnapshot(snapshot);
+    updateSnapshot(item);
   });
   const updateSnapshot = async (model) => {
     snapshot.provider = renderProvider;
     snapshot.texture = item[modelName].content;
+    snapshot.cameraOptions = GetCameraConfigForType(item[modelName].type);
     snapshot.provider.camera = new THREE.OrthographicCamera();
     if (snapshot.texture == null || snapshot.node == null) return;
     await RenderFromSnapshot(snapshot);

@@ -15,7 +15,6 @@
   import OutfitPackageSnapshotRender from "$lib/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
   import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
-  import { GetCameraConfigForType } from "$src/helpers/renderHelper";
 
   export let item: OutfitPackage = null;
   export let dense = false;
