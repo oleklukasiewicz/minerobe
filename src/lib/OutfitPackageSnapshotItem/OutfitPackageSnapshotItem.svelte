@@ -14,8 +14,8 @@
   } from "$src/helpers/colorHelper";
   import OutfitPackageSnapshotRender from "$lib/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
-  import Label from "$lib/Label/Label.svelte";
   import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
+  import { GetCameraConfigForType } from "$src/helpers/renderHelper";
 
   export let item: OutfitPackage = null;
   export let dense = false;
@@ -75,7 +75,7 @@
         {/if} -->
         <div class="item-social-info">
           {#if item.isShared}
-          <SocialInfo data={item.social} dense />
+            <SocialInfo data={item.social} dense />
           {/if}
         </div>
       </div>

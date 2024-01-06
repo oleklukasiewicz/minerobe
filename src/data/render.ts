@@ -77,7 +77,6 @@ export const RenderFromSnapshot = async function (snapshot: RenderSnapshot) {
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
   if(width==0 || height==0) return false;
-
   renderer.setPixelRatio(window.devicePixelRatio);
   const canvasSizeMultiplier = 2; // Adjust this value as needed
   renderer.setSize(

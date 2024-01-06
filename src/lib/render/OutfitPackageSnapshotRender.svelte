@@ -3,6 +3,7 @@
   import type { OutfitPackage } from "$src/data/common";
   import { OUTFIT_TYPE } from "$src/data/consts";
   import {
+    CameraConfig,
     RenderFromSnapshot,
     RenderProvider,
     RenderSnapshot,
@@ -12,7 +13,8 @@
   import { mergeImages } from "$src/helpers/imageMerger";
 
   export let item: OutfitPackage = null;
-  export let renderProvider: RenderProvider=null;
+  export let renderProvider: RenderProvider = null;
+  export let cameraOptions: CameraConfig = null;
   export const snapshot: RenderSnapshot = new RenderSnapshot();
 
   let renderNode: HTMLImageElement;
@@ -22,7 +24,6 @@
     if (renderProvider == null || item.layers.length == 0) return;
 
     snapshot.provider = renderProvider;
-    snapshot.provider.camera = new THREE.OrthographicCamera();
 
     snapshot.node = renderNode;
     snapshot.tempNode = tempNode;
@@ -36,9 +37,12 @@
       );
       snapshot.texture = mergedLayers;
     }
-    snapshot.cameraOptions = GetCameraConfigForType(
-      item.type != OUTFIT_TYPE.OUTFIT_SET ? item.outfitType : item.type
-    );
+    snapshot.cameraOptions =
+      cameraOptions ||
+      GetCameraConfigForType(
+        item.type != OUTFIT_TYPE.OUTFIT_SET ? item.outfitType : item.type
+      );
+    snapshot.provider.camera = new THREE.OrthographicCamera();
     await RenderFromSnapshot(snapshot);
   });
 </script>

@@ -72,7 +72,7 @@
 <div
   class="outfit-package-list"
   class:dense
-  style=" grid-template-columns: repeat(auto-fill, minmax({minItemWidth}px, 1fr));"
+  style="grid-template-columns: repeat(auto-fit, minmax({minItemWidth}px, 1fr));"
 >
   {#if ready}
     {#each normalizedItems as item (item.id + item.layers[0]?.variantId)}
@@ -91,11 +91,10 @@
 <style lang="scss">
   .outfit-package-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 4px;
     max-width: 100%;
     &.dense {
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
   }
 </style>

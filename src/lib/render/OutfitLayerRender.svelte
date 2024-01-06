@@ -25,7 +25,6 @@
     snapshot.node = renderNode;
     snapshot.tempNode = tempNode;
     snapshot.texture = item[modelName].content;
-    snapshot.cameraOptions = GetCameraConfigForType(item[modelName].type);
     if (snapshot.texture == null || snapshot.node == null) return;
     await RenderFromSnapshot(snapshot);
   });
@@ -33,7 +32,6 @@
     snapshot.provider = renderProvider;
     snapshot.texture = item[modelName].content;
     snapshot.provider.camera = new THREE.OrthographicCamera();
-    snapshot.cameraOptions = GetCameraConfigForType(item[modelName].type);
     if (snapshot.texture == null || snapshot.node == null) return;
     await RenderFromSnapshot(snapshot);
   };
