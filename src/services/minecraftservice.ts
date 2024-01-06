@@ -31,8 +31,7 @@ const authenticate = async function () {
   const credential = OAuthProvider.credentialFromResult(result);
   const token = credential.accessToken;
   const idToken = credential.idToken;
-
-  console.log(token);
+  
   const auth = new MicrosoftAuthenticator();
   const { liveXstsResponse, minecraftXstsResponse } =
     await auth.acquireXBoxToken(token);
