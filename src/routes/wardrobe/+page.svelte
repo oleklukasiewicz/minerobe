@@ -156,6 +156,8 @@
         <div class="sets-list">
           <OutfitPackageSnapshotList
             dense={false}
+            maxItemWidth="1fr"
+            fillMethod="auto-fill"
             renderer={$defaultRenderer}
             items={setsList}
             withBaseTexture={$userSettings?.baseTexture != null}
@@ -192,6 +194,8 @@
         <div class="outfits-list">
           <OutfitPackageSnapshotList
             dense={false}
+            maxItemWidth="1fr"
+            fillMethod="auto-fill"
             renderer={$defaultRenderer}
             items={outfitList}
             on:innerselect={onItemSelect}
