@@ -138,6 +138,7 @@
 
   onMount(async () => {
     isReadyForData.subscribe(async (readyness) => {
+
       if (loaded || !readyness) {
         loaded = false;
         return;
@@ -702,6 +703,11 @@
             {@html CloseIcon}
           </button>
         </div>
+        <SectionTitle label="Name" />
+        <h3 style="margin: 0px;">{$itemPackage.name}</h3>
+        <SectionTitle label="Author" />
+        <Label variant="unique">{$itemPublisher.name}</Label>
+        <SectionTitle label="Info" />
         <div style="font-family: minecraft;margin:8px;" class="icon-small">
           <div>
             {@html HearthIcon}
@@ -716,18 +722,15 @@
               {$itemPackage.social.downloads || 0}
             </div>
           </div>
-          &nbsp;&nbsp;&nbsp;
-          {#if $itemPackage.isShared}
-            <Label variant="rare" style="margin-left:8px">{$_("shared")}</Label>
-          {/if}
         </div>
-        <div style="display:flex;gap:8px">
+        <br/>
+        <SectionTitle label="Actions" />
+        <div style="display:flex;gap:8px;max-width:500px;">
           <button
             style="flex:1;"
             id="item-page-action"
             on:click={goToItemPage}
             title={$_("goToItemPage")}
-            class="secondary"
             >{@html SpotlightIcon}
 
             {$_("goToItemPage")}

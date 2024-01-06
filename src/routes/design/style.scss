@@ -43,8 +43,8 @@
     .item-layers {
       display: flex;
       flex-direction: column;
-      button{
-        font-size:medium;
+      button {
+        font-size: medium;
       }
     }
     #item-description {
@@ -73,9 +73,17 @@
     }
   }
 }
-.outfit-picker-dialog,
+.outfit-picker-dialog {
+  min-width: 60vw;
+  margin: 16px;
+  div {
+    display: flex;
+    flex-direction: row;
+  }
+}
 .social-dialog {
   margin: 16px;
+  min-width: 500px;
   div {
     display: flex;
     flex-direction: row;

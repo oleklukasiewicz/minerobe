@@ -55,7 +55,15 @@ export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
       state: $appState,
       userReadyness: $appState == APP_STATE.READY|| $appState == APP_STATE.GUEST_READY,
     };
-  if ($appState == APP_STATE.GUEST_READY) result = true;
+  if ($appState == APP_STATE.GUEST_READY) 
+  {
+    result = {
+      state: $appState,
+      user:null,
+      userReadyness: true,
+      fullReadyness: true,
+    };
+  };
   return result;
 });
 export const userSettings: Writable<MinerobeUserSettings> = writable({
