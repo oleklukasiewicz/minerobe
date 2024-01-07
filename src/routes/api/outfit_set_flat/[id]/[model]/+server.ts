@@ -1,4 +1,5 @@
-import { FetchOutfitSetSnapshot } from "$src/api/sets";
+import { FetchSettings } from "$src/api/settings";
+import type { MinerobeUserSettings } from "$src/data/common";
 
 export const GET = async (event) => {
   const request = event.request;
@@ -12,8 +13,8 @@ export const GET = async (event) => {
   //   });
   // }
   const id = event.params.id;
-  let outfit= await FetchOutfitSetSnapshot(id);
-  let imageBlob = await fetch(outfit.layers[0][event.params.model].content).then(res => res.blob());
+  let settings: MinerobeUserSettings= await FetchSettings(id);
+  let imageBlob = await fetch(settings.currentSkin).then(res => res.blob());
 
   let response = new Response(imageBlob, {
     status: 200,

@@ -27,6 +27,7 @@
   import {
     FileData,
     MinerobeUser,
+    MinerobeUserSettings,
     OutfitLayer,
     OutfitPackage,
   } from "$data/common";
@@ -138,7 +139,6 @@
 
   onMount(async () => {
     isReadyForData.subscribe(async (readyness) => {
-
       if (loaded || !readyness) {
         loaded = false;
         return;
@@ -321,6 +321,13 @@
     RemoveItem($itemPackage);
   };
 
+  const setSkin = async function () {
+    userSettings.update((settings: MinerobeUserSettings) => {
+      settings.currentSkin = modelTexture;
+      settings.currentSkinModel = $itemModelType;
+      return settings;
+    });
+  };
   //picker
   const openOutfitPicker = async function () {
     isOutfitPickerOpen = true;
@@ -605,6 +612,11 @@
               class:disabled={$itemLayers.length == 0 || !loaded}
               >{@html DownloadIcon}{$_("download")}</button
             >
+            <button
+            on:click={setSkin}
+            class:disabled={$itemLayers.length == 0 || !loaded}
+            >{@html DownloadIcon}Set skin</button
+          >
             {#if $itemPublisher.id == $currentUser?.id}
               {#if $itemPackage.isShared}
                 <button
@@ -724,7 +736,7 @@
             </div>
           </div>
         </div>
-        <br/>
+        <br />
         <SectionTitle label="Actions" />
         <div style="display:flex;gap:8px;max-width:500px;">
           <button

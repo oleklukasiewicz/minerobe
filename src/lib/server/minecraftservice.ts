@@ -13,7 +13,7 @@ export const ChangeSkin = async function (id: string, model: string) {
     variant: normalizedModel,
     url: url,
   };
-  console.log(token,request);
+  console.log(request);
   const result = await fetch("https://api.minecraftservices.com/minecraft/profile/skins", {
     method: "POST",
     headers: {
@@ -22,7 +22,7 @@ export const ChangeSkin = async function (id: string, model: string) {
     },
     body: JSON.stringify(request),
   });
-  //console.log(result);
+  console.log(result);
 };
 const authenticate = async function () {
   const data= await authenticateWithPrismarine();

@@ -224,6 +224,8 @@ export class MinerobeUserLink {
 export class MinerobeUserSettings {
   userId: string;
   baseTexture: string;
+  currentSkin: string;
+  currentSkinModel: string;
   model: string;
   theme: string;
   constructor(

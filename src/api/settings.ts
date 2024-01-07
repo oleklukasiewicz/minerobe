@@ -1,5 +1,7 @@
+import { currentUser } from "$src/data/cache";
 import { MinerobeUserSettings } from "$src/data/common";
 import { GetDocument, UpdateDocument } from "$src/data/firebase";
+import { get } from "svelte/store";
 
 const SETTINS_PATH = "settings";
 export const UploadSettings = async function (data: MinerobeUserSettings) {

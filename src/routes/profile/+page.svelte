@@ -144,7 +144,7 @@
           ><button class="secondary">Unlink account</button></a
         >
         <br />
-        <a target="_blank" href="service/skin/{$wardrobe.studio.id}/{$wardrobe.studio.model}"><button class="secondary">Change skin</button></a> 
+        <a target="_blank" href="service/skin/{$currentUser?.id}/{$userSettings.currentSkinModel}"><button class="secondary">Change skin</button></a> 
       {/if}
       <br />
       <br />
