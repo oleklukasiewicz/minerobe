@@ -143,8 +143,6 @@
         <a href="/auth/xbox/unlink"
           ><button class="secondary">Unlink account</button></a
         >
-        <br />
-        <a target="_blank" href="service/skin/{$currentUser?.id}/{$userSettings.currentSkinModel}"><button class="secondary">Change skin</button></a> 
       {/if}
       <br />
       <br />

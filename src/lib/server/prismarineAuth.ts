@@ -1,4 +1,7 @@
 import { Authflow } from "prismarine-auth";
+import { get, writable } from "svelte/store";
+
+const prismarineAuthCache = writable({});
 
 export const authenticateWithPrismarine = async function () {
   let authPromise: Promise<any> = new Promise((resolve, reject) => {
@@ -22,23 +25,27 @@ export const authenticateWithPrismarine = async function () {
   });
   return authPromise;
 };
-export const refreshWithPrismarine = async function () {};
+export const refreshWithPrismarine = async function () {
+  prismarineAuthCache.set({});
+};
+//temporary workarount for prismarine auth
 class InMemoryCache {
-  private cache = {}
-  async getCached () {
-    return this.cache
+  private cache = {};
+  async getCached() {
+    return get(prismarineAuthCache);
   }
-  async setCached (value) {
-    this.cache = value
+  async setCached(value) {
+    prismarineAuthCache.set(value);
   }
-  async setCachedPartial (value) {
+  async setCachedPartial(value) {
     this.cache = {
-      ...this.cache,
-      ...value
-    }
+      ...get(prismarineAuthCache),
+      ...value,
+    };
+    prismarineAuthCache.set(this.cache);
   }
 }
 
-function cacheFactory ({ username, cacheName }) {
-  return new InMemoryCache()
+function cacheFactory({ username, cacheName }) {
+  return new InMemoryCache();
 }
