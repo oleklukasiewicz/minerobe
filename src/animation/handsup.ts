@@ -1,143 +1,68 @@
-import { RenderAnimation,lerp,lerpOutCubic,isPoseReady } from "$data/animation";
-import { MODEL_TYPE } from "$data/consts";
+import {
+  RenderAnimation,
+  lerp,
+  lerpOutCubic,
+  isPoseReady,
+} from "$data/animation";
+import {
+  AnimationPropertyStep,
+  AnimationStepManager,
+  AnimationStepState,
+  CreateModelAnimationData,
+} from "$src/helpers/animationHelper";
 const HandsUpAnimation = new RenderAnimation(
-    function (scene, keepData = false, modelName) {
-      let data: any = {
-        head: scene.getObjectByName("Head"),
-        body: scene.getObjectByName("Body"),
-        leftarm: scene.getObjectByName("LeftArm"),
-        rightarm: scene.getObjectByName("RightArm"),
-        leftleg: scene.getObjectByName("LeftLeg"),
-        rightleg: scene.getObjectByName("RightLeg"),
-      };
-      data.head.parent.remove(data.head);
-  
-      data.body.add(data.head);
-      data.head.position.set(0, 0, 0);
-  
-      data.leftarm.parent.remove(data.leftarm);
-      data.rightarm.parent.remove(data.rightarm);
-  
-      data.body.add(data.leftarm);
-      data.body.add(data.rightarm);
-  
-      const armDistanceX = 0.31; // Adjust this value to change the distance of the arms from the body in the x direction
-      const armDistanceZ = 0.0; // Adjust this value to change the distance of
-      // Set the position of the arms relative to the body
-      if (modelName ==MODEL_TYPE.STEVE) {
-        data.leftarm.position.set(-armDistanceX, -0.125, -armDistanceZ);
-        data.rightarm.position.set(armDistanceX, -0.125, armDistanceZ);
-      } else {
-        data.leftarm.position.set(-armDistanceX, -0.15, -armDistanceZ);
-        data.rightarm.position.set(armDistanceX, -0.15, armDistanceZ);
-      }
-  
-      if (keepData) {
-        return data;
-      } else {
-        data.ishandGoUp = true;
-        data.deg90 = 160 * (Math.PI / 180);
-        data.speed = 0.02;
-        data.speedDef = 1;
-        data.bodyPosition = 1.47;
-        data.delay = 0.2;
-        data.waiter = 0;
-      }
+  function (scene, keepData = false, modelName) {
+    let data: any = CreateModelAnimationData(scene, modelName);
+    //unpin legs from body
+    data.rightLegPivot.parent.remove(data.rightLegPivot);
+    data.leftLegPivot.parent.remove(data.leftLegPivot);
+    //add to scene
+    scene.add(data.rightLegPivot);
+    scene.add(data.leftLegPivot);
+    data.rightLegPivot.position.set(0.125, 0.75, 0);
+    data.leftLegPivot.position.set(-0.125, 0.75, 0);
+    data.leftLegPivot.rotation.x = -0.1;
+
+    if (keepData) {
       return data;
-    },
-    function () {
-      return true;
-    },
-    function (data, scene, clock, modelName) {
-      if (data.ishandGoUp) {
-        data.body.rotation.x = lerpOutCubic(clock,
-          data.body.rotation.x,
-          0.2,
-          data.speed
-        );
-        data.body.position.z = lerpOutCubic(clock,
-          data.body.position.z,
-          0.17,
-          data.speed
-        );
-        data.body.position.y = lerpOutCubic(clock,
-          data.body.position.y,
-          1.43,
-          data.speed
-        );
-        data.leftarm.rotation.x = lerpOutCubic(clock,
-          data.leftarm.rotation.x,
-          data.deg90,
-          data.speed
-        );
-        data.leftarm.rotation.z = lerpOutCubic(clock,
-          data.leftarm.rotation.z,
-          -0.2,
-          data.speed
-        );
-        data.rightarm.rotation.x = lerpOutCubic(clock,
-          data.rightarm.rotation.x,
-          data.deg90,
-          data.speed
-        );
-        data.rightarm.rotation.z = lerpOutCubic(clock,
-          data.rightarm.rotation.z,
-          0.2,
-          data.speed
-        );
-        if (
-          isPoseReady([
-            { value: data.leftarm.rotation.x, target: data.deg90 },
-            { value: data.leftarm.rotation.z, target: -0.2 },
-            { value: data.rightarm.rotation.x, target: data.deg90 },
-            { value: data.rightarm.rotation.z, target: 0.2 },
-          ])
-        ) {
-          data.waiter+=clock
-          if (data.waiter > data.delay) {
-            data.ishandGoUp = false;
-          }
-        }
-      } else {
-        data.body.rotation.x = lerpOutCubic(clock,data.body.rotation.x, 0, data.speed);
-        data.body.position.z = lerpOutCubic(clock,data.body.position.z, 0, data.speed);
-        data.body.position.y = lerpOutCubic(clock,
-          data.body.position.y,
-          1.47,
-          data.speed
-        );
-        data.leftarm.rotation.x = lerpOutCubic(clock,
-          data.leftarm.rotation.x,
-          0,
-          data.speed
-        );
-        data.leftarm.rotation.z = lerpOutCubic(clock,
-          data.leftarm.rotation.z,
-          0,
-          data.speed
-        );
-        data.rightarm.rotation.x = lerpOutCubic(clock,
-          data.rightarm.rotation.x,
-          0,
-          data.speed
-        );
-        data.rightarm.rotation.z = lerpOutCubic(clock,
-          data.rightarm.rotation.z,
-          0,
-          data.speed
-        );
-        if (
-          isPoseReady([
-            { value: data.leftarm.rotation.x, target: 0 },
-            { value: data.leftarm.rotation.z, target: 0 },
-            { value: data.rightarm.rotation.x, target: 0 },
-            { value: data.rightarm.rotation.z, target: 0 },
-          ])
-        ) {
-          return true;
-        }
-      }
-      data.bodyPosition = data.body.position.y;
+    } else {
+      data.deg90 = 160 * (Math.PI / 180);
+      data.speed = 0.025;
+      data.speedDef = 1;
+      data.stepManager = AnimationStepManager(data, [
+        new AnimationStepState("start",
+        [
+          new AnimationPropertyStep("bodyPivot","rotation","x",0.2,data.speed),
+          new AnimationPropertyStep("bodyPivot","position","z",0.17,data.speed),
+          new AnimationPropertyStep("bodyPivot","position","y",1.45,data.speed),
+          new AnimationPropertyStep("leftArmPivot","rotation","x",data.deg90,data.speed),
+          new AnimationPropertyStep("rightArmPivot","rotation","x",data.deg90,data.speed),
+          new AnimationPropertyStep("leftArmPivot","rotation","z",-0.2,data.speed),
+          new AnimationPropertyStep("rightArmPivot","rotation","z",0.2,data.speed),
+          new AnimationPropertyStep("headPivot","rotation","x",0.2,data.speed),
+          new AnimationPropertyStep("headPivot","rotation","y",0,data.speed),
+          new AnimationPropertyStep("headPivot","rotation","z",0,data.speed),
+        ],()=>"reset"),
+      new AnimationStepState("reset",
+      [
+        new AnimationPropertyStep("bodyPivot","rotation","x",0,data.speed),
+        new AnimationPropertyStep("bodyPivot","position","z",0,data.speed),
+        new AnimationPropertyStep("bodyPivot","position","y",1.47,data.speed),
+        new AnimationPropertyStep("leftArmPivot","rotation","x",0,data.speed),
+        new AnimationPropertyStep("rightArmPivot","rotation","x",0,data.speed),
+        new AnimationPropertyStep("leftArmPivot","rotation","z",0,data.speed),
+        new AnimationPropertyStep("rightArmPivot","rotation","z",0,data.speed),
+        new AnimationPropertyStep("headPivot","rotation","x",0,data.speed),
+        new AnimationPropertyStep("headPivot","rotation","y",0,data.speed),
+      ],()=>null)],"start");
     }
-  );
-  export default HandsUpAnimation;
+    return data;
+  },
+  function () {
+    return true;
+  },
+  function (data, scene, clock, modelName) {
+    return data.stepManager.run(clock);
+  }
+);
+export default HandsUpAnimation;

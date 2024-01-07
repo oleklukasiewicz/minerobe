@@ -9,7 +9,7 @@ import {
 } from "$src/helpers/animationHelper";
 const BaseAnimation = new RenderAnimation(
   function (scene, keepData = false, modelName) {
-    const data = CreateModelAnimationData(scene);
+    const data = CreateModelAnimationData(scene,modelName);
     return data;
   },
   function (data, scene, clock, modelName, elapsedRenderTime) {
