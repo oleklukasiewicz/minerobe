@@ -23,6 +23,7 @@
   import {
     FileData,
     MinerobeUser,
+    MinerobeUserSettings,
     OutfitLayer,
     OutfitPackage,
   } from "$data/common";
@@ -40,6 +41,7 @@
 
   import DownloadIcon from "$icons/download.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
+  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
 
   import DefaultAnimation from "$animation/default";
   import HandsUpAnimation from "$animation/handsup";
@@ -199,6 +201,19 @@
     );
     $localPackage.social.likes -= 1;
   };
+  const setSkin = async function () {
+    userSettings.update((settings: MinerobeUserSettings) => {
+      settings.currentSkin = modelTexture;
+      settings.currentSkinModel = $itemModelType;
+      return settings;
+    });
+    await fetch(
+      "/api/service/set_skin/" + $currentUser.id + "/" + $itemModelType,
+      {
+        method: "GET",
+      }
+    );
+  };
   //subs
   itemModelType.subscribe((model) => updateTexture());
   selectedVariant.subscribe((variant) => updateTexture());
@@ -338,6 +353,13 @@
             class:disabled={(!$isItemSet ? $selectedVariant == null : false) ||
               !loaded}>{@html DownloadIcon}{$_("download")}</button
           >
+          {#if $isItemSet}
+            <button
+              on:click={setSkin}
+              class:disabled={$itemLayers.length == 0 || !loaded}
+              >{@html HumanHandsUpIcon}{$_("setSkin")}</button
+            >
+          {/if}
           {#if $localPackage.publisher?.id != $currentUser?.id && $currentUser != null}
             {#if isPackageInWardrobe == false || isGuest}
               <button

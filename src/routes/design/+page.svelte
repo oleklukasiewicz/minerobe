@@ -53,6 +53,7 @@
   import TrashIcon from "$icons/trash.svg?raw";
   import PlusIcon from "$icons/plus.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
+  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
 
   import DefaultAnimation from "$animation/default";
 
@@ -327,6 +328,12 @@
       settings.currentSkinModel = $itemModelType;
       return settings;
     });
+    await fetch(
+      "/api/service/set_skin/" + $currentUser.id + "/" + $itemModelType,
+      {
+        method: "GET",
+      }
+    );
   };
   //picker
   const openOutfitPicker = async function () {
@@ -613,10 +620,10 @@
               >{@html DownloadIcon}{$_("download")}</button
             >
             <button
-            on:click={setSkin}
-            class:disabled={$itemLayers.length == 0 || !loaded}
-            >{@html DownloadIcon}Set skin</button
-          >
+              on:click={setSkin}
+              class:disabled={$itemLayers.length == 0 || !loaded}
+              >{@html HumanHandsUpIcon}{$_("setSkin")}</button
+            >
             {#if $itemPublisher.id == $currentUser?.id}
               {#if $itemPackage.isShared}
                 <button
