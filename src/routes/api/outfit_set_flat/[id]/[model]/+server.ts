@@ -13,7 +13,14 @@ export const GET = async (event) => {
   // }
   const id = event.params.id;
   let outfit= await FetchOutfitSetSnapshot(id);
-  return new Response(outfit.layers[0][event.params.model].content, {
+  let imageBlob = await fetch(outfit.layers[0][event.params.model].content).then(res => res.blob());
+
+  let response = new Response(imageBlob, {
     status: 200,
+    headers: {
+      'Content-Type': imageBlob.type
+    }
   });
+
+  return response;
 };

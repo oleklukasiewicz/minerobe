@@ -30,6 +30,9 @@
   import { navigateToHome } from "$src/helpers/navigationHelper";
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
   import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
+  import Label from "$lib/Label/Label.svelte";
+
+  export let data: any;
 
   const userModel = propertyStore(userSettings, "model");
 
@@ -130,8 +133,21 @@
             isFeatured: false,
           }}
         />
-        <br />
       </div>
+      <SectionTitle label="Minecraft account" placeholder={loading} />
+      {#if data.requireUserInteraction}
+        <a href="/auth/xbox"><button>Link account</button></a>
+      {:else}
+        <span><Label variant="unique">{data.token?.profile?.name}</Label></span>
+        &nbsp;
+        <a href="/auth/xbox/unlink"
+          ><button class="secondary">Unlink account</button></a
+        >
+        <br />
+        <a target="_blank" href="service/skin/{$wardrobe.studio.id}/{$wardrobe.studio.model}"><button class="secondary">Change skin</button></a> 
+      {/if}
+      <br />
+      <br />
       <button on:click={logout}>Logout</button>
     {:else}
       <Placeholder style="height:46px;margin-bottom:16px;" />
