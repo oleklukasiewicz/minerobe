@@ -4,7 +4,7 @@ export const authenticateWithPrismarine = async function () {
   let authPromise: Promise<any> = new Promise((resolve, reject) => {
     const flow = new Authflow(
       import.meta.env.VITE_AZURE_APP_ID,
-      "./cache",
+      cacheFactory,
       { flow: "msal" },
       async (params) => {
         resolve({
@@ -23,3 +23,22 @@ export const authenticateWithPrismarine = async function () {
   return authPromise;
 };
 export const refreshWithPrismarine = async function () {};
+class InMemoryCache {
+  private cache = {}
+  async getCached () {
+    return this.cache
+  }
+  async setCached (value) {
+    this.cache = value
+  }
+  async setCachedPartial (value) {
+    this.cache = {
+      ...this.cache,
+      ...value
+    }
+  }
+}
+
+function cacheFactory ({ username, cacheName }) {
+  return new InMemoryCache()
+}
