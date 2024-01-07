@@ -4,7 +4,7 @@ export const authenticateWithPrismarine = async function () {
   let authPromise: Promise<any> = new Promise((resolve, reject) => {
     const flow = new Authflow(
       import.meta.env.VITE_AZURE_APP_ID,
-      "/.cache",
+      "./cache",
       { flow: "msal" },
       async (params) => {
         resolve({
