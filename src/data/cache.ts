@@ -11,7 +11,7 @@ import { APP_STATE } from "$data/consts";
 import { MinerobeUserSettings, type MinerobeUser } from "./common";
 import alexModelData from "$src/model/alex.gltf?raw";
 import steveModelData from "$src/model/steve.gltf?raw";
-import planksTextureRaw from "$src/texture/default_planks.png?url";
+import planksTextureRaw from "$src/texture/base_skin.png?url";
 import type { WardrobePackage } from "./common";
 import { FetchWardrobe, UploadWardrobe } from "$src/api/wardrobe";
 import * as THREE from "three";
@@ -37,6 +37,7 @@ export const wardrobe: Writable<WardrobePackage> = writable({
   outfits: [],
   sets: [],
   studio: null,
+  local: null,
 });
 export const baseTexture: Readable<string> = readable(get(planksTexture));
 export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
