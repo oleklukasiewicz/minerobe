@@ -72,6 +72,9 @@ export const userSettings: Writable<MinerobeUserSettings> = writable({
   model: "alex",
   baseTexture: "",
   theme: "",
+  linkedMinecraftAccount: null,
+  currentSkin: null,
+  currentSkinModel: null,
 });
 
 let wardrobeSubscription, settingsSubscription;

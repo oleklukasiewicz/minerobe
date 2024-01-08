@@ -59,6 +59,7 @@
   import { FetchOutfitSet } from "$src/api/sets";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
+  import { FetchWithTokenAuth } from "$src/data/firebase.js";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -207,11 +208,9 @@
       settings.currentSkinModel = $itemModelType;
       return settings;
     });
-    await fetch(
+    await FetchWithTokenAuth(
       "/api/service/set_skin/" + $currentUser.id + "/" + $itemModelType,
-      {
-        method: "GET",
-      }
+      "GET"
     );
   };
   //subs

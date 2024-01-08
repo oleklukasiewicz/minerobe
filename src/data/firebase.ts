@@ -39,8 +39,10 @@ export const db: any = getFirestore(app);
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
 let cUser;
-auth.onAuthStateChanged((user) => {
+let cToken;
+auth.onAuthStateChanged(async (user) => {
   if (user) {
+    cToken = await user.getIdToken();
     cUser = user;
   } else {
     cUser = null;
@@ -49,12 +51,13 @@ auth.onAuthStateChanged((user) => {
 
 export const getCurrentUserFromLocal = () => {
   return new Promise((resolve, reject) => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       unsubscribe();
-      resolve(user);
       if (user) {
+        cToken = await user.getIdToken();
         cUser = user;
       }
+      resolve(user);
     }, reject);
   });
 };
@@ -62,6 +65,7 @@ export const getCurrentUserFromLocal = () => {
 export const login = async () => {
   await getCurrentUserFromLocal();
   if (cUser) {
+    cToken = await cUser.getIdToken();
     return cUser;
   }
   await setPersistence(auth, browserLocalPersistence).catch((error) => {
@@ -78,6 +82,7 @@ export const login = async () => {
     // ...
   });
   cUser = res?.user;
+  cToken = await cUser.getIdToken();
   return res?.user;
 };
 
@@ -87,6 +92,7 @@ export const GetUser = function () {
 export const logout = async () => {
   await auth.signOut();
   cUser = null;
+  cToken = null;
 };
 export const GetDocument = async function (
   path: string,
@@ -161,9 +167,9 @@ export const DeleteCollection = async function (path: string) {
   }
 };
 export const GetCollection = async function (path: string) {
-    const dataRef = collection(db, path);
-    const dataSnap = await getDocs(dataRef);
-    return dataSnap.docs.map((doc) => doc.data());
+  const dataRef = collection(db, path);
+  const dataSnap = await getDocs(dataRef);
+  return dataSnap.docs.map((doc) => doc.data());
 };
 export const SetDocumentAnonymous = async function (
   path: string,
@@ -208,12 +214,12 @@ export const BuildCollectionQuery = async function (
   clauses: QueryWhere[] = [],
   orderByClauses: QueryOrderBy[] = [],
   limit: number = 0,
-  docname:string[]=[]
+  docname: string[] = []
 ) {
   const subCollectionRef = collection(db, path);
   const subCollectionQuery = query(
     subCollectionRef,
-    ...docname.map((doc)=>where(documentId(), "==", doc)),
+    ...docname.map((doc) => where(documentId(), "==", doc)),
     ...clauses.map((clause) =>
       where(clause.field, clause.operator as WhereFilterOp, clause.value)
     ),
@@ -260,3 +266,17 @@ export class QueryOrderBy {
     this.direction = direction;
   }
 }
+export const FetchWithTokenAuth = async function (
+  url: string,
+  method: string,
+  data: any = {}
+) {
+  const res = await fetch(url, {
+    method: method,
+    body: method != "GET" ? JSON.stringify(data) : null,
+    headers: {
+      Authorization: cToken,
+    },
+  });
+  return res;
+};

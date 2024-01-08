@@ -32,8 +32,6 @@
   import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
   import Label from "$lib/Label/Label.svelte";
 
-  export let data: any;
-
   const userModel = propertyStore(userSettings, "model");
 
   let providers: { steve: RenderProvider; alex: RenderProvider };
@@ -135,12 +133,12 @@
         />
       </div>
       <SectionTitle label="Minecraft account" placeholder={loading} />
-      {#if data.requireUserInteraction}
+      {#if $userSettings.linkedMinecraftAccount?.name == null}
         <a href="/auth/xbox"><button>Link account</button></a>
       {:else}
-        <span><Label variant="unique">{data.token?.profile?.name}</Label></span>
+        <span><Label variant="unique">{$userSettings.linkedMinecraftAccount.name}</Label></span>
         &nbsp;
-        <a href="/auth/xbox/unlink"
+        <a href="/auth/xbox/unlink" target="_blank" rel="noopener noreferrer"
           ><button class="secondary">Unlink account</button></a
         >
       {/if}

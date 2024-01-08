@@ -23,9 +23,6 @@
   onMount(async () => {
     setup();
     await getCurrentUser();
-    if ($currentUser == null) {
-      await logoutUser();
-    }
   });
   const profileAction = async () => {
     if ($currentUser) {

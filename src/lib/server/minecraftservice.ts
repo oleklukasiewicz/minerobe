@@ -1,7 +1,8 @@
 import { MODEL_TYPE } from "../../data/consts";
 import { authenticateWithPrismarine } from "./prismarineAuth";
-export const ChangeSkin = async function (id: string, model: string) {
-  const token = await authenticate();
+export const ChangeSkin = async function (id: string, model: string,userToken:string) {
+  const token = await authenticate(id,userToken);
+  if(token==null) throw new Error("Invalid token");
   let normalizedModel;
   if (model == MODEL_TYPE.ALEX) {
     normalizedModel = "slim";
@@ -22,7 +23,7 @@ export const ChangeSkin = async function (id: string, model: string) {
     body: JSON.stringify(request),
   });
 };
-const authenticate = async function () {
-  const data= await authenticateWithPrismarine();
- return data.token.token;
+const authenticate = async function (user,token:string) {
+  const data= await authenticateWithPrismarine(user,token);
+ return data?.token?.token;
 };

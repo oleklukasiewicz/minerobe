@@ -226,6 +226,7 @@ export class MinerobeUserSettings {
   baseTexture: string;
   currentSkin: string;
   currentSkinModel: string;
+  linkedMinecraftAccount: any;
   model: string;
   theme: string;
   constructor(

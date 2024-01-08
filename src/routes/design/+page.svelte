@@ -91,6 +91,7 @@
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
+  import { FetchWithTokenAuth } from "$src/data/firebase";
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -328,12 +329,7 @@
       settings.currentSkinModel = $itemModelType;
       return settings;
     });
-    await fetch(
-      "/api/service/set_skin/" + $currentUser.id + "/" + $itemModelType,
-      {
-        method: "GET",
-      }
-    );
+    await FetchWithTokenAuth("/api/service/set_skin/" + $currentUser.id + "/" + $itemModelType,"GET");
   };
   //picker
   const openOutfitPicker = async function () {
