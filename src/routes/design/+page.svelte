@@ -488,6 +488,9 @@
                 >{$_("shared")}</Label
               >
             {/if}
+            {#if $isItemSet && $itemPackage.local.isCurrentSkin}
+            <Label variant="ancient">Current skin</Label>
+            {/if}
             <br />
           {:else}
             <Placeholder style="height:24px;max-width:100px;" />

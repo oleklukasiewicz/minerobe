@@ -251,6 +251,9 @@
         {#if loaded}
           <div style="display: flex;gap:4px;height:24px">
             <Label variant="unique">{$localPackage.publisher.name}</Label>
+            {#if $isItemSet && $localPackage.local.isCurrentSkin}
+              <Label variant="ancient">Current skin</Label>
+            {/if}
             &nbsp;
             <SocialInfo data={$localPackage.social} />
           </div>
@@ -347,39 +350,42 @@
               >{@html HumanHandsUpIcon}{$_("setSkin")}</button
             >
           {/if}
-          <button
-            id="download-action"
-            title= {$_("download")}
-            on:click={downloadImage}
-            class:icon={!$isMobileView &&
-              $isItemSet &&
-              $userSettings?.linkedMinecraftAccount?.name != null}
-            class:disabled={(!$isItemSet ? $selectedVariant == null : false) ||
-              !loaded}
-            >{@html DownloadIcon}
-            {#if $isMobileView || !$isItemSet || $userSettings?.linkedMinecraftAccount?.name == null}
-              {$_("download")}
+          <div style="display: flex; gap:8px">
+            <button
+              id="download-action"
+              title={$_("download")}
+              on:click={downloadImage}
+              class:icon={!$isMobileView &&
+                $isItemSet &&
+                $userSettings?.linkedMinecraftAccount?.name != null}
+              class:disabled={(!$isItemSet
+                ? $selectedVariant == null
+                : false) || !loaded}
+              >{@html DownloadIcon}
+              {#if $isMobileView || !$isItemSet || $userSettings?.linkedMinecraftAccount?.name == null}
+                {$_("download")}
+              {/if}
+            </button>
+            {#if $localPackage.publisher?.id != $currentUser?.id && $currentUser != null}
+              {#if isPackageInWardrobe == false || isGuest}
+                <button
+                  id="add-to-wardrobe"
+                  on:click={addToWardrobe}
+                  title="Add to wardrobe"
+                  class:disabled={!loaded || isGuest}
+                  class="icon tertiary">{@html HearthIcon}</button
+                >
+              {:else}
+                <button
+                  id="remove-from-wardrobe"
+                  title="Already in wardrobe"
+                  class:disabled={!loaded || isGuest}
+                  on:click={removeFromWardrobe}
+                  class="icon">{@html HearthIcon}</button
+                >
+              {/if}
             {/if}
-          </button>
-          {#if $localPackage.publisher?.id != $currentUser?.id && $currentUser != null}
-            {#if isPackageInWardrobe == false || isGuest}
-              <button
-                id="add-to-wardrobe"
-                on:click={addToWardrobe}
-                title="Add to wardrobe"
-                class:disabled={!loaded || isGuest}
-                class="icon tertiary">{@html HearthIcon}</button
-              >
-            {:else}
-              <button
-                id="remove-from-wardrobe"
-                title="Already in wardrobe"
-                class:disabled={!loaded || isGuest}
-                on:click={removeFromWardrobe}
-                class="icon">{@html HearthIcon}</button
-              >
-            {/if}
-          {/if}
+          </div>
         </div>
       {:else}
         <div style="display: flex; gap:8px; margin-top:36px;">
