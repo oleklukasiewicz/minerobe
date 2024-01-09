@@ -45,7 +45,7 @@ export const ParseOutfitSetToLocal = async function (data: OutfitPackage) {
       warnings: ["missingLayer"],
     });
   }
-  if (data.id == get(userSettings).currentSkin?.id) {
+  if (data.id == get(userSettings)?.currentSkin?.id) {
     data.local.isCurrentSkin = true;
   }
   if (data.publisher.id == get(currentUser)?.id)

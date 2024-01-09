@@ -92,7 +92,7 @@
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { FetchWithTokenAuth } from "$src/data/firebase";
-  import { SetCurrentSkin } from "$src/api/settings";
+  import { LinkMinecraftAccount, SetCurrentSkin } from "$src/api/settings";
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -605,17 +605,26 @@
         <br />
         {#if loaded}
           <div class="item-actions">
+            {#if $userSettings?.linkedMinecraftAccount?.name != null && $isItemSet}
+              <button
+                on:click={setSkin}
+                class:disabled={$itemLayers.length == 0 || !loaded}
+                >{@html HumanHandsUpIcon}{$_("setSkin")}</button
+              >
+            {/if}
             <button
               id="download-action"
+              title={$_("download")}
               on:click={downloadImage}
+              class:icon={!$isMobileView &&
+                $isItemSet &&
+                $userSettings?.linkedMinecraftAccount?.name != null}
               class:disabled={$itemLayers.length == 0 || !loaded}
-              >{@html DownloadIcon}{$_("download")}</button
-            >
-            <button
-              on:click={setSkin}
-              class:disabled={$itemLayers.length == 0 || !loaded}
-              >{@html HumanHandsUpIcon}{$_("setSkin")}</button
-            >
+              >{@html DownloadIcon}
+              {#if $isMobileView || !$isItemSet || $userSettings?.linkedMinecraftAccount?.name == null}
+                {$_("download")}
+              {/if}
+            </button>
             {#if $itemPublisher.id == $currentUser?.id}
               {#if $itemPackage.isShared}
                 <button

@@ -9,7 +9,7 @@ import {
   login,
   logout,
 } from "../data/firebase";
-import { MinerobeUser, MinerobeUserLink } from "$src/data/common";
+import { MinerobeUser, MinerobeUserLink, MinerobeUserSettings } from "$src/data/common";
 
 const USER_PATH = "users";
 const USER_LINK_PATH = "user-link";
@@ -50,7 +50,7 @@ export const loginUser = async function () {
 export const logoutUser = async function () {
   await logout();
   currentUser.set(null);
-  userSettings.set(null);
+  userSettings.set(new MinerobeUserSettings(null,null,null));
 };
 const createUser = async function (user: any): Promise<MinerobeUser> {
   const userID = GenerateIdForCollection(USER_PATH);

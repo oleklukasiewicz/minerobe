@@ -36,6 +36,7 @@
     defaultRenderer,
     isReadyForData,
     userSettings,
+    isMobileView,
   } from "$data/cache";
   import { LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
 
@@ -339,19 +340,27 @@
       {/if}
       {#if loaded}
         <div class="item-actions">
-          <button
-            id="download-action"
-            on:click={downloadImage}
-            class:disabled={(!$isItemSet ? $selectedVariant == null : false) ||
-              !loaded}>{@html DownloadIcon}{$_("download")}</button
-          >
-          {#if $isItemSet}
+          {#if $userSettings?.linkedMinecraftAccount?.name != null && $isItemSet}
             <button
               on:click={setSkin}
               class:disabled={$itemLayers.length == 0 || !loaded}
               >{@html HumanHandsUpIcon}{$_("setSkin")}</button
             >
           {/if}
+          <button
+            id="download-action"
+            title= {$_("download")}
+            on:click={downloadImage}
+            class:icon={!$isMobileView &&
+              $isItemSet &&
+              $userSettings?.linkedMinecraftAccount?.name != null}
+            class:disabled={(!$isItemSet ? $selectedVariant == null : false) ||
+              !loaded}
+            >{@html DownloadIcon}
+            {#if $isMobileView || !$isItemSet || $userSettings?.linkedMinecraftAccount?.name == null}
+              {$_("download")}
+            {/if}
+          </button>
           {#if $localPackage.publisher?.id != $currentUser?.id && $currentUser != null}
             {#if isPackageInWardrobe == false || isGuest}
               <button

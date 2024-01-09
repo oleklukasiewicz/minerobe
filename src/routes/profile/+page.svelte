@@ -69,9 +69,9 @@
       requireUserInteraction = v.linkedMinecraftAccount == null;
       profile = v.linkedMinecraftAccount;
       if (profile) {
-        profilePhoto = await GetFaceOfRemoteSkin(
-          profile.skins.find((s) => s.state == "ACTIVE").url
-        );
+        let skinUrl = profile.skins.find((s) => s.state == "ACTIVE").url;
+        skinUrl = skinUrl.replace("http://", "https://");
+        profilePhoto = await GetFaceOfRemoteSkin(skinUrl);
       }
     });
   });
@@ -173,13 +173,15 @@
         />
       </div>
       <SectionTitle label="Minecraft account" placeholder={loading} />
-      {#if $userSettings.linkedMinecraftAccount?.name == null}
+      {#if $userSettings?.linkedMinecraftAccount?.name == null}
         <button on:click={linkAccount}>Link account</button>
       {:else}
         <div class="profile-data">
           <!-- svelte-ignore a11y-missing-attribute -->
           <img src={profilePhoto} />
-          <span class="mc-font">{$userSettings.linkedMinecraftAccount.name}</span>
+          <span class="mc-font"
+            >{$userSettings.linkedMinecraftAccount.name}</span
+          >
           <button class="secondary" on:click={() => (isAuthDialogOpen = true)}
             >Unlink account</button
           >
