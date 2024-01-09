@@ -92,6 +92,7 @@
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { FetchWithTokenAuth } from "$src/data/firebase";
+  import { SetCurrentSkin } from "$src/api/settings";
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -324,12 +325,16 @@
   };
 
   const setSkin = async function () {
-    userSettings.update((settings: MinerobeUserSettings) => {
-      settings.currentSkin = modelTexture;
-      settings.currentSkinModel = $itemModelType;
-      return settings;
-    });
-    await FetchWithTokenAuth("/api/service/set_skin/" + $currentUser.id + "/" + $itemModelType,"GET");
+    await SetCurrentSkin($itemPackage.id, $itemModelType, modelTexture);
+    await FetchWithTokenAuth(
+      "/api/service/set_skin/" +
+        $itemPackage.id +
+        "/" +
+        $itemModelType +
+        "/" +
+        $currentUser.id,
+      "GET"
+    );
   };
   //picker
   const openOutfitPicker = async function () {

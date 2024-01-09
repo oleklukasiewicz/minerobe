@@ -35,19 +35,31 @@ export const AuthorizeViaFirebaseToken = async (token: string) => {
     return null;
   }
 };
-export const SetDocument = async function (
+export const GetSecret = async function (
+  path: string,
+  documentName: string,
+  token: string,
+  user: string
+): Promise<any> {
+  const auth = await AuthorizeViaFirebaseToken(token);
+  if (auth != null) {
+    const dataRef = db.doc(path + "/" + documentName);
+    const dataSnap = await dataRef.get();
+    const data = dataSnap.data();
+    return data?.data;
+  }
+  return null;
+};
+export const SetSecret = async function (
   path: string,
   documentName: string,
   data: any,
   token: string
 ) {
   const auth = await AuthorizeViaFirebaseToken(token);
-  if (!auth) {
-    throw new Error("Unauthorized");
-  }
   if (auth != null) {
     const dataJson = JSON.parse(JSON.stringify(data));
-    return await db.doc(path + "/" + documentName).set(dataJson);
+    return await db.doc(path + "/" + documentName).set({ data: dataJson });
   }
   return null;
 };
@@ -58,31 +70,9 @@ export const UpdateDocument = async function (
   token: string
 ) {
   const auth = await AuthorizeViaFirebaseToken(token);
-  if (!auth) {
-    throw new Error("Unauthorized");
-  }
   if (auth != null) {
     const dataJson = JSON.parse(JSON.stringify(data));
-    return await db
-      .doc(path + "/" + documentName)
-      .set(dataJson, { merge: true });
+    return await db.doc(path + "/" + documentName).update(dataJson);
   }
   return null;
-};
-
-export const GetDocument = async function (
-  path: string,
-  documentName: string,
-  token: string
-): Promise<any> {
-  const auth = await AuthorizeViaFirebaseToken(token);
-  if (!auth) {
-    throw new Error("Unauthorized");
-  }
-  if (auth != null) {
-    const dataRef = db.doc(path + "/" + documentName);
-    const dataSnap = await dataRef.get();
-    return dataSnap.data();
-  }
-  return null;
-};
+}

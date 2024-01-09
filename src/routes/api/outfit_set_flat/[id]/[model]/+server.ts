@@ -14,7 +14,7 @@ export const GET = async (event) => {
   // }
   const id = event.params.id;
   let settings: MinerobeUserSettings= await FetchSettings(id);
-  let imageBlob = await fetch(settings.currentSkin).then(res => res.blob());
+  let imageBlob = await fetch(settings.currentSkin.texture).then(res => res.blob());
 
   let response = new Response(imageBlob, {
     status: 200,

@@ -60,6 +60,7 @@
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
   import { FetchWithTokenAuth } from "$src/data/firebase.js";
+  import { SetCurrentSkin } from "$src/api/settings.js";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -203,13 +204,14 @@
     $localPackage.social.likes -= 1;
   };
   const setSkin = async function () {
-    userSettings.update((settings: MinerobeUserSettings) => {
-      settings.currentSkin = modelTexture;
-      settings.currentSkinModel = $itemModelType;
-      return settings;
-    });
+    await SetCurrentSkin($localPackage.id, $itemModelType, modelTexture);
     await FetchWithTokenAuth(
-      "/api/service/set_skin/" + $currentUser.id + "/" + $itemModelType,
+      "/api/service/set_skin/" +
+        $localPackage.id +
+        "/" +
+        $itemModelType +
+        "/" +
+        $currentUser.id,
       "GET"
     );
   };

@@ -1,5 +1,6 @@
 import { Authflow } from "prismarine-auth";
-import { GetDocument, SetDocument, UpdateDocument } from "./firebaseServer";
+import {GetSecret,SetSecret,UpdateDocument } from "./firebaseServer";
+const pathToSecret="secret/"+import.meta.env.VITE_USERS_SECRET_PATH
 
 export const authenticateWithPrismarine = async function (user, token) {
   let authPromise: Promise<any> = new Promise((resolve, reject) => {
@@ -38,16 +39,16 @@ export const authenticateWithPrismarine = async function (user, token) {
     const token = userToken;
     return {
       async getCached() {
-        const cache = await GetDocument("secret", id, token);
+        const cache = await GetSecret(pathToSecret, id, token,user);
         return cache || {};
       },
       async setCached(value) {
-        const cache = await SetDocument("secret", id, value, token);
+        const cache = await SetSecret(pathToSecret, id, value, token);
       },
       async setCachedPartial(value) {
-        const cacheref = await GetDocument("secret", id, token);
-        const cache = await SetDocument(
-          "secret",
+        const cacheref = await GetSecret(pathToSecret, id, token,user);
+        const cache = await SetSecret(
+          pathToSecret,
           id,
           { ...value, ...cacheref },
           token
@@ -62,7 +63,7 @@ export const authenticateWithPrismarine = async function (user, token) {
   return authPromise;
 };
 export const refreshWithPrismarine = async function (id, token) {
-  const cache = await SetDocument("secret", id, {}, token);
+  const cache = await SetSecret(pathToSecret, id, {}, token);
   await UpdateDocument(
     "settings",
     id,
