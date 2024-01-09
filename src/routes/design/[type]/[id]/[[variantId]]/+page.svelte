@@ -205,15 +205,6 @@
   };
   const setSkin = async function () {
     await SetCurrentSkin($localPackage.id, $itemModelType, modelTexture);
-    await FetchWithTokenAuth(
-      "/api/service/set_skin/" +
-        $localPackage.id +
-        "/" +
-        $itemModelType +
-        "/" +
-        $currentUser.id,
-      "GET"
-    );
   };
   //subs
   itemModelType.subscribe((model) => updateTexture());

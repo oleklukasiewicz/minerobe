@@ -15,6 +15,7 @@
   import OutfitPackageSnapshotRender from "$lib/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
   import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
+  import Label from "$lib/Label/Label.svelte";
 
   export let item: OutfitPackage = null;
   export let dense = false;
@@ -56,6 +57,9 @@
   class:outfit={item.type != OUTFIT_TYPE.OUTFIT_SET}
   class:dense
 >
+{#if item?.local?.isCurrentSkin}
+  <div class="current-flag"><Label dense variant="ancient">current</Label></div>
+{/if}
   <div class="render-area">
     <!-- svelte-ignore a11y-missing-attribute -->
     <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />

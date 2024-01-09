@@ -42,7 +42,7 @@ export const GetSecret = async function (
   user: string
 ): Promise<any> {
   const auth = await AuthorizeViaFirebaseToken(token);
-  if (auth != null) {
+  if (auth?.uid != null) {
     const dataRef = db.doc(path + "/" + documentName);
     const dataSnap = await dataRef.get();
     const data = dataSnap.data();
@@ -57,7 +57,7 @@ export const SetSecret = async function (
   token: string
 ) {
   const auth = await AuthorizeViaFirebaseToken(token);
-  if (auth != null) {
+  if (auth?.uid != null) {
     const dataJson = JSON.parse(JSON.stringify(data));
     return await db.doc(path + "/" + documentName).set({ data: dataJson });
   }
@@ -70,9 +70,9 @@ export const UpdateDocument = async function (
   token: string
 ) {
   const auth = await AuthorizeViaFirebaseToken(token);
-  if (auth != null) {
+  if (auth?.uid != null) {
     const dataJson = JSON.parse(JSON.stringify(data));
     return await db.doc(path + "/" + documentName).update(dataJson);
   }
   return null;
-}
+};

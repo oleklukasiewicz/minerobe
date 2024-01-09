@@ -137,3 +137,37 @@ export const sortOutfitLayersByColor = async function (
   }
   return hues.sort((a, b) => a.h - b.h).map((x) => x.item);
 };
+
+export const GetFaceOfRemoteSkin = async function (skinUrl) {
+  //fetch skin
+  let blob;
+  try {
+    const response = await fetch(skinUrl);
+    blob = await response.blob();
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+
+  // Create an image bitmap from the Blob
+  const bitmap = await createImageBitmap(blob);
+
+  // Create a canvas and draw the image bitmap on it
+  const canvas = document.createElement("canvas");
+  canvas.width = bitmap.width;
+  canvas.height = bitmap.height;
+  const context = canvas.getContext("2d");
+  context.drawImage(bitmap, 0, 0);
+
+  const scale = 10;
+  const face = context.getImageData(8, 8, 8, 8);
+  const faceCanvas = document.createElement("canvas");
+  faceCanvas.width = face.width * scale;
+  faceCanvas.height = face.height * scale;
+  const faceContext = faceCanvas.getContext("2d");
+  faceContext.imageSmoothingEnabled = false; // Keep the image sharp when scaling
+  faceContext.drawImage(canvas, 8, 8, 8, 8, 0, 0, faceCanvas.width, faceCanvas.height);
+  const faceUrl = faceCanvas.toDataURL();
+
+  return faceUrl;
+};

@@ -1,4 +1,4 @@
-import { currentUser } from "$src/data/cache";
+import { currentUser, userSettings } from "$src/data/cache";
 import {
   OutfitPackage,
   OutfitLayer,
@@ -44,6 +44,9 @@ export const ParseOutfitSetToLocal = async function (data: OutfitPackage) {
     Object.assign(data.local, {
       warnings: ["missingLayer"],
     });
+  }
+  if (data.id == get(userSettings).currentSkin?.id) {
+    data.local.isCurrentSkin = true;
   }
   if (data.publisher.id == get(currentUser)?.id)
     data.publisher = get(currentUser);

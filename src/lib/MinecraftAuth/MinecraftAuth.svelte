@@ -34,7 +34,7 @@
     <br />
     <b class="code mc-font">{authCode}</b>
     <br />
-    <b>Refresh page after signing in</b>
+    <b>Refresh page after signing in (linking may take some time)</b>
     <br />
     <a href={authUrl} target="_blank"><button on:click={link}>Link account</button></a>
   {/if}

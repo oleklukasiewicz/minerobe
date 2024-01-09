@@ -1,5 +1,6 @@
 .outfit-package-item {
   display: flex;
+  position: relative;
   max-width: 350px;
   min-width: 175px;
   width: auto;
@@ -85,4 +86,10 @@
   min-height: 16px;
   margin: 2px 2px;
   font-family: minecraft;
+}
+.current-flag
+{
+  position: absolute;
+  top: 2px;
+  left: 4px;
 }

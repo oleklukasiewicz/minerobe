@@ -74,3 +74,23 @@
     }
   }
 }
+.profile-data
+{
+  background-color: var(--color-theme-D1);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  max-width: 400px;
+  img
+  {
+    aspect-ratio: 1/1;
+    height: 30px;
+    margin: 4px;
+  }
+  span
+  {
+    margin-left: 10px;
+    margin-top: 8px;
+  }
+}

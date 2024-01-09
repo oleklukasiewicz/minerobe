@@ -29,7 +29,9 @@ export const authenticateWithPrismarine = async function (user, token) {
           user,
           {
             linkedMinecraftAccount: {
-              ...tokenAcc.profile,
+              id: tokenAcc.profile.id,
+              name: tokenAcc.profile.name,
+              skins:tokenAcc.profile.skins,
             },
           },
           token
@@ -39,6 +41,7 @@ export const authenticateWithPrismarine = async function (user, token) {
           profile: {
             id: tokenAcc.profile.id,
             name: tokenAcc.profile.name,
+            skins:tokenAcc.profile.skins,
           },
           token: tokenAcc.token,
         });

@@ -1,5 +1,5 @@
 <script lang="ts">
-export let variant: "unique" | "rare" | "common" |"legendary"  = "common";
+export let variant: "unique" | "rare" | "common" |"legendary"|"ancient"  = "common";
 export let dense: boolean = false;
 export let text: string = "";
 export let style: string = "";
@@ -36,5 +36,8 @@ export let style: string = "";
   }
   .label.legendary {
     background: linear-gradient(var(--color-legend), var(--color-legend-A1));
+  }
+  .label.ancient {
+    background: linear-gradient(var(--color-ancient), var(--color-ancient-A1));
   }
 </style>

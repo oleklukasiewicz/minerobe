@@ -326,15 +326,6 @@
 
   const setSkin = async function () {
     await SetCurrentSkin($itemPackage.id, $itemModelType, modelTexture);
-    await FetchWithTokenAuth(
-      "/api/service/set_skin/" +
-        $itemPackage.id +
-        "/" +
-        $itemModelType +
-        "/" +
-        $currentUser.id,
-      "GET"
-    );
   };
   //picker
   const openOutfitPicker = async function () {

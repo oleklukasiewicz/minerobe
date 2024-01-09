@@ -33,11 +33,12 @@
   import Label from "$lib/Label/Label.svelte";
   import Dialog from "$lib/Dialog/Dialog.svelte";
   import MinecraftAuth from "$lib/MinecraftAuth/MinecraftAuth.svelte";
-  import { FetchWithTokenAuth } from "$src/data/firebase";
+
   import {
     LinkMinecraftAccount,
     UnlinkMinecraftAccount,
   } from "$src/api/settings";
+  import { GetFaceOfRemoteSkin } from "$src/helpers/imageDataHelpers";
 
   const userModel = propertyStore(userSettings, "model");
 
@@ -45,6 +46,9 @@
 
   let isAuthDialogOpen = false;
   let authCode = "";
+  let profile: any;
+  let profilePhoto = "";
+  let requireUserInteraction = true;
   let authUrl = "";
   let loading = true;
   onMount(async () => {
@@ -62,6 +66,13 @@
           v.model
         );
       } else texture = $planksTexture;
+      requireUserInteraction = v.linkedMinecraftAccount == null;
+      profile = v.linkedMinecraftAccount;
+      if (profile) {
+        profilePhoto = await GetFaceOfRemoteSkin(
+          profile.skins.find((s) => s.state == "ACTIVE").url
+        );
+      }
     });
   });
   let texture = $planksTexture;
@@ -87,6 +98,8 @@
 
   const unlinkAccount = async function () {
     await UnlinkMinecraftAccount();
+    requireUserInteraction = true;
+    profile = null;
     isAuthDialogOpen = false;
   };
   const linkAccount = async function () {
@@ -94,6 +107,8 @@
     if (resp.requireUserInteraction) {
       authCode = resp.params.userCode;
       authUrl = resp.params.verificationUri;
+      requireUserInteraction = resp.requireUserInteraction;
+      profile = resp.profile;
     } else {
       isAuthDialogOpen = false;
     }
@@ -161,20 +176,22 @@
       {#if $userSettings.linkedMinecraftAccount?.name == null}
         <button on:click={linkAccount}>Link account</button>
       {:else}
-        <span
-          ><Label variant="unique"
-            >{$userSettings.linkedMinecraftAccount.name}</Label
-          ></span
-        >
-        &nbsp;
-        <button class="secondary" on:click={() => (isAuthDialogOpen = true)}
-          >Unlink account</button
-        >
+        <div class="profile-data">
+          <!-- svelte-ignore a11y-missing-attribute -->
+          <img src={profilePhoto} />
+          <span class="mc-font">{$userSettings.linkedMinecraftAccount.name}</span>
+          <button class="secondary" on:click={() => (isAuthDialogOpen = true)}
+            >Unlink account</button
+          >
+        </div>
       {/if}
-      <br />
       <br />
       <button on:click={logout}>Logout</button>
     {:else}
+      <Placeholder style="height:46px;margin-bottom:16px;" />
+      <Placeholder style="height:24px; max-width:100px;margin-bottom:8px;" />
+      <Placeholder style="height:36px;margin-bottom:16px; max-width:400px;" />
+      <Placeholder style="height:24px;" />
       <Placeholder style="height:46px;margin-bottom:16px;" />
     {/if}
   </div>
@@ -194,8 +211,8 @@
       </button>
     </div>
     <MinecraftAuth
-      isAuthorized={$userSettings.linkedMinecraftAccount?.id != null}
-      profile={$userSettings.linkedMinecraftAccount}
+      isAuthorized={!requireUserInteraction}
+      {profile}
       {authCode}
       {authUrl}
       on:unlink={unlinkAccount}
