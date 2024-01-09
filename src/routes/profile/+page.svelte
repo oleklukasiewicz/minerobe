@@ -31,11 +31,21 @@
   import Placeholder from "$lib/Placeholder/Placeholder.svelte";
   import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
   import Label from "$lib/Label/Label.svelte";
+  import Dialog from "$lib/Dialog/Dialog.svelte";
+  import MinecraftAuth from "$lib/MinecraftAuth/MinecraftAuth.svelte";
+  import { FetchWithTokenAuth } from "$src/data/firebase";
+  import {
+    LinkMinecraftAccount,
+    UnlinkMinecraftAccount,
+  } from "$src/api/settings";
 
   const userModel = propertyStore(userSettings, "model");
 
   let providers: { steve: RenderProvider; alex: RenderProvider };
 
+  let isAuthDialogOpen = false;
+  let authCode = "";
+  let authUrl = "";
   let loading = true;
   onMount(async () => {
     providers = await CreateDefaultRenderProvider($defaultRenderer);
@@ -73,6 +83,21 @@
   const logout = async () => {
     navigateToHome();
     await logoutUser();
+  };
+
+  const unlinkAccount = async function () {
+    await UnlinkMinecraftAccount();
+    isAuthDialogOpen = false;
+  };
+  const linkAccount = async function () {
+    const resp = await LinkMinecraftAccount();
+    if (resp.requireUserInteraction) {
+      authCode = resp.params.userCode;
+      authUrl = resp.params.verificationUri;
+    } else {
+      isAuthDialogOpen = false;
+    }
+    isAuthDialogOpen = true;
   };
 </script>
 
@@ -134,12 +159,16 @@
       </div>
       <SectionTitle label="Minecraft account" placeholder={loading} />
       {#if $userSettings.linkedMinecraftAccount?.name == null}
-        <a href="/auth/xbox"><button>Link account</button></a>
+        <button on:click={linkAccount}>Link account</button>
       {:else}
-        <span><Label variant="unique">{$userSettings.linkedMinecraftAccount.name}</Label></span>
+        <span
+          ><Label variant="unique"
+            >{$userSettings.linkedMinecraftAccount.name}</Label
+          ></span
+        >
         &nbsp;
-        <a href="/auth/xbox/unlink" target="_blank" rel="noopener noreferrer"
-          ><button class="secondary">Unlink account</button></a
+        <button class="secondary" on:click={() => (isAuthDialogOpen = true)}
+          >Unlink account</button
         >
       {/if}
       <br />
@@ -150,6 +179,29 @@
     {/if}
   </div>
 </div>
+<Dialog bind:open={isAuthDialogOpen}>
+  <div class="auth-dialog">
+    <div class="dialog-header">
+      <h1>{$_("link_to_mc")}</h1>
+      <button
+        style="margin: 0px"
+        class="icon tertiary"
+        on:click={() => {
+          isAuthDialogOpen = false;
+        }}
+      >
+        {@html CloseIcon}
+      </button>
+    </div>
+    <MinecraftAuth
+      isAuthorized={$userSettings.linkedMinecraftAccount?.id != null}
+      profile={$userSettings.linkedMinecraftAccount}
+      {authCode}
+      {authUrl}
+      on:unlink={unlinkAccount}
+    />
+  </div>
+</Dialog>
 
 <style lang="scss">
   @import "style.scss";

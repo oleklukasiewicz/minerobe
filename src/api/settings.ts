@@ -1,6 +1,10 @@
 import { currentUser, userSettings } from "$src/data/cache";
 import { MinerobeUserSettings, SkinData } from "$src/data/common";
-import { GetDocument, UpdateDocument } from "$src/data/firebase";
+import {
+  FetchWithTokenAuth,
+  GetDocument,
+  UpdateDocument,
+} from "$src/data/firebase";
 import { get } from "svelte/store";
 
 const SETTINS_PATH = "settings";
@@ -12,8 +16,26 @@ export const FetchSettings = async function (userId: string) {
   if (data == null) return new MinerobeUserSettings("", "");
   return data;
 };
-export const SetCurrentSkin = function (id, model, texture) {
+export const SetCurrentSkin = async function (id, model, texture) {
   const settins = get(userSettings);
   settins.currentSkin = new SkinData(id, model, texture);
-  UploadSettings(settins);
+  await UploadSettings(settins);
+  userSettings.set(settins);
+};
+export const UnlinkMinecraftAccount = async function () {
+  await FetchWithTokenAuth(
+    "/api/internal/unlink/" + get(currentUser).id,
+    "GET"
+  );
+  const settins = get(userSettings);
+  settins.linkedMinecraftAccount = null;
+  await UploadSettings(settins);
+  userSettings.set(settins);
+};
+export const LinkMinecraftAccount = async function () {
+  const resp=await FetchWithTokenAuth(
+    "/api/internal/link/" + get(currentUser).id,
+    "GET"
+  );
+  return await resp.json();
 };

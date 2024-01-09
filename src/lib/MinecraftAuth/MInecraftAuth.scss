@@ -1,0 +1,12 @@
+.mc-auth
+{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    .code
+    {
+        background-color: var(--color-theme-D1);
+        padding: 12px 10px;
+        box-sizing: border-box;
+    }
+}

@@ -1,6 +1,8 @@
 import { Authflow } from "prismarine-auth";
-import {GetSecret,SetSecret,UpdateDocument } from "./firebaseServer";
-const pathToSecret="secret/"+import.meta.env.VITE_USERS_SECRET_PATH
+import { GetSecret, SetSecret, UpdateDocument } from "./firebaseServer";
+const getCacheNameForUser = function (user) {
+  return import.meta.env.VITE_USERS_SECRET_PATH + "/"+user +"/"+import.meta.env.VITE_USERS_SECRET_LOCAL_PATH;
+}
 
 export const authenticateWithPrismarine = async function (user, token) {
   let authPromise: Promise<any> = new Promise((resolve, reject) => {
@@ -8,10 +10,14 @@ export const authenticateWithPrismarine = async function (user, token) {
       import.meta.env.VITE_AZURE_APP_ID,
       cacheFactory,
       { flow: "msal" },
-      async (params) => {
+      async (params: any) => {
         resolve({
           requireUserInteraction: true,
-          params: params,
+          params: {
+            userCode: params.userCode,
+            verificationUri: params.verificationUri,
+            expiresIn: params.expiresIn,
+          },
         });
       }
     );
@@ -30,7 +36,11 @@ export const authenticateWithPrismarine = async function (user, token) {
         );
         resolve({
           requireUserInteraction: false,
-          token: tokenAcc,
+          profile: {
+            id: tokenAcc.profile.id,
+            name: tokenAcc.profile.name,
+          },
+          token: tokenAcc.token,
         });
       });
   });
@@ -39,16 +49,16 @@ export const authenticateWithPrismarine = async function (user, token) {
     const token = userToken;
     return {
       async getCached() {
-        const cache = await GetSecret(pathToSecret, id, token,user);
+        const cache = await GetSecret(getCacheNameForUser(id), id, token, user);
         return cache || {};
       },
       async setCached(value) {
-        const cache = await SetSecret(pathToSecret, id, value, token);
+        const cache = await SetSecret(getCacheNameForUser(id), id, value, token);
       },
       async setCachedPartial(value) {
-        const cacheref = await GetSecret(pathToSecret, id, token,user);
+        const cacheref = await GetSecret(getCacheNameForUser(id), id, token, user);
         const cache = await SetSecret(
-          pathToSecret,
+          getCacheNameForUser(id),
           id,
           { ...value, ...cacheref },
           token
@@ -63,7 +73,7 @@ export const authenticateWithPrismarine = async function (user, token) {
   return authPromise;
 };
 export const refreshWithPrismarine = async function (id, token) {
-  const cache = await SetSecret(pathToSecret, id, {}, token);
+  const cache = await SetSecret(getCacheNameForUser(id), id, {}, token);
   await UpdateDocument(
     "settings",
     id,

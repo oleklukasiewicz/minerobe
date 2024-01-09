@@ -57,3 +57,20 @@
     }
   }
 }
+.auth-dialog
+{
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  .dialog-header
+  {
+    display: flex;
+    gap: 16px;
+    flex-direction: row;
+    h1
+    {
+      flex: 1;
+      margin: 0px;
+    }
+  }
+}
