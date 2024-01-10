@@ -350,7 +350,7 @@
               >{@html HumanHandsUpIcon}{$_("setSkin")}</button
             >
           {/if}
-          <div style="display: flex; gap:8px">
+          <div style="display: flex; gap:8px;flex:1;">
             <button
               id="download-action"
               title={$_("download")}
