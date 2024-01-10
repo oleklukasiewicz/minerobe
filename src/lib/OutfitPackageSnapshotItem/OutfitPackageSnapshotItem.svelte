@@ -7,7 +7,8 @@
     RenderSnapshot,
   } from "$src/data/render";
   import CloudIcon from "$icons/cloud.svg?raw";
-  import { currentUser } from "$src/data/cache";
+  import LoaderIcon from "$icons/loader.svg?raw";
+  import { currentUser, userSettings } from "$src/data/cache";
   import {
     FindStringInColors,
     FindStringInColorsAsHex,
@@ -57,9 +58,11 @@
   class:outfit={item.type != OUTFIT_TYPE.OUTFIT_SET}
   class:dense
 >
-{#if item?.local?.isCurrentSkin}
-  <div class="current-flag"><Label dense variant="ancient">current</Label></div>
-{/if}
+  {#if item.id == $userSettings.currentSkin?.id}
+    <div class="current-flag" title="Current skin">
+      <div class="icon-small">{@html LoaderIcon}</div>
+    </div>
+  {/if}
   <div class="render-area">
     <!-- svelte-ignore a11y-missing-attribute -->
     <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />

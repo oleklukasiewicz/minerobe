@@ -136,3 +136,10 @@ export const SplitOutfitPackages = function (packs: OutfitPackage[]) {
   });
   return splited;
 };
+export const IsItemIdInWardrobe = function (id, wardrobe) {
+  const outfit = wardrobe.outfits.find((outfit) => outfit.id == id);
+  if (outfit != null) return outfit;
+  const set = wardrobe.sets.find((set) => set.id == id);
+  if (set != null) return set;
+  return null;
+};

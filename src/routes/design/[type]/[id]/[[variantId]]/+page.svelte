@@ -251,7 +251,7 @@
         {#if loaded}
           <div style="display: flex;gap:4px;height:24px">
             <Label variant="unique">{$localPackage.publisher.name}</Label>
-            {#if $isItemSet && $localPackage.local.isCurrentSkin}
+            {#if $isItemSet && ($localPackage.id == $userSettings.currentSkin?.id)}
               <Label variant="ancient">Current skin</Label>
             {/if}
             &nbsp;

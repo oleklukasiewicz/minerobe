@@ -488,7 +488,7 @@
                 >{$_("shared")}</Label
               >
             {/if}
-            {#if $isItemSet && $itemPackage.local.isCurrentSkin}
+            {#if $isItemSet && ($itemPackage.id== $userSettings.currentSkin?.id)}
             <Label variant="ancient">Current skin</Label>
             {/if}
             <br />
