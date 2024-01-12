@@ -1,4 +1,9 @@
-import { currentUser, userSettings, wardrobe } from "$src/data/cache";
+import {
+  currentUser,
+  showToast,
+  userSettings,
+  wardrobe,
+} from "$src/data/cache";
 import { MinerobeUserSettings, SkinData } from "$src/data/common";
 import { PACKAGE_TYPE } from "$src/data/consts";
 import {
@@ -29,7 +34,9 @@ export const SetCurrentSkin = async function (id, model, texture) {
   );
   if (resp.status != 200) {
     settins.currentSkin = old;
-    await UploadSettings(settins);
+    showToast("Failed to change skin", undefined, "error");
+  } else {
+    showToast("Skin changed");
   }
   userSettings.set(settins);
 };

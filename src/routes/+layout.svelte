@@ -10,9 +10,17 @@
   import AvatarIcon from "$src/icons/avatar.svg?raw";
 
   import { onMount } from "svelte";
-  import { currentUser, isMobileView, setup } from "$src/data/cache";
+  import {
+    currentToasts,
+    currentUser,
+    hideToast,
+    isMobileView,
+    setup,
+    showToast,
+  } from "$src/data/cache";
   import { getCurrentUser, loginUser, logoutUser } from "$src/api/auth";
   import { navigateToProfile } from "$src/helpers/navigationHelper";
+  import Toast from "$lib/Toast/Toast.svelte";
 
   export const load = async () => {
     if (browser) {
@@ -37,6 +45,19 @@
 </script>
 
 {#if !$isLoading}
+  {#each $currentToasts as toast}
+    <Toast
+      message={toast.message}
+      icon={toast.icon}
+      mobile={$isMobileView}
+      show={true}
+      duration={toast.duration}
+      closeable={toast.closeable}
+      type={toast.type}
+      on:click={toast.action}
+      on:close={()=>hideToast(toast)}
+    />
+  {/each}
   <div id="nav" class:opened={isMenuOpened} class:closed={!isMenuOpened}>
     <button
       class="icon menu-button dark"
@@ -51,7 +72,10 @@
       <NavigationItem
         label={$_("navigation.home")}
         viewId=""
-        on:click={() => (isMenuOpened = false)}
+        on:click={() => {
+          isMenuOpened = false;
+          showToast("test");
+        }}
       />
       <NavigationItem
         label={$_("navigation.explore")}

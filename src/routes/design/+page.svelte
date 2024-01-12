@@ -484,7 +484,7 @@
                 : $_("outfit_set")}</Label
             >
             {#if $itemPackage.isShared}
-              <Label variant="rare" style="margin-left:8px"
+              <Label variant="rare"
                 >{$_("shared")}</Label
               >
             {/if}

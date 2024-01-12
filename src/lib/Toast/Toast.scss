@@ -1,0 +1,33 @@
+.toast {
+  position: fixed;
+  top: 75px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  display: table;
+
+  background-color: var(--color-accent);
+  &.error {
+    background-color: var(--color-error);
+  }
+  &.warning {
+    background-color: var(--color-warning);
+  }
+  &.info {
+    background-color: var(--color-info);
+  }
+  z-index: 20;
+  &>*
+  {
+    color:var(--color-accent-font);
+  }
+  .message
+  {
+    margin: 10px;
+    box-sizing: border-box;
+  }
+  &.hidden {
+    display: none;
+  }
+}

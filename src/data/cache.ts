@@ -47,24 +47,25 @@ export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
       wardrobe: get(wardrobe),
       user: get(currentUser),
       state: $appState,
-      userReadyness: $appState == APP_STATE.READY|| $appState == APP_STATE.GUEST_READY,
+      userReadyness:
+        $appState == APP_STATE.READY || $appState == APP_STATE.GUEST_READY,
       fullReadyness: true,
     };
   if ($appState == APP_STATE.USER_READY)
     result = {
       user: get(currentUser),
       state: $appState,
-      userReadyness: $appState == APP_STATE.READY|| $appState == APP_STATE.GUEST_READY,
+      userReadyness:
+        $appState == APP_STATE.READY || $appState == APP_STATE.GUEST_READY,
     };
-  if ($appState == APP_STATE.GUEST_READY) 
-  {
+  if ($appState == APP_STATE.GUEST_READY) {
     result = {
       state: $appState,
-      user:null,
+      user: null,
       userReadyness: true,
       fullReadyness: true,
     };
-  };
+  }
   return result;
 });
 export const userSettings: Writable<MinerobeUserSettings> = writable({
@@ -127,3 +128,38 @@ const setupSubscriptions = function () {
     if (get(appState) == APP_STATE.READY && data) await UploadSettings(data);
   });
 };
+
+export const currentToasts:Writable<any[]> = writable([]);
+export const showToast = function (
+  message: string,
+  icon=null,
+  type: string = "success",
+  action: any=()=>{},
+  closeable: boolean = true,
+  duration: number=3000,
+) {
+  let toast = {
+    message: message,
+    icon: icon,
+    duration: duration,
+    action: action,
+    closeable: closeable,
+    type: type,
+  };
+  currentToasts.update((toasts) => {
+    toasts.push(toast);
+    return toasts;
+  });
+  setTimeout(() => {
+    currentToasts.update((toasts) => {
+      toasts.shift();
+      return toasts;
+    });
+  }, duration);
+};
+export const hideToast = function (toast: any) {
+  currentToasts.update((toasts) => {
+    toasts.splice(toasts.indexOf(toast), 1);
+    return toasts;
+  });
+}

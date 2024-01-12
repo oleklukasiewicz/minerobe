@@ -23,7 +23,6 @@
   import {
     FileData,
     MinerobeUser,
-    MinerobeUserSettings,
     OutfitLayer,
     OutfitPackage,
   } from "$data/common";
@@ -60,7 +59,6 @@
   import { FetchOutfitSet } from "$src/api/sets";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
-  import { FetchWithTokenAuth } from "$src/data/firebase.js";
   import { SetCurrentSkin } from "$src/api/settings.js";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(
