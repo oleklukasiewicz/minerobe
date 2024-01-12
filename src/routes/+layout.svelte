@@ -51,7 +51,6 @@
       icon={toast.icon}
       mobile={$isMobileView}
       show={true}
-      duration={toast.duration}
       closeable={toast.closeable}
       type={toast.type}
       on:click={toast.action}
@@ -74,7 +73,6 @@
         viewId=""
         on:click={() => {
           isMenuOpened = false;
-          showToast("test");
         }}
       />
       <NavigationItem

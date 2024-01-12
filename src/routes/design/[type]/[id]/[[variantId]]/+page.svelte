@@ -60,6 +60,7 @@
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
   import { SetCurrentSkin } from "$src/api/settings.js";
+  import SetSkinButton from "$lib/SetSkinButton/SetSkinButton.svelte";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -202,9 +203,6 @@
     );
     $localPackage.social.likes -= 1;
   };
-  const setSkin = async function () {
-    await SetCurrentSkin($localPackage.id, $itemModelType, modelTexture);
-  };
   //subs
   itemModelType.subscribe((model) => updateTexture());
   selectedVariant.subscribe((variant) => updateTexture());
@@ -342,13 +340,9 @@
       {#if loaded}
         <div class="item-actions">
           {#if $userSettings?.linkedMinecraftAccount?.name != null && $isItemSet}
-            <button
-              on:click={setSkin}
-              class:disabled={$itemLayers.length == 0 || !loaded}
-              >{@html HumanHandsUpIcon}{$_("setSkin")}</button
-            >
+          <SetSkinButton item={$localPackage} texture={modelTexture} style="flex:1;"/>
           {/if}
-          <div style="display: flex; gap:8px;flex:1;">
+          <div style={"display: flex; gap:8px;"+(!$isItemSet?"flex:1;":"")}>
             <button
               id="download-action"
               title={$_("download")}

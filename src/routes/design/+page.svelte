@@ -27,7 +27,6 @@
   import {
     FileData,
     MinerobeUser,
-    MinerobeUserSettings,
     OutfitLayer,
     OutfitPackage,
   } from "$data/common";
@@ -53,7 +52,6 @@
   import TrashIcon from "$icons/trash.svg?raw";
   import PlusIcon from "$icons/plus.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
-  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
 
   import DefaultAnimation from "$animation/default";
 
@@ -91,8 +89,7 @@
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
-  import { FetchWithTokenAuth } from "$src/data/firebase";
-  import { LinkMinecraftAccount, SetCurrentSkin } from "$src/api/settings";
+  import SetSkinButton from "$lib/SetSkinButton/SetSkinButton.svelte";
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -324,9 +321,7 @@
     RemoveItem($itemPackage);
   };
 
-  const setSkin = async function () {
-    await SetCurrentSkin($itemPackage.id, $itemModelType, modelTexture);
-  };
+
   //picker
   const openOutfitPicker = async function () {
     isOutfitPickerOpen = true;
@@ -609,11 +604,7 @@
         {#if loaded}
           <div class="item-actions">
             {#if $userSettings?.linkedMinecraftAccount?.name != null && $isItemSet}
-              <button
-                on:click={setSkin}
-                class:disabled={$itemLayers.length == 0 || !loaded}
-                >{@html HumanHandsUpIcon}{$_("setSkin")}</button
-              >
+              <SetSkinButton item={$itemPackage} texture={modelTexture} style="flex:1;"/>
             {/if}
             <button
               id="download-action"

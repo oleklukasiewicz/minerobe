@@ -51,7 +51,7 @@
     --color-dialog: rgba(0,0,0,.6);
     --color-warning: #f3c995;
     --color-info: #6692f0;
-    --color-error: #e76969;
+    --color-error: #b84343;
 }
 @keyframes Blink{
     0%{

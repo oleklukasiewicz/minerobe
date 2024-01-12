@@ -3,9 +3,7 @@
   import { createEventDispatcher } from "svelte";
   import { cubicOut } from "svelte/easing";
   export let message: string;
-  export let duration: number = 3000;
   export let type: "success" | "error" | "warning" | "info" = "info";
-  export let position: "top" | "bottom" | "center" = "bottom";
   export let mobile = false;
   export let show: boolean = false;
   export let icon: string = "";
