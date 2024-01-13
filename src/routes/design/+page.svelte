@@ -554,7 +554,7 @@
             <Placeholder style="height:66px;margin-bottom:4px;" />
           {/if}
           {#if $itemPublisher.id == $currentUser?.id && !$isMobileView}
-            <div style="display: flex;flex-wrap:wrap;">
+            <div style="display: flex;flex-wrap:wrap;margin-top:8px;gap:8px;">
               {#if $isItemSet}
                 <button
                   id="import-package-action"
