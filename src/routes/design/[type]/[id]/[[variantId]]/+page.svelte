@@ -41,7 +41,6 @@
 
   import DownloadIcon from "$icons/download.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
-  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
 
   import DefaultAnimation from "$animation/default";
   import HandsUpAnimation from "$animation/handsup";
@@ -59,7 +58,6 @@
   import { FetchOutfitSet } from "$src/api/sets";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
-  import { SetCurrentSkin } from "$src/api/settings.js";
   import SetSkinButton from "$lib/SetSkinButton/SetSkinButton.svelte";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(
