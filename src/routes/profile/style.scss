@@ -1,96 +1,82 @@
 #profile-view {
   height: 100%;
   max-width: 100vw;
-  display: grid;
-    grid-template-columns: auto 1fr;
-  .render-area {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    min-width: 100px;
-    max-height: calc(100vh - 60px);
-    max-width: 100vw;
-    position: sticky;
-    top: 60px;
-    padding: 30px;
+  .header-area {
+    background-color: var(--color-theme-D1);
+    display: grid;
+    grid-template-columns: auto 1fr 1fr 1fr;
+    gap: 16px;
+    flex-direction: row;
+    margin: 10px;
+    padding: 16px;
     box-sizing: border-box;
-    .render {
+    .header-image {
       aspect-ratio: 1/1;
-      height: 100%;
-      width: 100%;
-      max-width: 100vw;
-      max-height: calc(100vh - 240px);
-       }
-    .render-actions {
-      padding: 10px;
-      box-sizing: border-box;
-      .render-opt
-      {
-        margin-top: 10px;
-        display: flex;
-        gap: 8px;
-        flex-direction: row;
-        button
-        {
-          flex:1;
-        }
+      min-height: 200px;
+      min-width: 200px;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
       }
     }
-  }
-  .data-area {
-    padding: 30px;
-    box-sizing: border-box;
-    min-height:  calc(100vh - 240px);
-    display: table;
+    .header-name,
+    .header-social {
+      flex: 1;
+      max-width: 300px;
+    }
   }
   &.mobile {
-    grid-template-columns: auto;
-    .render-area {
-      flex: 1;
-      display: table;
-      padding: 0px;
-      max-height: 100vw;
-      position: static;
-    }
-    .data-area {
-      padding: 8px;
+    .header-area {
+      display: flex;
+      flex-direction: column;
+      margin: 0px;
     }
   }
 }
-.auth-dialog
-{
+.auth-dialog {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  .dialog-header
-  {
+  .dialog-header {
     display: flex;
     gap: 16px;
     flex-direction: row;
-    h1
-    {
+    h1 {
       flex: 1;
       margin: 0px;
     }
   }
 }
-.profile-data
-{
-  background-color: var(--color-theme-D1);
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  padding: 8px 12px;
+.profile-cards {
+  display: flex;
+  width: 100%;
+  min-height: 200px;
+  padding: 10px;
   box-sizing: border-box;
-  max-width: 400px;
-  img
+  gap: 10px;
+}
+
+.profile-card {
+  flex: 1;
+  text-align: center;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 10px;
+  padding: 10px;
+  max-width: 15vw;
+  background-color: var(--color-theme-D1);
+  .main-data
   {
-    aspect-ratio: 1/1;
-    height: 30px;
-    margin: 4px;
+    display: grid;
+    place-items: center;
   }
-  span
-  {
-    margin-left: 10px;
-    margin-top: 8px;
+  .actions {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    * {
+      flex: 1;
+    }
   }
 }

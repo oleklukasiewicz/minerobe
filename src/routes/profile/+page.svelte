@@ -1,9 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import ModelSelection from "$component/outfit/ModelSelection/ModelSelection.svelte";
   import SectionTitle from "$component/base/SectionTitle/SectionTitle.svelte";
-  import DynamicRender from "$component/render/DynamicRender.svelte";
-  import DefaultAnimation from "$src/animation/default";
   import {
     alexModel,
     currentUser,
@@ -22,7 +19,6 @@
   } from "$src/data/render";
   import { onMount } from "svelte";
   import { propertyStore } from "svelte-writable-derived";
-  import ImportPackageIcon from "$icons/upload.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import { mergeImages } from "$src/data/imageMerger";
   import { ImportImage } from "$src/helpers/imageOperationsHelper";
@@ -32,12 +28,13 @@
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
   import Dialog from "$component/base/Dialog/Dialog.svelte";
   import MinecraftAuth from "$component/other/MinecraftAuth/MinecraftAuth.svelte";
-
+  import AvatarIcon from "$src/icons/avatar.svg?raw";
   import {
     LinkMinecraftAccount,
     UnlinkMinecraftAccount,
   } from "$src/api/settings";
   import { GetFaceOfRemoteSkin } from "$src/helpers/imageDataHelpers";
+  import OutfitTextureRender from "$lib/components/render/OutfitTextureRender.svelte";
 
   const userModel = propertyStore(userSettings, "model");
 
@@ -116,85 +113,95 @@
 </script>
 
 <div id="profile-view" class:mobile={$isMobileView}>
-  <div class="render-area">
-    <div class="render">
+  <div class="header-area">
+    <div class="header-image">
+      <!-- svelte-ignore a11y-missing-attribute -->
+      <img src={$currentUser?.avatar} />
+    </div>
+    <div class="header-name">
+      <SectionTitle label="Profile" placeholder={loading} />
       {#if !loading}
-        <DynamicRender
-          defaultAnimation={DefaultAnimation}
-          model={$userModel == MODEL_TYPE.STEVE ? $steveModel : $alexModel}
-          {texture}
-          modelName={$userModel}
-        />
+        <h1>{$currentUser?.name}</h1>
       {:else}
-        <Placeholder />
+        <Placeholder style="height:46px;margin-bottom:16px;min-width:200px" />
       {/if}
     </div>
-    <div class="render-actions">
-      <SectionTitle label="model" placeholder={loading} />
-      {#if !loading}
-        <ModelSelection bind:group={$userModel} />
-      {:else}
-        <Placeholder style="height:52px" />
-      {/if}
-      <div class="render-opt">
-        {#if !loading}
-          <button
-            class="secondary"
-            class:disabled={loading}
-            on:click={importBaseImage}
-            >{@html ImportPackageIcon}
-            {$_("layersOpt.addLayer")}</button
-          >
-          <button
-            class="secondary"
-            class:disabled={loading}
-            on:click={resetImage}>{@html CloseIcon} Reset</button
-          >
-        {:else}
-          <Placeholder style="height:42px" />
-          <Placeholder style="height:42px" />
-        {/if}
-      </div>
+    <div class="header-social">
+      <SectionTitle label="Total" placeholder={loading} />
+      <SocialInfo
+        data={{
+          likes: $wardrobe.local?.totalLikes,
+          downloads: $wardrobe.local?.totalDownloads,
+          isFeatured: false,
+        }}
+      />
     </div>
   </div>
-  <div class="data-area">
-    <SectionTitle label="Profile" placeholder={loading} />
-    {#if !loading}
-      <h1>{$currentUser?.name}</h1>
-      <div>
-        <SectionTitle label="Total" placeholder={loading} />
-        <SocialInfo
-          data={{
-            likes: $wardrobe.local.totalLikes,
-            downloads: $wardrobe.local.totalDownloads,
-            isFeatured: false,
-          }}
-        />
-      </div>
+  <div class="profile-cards">
+    <div class="profile-card">
+      <SectionTitle label="Base texture" placeholder={loading} />
+      {#if !loading}
+        <div>
+          <OutfitTextureRender
+            renderProvider={$userModel == MODEL_TYPE.ALEX
+              ? providers.alex
+              : providers.steve}
+            texture={$userSettings.baseTexture}
+          />
+        </div>
+        <div class="actions">
+          <button>Edit</button>
+        </div>
+      {/if}
+    </div>
+    <div class="profile-card">
       <SectionTitle label="Minecraft account" placeholder={loading} />
-      {#if $userSettings?.linkedMinecraftAccount?.name == null}
-        <button on:click={linkAccount}>Link account</button>
-      {:else}
-        <div class="profile-data">
+      {#if !loading}
+        <div class="main-data">
           <!-- svelte-ignore a11y-missing-attribute -->
-          <img src={profilePhoto} />
-          <span class="mc-font"
-            >{$userSettings.linkedMinecraftAccount.name}</span
-          >
-          <button class="secondary" on:click={() => (isAuthDialogOpen = true)}
-            >Unlink account</button
+          {#if $userSettings?.linkedMinecraftAccount?.name != null}
+            <img src={profilePhoto} style="min-width: calc(100% - 80px);" />
+            <span class="mc-font"
+              >{$userSettings.linkedMinecraftAccount.name}</span
+            >
+          {:else}
+            <span class="icon-big">{@html AvatarIcon}</span>
+            <span class="mc-font">Not linked</span>
+          {/if}
+        </div>
+        <div class="actions">
+          {#if $userSettings?.linkedMinecraftAccount?.name == null}
+            <button on:click={linkAccount}>Link account</button>
+          {:else}
+            <button class="secondary" on:click={() => (isAuthDialogOpen = true)}
+              >Unlink account</button
+            >
+          {/if}
+        </div>
+      {/if}
+    </div>
+    <div class="profile-card">
+      <SectionTitle label="Profile page" placeholder={loading} />
+      {#if !loading}
+        <div class="main-data">
+          <span class="mc-font">{$currentUser?.name}</span>
+        </div>
+        <div class="actions">
+          <a href="/profile/{$currentUser.id}">
+            <button style="width: 100%;">profile page</button></a
           >
         </div>
       {/if}
-      <br />
-      <button on:click={logout}>Logout</button>
-    {:else}
-      <Placeholder style="height:46px;margin-bottom:16px;" />
-      <Placeholder style="height:24px; max-width:100px;margin-bottom:8px;" />
-      <Placeholder style="height:36px;margin-bottom:16px; max-width:400px;" />
-      <Placeholder style="height:24px;" />
-      <Placeholder style="height:46px;margin-bottom:16px;" />
-    {/if}
+    </div>
+    <div class="profile-card">
+      <SectionTitle label="Logout"></SectionTitle>
+      <div class="main-data">
+        <span class="mc-font">Logout from your account</span>
+      </div>
+      <div class="actions">
+        <button class="secondary" on:click={logout}>Logout</button>
+      </div>
+    </div>
   </div>
 </div>
 <Dialog bind:open={isAuthDialogOpen}>
