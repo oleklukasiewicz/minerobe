@@ -13,10 +13,10 @@
     FindStringInColors,
     FindStringInColorsAsHex,
   } from "$src/helpers/colorHelper";
-  import OutfitPackageSnapshotRender from "$lib/render/OutfitPackageSnapshotRender.svelte";
+  import OutfitPackageSnapshotRender from "$component/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
-  import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
-  import Label from "$lib/Label/Label.svelte";
+  import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
+  import Label from "$component/base/Label/Label.svelte";
 
   export let item: OutfitPackage = null;
   export let dense = false;

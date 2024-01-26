@@ -1,8 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
-  import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
-  import DynamicRender from "$lib/render/DynamicRender.svelte";
+  import ModelSelection from "$component/outfit/ModelSelection/ModelSelection.svelte";
+  import SectionTitle from "$component/base/SectionTitle/SectionTitle.svelte";
+  import DynamicRender from "$component/render/DynamicRender.svelte";
   import DefaultAnimation from "$src/animation/default";
   import {
     alexModel,
@@ -28,11 +28,11 @@
   import { ImportImage } from "$src/helpers/imageOperations";
   import { logoutUser } from "$src/api/auth";
   import { navigateToHome } from "$src/helpers/navigationHelper";
-  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
-  import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
-  import Label from "$lib/Label/Label.svelte";
-  import Dialog from "$lib/Dialog/Dialog.svelte";
-  import MinecraftAuth from "$lib/MinecraftAuth/MinecraftAuth.svelte";
+  import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
+  import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
+  import Label from "$component/base/Label/Label.svelte";
+  import Dialog from "$component/base/Dialog/Dialog.svelte";
+  import MinecraftAuth from "$component/other/MinecraftAuth/MinecraftAuth.svelte";
 
   import {
     LinkMinecraftAccount,

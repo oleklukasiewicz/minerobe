@@ -13,20 +13,20 @@
   } from "$src/helpers/navigationHelper";
   import { onMount } from "svelte";
   import PlusIcon from "$icons/plus.svg?raw";
-  import CategoryMenu from "$lib/CategoryMenu/CategoryMenu.svelte";
-  import CategoryMenuItem from "$lib/CategoryMenuItem/CategoryMenuItem.svelte";
+  import CategoryMenu from "$component/other/CategoryMenu/CategoryMenu.svelte";
+  import CategoryMenuItem from "$component/other/CategoryMenuItem/CategoryMenuItem.svelte";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import { OUTFIT_TYPE } from "$src/data/consts";
-  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
+  import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import { CreateOutfitSet } from "$src/api/sets";
   import { CreateOutfit } from "$src/api/outfits";
   import {
     GetCategoriesFromList,
     GetOutfitIconFromType,
   } from "$src/helpers/imageDataHelpers";
-  import Search from "$lib/Search/Search.svelte";
-  import OutfitPackageSnapshotList from "$lib/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
+  import Search from "$component/base/Search/Search.svelte";
+  import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
 
   let currentView = "sets";
   let loaded = false;

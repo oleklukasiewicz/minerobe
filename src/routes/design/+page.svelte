@@ -9,14 +9,14 @@
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
-  import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
-  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
-  import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
-  import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
-  import DynamicRender from "$lib/render/DynamicRender.svelte";
-  import Dialog from "$lib/Dialog/Dialog.svelte";
-  import OutfitPicker from "$lib/OutfitPicker/OutfitPicker.svelte";
-  import Label from "$lib/Label/Label.svelte";
+  import ItemLayer from "$component/outfit/ItemLayer/ItemLayer.svelte";
+  import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
+  import SectionTitle from "$component/base/SectionTitle/SectionTitle.svelte";
+  import ModelSelection from "$component/outfit/ModelSelection/ModelSelection.svelte";
+  import DynamicRender from "$component/render/DynamicRender.svelte";
+  import Dialog from "$component/base/Dialog/Dialog.svelte";
+  import OutfitPicker from "$component/outfit/OutfitPicker/OutfitPicker.svelte";
+  import Label from "$component/base/Label/Label.svelte";
 
   import {
     CHANGE_TYPE,
@@ -89,7 +89,7 @@
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
-  import SetSkinButton from "$lib/SetSkinButton/SetSkinButton.svelte";
+  import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(

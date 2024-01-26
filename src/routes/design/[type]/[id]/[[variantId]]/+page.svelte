@@ -10,15 +10,15 @@
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
-  import ItemVariant from "$lib/ItemVariant/ItemVariant.svelte";
-  import ItemLayer from "$lib/ItemLayer/ItemLayer.svelte";
-  import DynamicRender from "$lib/render/DynamicRender.svelte";
-  import InfoLabel from "$lib/InfoLabel/InfoLabel.svelte";
-  import Label from "$lib/Label/Label.svelte";
-  import SocialInfo from "$lib/SocialInfo/SocialInfo.svelte";
-  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
-  import SectionTitle from "$lib/SectionTitle/SectionTitle.svelte";
-  import ModelSelection from "$lib/ModelSelection/ModelSelection.svelte";
+  import ItemVariant from "$component/outfit/ItemVariant/ItemVariant.svelte";
+  import ItemLayer from "$component/outfit/ItemLayer/ItemLayer.svelte";
+  import DynamicRender from "$component/render/DynamicRender.svelte";
+  import InfoLabel from "$component/base/InfoLabel/InfoLabel.svelte";
+  import Label from "$component/base/Label/Label.svelte";
+  import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
+  import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
+  import SectionTitle from "$component/base/SectionTitle/SectionTitle.svelte";
+  import ModelSelection from "$component/outfit/ModelSelection/ModelSelection.svelte";
 
   import {
     FileData,
@@ -58,7 +58,7 @@
   import { FetchOutfitSet } from "$src/api/sets";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
-  import SetSkinButton from "$lib/SetSkinButton/SetSkinButton.svelte";
+  import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(

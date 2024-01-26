@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { browser } from "$app/environment";
-  import NavigationItem from "$lib/NavigationItem/NavigationItem.svelte";
+  import NavigationItem from "$component/other/NavigationItem/NavigationItem.svelte";
   import "$locales/locales";
   import { locale, waitLocale, isLoading, _ } from "svelte-i18n";
 
@@ -20,7 +20,7 @@
   } from "$src/data/cache";
   import { getCurrentUser, loginUser, logoutUser } from "$src/api/auth";
   import { navigateToProfile } from "$src/helpers/navigationHelper";
-  import Toast from "$lib/Toast/Toast.svelte";
+  import Toast from "$component/base/Toast/Toast.svelte";
 
   export const load = async () => {
     if (browser) {

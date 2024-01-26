@@ -1,5 +1,5 @@
 <script lang="ts">
-  import RatioButton from "$lib/RatioButton/RatioButton.svelte";
+  import RatioButton from "$component/base/RatioButton/RatioButton.svelte";
   import { MODEL_TYPE } from "$src/data/consts";
   import { _ } from "svelte-i18n";
 

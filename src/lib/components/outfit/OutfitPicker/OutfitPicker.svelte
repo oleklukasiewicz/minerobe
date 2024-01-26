@@ -3,11 +3,11 @@
   import * as THREE from "three";
   import { createEventDispatcher, onMount } from "svelte";
   import { SplitOutfitPackages } from "$src/helpers/apiHelper";
-  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
-  import OutfitPackageSnapshotList from "$lib/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
+  import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
+  import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import ChevronLeftIcon from "$icons/chevron-left.svg?raw";
   import ChevronRightIcon from "$icons/chevron-right.svg?raw";
-  import Search from "$lib/Search/Search.svelte";
+  import Search from "$component/base/Search/Search.svelte";
 
   export let outfits: OutfitPackage[] = [];
   export let categories = ["ALL"];

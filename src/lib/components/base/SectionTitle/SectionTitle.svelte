@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Placeholder from "$lib/Placeholder/Placeholder.svelte";
+    import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
     export let label: string;
     export let placeholder:boolean = false;
 </script>

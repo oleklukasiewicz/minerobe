@@ -1,5 +1,5 @@
 <script lang="ts">
-  import OutfitPicker from "$lib/OutfitPicker/OutfitPicker.svelte";
+  import OutfitPicker from "$component/outfit/OutfitPicker/OutfitPicker.svelte";
   import { appState, wardrobe } from "$src/data/cache";
   import { APP_STATE } from "$src/data/consts";
   import { FetchWardrobeOutfitsByCategory } from "$src/helpers/apiHelper";

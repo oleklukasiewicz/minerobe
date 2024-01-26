@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as THREE from "three";
-  import OutfitPackageSnapshotItem from "$lib/OutfitPackageSnapshotItem/OutfitPackageSnapshotItem.svelte";
+  import OutfitPackageSnapshotItem from "$component/outfit/OutfitPackageSnapshotItem/OutfitPackageSnapshotItem.svelte";
   import { FileData, OutfitLayer, type OutfitPackage } from "$src/data/common";
   import { createEventDispatcher, onMount } from "svelte";
   import { CreateDefaultRenderProvider } from "$src/data/render";

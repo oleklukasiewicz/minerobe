@@ -1,6 +1,6 @@
 <script lang="ts">
-  import OutfitPackageSnapshotList from "$lib/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
-  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
+  import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
+  import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import { FetchLandingPage } from "$src/api/landing";
   import { defaultRenderer, isMobileView, userSettings } from "$src/data/cache";
   import { navigateToOutfitPackage } from "$src/helpers/navigationHelper";

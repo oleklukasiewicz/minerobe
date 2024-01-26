@@ -22,6 +22,7 @@ const config = {
       $icons: "src/icons",
       $helpers: "src/helpers",
       $texture: "src/texture",
+      $component: "src/lib/components",
     },
   },
 };

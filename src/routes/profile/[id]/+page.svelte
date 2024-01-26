@@ -5,8 +5,8 @@
     QueryWhere,
   } from "$src/data/firebase";
   import { onMount } from "svelte";
-  import OutfitPackageSnapshotList from "$lib/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
-  import Placeholder from "$lib/Placeholder/Placeholder.svelte";
+  import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
+  import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import { OutfitPackageLink } from "$src/data/common";
   import { OUTFIT_TYPE } from "$src/data/consts";
   import { FetchOutfitSetSnapshotFromLink } from "$src/api/sets";

@@ -10,9 +10,9 @@
   import UserPlusIcon from "$src/icons/user-plus.svg?raw";
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
   import { LAYER_TYPE } from "$src/data/consts";
-  import OutfitLayerRender from "$lib/render/OutfitLayerRender.svelte";
+  import OutfitLayerRender from "$component/render/OutfitLayerRender.svelte";
   import { RenderProvider } from "$src/data/render";
-  import Label from "$lib/Label/Label.svelte";
+  import Label from "$component/base/Label/Label.svelte";
 
   export let item: OutfitLayer;
   export let renderProvider: RenderProvider = new RenderProvider();
