@@ -1,5 +1,4 @@
-import { getApp, initializeApp } from "firebase-admin/app";
-import { Auth, getAuth } from "firebase-admin/auth";
+import { getAuth } from "firebase-admin/auth";
 import admin from "firebase-admin";
 import { initializeFirestore } from "firebase-admin/firestore";
 const firebaseConfig = {

@@ -10,7 +10,7 @@
   } from "$src/data/render";
   import { GetCameraConfigForType } from "$src/helpers/renderHelper";
   import { onMount } from "svelte";
-  import { mergeImages } from "$src/helpers/imageMerger";
+  import { mergeImages } from "$src/data/imageMerger";
 
   export let item: OutfitPackage = null;
   export let renderProvider: RenderProvider = null;

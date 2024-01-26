@@ -10,13 +10,12 @@
   import LoaderIcon from "$icons/loader.svg?raw";
   import { currentUser, userSettings } from "$src/data/cache";
   import {
-    FindStringInColors,
-    FindStringInColorsAsHex,
+    FindColorTitle,
+    FindColor
   } from "$src/helpers/colorHelper";
   import OutfitPackageSnapshotRender from "$component/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
-  import Label from "$component/base/Label/Label.svelte";
 
   export let item: OutfitPackage = null;
   export let dense = false;
@@ -91,9 +90,9 @@
           .filter((x) => x[item.model].color != null) as layer (layer.variantId)}
           <span
             class="color-view"
-            title={FindStringInColors(layer[item.model].color)}
+            title={FindColorTitle(layer[item.model].color)}
             on:click|stopPropagation={() => updateRender(layer)}
-            style="background-color: {FindStringInColorsAsHex(
+            style="background-color: {FindColor(
               layer[item.model].color
             )};"
           ></span>

@@ -45,9 +45,9 @@
   import DefaultAnimation from "$animation/default";
   import HandsUpAnimation from "$animation/handsup";
 
-  import { ExportImageLayers } from "$helpers/imageOperations";
+  import { ExportImageLayers } from "$src/helpers/imageOperationsHelper.js";
   import { sortOutfitLayersByColor } from "$src/helpers/imageDataHelpers.js";
-  import { mergeImages } from "$helpers/imageMerger";
+  import { mergeImages } from "$src/data/imageMerger.js";
   import {
     AddItemToWardrobe,
     IsItemInWardrobe,

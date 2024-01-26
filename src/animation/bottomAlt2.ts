@@ -1,10 +1,6 @@
 import {
-  RenderAnimation,
-  lerp,
-  lerpOutCubic,
-  isPoseReady,
+  RenderAnimation
 } from "$data/animation";
-import { MODEL_TYPE } from "$data/consts";
 import {
   AnimationPropertyStep,
   AnimationStep,
@@ -44,11 +40,6 @@ const NewOutfitBottomAlt2Animation = new RenderAnimation(
   function (data, scene, clock, modelName, elapsedRenderTime) {
     const resetSpeed = 0.015; // Adjust this value to change the speed of the reset
     const rotSpeed = 0.03;
-    const epsilon = 0.01; // Adjust this value to change the precision of the equality check
-    const amplitude = 0.025;
-    const elapsedTime = clock;
-
-    const cSin = 1 * Math.sin(clock);
     if (data.head) {
       if (data.isRotatingDown) {
         data.isLookingLeft = true;

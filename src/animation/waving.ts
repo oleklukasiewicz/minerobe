@@ -1,8 +1,5 @@
 import {
-  RenderAnimation,
-  lerp,
-  lerpOutCubic,
-  isPoseReady,
+  RenderAnimation
 } from "$data/animation";
 import {
   AnimationPropertyStep,

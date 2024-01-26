@@ -12,26 +12,6 @@ import { PACKAGE_TYPE } from "$src/data/consts";
 import { QueryWhere } from "$src/data/firebase";
 import { get } from "svelte/store";
 
-//sharing
-export const ShareItem = async function (item) {
-  item.isShared = true;
-  if (item.type == PACKAGE_TYPE.OUTFIT_SET) {
-    await UploadOutfitSet(item);
-  }
-  if (item.type == PACKAGE_TYPE.OUTFIT) {
-    await UploadOutfit(item);
-  }
-};
-export const UnshareItem = async function (item) {
-  item.isShared = false;
-  if (item.type == PACKAGE_TYPE.OUTFIT_SET) {
-    await UploadOutfitSet(item);
-  }
-  if (item.type == PACKAGE_TYPE.OUTFIT) {
-    await UploadOutfit(item);
-  }
-};
-
 //helpers
 export const RemoveItem = function (item: OutfitPackage) {
   if (get(wardrobe).studio.id == item.id) {
@@ -120,6 +100,15 @@ export const FetchWardrobeOutfitsByCategory = async function (category) {
   let outfits = await FetchOutfitByFilter(outfitsIds, clauses);
   return outfits;
 };
+export const IsItemIdInWardrobe = function (id, wardrobe) {
+  const outfit = wardrobe.outfits.find((outfit) => outfit.id == id);
+  if (outfit != null) return outfit;
+  const set = wardrobe.sets.find((set) => set.id == id);
+  if (set != null) return set;
+  return null;
+};
+//other
+
 export const SplitOutfitPackage = function (pack: OutfitPackage) {
   let splited = [];
   pack.layers.forEach((layer) => {
@@ -135,11 +124,4 @@ export const SplitOutfitPackages = function (packs: OutfitPackage[]) {
     splited = splited.concat(SplitOutfitPackage(pack));
   });
   return splited;
-};
-export const IsItemIdInWardrobe = function (id, wardrobe) {
-  const outfit = wardrobe.outfits.find((outfit) => outfit.id == id);
-  if (outfit != null) return outfit;
-  const set = wardrobe.sets.find((set) => set.id == id);
-  if (set != null) return set;
-  return null;
 };

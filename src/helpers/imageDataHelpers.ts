@@ -1,11 +1,11 @@
-import { OUTFIT_TYPE } from "$data/consts";
+import { COLOR_TYPE, OUTFIT_TYPE } from "$data/consts";
 import type { OutfitLayer, OutfitPackage } from "$src/data/common";
 import HatIcon from "$icons/clothes/hat.svg?raw";
 import TopIcon from "$icons/clothes/top.svg?raw";
 import BottomIcon from "$icons/clothes/bottom.svg?raw";
 import ShoesIcon from "$icons/clothes/shoes.svg?raw";
 import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
-import { ConvertRGBToHSL, GetColorFromFileData } from "./colorHelper";
+import { ConvertColor, GetColorFromFileData } from "./colorHelper";
 
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =
@@ -130,9 +130,9 @@ export const sortOutfitLayersByColor = async function (
 ) {
   let hues = [];
   for (let i = 0; i < layers.length; i++) {
-    let color = ConvertRGBToHSL(
-      await GetColorFromFileData(layers[i][modelType])
-    );
+    let color = ConvertColor(
+      await GetColorFromFileData(layers[i][modelType]),COLOR_TYPE.RGB, COLOR_TYPE.HSL
+    ) as any;
     hues.push({ h: color.h, item: layers[i] });
   }
   return hues.sort((a, b) => a.h - b.h).map((x) => x.item);

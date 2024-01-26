@@ -1,4 +1,4 @@
-import { currentUser, userSettings } from "$src/data/cache";
+import { currentUser } from "$src/data/cache";
 import {
   OutfitPackage,
   OutfitLayer,
@@ -22,7 +22,7 @@ import {
   UploadPackageSnapshot,
   _FetchPackage,
 } from "./pack";
-import { mergeImages } from "$src/helpers/imageMerger";
+import { mergeImages } from "$src/data/imageMerger";
 
 const SETS_PATH = "sets";
 const SETS_LOCAL_PATH = "data";

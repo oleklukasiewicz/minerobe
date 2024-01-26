@@ -1,4 +1,4 @@
-import { MODEL_TYPE } from "../../data/consts";
+import { MODEL_TYPE } from "$data/consts";
 import { authenticateWithPrismarine } from "./prismarineAuth";
 export const ChangeSkin = async function (
   id: string,
@@ -8,12 +8,7 @@ export const ChangeSkin = async function (
 ) {
   const token = await authenticate(userId, userToken);
   if (token == null) throw new Error("Invalid token");
-  let normalizedModel;
-  if (model == MODEL_TYPE.ALEX) {
-    normalizedModel = "slim";
-  } else {
-    normalizedModel = "classic";
-  }
+  let normalizedModel = model == MODEL_TYPE.ALEX? "slim" : "classic";
   const url =
     "https://minerobe.vercel.app/api/outfit_set_flat/" + userId + "/" + model;
   const request = {
@@ -31,10 +26,7 @@ export const ChangeSkin = async function (
       body: JSON.stringify(request),
     }
   );
-  if (result.status != 200) {
-    return false;
-  }
-  return true;
+  return result.status == 200;
 };
 const authenticate = async function (user, token: string) {
   const data = await authenticateWithPrismarine(user, token);

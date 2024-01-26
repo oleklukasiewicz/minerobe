@@ -6,7 +6,7 @@ import {
   UpdateDocument,
   UpdateRawDocument,
 } from "$src/data/firebase";
-import { FindStringInColors } from "$src/helpers/colorHelper";
+import { FindColorTitle } from "$src/helpers/colorHelper";
 
 const QUERY_PATH = "query";
 export let CreateQueryDataFromPackage = async (pack: OutfitPackage) => {
@@ -58,7 +58,7 @@ export let CreateQueryDataFromPackage = async (pack: OutfitPackage) => {
       qdl.isFeatured = pack.social.isFeatured;
       qdl.downloads = pack.social.downloads || 0;
       qdl.outfitType = pack.outfitType;
-      qdl.normalizedColor = FindStringInColors(l.steve.color);
+      qdl.normalizedColor = FindColorTitle(l.steve.color);
       qdl.variantId = l.variantId;
       qdl.isShared = pack.isShared;
       qdl.model = pack.model;

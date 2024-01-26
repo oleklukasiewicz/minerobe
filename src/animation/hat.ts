@@ -1,6 +1,5 @@
 import {
   RenderAnimation,
-  lerp,
   lerpOutCubic,
   isPoseReady,
 } from "$data/animation";

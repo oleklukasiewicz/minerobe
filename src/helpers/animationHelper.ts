@@ -14,6 +14,63 @@ import {
 import type { OutfitPackage } from "$src/data/common";
 import { CHANGE_TYPE, MODEL_TYPE, OUTFIT_TYPE } from "$src/data/consts";
 import * as THREE from "three";
+const CreatePropertyStep = function (
+  data,
+  part,
+  property: "position" | "rotation",
+  value: "x" | "y" | "z",
+  targetValue,
+  duration,
+  ease: "direct" | "ease" = "ease",
+  clock
+) {
+  if (ease == "ease") {
+    data[part][property][value] = lerpOutCubic(
+      clock,
+      data[part][property][value],
+      targetValue,
+      duration
+    );
+  } else {
+    data[part][property][value] = targetValue;
+  }
+};
+
+export class AnimationPropertyStep {
+  part: string;
+  property: "position" | "rotation";
+  value: "x" | "y" | "z";
+  targetValue: number;
+  duration: number;
+  ease: "direct" | "ease" = "ease";
+  constructor(
+    part,
+    property: "position" | "rotation",
+    value: "x" | "y" | "z",
+    targetValue,
+    duration,
+    ease: "direct" | "ease" = "ease"
+  ) {
+    this.part = part;
+    this.property = property;
+    this.value = value;
+    this.targetValue = targetValue;
+    this.duration = duration;
+    this.ease = ease;
+  }
+}
+export class AnimationStepState {
+  name: string;
+  step: AnimationPropertyStep[];
+  onFinished: any;
+  epsilon = 0.003;
+  constructor(name, step, onFinishedMth, epsilon = 0.003) {
+    this.name = name;
+    this.step = step;
+    this.onFinished = onFinishedMth;
+    this.epsilon = epsilon;
+  }
+}
 
 export const GetAnimationForPackageChange = function (
   itempackage: OutfitPackage,
@@ -202,62 +259,6 @@ export const RemoveModelAnimationData = function (data) {
   data.rightleg.position.y = -0.75;
   data.rightleg.position.z = 0;
 };
-const CreatePropertyStep = function (
-  data,
-  part,
-  property: "position" | "rotation",
-  value: "x" | "y" | "z",
-  targetValue,
-  duration,
-  ease: "direct" | "ease" = "ease",
-  clock
-) {
-  if (ease == "ease") {
-    data[part][property][value] = lerpOutCubic(
-      clock,
-      data[part][property][value],
-      targetValue,
-      duration
-    );
-  } else {
-    data[part][property][value] = targetValue;
-  }
-};
-export class AnimationPropertyStep {
-  part: string;
-  property: "position" | "rotation";
-  value: "x" | "y" | "z";
-  targetValue: number;
-  duration: number;
-  ease: "direct" | "ease" = "ease";
-  constructor(
-    part,
-    property: "position" | "rotation",
-    value: "x" | "y" | "z",
-    targetValue,
-    duration,
-    ease: "direct" | "ease" = "ease"
-  ) {
-    this.part = part;
-    this.property = property;
-    this.value = value;
-    this.targetValue = targetValue;
-    this.duration = duration;
-    this.ease = ease;
-  }
-}
-export class AnimationStepState {
-  name: string;
-  step: AnimationPropertyStep[];
-  onFinished: any;
-  epsilon = 0.003;
-  constructor(name, step, onFinishedMth, epsilon = 0.003) {
-    this.name = name;
-    this.step = step;
-    this.onFinished = onFinishedMth;
-    this.epsilon = epsilon;
-  }
-}
 export const AnimationStep = function (
   data,
   props: AnimationPropertyStep[],

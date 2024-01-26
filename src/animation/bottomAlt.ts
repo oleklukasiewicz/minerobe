@@ -33,10 +33,6 @@ const NewOutfitBottomAltAnimation = new RenderAnimation(
   },
   function (data, scene, clock, modelName, elapsedRenderTime) {
     const resetSpeed = 0.02; // Adjust this value to change the speed of the reset
-    const epsilon = 0.01; // Adjust this value to change the precision of the equality check
-    const amplitude = 0.025;
-    const elapsedTime = clock;
-    const cSin = 1 * Math.sin(clock);
     if (data.head) {
       if (data.isLookingRight) {
         if (

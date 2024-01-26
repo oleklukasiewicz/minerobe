@@ -1,4 +1,4 @@
-import { RenderAnimation,lerp,lerpOutCubic,isPoseReady } from "$data/animation";
+import { RenderAnimation,lerpOutCubic,isPoseReady } from "$data/animation";
 import { MODEL_TYPE } from "$data/consts";
 const FrendshipAnimation = new RenderAnimation(
     function (scene, keepData = false, modelName) {

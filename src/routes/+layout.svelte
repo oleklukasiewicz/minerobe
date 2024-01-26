@@ -16,9 +16,8 @@
     hideToast,
     isMobileView,
     setup,
-    showToast,
   } from "$src/data/cache";
-  import { getCurrentUser, loginUser, logoutUser } from "$src/api/auth";
+  import { getCurrentUser, loginUser } from "$src/api/auth";
   import { navigateToProfile } from "$src/helpers/navigationHelper";
   import Toast from "$component/base/Toast/Toast.svelte";
 

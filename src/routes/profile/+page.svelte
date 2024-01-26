@@ -24,13 +24,12 @@
   import { propertyStore } from "svelte-writable-derived";
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
-  import { mergeImages } from "$src/helpers/imageMerger";
-  import { ImportImage } from "$src/helpers/imageOperations";
+  import { mergeImages } from "$src/data/imageMerger";
+  import { ImportImage } from "$src/helpers/imageOperationsHelper";
   import { logoutUser } from "$src/api/auth";
   import { navigateToHome } from "$src/helpers/navigationHelper";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
-  import Label from "$component/base/Label/Label.svelte";
   import Dialog from "$component/base/Dialog/Dialog.svelte";
   import MinecraftAuth from "$component/other/MinecraftAuth/MinecraftAuth.svelte";
 

@@ -8,6 +8,8 @@ import {
 } from "$src/data/firebase";
 import { increment } from "firebase/firestore";
 import { UploadPartialQueryDataRaw } from "./query";
+import { UploadOutfitSet } from "./sets";
+import { UploadOutfit } from "./outfits";
 const SOCIAL_PATH = "social";
 const SNAPSHOT_PATH = "snapshot";
 export const AddLike = async (id: string, type: string) => {
@@ -75,4 +77,22 @@ export const FetchSocial = async (path: string) => {
     await UpdateDocument(path, SOCIAL_PATH, obj);
   }
   return obj;
+};
+export const ShareItem = async function (item) {
+  item.isShared = true;
+  if (item.type == PACKAGE_TYPE.OUTFIT_SET) {
+    await UploadOutfitSet(item);
+  }
+  if (item.type == PACKAGE_TYPE.OUTFIT) {
+    await UploadOutfit(item);
+  }
+};
+export const UnshareItem = async function (item) {
+  item.isShared = false;
+  if (item.type == PACKAGE_TYPE.OUTFIT_SET) {
+    await UploadOutfitSet(item);
+  }
+  if (item.type == PACKAGE_TYPE.OUTFIT) {
+    await UploadOutfit(item);
+  }
 };

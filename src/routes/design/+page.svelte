@@ -59,8 +59,8 @@
     ExportImageLayers,
     ImportImage,
     ImportLayerFromFile,
-  } from "$helpers/imageOperations";
-  import { mergeImages } from "$helpers/imageMerger";
+  } from "$src/helpers/imageOperationsHelper";
+  import { mergeImages } from "$src/data/imageMerger";
   import {
     CreateOutfit,
     FetchOutfit,
@@ -72,8 +72,6 @@
     FetchWardrobeOutfitsByCategory,
     IsItemInWardrobe,
     RemoveItem,
-    ShareItem,
-    UnshareItem,
     UpdateItemInWardrobe,
   } from "$src/helpers/apiHelper";
   import {
@@ -90,6 +88,7 @@
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
+  import { ShareItem, UnshareItem } from "$src/api/social";
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
