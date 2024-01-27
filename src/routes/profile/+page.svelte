@@ -35,12 +35,14 @@
   } from "$src/api/settings";
   import { GetFaceOfRemoteSkin } from "$src/helpers/imageDataHelpers";
   import OutfitTextureRender from "$lib/components/render/OutfitTextureRender.svelte";
+  import BaseTextureDialog from "$lib/components/dialog/BaseTextureDialog.svelte";
 
   const userModel = propertyStore(userSettings, "model");
 
   let providers: { steve: RenderProvider; alex: RenderProvider };
 
   let isAuthDialogOpen = false;
+  let isBaseTextureDialogOpen=false;
   let authCode = "";
   let profile: any;
   let profilePhoto = "";
@@ -55,13 +57,6 @@
       }
     });
     userSettings.subscribe(async (v) => {
-      if (v.baseTexture) {
-        texture = await mergeImages(
-          [$planksTexture, v.baseTexture],
-          undefined,
-          v.model
-        );
-      } else texture = $planksTexture;
       requireUserInteraction = v.linkedMinecraftAccount == null;
       profile = v.linkedMinecraftAccount;
       if (profile) {
@@ -71,22 +66,6 @@
       }
     });
   });
-  let texture = $planksTexture;
-  const importBaseImage = async () => {
-    const filedata = await ImportImage();
-    if (filedata) {
-      userSettings.update((v) => {
-        v.baseTexture = filedata[0].content;
-        return v;
-      });
-    }
-  };
-  const resetImage = () => {
-    userSettings.update((v) => {
-      v.baseTexture = null;
-      return v;
-    });
-  };
   const logout = async () => {
     navigateToHome();
     await logoutUser();
@@ -150,7 +129,7 @@
           />
         </div>
         <div class="actions">
-          <button>Edit</button>
+          <button on:click={()=>isBaseTextureDialogOpen=true}>Edit</button>
         </div>
       {/if}
     </div>
@@ -227,7 +206,23 @@
     />
   </div>
 </Dialog>
-
+<Dialog bind:open={isBaseTextureDialogOpen}>
+  <div class="dialog-header" style="padding:16px;">
+    <h1>Base texture</h1>
+    <button
+      style="margin: 0px"
+      class="icon tertiary"
+      on:click={() => {
+        isBaseTextureDialogOpen = false;
+      }}
+    >
+      {@html CloseIcon}
+    </button>
+  </div>
+  {#if isBaseTextureDialogOpen}
+  <BaseTextureDialog/>
+  {/if}
+  </Dialog>
 <style lang="scss">
   @import "style.scss";
 </style>
