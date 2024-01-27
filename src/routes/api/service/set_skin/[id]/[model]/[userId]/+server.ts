@@ -1,4 +1,4 @@
-import { ChangeSkin } from "$lib/server/minecraftService";
+import { ChangeSkin } from "$lib/server/minecraftServices";
 
 export const GET = async (event) => {
   const request = event.request;
