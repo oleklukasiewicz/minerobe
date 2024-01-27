@@ -1,0 +1,162 @@
+.button {
+  display: table;
+  transition: var(--time);
+  box-sizing: border-box;
+  user-select: none;
+  cursor: pointer;
+  &.medium {
+    height: 36px;
+  }
+  &.large {
+    height: 46px;
+  }
+  &.small {
+    height: 28px;
+  }
+  .icon {
+    display: inline-block;
+    max-height: 16px;
+    width: 16px;
+    margin-right: 6px;
+    vertical-align: top;
+    transform: translate(-6px, -2px);
+  }
+  &.icon {
+    .icon {
+      transform: translate(-3px, 0);
+    }
+  }
+  span {
+    display: inline;
+    vertical-align: top;
+  }
+  &.primary {
+    background-color: var(--color-accent);
+    color: var(--color-accent-font);
+    font-family: minecraft;
+    border-top: 2px solid var(--color-accent-L1);
+    border-bottom: 2px solid var(--color-accent-D1);
+    &:hover {
+      color: var(--color-accent-font);
+      background-color: var(--color-hover);
+      border-top-color: var(--color-hover-L1);
+      border-bottom-color: var(--color-hover-D1);
+    }
+    &:active {
+      color: var(--color-accent-font);
+      background-color: var(--color-active);
+      border-top-color: var(--color-active-L1);
+      border-bottom-color: var(--color-active-D1);
+    }
+    &.medium {
+      padding: 6px 12px 10px;
+      &.icon {
+        padding: 6px;
+      }
+    }
+    &.large {
+      padding: 10px 16px 12px;
+      font-size: larger;
+      &.with-label {
+        .icon {
+          transform: translate(-6px,0px);
+        }
+      }
+      &.icon {
+        padding: 10px 12px;
+      }
+    }
+    &.small {
+      padding: 2px 6px 6px;
+      &.icon {
+        padding: 2px;
+      }
+    }
+  }
+  &.secondary {
+    font-size: 12px;
+    color: var(--color-theme-font);
+    font-family: minecraft-simple;
+    background-color: var(--color-theme-D2);
+    border-top: 2px solid var(--color-theme-D1);
+    border-bottom: 2px solid var(--color-theme-D3);
+    &:hover {
+      color: var(--color-accent-font);
+      background-color: var(--color-hover);
+      border-top-color: var(--color-hover-L1);
+      border-bottom-color: var(--color-hover-D1);
+    }
+    &:active {
+      color: var(--color-accent-font);
+      background-color: var(--color-active);
+      border-top-color: var(--color-active-L1);
+      border-bottom-color: var(--color-active-D1);
+    }
+    &.medium {
+      padding: 8px 12px 8px;
+      &.icon {
+        padding: 6px;
+      }
+    }
+    &.large {
+      padding: 10px 16px 10px;
+      font-size: larger;
+      &.with-label {
+        .icon {
+          transform: translate(-6px,4px);
+        }
+      }
+      &.icon {
+        padding: 10px 12px;
+      }
+    }
+    &.small {
+      padding: 2px 6px 4px;
+      &.icon {
+        padding: 2px;
+      }
+    }
+  }
+  &.tertiary {
+    font-size: 12px;
+    background-color: transparent;
+    color: var(--color-accent);
+    font-family: minecraft-simple;
+    &:hover {
+      color: var(--color-accent-font);
+      background-color: var(--color-hover);
+      border-top-color: var(--color-hover-L1);
+      border-bottom-color: var(--color-hover-D1);
+    }
+    &:active {
+      color: var(--color-accent-font);
+      background-color: var(--color-active);
+      border-top-color: var(--color-active-L1);
+      border-bottom-color: var(--color-active-D1);
+    }
+    &.medium {
+      padding: 8px 12px 7px;
+      &.icon {
+        padding: 6px;
+      }
+    }
+    &.large {
+      padding: 12px 16px 10px;
+      font-size: larger;
+      &.with-label {
+        .icon {
+          transform: translate(-6px,4px);
+        }
+      }
+      &.icon {
+        padding: 10px 12px;
+      }
+    }
+    &.small {
+      padding: 4px 6px 4px;
+      &.icon {
+        padding: 2px;
+      }
+    }
+  }
+}
