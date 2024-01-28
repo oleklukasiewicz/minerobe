@@ -1,6 +1,7 @@
 <script lang="ts">
   import Button from "$lib/components/base/Button/Button.svelte";
   import DownloadIcon from "$icons/download.svg?raw";
+  import RatioGroup from "$lib/components/base/RatioGroup/RatioGroup.svelte";
 </script>
 
 <h1 id="view-title">Explore new outfits</h1>
@@ -35,6 +36,23 @@
 <Button label="Button" icon={DownloadIcon} onlyIcon type="tertiary"/>
 <Button label="Button" icon={DownloadIcon} onlyIcon type="tertiary" size="large"/>
 <Button label="Button" icon={DownloadIcon} onlyIcon type="tertiary" size="small"/>
+<br />
+<RatioGroup values={[
+  {
+    value: "test1",
+    label: "Test 1",
+    icon: DownloadIcon,
+  },
+  {
+    value: "test2",
+    label: "Test 2",
+    icon: DownloadIcon,
+  },
+  {
+    value: "test3",
+    label: "Test 3",
+    icon: DownloadIcon,
+  },"test4"]}/>
 <style lang="scss">
   @import "style.scss";
 </style>

@@ -1,6 +1,7 @@
 .button {
   display: table;
-  transition: var(--time);
+  flex:1;
+  transition: background-color var(--time), color var(--time);
   box-sizing: border-box;
   user-select: none;
   cursor: pointer;
@@ -59,6 +60,7 @@
       font-size: larger;
       &.with-label {
         .icon {
+          margin-right: 12px;
           transform: translate(-6px,0px);
         }
       }
@@ -93,7 +95,7 @@
       border-bottom-color: var(--color-active-D1);
     }
     &.medium {
-      padding: 8px 12px 8px;
+      padding: 8px 12px 6px;
       &.icon {
         padding: 6px;
       }
@@ -103,6 +105,7 @@
       font-size: larger;
       &.with-label {
         .icon {
+          margin-right: 12px;
           transform: translate(-6px,4px);
         }
       }
@@ -145,6 +148,7 @@
       font-size: larger;
       &.with-label {
         .icon {
+          margin-right: 12px;
           transform: translate(-6px,4px);
         }
       }

@@ -10,6 +10,8 @@
 </script>
 
 <a
+on:click
+on:contextmenu
   class="button"
   {href}
   class:link={href != null}
@@ -36,6 +38,7 @@
   {#if label != null && !onlyIcon}
     <span>{label}</span>
   {/if}
+  <slot />
 </a>
 
 <style lang="scss">
