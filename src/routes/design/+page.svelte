@@ -211,17 +211,19 @@
   };
   const addImageVariant = async function (data) {
     const layer = data.detail.texture;
-    const newLayer = await ImportImage()[0];
-    itemLayers.update((layers) => {
-      const index = layers.indexOf(layer);
-      if ($itemModelType == MODEL_TYPE.ALEX) {
-        layers[index].alex = newLayer;
-      } else {
-        layers[index].steve = newLayer;
-      }
-      $selectedLayer = layers[index];
-      applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
-      return layers;
+    await ImportImage().then((layers) => {
+      const newLayer = layers[0];
+      itemLayers.update((layers) => {
+        const index = layers.indexOf(layer);
+        if ($itemModelType == MODEL_TYPE.ALEX) {
+          layers[index].alex = newLayer;
+        } else {
+          layers[index].steve = newLayer;
+        }
+        $selectedLayer = layers[index];
+        applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
+        return layers;
+      });
     });
   };
   const updateTexture = async () => {
@@ -236,7 +238,6 @@
         rendererLayers = [];
       }
     }
-
     modelTexture = await mergeImages(
       [
         ...rendererLayers.map((x) => x.content),
@@ -319,7 +320,6 @@
     navigateToWardrobe();
     RemoveItem($itemPackage);
   };
-
 
   //picker
   const openOutfitPicker = async function () {
@@ -478,12 +478,10 @@
                 : $_("outfit_set")}</Label
             >
             {#if $itemPackage.isShared}
-              <Label variant="rare"
-                >{$_("shared")}</Label
-              >
+              <Label variant="rare">{$_("shared")}</Label>
             {/if}
-            {#if $isItemSet && ($itemPackage.id== $userSettings.currentSkin?.id)}
-            <Label variant="ancient">Current skin</Label>
+            {#if $isItemSet && $itemPackage.id == $userSettings.currentSkin?.id}
+              <Label variant="ancient">Current skin</Label>
             {/if}
             <br />
           {:else}
@@ -603,7 +601,11 @@
         {#if loaded}
           <div class="item-actions">
             {#if $userSettings?.linkedMinecraftAccount?.name != null && $isItemSet}
-              <SetSkinButton item={$itemPackage} texture={modelTexture} style="flex:1;"/>
+              <SetSkinButton
+                item={$itemPackage}
+                texture={modelTexture}
+                style="flex:1;"
+              />
             {/if}
             <button
               id="download-action"
