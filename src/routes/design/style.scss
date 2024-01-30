@@ -111,19 +111,5 @@
     display: grid !important;
     grid-template-rows: 1fr 1fr;
     grid-template-columns: 1fr;
-
-    #share-package-action,
-    #shared-info-action {
-      width: 100%;
-    }
-  }
-}
-.item-view-placeholder {
-  display: flex;
-  width: 100%;
-  gap: 30px;
-  min-height: calc(100vh - 120px);
-  * {
-    flex: 1;
   }
 }

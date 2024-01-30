@@ -15,6 +15,7 @@
   on:click
   on:contextmenu
   class="button"
+  title={label}
   {style}
   {href}
   class:link={href != null}

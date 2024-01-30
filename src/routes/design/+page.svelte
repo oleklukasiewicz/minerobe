@@ -17,6 +17,8 @@
   import Dialog from "$component/base/Dialog/Dialog.svelte";
   import OutfitPicker from "$component/outfit/OutfitPicker/OutfitPicker.svelte";
   import Label from "$component/base/Label/Label.svelte";
+  import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
 
   import {
     CHANGE_TYPE,
@@ -50,7 +52,6 @@
   import SpotlightIcon from "$icons/spotlight.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import TrashIcon from "$icons/trash.svg?raw";
-  import PlusIcon from "$icons/plus.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
 
   import DefaultAnimation from "$animation/default";
@@ -62,7 +63,6 @@
   } from "$src/helpers/imageOperationsHelper";
   import { mergeImages } from "$src/data/imageMerger";
   import {
-    CreateOutfit,
     FetchOutfit,
     GenerateIdForOutfitLayer,
     UploadOutfit,
@@ -75,21 +75,15 @@
     UpdateItemInWardrobe,
   } from "$src/helpers/apiHelper";
   import {
-    navigateToDesign,
     navigateToOutfitPackage,
     navigateToWardrobe,
   } from "$src/helpers/navigationHelper";
-  import {
-    CreateOutfitSet,
-    FetchOutfitSet,
-    UploadOutfitSet,
-  } from "$src/api/sets";
+  import { FetchOutfitSet, UploadOutfitSet } from "$src/api/sets";
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
-  import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
   import { ShareItem, UnshareItem } from "$src/api/social";
-  import Button from "$lib/components/base/Button/Button.svelte";
+  import AddVariantDialog from "$lib/components/dialog/AddVariantDialog.svelte";
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -132,7 +126,9 @@
   let isOutfitPickerOpen = false;
   let isDeleteDialogOpen = false;
   let isShareDialogOpen = false;
+  let isAddVariantDialogOpen = false;
 
+  let newVariantLayer = null;
   let defaultProvider = null;
 
   let updateAnimation = function (anim) {};
@@ -212,16 +208,22 @@
   };
   const addImageVariant = async function (data) {
     const layer = data.detail.texture;
+    newVariantLayer = layer;
+    isAddVariantDialogOpen = true;
+  };
+  const uploadImageForVariant = async function (e) {
+    const modelName = e.detail.modelName;
     await ImportImage().then((layers) => {
       const newLayer = layers[0];
       itemLayers.update((layers) => {
-        const index = layers.indexOf(layer);
-        if ($itemModelType == MODEL_TYPE.ALEX) {
+        const index = layers.indexOf(newVariantLayer);
+        if (modelName == MODEL_TYPE.ALEX) {
           layers[index].alex = newLayer;
         } else {
           layers[index].steve = newLayer;
         }
         $selectedLayer = layers[index];
+        newVariantLayer=$selectedLayer;
         applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
         return layers;
       });
@@ -426,362 +428,343 @@
 </script>
 
 <div class="item-page">
-  {#if $itemPackage?.id != null || loaded == false}
-    <div class="render-data">
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div
-        class="render"
-        class:drop-hover={isDragging}
-        on:drop={handleRenderDrop}
-        on:dragover={handleRenderDragOver}
-        on:dragenter={handleRenderDragEnter}
-        on:dragleave={handleRenderDragLeave}
-      >
-        {#if loaded}
-          <DynamicRender
-            texture={modelTexture}
-            model={$itemModel}
-            modelName={$itemPackage.model}
-            defaultAnimation={DefaultAnimation}
-            bind:addAnimation={updateAnimation}
-          />
-        {:else}
-          <Placeholder />
-        {/if}
-      </div>
+  <div class="render-data">
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div
+      class="render"
+      class:drop-hover={isDragging}
+      on:drop={handleRenderDrop}
+      on:dragover={handleRenderDragOver}
+      on:dragenter={handleRenderDragEnter}
+      on:dragleave={handleRenderDragLeave}
+    >
+      {#if loaded}
+        <DynamicRender
+          texture={modelTexture}
+          model={$itemModel}
+          modelName={$itemPackage.model}
+          defaultAnimation={DefaultAnimation}
+          bind:addAnimation={updateAnimation}
+        />
+      {:else}
+        <Placeholder />
+      {/if}
     </div>
-    <div class="item-data">
-      <div class="data">
-        <div class="item-name">
-          <SectionTitle label={$_("name")} placeholder={!loaded} />
-          {#if loaded}
-            <div style="display:flex; flex-direction:row">
-              <input
-                id="item-title"
-                class:disabled={$itemPublisher.id != $currentUser?.id}
-                class="title-input"
-                bind:value={$itemPackage.name}
-              />
-              <button
-                class="icon secondary icon-small small"
-                style="margin-top: 8px;"
-                on:click={() => (isDeleteDialogOpen = true)}
-                >{@html TrashIcon}</button
-              >
-            </div>
-          {:else}
-            <Placeholder style="height:46px;margin-bottom:16px;" />
-          {/if}
-          {#if loaded}
-            <Label variant="common"
-              >{$itemPackage.type == PACKAGE_TYPE.OUTFIT
-                ? $_("outfit")
-                : $_("outfit_set")}</Label
+  </div>
+  <div class="item-data">
+    <div class="data">
+      <div class="item-name">
+        <SectionTitle label={$_("name")} placeholder={!loaded} />
+        {#if loaded}
+          <div style="display:flex; flex-direction:row">
+            <input
+              id="item-title"
+              class:disabled={$itemPublisher.id != $currentUser?.id}
+              class="title-input"
+              bind:value={$itemPackage.name}
+            />
+            <button
+              class="icon secondary icon-small small"
+              style="margin-top: 8px;"
+              on:click={() => (isDeleteDialogOpen = true)}
+              >{@html TrashIcon}</button
             >
-            {#if $itemPackage.isShared}
-              <Label variant="rare">{$_("shared")}</Label>
-            {/if}
-            {#if $isItemSet && $itemPackage.id == $userSettings.currentSkin?.id}
-              <Label variant="ancient">Current skin</Label>
-            {/if}
-            <br />
-          {:else}
-            <Placeholder style="height:24px;max-width:100px;" />
+          </div>
+        {:else}
+          <Placeholder style="height:46px;margin-bottom:16px;" />
+        {/if}
+        {#if loaded}
+          <Label variant="common"
+            >{$itemPackage.type == PACKAGE_TYPE.OUTFIT
+              ? $_("outfit")
+              : $_("outfit_set")}</Label
+          >
+          {#if $itemPackage.isShared}
+            <Label variant="rare">{$_("shared")}</Label>
+          {/if}
+          {#if $isItemSet && $itemPackage.id == $userSettings.currentSkin?.id}
+            <Label variant="ancient">Current skin</Label>
           {/if}
           <br />
-        </div>
-        <SectionTitle
-          label={$isItemSet ? $_("layers") : $_("variants")}
-          placeholder={!loaded}
-        />
-        <div class="item-layers">
-          {#if loaded}
-            {#if $itemPublisher.id == $currentUser?.id && $isMobileView}
-              <div style="display: flex;">
-                {#if $isItemSet}
-                  <button
-                    id="import-package-action"
-                    title={$_("importOutfit")}
-                    style="flex:1;"
-                    class:disabled={!loaded}
-                    on:click={openOutfitPicker}
-                    class="secondary"
-                    >{@html AddIcon} {$_("importOutfit")}</button
-                  >
-                {/if}
-                <button
-                  id="add-layer-action"
-                  style="flex:1;"
-                  class="secondary"
-                  class:disabled={!loaded}
-                  on:click={importLayer}
-                  >{@html ImportPackageIcon}
-                  {$isItemSet
-                    ? $_("layersOpt.addLayer")
-                    : $_("layersOpt.addVariant")}</button
-                >
-              </div>
-              <br />
-            {/if}
-            {#each $itemLayers as item, index (item.id + item.variantId)}
-              <div class="item-layer">
-                <ItemLayer
-                  renderProvider={$itemModelType == MODEL_TYPE.STEVE
-                    ? defaultProvider.steve
-                    : defaultProvider.alex}
-                  selectable={!$isItemSet}
-                  controls={$isItemSet}
-                  readonly={$itemPublisher.id != $currentUser?.id}
-                  modelName={$itemPackage.model}
-                  {item}
-                  bind:label={item.name}
-                  on:addvariant={addImageVariant}
-                  on:down={downLayer}
-                  on:up={upLayer}
-                  on:remove={removeLayer}
-                  on:dropvariant={addNewDropVariant}
-                  canUp={index != 0}
-                  canDown={index != $itemLayers.length - 1}
-                  selected={item?.variantId == $selectedLayer?.variantId}
-                  on:click={() => ($selectedLayer = item)}
-                />
-              </div>
-            {/each}
-          {:else}
-            <Placeholder style="height:66px;margin-bottom:4px;" />
-            <Placeholder style="height:66px;margin-bottom:4px;" />
-          {/if}
-          {#if $itemPublisher.id == $currentUser?.id && !$isMobileView}
-            <div style="display: flex;flex-wrap:wrap;margin-top:8px;gap:8px;">
+        {:else}
+          <Placeholder style="height:24px;max-width:100px;" />
+        {/if}
+        <br />
+      </div>
+      <SectionTitle
+        label={$isItemSet ? $_("layers") : $_("variants")}
+        placeholder={!loaded}
+      />
+      <div class="item-layers">
+        {#if loaded}
+          {#if $itemPublisher.id == $currentUser?.id && $isMobileView}
+            <div style="display: flex;">
               {#if $isItemSet}
-                <Button
+                <button
+                  id="import-package-action"
+                  title={$_("importOutfit")}
+                  style="flex:1;"
+                  class:disabled={!loaded}
                   on:click={openOutfitPicker}
-                  icon={AddIcon}
-                  disabled={!loaded}
-                  label={$_("importOutfit")}
-                  type="tertiary"
-                />
+                  class="secondary">{@html AddIcon} {$_("importOutfit")}</button
+                >
               {/if}
-              <Button
+              <button
+                id="add-layer-action"
+                style="flex:1;"
+                class="secondary"
+                class:disabled={!loaded}
                 on:click={importLayer}
-                icon={ImportPackageIcon}
-                disabled={!loaded}
-                label={$isItemSet
+                >{@html ImportPackageIcon}
+                {$isItemSet
                   ? $_("layersOpt.addLayer")
-                  : $_("layersOpt.addVariant")}
-                type="tertiary"
+                  : $_("layersOpt.addVariant")}</button
+              >
+            </div>
+            <br />
+          {/if}
+          {#each $itemLayers as item, index (item.id + item.variantId)}
+            <div class="item-layer">
+              <ItemLayer
+                renderProvider={$itemModelType == MODEL_TYPE.STEVE
+                  ? defaultProvider.steve
+                  : defaultProvider.alex}
+                selectable={!$isItemSet}
+                controls={$isItemSet}
+                readonly={$itemPublisher.id != $currentUser?.id}
+                modelName={$itemPackage.model}
+                {item}
+                bind:label={item.name}
+                on:addvariant={addImageVariant}
+                on:down={downLayer}
+                on:up={upLayer}
+                on:remove={removeLayer}
+                on:dropvariant={addNewDropVariant}
+                canUp={index != 0}
+                canDown={index != $itemLayers.length - 1}
+                selected={item?.variantId == $selectedLayer?.variantId}
+                on:click={() => ($selectedLayer = item)}
               />
             </div>
-          {/if}
-        </div>
-        <br />
-        <SectionTitle label={$_("model")} placeholder={!loaded} />
-        {#if loaded}
-          <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
+          {/each}
         {:else}
-          <Placeholder style="height:48px;margin-bottom:8px;" />
+          <Placeholder style="height:66px;margin-bottom:4px;" />
+          <Placeholder style="height:66px;margin-bottom:4px;" />
         {/if}
-        <br />
-        <SectionTitle label={$_("description")} placeholder={!loaded} />
-        {#if !loaded}
-          <Placeholder style="height:64px;margin-bottom:8px;" />
-        {:else}
-          <textarea
-            id="item-description"
-            class:disabled={$itemPublisher.id != $currentUser?.id}
-            class="description-input"
-            bind:value={$itemPackage.description}
-            placeholder={$_("description")}
-          ></textarea>
-        {/if}
-        <br />
-        <br />
-        {#if loaded}
-          <div class="item-actions">
-            {#if $userSettings?.linkedMinecraftAccount?.name != null && $isItemSet}
-              <SetSkinButton
-                item={$itemPackage}
-                texture={modelTexture}
-                style="flex:1;"
+        {#if $itemPublisher.id == $currentUser?.id && !$isMobileView}
+          <div style="display: flex;flex-wrap:wrap;margin-top:8px;gap:8px;">
+            {#if $isItemSet}
+              <Button
+                on:click={openOutfitPicker}
+                icon={AddIcon}
+                disabled={!loaded}
+                label={$_("importOutfit")}
+                type="tertiary"
               />
             {/if}
             <Button
-              on:click={downloadImage}
-              label={$_("download")}
-              onlyIcon={!$isMobileView &&
-                $isItemSet &&
-                $userSettings?.linkedMinecraftAccount?.name != null}
-              icon={DownloadIcon}
-              disabled={$itemLayers.length == 0 || !loaded}
-              size="large"
+              on:click={importLayer}
+              icon={ImportPackageIcon}
+              disabled={!loaded}
+              label={$isItemSet
+                ? $_("layersOpt.addLayer")
+                : $_("layersOpt.addVariant")}
+              type="tertiary"
             />
-            {#if $itemPublisher.id == $currentUser?.id}
-              {#if $itemPackage.isShared}
-                <Button
-                  on:click={() => (isShareDialogOpen = true)}
-                  type="tertiary"
-                  icon={MoreHorizontalIcon}
-                  onlyIcon={!$isMobileView}
-                  label={$_("shareinfo")}
-                  size="large"
-                />
-              {:else}
-                <Button
-                  on:click={sharePackage}
-                  type="tertiary"
-                  icon={CloudIcon}
-                  onlyIcon={!$isMobileView}
-                  label={$_("sharePackage")}
-                  size="large"
-                />
-              {/if}
-            {/if}
-          </div>
-        {:else}
-          <div style="display: flex; gap:8px;">
-            <Placeholder style="height:48px;margin-bottom:8px;" />
-            <Placeholder style="height:48px;margin-bottom:8px;" />
           </div>
         {/if}
       </div>
-    </div>
-    <Dialog bind:open={isOutfitPickerOpen}>
-      <div class="outfit-picker-dialog">
-        <div>
-          <h1 style="flex:1;margin-top:0px;">Pick outfit</h1>
-          <button
-            style="margin: 0px 0px 16px"
-            class="icon tertiary"
-            on:click={() => {
-              isOutfitPickerOpen = false;
-            }}
-          >
-            {@html CloseIcon}
-          </button>
-        </div>
-        {#if isOutfitPickerOpen}
-          <OutfitPicker
-            bind:loading={isPickerLoading}
-            renderer={$defaultRenderer}
-            outfits={pickerOutfits}
-            categories={pickerCategories}
-            on:category={fetchByCategory}
-            on:select={(e) => addNewRemoteLayer(e.detail)}
+      <br />
+      <SectionTitle label={$_("model")} placeholder={!loaded} />
+      {#if loaded}
+        <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
+      {:else}
+        <Placeholder style="height:48px;margin-bottom:8px;" />
+      {/if}
+      <br />
+      <SectionTitle label={$_("description")} placeholder={!loaded} />
+      {#if !loaded}
+        <Placeholder style="height:64px;margin-bottom:8px;" />
+      {:else}
+        <textarea
+          id="item-description"
+          class:disabled={$itemPublisher.id != $currentUser?.id}
+          class="description-input"
+          bind:value={$itemPackage.description}
+          placeholder={$_("description")}
+        ></textarea>
+      {/if}
+      <br />
+      <br />
+      {#if loaded}
+        <div class="item-actions">
+          {#if $userSettings?.linkedMinecraftAccount?.name != null && $isItemSet}
+            <SetSkinButton
+              item={$itemPackage}
+              texture={modelTexture}
+              style="flex:1;"
+            />
+          {/if}
+          <Button
+            on:click={downloadImage}
+            label={$_("download")}
+            onlyIcon={!$isMobileView &&
+              $isItemSet &&
+              $userSettings?.linkedMinecraftAccount?.name != null}
+            icon={DownloadIcon}
+            disabled={$itemLayers.length == 0 || !loaded}
+            size="large"
           />
-        {/if}
-      </div>
-    </Dialog>
-    <Dialog bind:open={isDeleteDialogOpen} style="min-width:30vw">
-      <div style="text-align:center;margin:8px;">
-        <h2>{$_("dialog.confirmDeleteItem")}</h2>
-        <div style="display:flex;flex-direction:row; gap:8px">
-          <button
-            class="tertiary"
-            style="flex:1;"
-            on:click={() => {
-              isDeleteDialogOpen = false;
-            }}
-          >
-            {@html CloseIcon}
-            {$_("cancel")}
-          </button>
-          <button
-            style="flex:1;"
-            on:click={() => {
-              isDeleteDialogOpen = false;
-              deletePackage();
-            }}
-          >
-            {@html TrashIcon}
-            {$_("delete")}
-          </button>
+          {#if $itemPublisher.id == $currentUser?.id}
+            {#if $itemPackage.isShared}
+              <Button
+                on:click={() => (isShareDialogOpen = true)}
+                type="tertiary"
+                icon={MoreHorizontalIcon}
+                onlyIcon={!$isMobileView}
+                label={$_("shareinfo")}
+                size="large"
+              />
+            {:else}
+              <Button
+                on:click={sharePackage}
+                type="tertiary"
+                icon={CloudIcon}
+                onlyIcon={!$isMobileView}
+                label={$_("sharePackage")}
+                size="large"
+              />
+            {/if}
+          {/if}
         </div>
-      </div></Dialog
-    >
-    <Dialog bind:open={isShareDialogOpen}>
-      <div class="social-dialog">
-        <div>
-          <h1 style="flex:1;margin-top:0px;margin-bottom:0;">Social info</h1>
-          <button
-            style="margin: 0px"
-            class="icon tertiary"
-            on:click={() => {
-              isShareDialogOpen = false;
-            }}
-          >
-            {@html CloseIcon}
-          </button>
+      {:else}
+        <div style="display: flex; gap:8px;">
+          <Placeholder style="height:48px;margin-bottom:8px;" />
+          <Placeholder style="height:48px;margin-bottom:8px;" />
         </div>
-        <SectionTitle label="Name" />
-        <h3 style="margin: 0px;">{$itemPackage.name}</h3>
-        <SectionTitle label="Author" />
-        <Label variant="unique">{$itemPublisher.name}</Label>
-        <SectionTitle label="Info" />
-        <div style="font-family: minecraft;margin:8px;" class="icon-small">
-          <div>
-            {@html HearthIcon}
-            <div style="margin-top:2px;margin-left:4px;">
-              {$itemPackage.social.likes}
-            </div>
-          </div>
-          &nbsp;&nbsp;&nbsp;
-          <div>
-            {@html DownloadIcon}
-            <div style="margin-top:2px;margin-left:4px;">
-              {$itemPackage.social.downloads || 0}
-            </div>
-          </div>
-        </div>
-        <br />
-        <SectionTitle label="Actions" />
-        <div style="display:flex;gap:8px;max-width:500px;">
-          <button
-            style="flex:1;"
-            id="item-page-action"
-            on:click={goToItemPage}
-            title={$_("goToItemPage")}
-            >{@html SpotlightIcon}
-
-            {$_("goToItemPage")}
-          </button>
-          <button
-            style="flex:1;"
-            id="unshare-package-action"
-            on:click={unSharePackage}
-            class:disabled={!loaded}
-            title={$_("unsharepackage")}
-            class="secondary"
-            >{@html CloseIcon}
-            {$_("unsharepackage")}</button
-          >
-        </div>
-      </div>
-    </Dialog>
-  {:else}
-    <div class="item-view-placeholder">
-      <!-- svelte-ignore missing-declaration -->
-      <button
-        on:click={async () => {
-          const newSet = await CreateOutfitSet(true);
-          navigateToDesign(newSet);
-        }}
-      >
-        {@html PlusIcon}
-        <br />
-        <span>New set</span>
-      </button>
-      <button
-        on:click={async () => {
-          const newSet = await CreateOutfit(true);
-          navigateToDesign(newSet);
-        }}
-      >
-        {@html PlusIcon}
-        <br />
-        <span>New outfit</span>
-      </button>
+      {/if}
     </div>
-  {/if}
+  </div>
+  <Dialog bind:open={isOutfitPickerOpen}>
+    <div class="outfit-picker-dialog">
+      <div>
+        <h1 style="flex:1;margin-top:0px;">Pick outfit</h1>
+        <button
+          style="margin: 0px 0px 16px"
+          class="icon tertiary"
+          on:click={() => {
+            isOutfitPickerOpen = false;
+          }}
+        >
+          {@html CloseIcon}
+        </button>
+      </div>
+      {#if isOutfitPickerOpen}
+        <OutfitPicker
+          bind:loading={isPickerLoading}
+          renderer={$defaultRenderer}
+          outfits={pickerOutfits}
+          categories={pickerCategories}
+          on:category={fetchByCategory}
+          on:select={(e) => addNewRemoteLayer(e.detail)}
+        />
+      {/if}
+    </div>
+  </Dialog>
+  <Dialog bind:open={isDeleteDialogOpen} style="min-width:30vw">
+    <div style="text-align:center;margin:8px;">
+      <h2>{$_("dialog.confirmDeleteItem")}</h2>
+      <div style="display:flex;flex-direction:row; gap:8px">
+        <button
+          class="tertiary"
+          style="flex:1;"
+          on:click={() => {
+            isDeleteDialogOpen = false;
+          }}
+        >
+          {@html CloseIcon}
+          {$_("cancel")}
+        </button>
+        <button
+          style="flex:1;"
+          on:click={() => {
+            isDeleteDialogOpen = false;
+            deletePackage();
+          }}
+        >
+          {@html TrashIcon}
+          {$_("delete")}
+        </button>
+      </div>
+    </div></Dialog
+  >
+  <Dialog bind:open={isShareDialogOpen}>
+    <div class="social-dialog">
+      <div>
+        <h1 style="flex:1;margin-top:0px;margin-bottom:0;">Social info</h1>
+        <button
+          style="margin: 0px"
+          class="icon tertiary"
+          on:click={() => {
+            isShareDialogOpen = false;
+          }}
+        >
+          {@html CloseIcon}
+        </button>
+      </div>
+      <SectionTitle label="Name" />
+      <h3 style="margin: 0px;">{$itemPackage.name}</h3>
+      <SectionTitle label="Author" />
+      <Label variant="unique">{$itemPublisher.name}</Label>
+      <SectionTitle label="Info" />
+      <div style="font-family: minecraft;margin:8px;" class="icon-small">
+        <div>
+          {@html HearthIcon}
+          <div style="margin-top:2px;margin-left:4px;">
+            {$itemPackage.social.likes}
+          </div>
+        </div>
+        &nbsp;&nbsp;&nbsp;
+        <div>
+          {@html DownloadIcon}
+          <div style="margin-top:2px;margin-left:4px;">
+            {$itemPackage.social.downloads || 0}
+          </div>
+        </div>
+      </div>
+      <br />
+      <SectionTitle label="Actions" />
+      <div style="display:flex;gap:8px;max-width:500px;">
+        <button
+          style="flex:1;"
+          id="item-page-action"
+          on:click={goToItemPage}
+          title={$_("goToItemPage")}
+          >{@html SpotlightIcon}
+
+          {$_("goToItemPage")}
+        </button>
+        <button
+          style="flex:1;"
+          id="unshare-package-action"
+          on:click={unSharePackage}
+          class:disabled={!loaded}
+          title={$_("unsharepackage")}
+          class="secondary"
+          >{@html CloseIcon}
+          {$_("unsharepackage")}</button
+        >
+      </div>
+    </div>
+  </Dialog>
+  <Dialog bind:open={isAddVariantDialogOpen}>
+    {#if isAddVariantDialogOpen}
+      <AddVariantDialog
+        bind:layer={newVariantLayer}
+        on:uploadVariant={uploadImageForVariant}
+      />
+    {/if}
+  </Dialog>
 </div>
 
 <style lang="scss">
