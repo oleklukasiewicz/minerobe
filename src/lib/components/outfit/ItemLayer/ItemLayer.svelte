@@ -110,7 +110,7 @@
       <br /><Label variant="common">{item[modelName].type}</Label>
       {#if showLabels}
         {#if item.type == LAYER_TYPE.REMOTE}
-          <Label variant="rare" style="margin-left:8px;"
+          <Label variant="rare"
             >{$_("layerType.remote")}</Label
           >
         {/if}

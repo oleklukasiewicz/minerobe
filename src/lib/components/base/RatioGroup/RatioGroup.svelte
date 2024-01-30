@@ -1,7 +1,8 @@
 <script lang="ts">
-  import Button from "../Button/Button.svelte";
+  import RatioButton from "../RatioButton/RatioButton.svelte";
 
   export let value = null;
+  export let size: "small" | "medium" | "large" = "medium";
   export let values = [];
   let normalizedValues = [];
   const normalizeValues = function (vals) {
@@ -20,10 +21,11 @@
 
 <div class="ratio-group">
   {#each normalizedValues as v (v.value)}
-    <Button
+    <RatioButton
       label={v.label}
+      size={size}
       icon={v.icon}
-      type={v.value === value ? "primary" : "secondary"}
+      selected={v.value.toLowerCase() === value.toLowerCase()}
       on:click={() => {
         value = v.value;
       }}
@@ -33,6 +35,8 @@
 
 <style lang="scss">
   .ratio-group {
+    flex:1;
+    text-align: center;
     display: flex;
     flex-direction: row;
   }

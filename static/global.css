@@ -111,7 +111,7 @@ br{
     font-family: minecraft;
     font-size: medium;
     box-shadow: 2px 2px 1px rgba(0,0,0,.6);
-    padding: 2px 8px;
+    padding: 0px 8px 4px;
     text-shadow: 0 1px rgba(255,255,255,.6);
     user-select: none;
     text-align: end;
@@ -334,7 +334,7 @@ button.fab.dynamic:hover
     border-bottom: 2px solid var(--color-active-L1);
 }
 input{
-    font-family: minecraft;
+    font-family: minecraft-simple;
     font-size: var(--size-font-base);
     border: 0;
     background-color: transparent;

@@ -7,12 +7,15 @@
   export let iconSize: "small" | "medium" | "large" = size;
   export let disabled: boolean = false;
   export let onlyIcon: boolean = false;
+  export let textAlign: "left" | "center" | "right" = "center";
+  export let style = null;
 </script>
 
 <a
-on:click
-on:contextmenu
+  on:click
+  on:contextmenu
   class="button"
+  {style}
   {href}
   class:link={href != null}
   class:icon={onlyIcon && icon != null}
@@ -24,6 +27,9 @@ on:contextmenu
   class:medium={size === "medium"}
   class:large={size === "large"}
   class:disabled
+  class:text-left={textAlign === "left"}
+  class:text-center={textAlign === "center"}
+  class:text-right={textAlign === "right"}
 >
   {#if icon != null}
     <div

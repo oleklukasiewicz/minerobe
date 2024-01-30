@@ -89,6 +89,7 @@
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
   import { ShareItem, UnshareItem } from "$src/api/social";
+  import Button from "$lib/components/base/Button/Button.svelte";
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -553,26 +554,23 @@
           {#if $itemPublisher.id == $currentUser?.id && !$isMobileView}
             <div style="display: flex;flex-wrap:wrap;margin-top:8px;gap:8px;">
               {#if $isItemSet}
-                <button
-                  id="import-package-action"
-                  title={$_("importOutfit")}
-                  style="flex:1;"
-                  class:disabled={!loaded}
+                <Button
                   on:click={openOutfitPicker}
-                  class="secondary">{@html AddIcon} {$_("importOutfit")}</button
-                >
+                  icon={AddIcon}
+                  disabled={!loaded}
+                  label={$_("importOutfit")}
+                  type="tertiary"
+                />
               {/if}
-              <button
-                id="add-layer-action"
-                class="secondary"
-                style="flex:1;"
-                class:disabled={!loaded}
+              <Button
                 on:click={importLayer}
-                >{@html ImportPackageIcon}
-                {$isItemSet
+                icon={ImportPackageIcon}
+                disabled={!loaded}
+                label={$isItemSet
                   ? $_("layersOpt.addLayer")
-                  : $_("layersOpt.addVariant")}</button
-              >
+                  : $_("layersOpt.addVariant")}
+                type="tertiary"
+              />
             </div>
           {/if}
         </div>
@@ -607,40 +605,35 @@
                 style="flex:1;"
               />
             {/if}
-            <button
-              id="download-action"
-              title={$_("download")}
+            <Button
               on:click={downloadImage}
-              class:icon={!$isMobileView &&
+              label={$_("download")}
+              onlyIcon={!$isMobileView &&
                 $isItemSet &&
                 $userSettings?.linkedMinecraftAccount?.name != null}
-              class:disabled={$itemLayers.length == 0 || !loaded}
-              >{@html DownloadIcon}
-              {#if $isMobileView || !$isItemSet || $userSettings?.linkedMinecraftAccount?.name == null}
-                {$_("download")}
-              {/if}
-            </button>
+              icon={DownloadIcon}
+              disabled={$itemLayers.length == 0 || !loaded}
+              size="large"
+            />
             {#if $itemPublisher.id == $currentUser?.id}
               {#if $itemPackage.isShared}
-                <button
+                <Button
                   on:click={() => (isShareDialogOpen = true)}
-                  id="shared-info-action"
-                  class="secondary"
-                  class:icon={!$isMobileView}
-                >
-                  {@html MoreHorizontalIcon}{#if $isMobileView}
-                    {$_("shareinfo")}{/if}
-                </button>
+                  type="tertiary"
+                  icon={MoreHorizontalIcon}
+                  onlyIcon={!$isMobileView}
+                  label={$_("shareinfo")}
+                  size="large"
+                />
               {:else}
-                <button
-                  id="share-package-action"
+                <Button
                   on:click={sharePackage}
-                  class:disabled={!loaded}
-                  title={$_("sharePackage")}
-                  class="icon secondary"
-                  >{@html CloudIcon}{#if $isMobileView}
-                    {$_("sharePackage")}{/if}</button
-                >
+                  type="tertiary"
+                  icon={CloudIcon}
+                  onlyIcon={!$isMobileView}
+                  label={$_("sharePackage")}
+                  size="large"
+                />
               {/if}
             {/if}
           </div>

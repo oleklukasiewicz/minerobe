@@ -4,6 +4,7 @@
   import type { OutfitPackage } from "$src/data/common";
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
+  import Button from "$lib/components/base/Button/Button.svelte";
 
   export let item: OutfitPackage = null;
   export let texture = null;
@@ -17,16 +18,11 @@
   };
 </script>
 
-<button on:click={setSkin} class:disabled={item.layers.length == 0} {style} class="set-skin-btn">
-  {#if skinIsSetting}
-    {@html LoaderIcon}{$_("skinIsSetting")}
-  {:else}
-    {@html HumanHandsUpIcon}{$_("setSkin")}
-  {/if}
-</button>
-<style lang="scss">
-.set-skin-btn
-{
-  font-size: larger;
-}
-</style>
+<Button
+  on:click={setSkin}
+  disabled={item.layers.length == 0}
+  icon={skinIsSetting ? LoaderIcon : HumanHandsUpIcon}
+  label={skinIsSetting ? $_("skinIsSetting") : $_("setSkin")}
+  size="large"
+  textAlign="center"
+></Button>

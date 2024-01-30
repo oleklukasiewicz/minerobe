@@ -59,6 +59,7 @@
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
   import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -245,7 +246,7 @@
         {#if loaded}
           <div style="display: flex;gap:4px;height:24px">
             <Label variant="unique">{$localPackage.publisher.name}</Label>
-            {#if $isItemSet && ($localPackage.id == $userSettings.currentSkin?.id)}
+            {#if $isItemSet && $localPackage.id == $userSettings.currentSkin?.id}
               <Label variant="ancient">Current skin</Label>
             {/if}
             &nbsp;
@@ -338,44 +339,44 @@
       {#if loaded}
         <div class="item-actions">
           {#if $userSettings?.linkedMinecraftAccount?.name != null && $isItemSet}
-          <SetSkinButton item={$localPackage} texture={modelTexture} style="flex:1;"/>
-          {/if}
-          <div style={"display: flex; gap:8px;"+(!$isItemSet?"flex:1;":"")}>
-            <button
-              id="download-action"
-              title={$_("download")}
+            <SetSkinButton
+              item={$localPackage}
+              texture={modelTexture}
+              style="flex:1;"
+            />
+          {/if}      
+            <Button
               on:click={downloadImage}
-              class:icon={!$isMobileView &&
+              label={$_("download")}
+              onlyIcon={!$isMobileView &&
                 $isItemSet &&
                 $userSettings?.linkedMinecraftAccount?.name != null}
-              class:disabled={(!$isItemSet
-                ? $selectedVariant == null
-                : false) || !loaded}
-              >{@html DownloadIcon}
-              {#if $isMobileView || !$isItemSet || $userSettings?.linkedMinecraftAccount?.name == null}
-                {$_("download")}
-              {/if}
-            </button>
+              icon={DownloadIcon}
+              disabled={$itemLayers.length == 0 || !loaded}
+              size="large"
+            />
             {#if $localPackage.publisher?.id != $currentUser?.id && $currentUser != null}
               {#if isPackageInWardrobe == false || isGuest}
-                <button
-                  id="add-to-wardrobe"
+                <Button
                   on:click={addToWardrobe}
-                  title="Add to wardrobe"
-                  class:disabled={!loaded || isGuest}
-                  class="icon tertiary">{@html HearthIcon}</button
-                >
+                  onlyIcon={!$isMobileView}
+                  icon={HearthIcon}
+                  disabled={!loaded || isGuest}
+                  size="large"
+                  type="tertiary"
+                  label="Add to wardrobe"
+                />
               {:else}
-                <button
-                  id="remove-from-wardrobe"
-                  title="Already in wardrobe"
-                  class:disabled={!loaded || isGuest}
+                <Button
                   on:click={removeFromWardrobe}
-                  class="icon">{@html HearthIcon}</button
-                >
+                  onlyIcon={!$isMobileView}
+                  icon={HearthIcon}
+                  disabled={!loaded || isGuest}
+                  size="large"
+                  label="Remove from wardrobe"
+                />
               {/if}
             {/if}
-          </div>
         </div>
       {:else}
         <div style="display: flex; gap:8px; margin-top:36px;">
