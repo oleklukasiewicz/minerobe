@@ -135,6 +135,10 @@
     background-color: transparent;
     color: var(--color-accent);
     font-family: minecraft-simple;
+    &.alt-style
+    {
+      color: var(--color-accent-font);
+    }
     &:hover {
       color: var(--color-accent-font);
       background-color: var(--color-hover);
@@ -178,6 +182,10 @@
     background-color: transparent;
     color: var(--color-theme-font);
     font-family: minecraft-simple;
+    &.alt-style
+    {
+      color: var(--color-accent-font);
+    }
     &:hover {
       color: var(--color-accent-font);
       background-color: var(--color-hover);

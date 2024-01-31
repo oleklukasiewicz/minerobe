@@ -16,6 +16,7 @@
   import ModelSelection from "../outfit/ModelSelection/ModelSelection.svelte";
   import CloseIcon from "$icons/close.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
+  import Button from "../base/Button/Button.svelte";
 
   let texture = $planksTexture;
   const importBaseImage = async () => {
@@ -60,13 +61,12 @@
     <ModelSelection bind:group={$userSettings.model} />
     <SectionTitle label="actions" />
     <div class="actions">
-      <button class="secondary" on:click={importBaseImage}
-        >{@html ImportPackageIcon}
-        {$_("layersOpt.addLayer")}</button
-      >
-      <button class="secondary" on:click={resetImage}
-        >{@html CloseIcon} Reset</button
-      >
+      <Button
+        label={$_("layersOpt.addLayer")}
+        icon={ImportPackageIcon}
+        on:click={importBaseImage}
+      />
+      <Button label="Reset" type="tertiary" on:click={resetImage} icon={CloseIcon} />
     </div>
   </div>
 </div>
@@ -90,12 +90,11 @@
       flex: 3;
     }
   }
-  .actions
-  {
+  .actions {
     display: flex;
     flex-direction: row;
-    button
-    {
+    gap: 8px;
+    button {
       width: 100%;
     }
   }

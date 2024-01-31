@@ -8,6 +8,7 @@
   import CloseIcon from "$icons/close.svg?raw";
   import { _ } from "svelte-i18n";
   import { createEventDispatcher } from "svelte";
+  import Button from "../base/Button/Button.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -45,24 +46,17 @@
   <br />
   <SectionTitle label="Actions" />
   <div style="display:flex;gap:8px;max-width:500px;">
-    <button
-      style="flex:1;"
-      id="item-page-action"
+    <Button
       on:click={goToItemPage}
-      title={$_("goToItemPage")}
-      >{@html SpotlightIcon}
-
-      {$_("goToItemPage")}
-    </button>
-    <button
-      style="flex:1;"
-      id="unshare-package-action"
+      label={$_("goToItemPage")}
+      icon={SpotlightIcon}
+    />
+    <Button
+      type="tertiary"
       on:click={unSharePackage}
-      title={$_("unsharepackage")}
-      class="secondary"
-      >{@html CloseIcon}
-      {$_("unsharepackage")}</button
-    >
+      icon={CloseIcon}
+      label={$_("unsharepackage")}
+    />
   </div>
 </div>
 

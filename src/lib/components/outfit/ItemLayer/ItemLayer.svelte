@@ -13,6 +13,7 @@
   import OutfitLayerRender from "$component/render/OutfitLayerRender.svelte";
   import { RenderProvider } from "$src/data/render";
   import Label from "$component/base/Label/Label.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
 
   export let item: OutfitLayer;
   export let renderProvider: RenderProvider = new RenderProvider();
@@ -110,62 +111,67 @@
       <br /><Label variant="common">{item[modelName].type}</Label>
       {#if showLabels}
         {#if item.type == LAYER_TYPE.REMOTE}
-          <Label variant="rare"
-            >{$_("layerType.remote")}</Label
-          >
+          <Label variant="rare">{$_("layerType.remote")}</Label>
         {/if}
       {/if}
     </span>
   </div>
   {#if link}
-    <a href={link} target="_blank">
-      <button
-      style="margin: 10px;"
-        class="secondary icon icon-small"
-        title={"Go to outfit page"}
-      >
-        {@html ExternalLinkIcon}</button
-      >
-    </a>
+    <Button
+      icon={ExternalLinkIcon}
+      label={"Go to outfit page"}
+      type="tertiary"
+      href={link}
+      onlyIcon
+      size="large"
+      style="margin:10px;"
+    />
   {/if}
   {#if !readonly}
-    <div class="actions" >
+    <div class="actions">
       {#if multiVariant && item.type != LAYER_TYPE.REMOTE}
-        <button
-          class="secondary icon icon-small"
-          title={$_("newLayerVariant")}
-          on:click|stopPropagation={addVariant}
-        >
-          {@html UserPlusIcon}</button
-        >
+        <Button
+          icon={UserPlusIcon}
+          altStyle={selected && selectable}
+          label={$_("newLayerVariant")}
+          type="tertiary"
+          on:click={addVariant}
+          onlyIcon
+          size="large"
+        />
       {/if}
       {#if controls && multiVariant && item.type != LAYER_TYPE.REMOTE}
         <div class="separator vertical" />
       {/if}
       {#if controls}
-        <button
-          class="tertiary icon icon-small"
-          title={$_("up")}
-          on:click|stopPropagation={up}
-          class:disabled={!canUp}
-        >
-          {@html UpIcon}</button
-        >
-        <button
-          class="tertiary icon icon-small"
-          title={$_("down")}
-          on:click|stopPropagation={down}
-          class:disabled={!canDown}>{@html DownIcon}</button
-        >
+        <Button
+          icon={UpIcon}
+          label={$_("up")}
+          type="quaternary"
+          altStyle={selected && selectable}
+          on:click={up}
+          disabled={!canUp}
+          onlyIcon
+          size="large"/>
+        <Button
+          icon={DownIcon}
+          label={$_("down")}
+          type="quaternary"
+          altStyle={selected && selectable}
+          on:click={down}
+          disabled={!canDown}
+          onlyIcon
+          size="large"/>
       {/if}
       <div class="separator vertical" />
-      <button
-        class="tertiary icon icon-small"
-        title={$_("remove")}
-        on:click|stopPropagation={remove}
-      >
-        {@html DeleteIcon}</button
-      >
+      <Button
+        icon={DeleteIcon}
+        altStyle={selected && selectable}
+        label={$_("remove")}
+        type="quaternary"
+        on:click={remove}
+        onlyIcon
+        size="large"/>
     </div>
   {/if}
 </div>

@@ -9,6 +9,8 @@
   export let onlyIcon: boolean = false;
   export let textAlign: "left" | "center" | "right" = "center";
   export let style = null;
+  export let altStyle: boolean = false;
+  export let target: "_blank" | "_self" = "_blank";
 </script>
 
 <a
@@ -18,6 +20,7 @@
   title={label}
   {style}
   {href}
+  {target}
   class:link={href != null}
   class:icon={onlyIcon && icon != null}
   class:with-label={label != null && !onlyIcon}
@@ -32,6 +35,7 @@
   class:text-left={textAlign === "left"}
   class:text-center={textAlign === "center"}
   class:text-right={textAlign === "right"}
+  class:alt-style={altStyle}
 >
   {#if icon != null}
     <div

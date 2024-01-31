@@ -115,6 +115,7 @@
       />
       <span
         class="separator"
+        style="width: calc(100% - 20px);"
         class:horizontal={!$isMobileView}
         class:vertical={$isMobileView}
       />

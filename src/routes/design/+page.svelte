@@ -464,12 +464,14 @@
               class="title-input"
               bind:value={$itemPackage.name}
             />
-            <button
-              class="icon secondary icon-small small"
-              style="margin-top: 8px;"
+            <Button
+             icon={TrashIcon}
+              label={$_("delete")}
+              type="tertiary"
               on:click={() => (isDeleteDialogOpen = true)}
-              >{@html TrashIcon}</button
-            >
+              onlyIcon
+              style="margin-top: 8px;"
+            />
           </div>
         {:else}
           <Placeholder style="height:46px;margin-bottom:16px;" />
@@ -658,31 +660,26 @@
   <Dialog
     bind:open={isDeleteDialogOpen}
     style="min-width:30vw"
-    showTitleBar={false}
+    showTitleBar={true}
   >
     <div style="text-align:center;margin:8px;">
-      <h2>{$_("dialog.confirmDeleteItem")}</h2>
-      <div style="display:flex;flex-direction:row; gap:8px">
-        <button
-          class="tertiary"
-          style="flex:1;"
+      <span class="mc-font-simple">{$_("dialog.confirmDeleteItem")}</span>
+      <div style="display:flex;flex-direction:row; gap:8px;margin-top:16px;">
+        <Button
+         type="tertiary"
           on:click={() => {
             isDeleteDialogOpen = false;
           }}
-        >
-          {@html CloseIcon}
-          {$_("cancel")}
-        </button>
-        <button
-          style="flex:1;"
+          label={$_("cancel")}
+          icon = {CloseIcon}
+        />
+        <Button type="primary"
           on:click={() => {
             isDeleteDialogOpen = false;
             deletePackage();
           }}
-        >
-          {@html TrashIcon}
-          {$_("delete")}
-        </button>
+          label={$_("delete")}
+          icon = {TrashIcon}/>
       </div>
     </div></Dialog
   >
