@@ -42,7 +42,7 @@
   let providers: { steve: RenderProvider; alex: RenderProvider };
 
   let isAuthDialogOpen = false;
-  let isBaseTextureDialogOpen=false;
+  let isBaseTextureDialogOpen = false;
   let authCode = "";
   let profile: any;
   let profilePhoto = "";
@@ -129,7 +129,8 @@
           />
         </div>
         <div class="actions">
-          <button on:click={()=>isBaseTextureDialogOpen=true}>Edit</button>
+          <button on:click={() => (isBaseTextureDialogOpen = true)}>Edit</button
+          >
         </div>
       {/if}
     </div>
@@ -183,20 +184,8 @@
     </div>
   </div>
 </div>
-<Dialog bind:open={isAuthDialogOpen}>
+<Dialog bind:open={isAuthDialogOpen} label={$_("link_to_mc")}>
   <div class="auth-dialog">
-    <div class="dialog-header">
-      <h1>{$_("link_to_mc")}</h1>
-      <button
-        style="margin: 0px"
-        class="icon tertiary"
-        on:click={() => {
-          isAuthDialogOpen = false;
-        }}
-      >
-        {@html CloseIcon}
-      </button>
-    </div>
     <MinecraftAuth
       isAuthorized={!requireUserInteraction}
       {profile}
@@ -206,23 +195,10 @@
     />
   </div>
 </Dialog>
-<Dialog bind:open={isBaseTextureDialogOpen}>
-  <div class="dialog-header" style="padding:16px;">
-    <h1>Base texture</h1>
-    <button
-      style="margin: 0px"
-      class="icon tertiary"
-      on:click={() => {
-        isBaseTextureDialogOpen = false;
-      }}
-    >
-      {@html CloseIcon}
-    </button>
-  </div>
-  {#if isBaseTextureDialogOpen}
-  <BaseTextureDialog/>
-  {/if}
-  </Dialog>
+<Dialog bind:open={isBaseTextureDialogOpen} label="Base texture">
+  <BaseTextureDialog />
+</Dialog>
+
 <style lang="scss">
   @import "style.scss";
 </style>

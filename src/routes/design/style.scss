@@ -81,14 +81,7 @@
     flex-direction: row;
   }
 }
-.social-dialog {
-  margin: 16px;
-  min-width: 500px;
-  div {
-    display: flex;
-    flex-direction: row;
-  }
-}
+
 @media only screen and (max-width: 700px) {
   .item-page {
     margin: 0px;

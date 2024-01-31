@@ -2,7 +2,7 @@
   export let href: string = null;
   export let label: string = null;
   export let icon: string = null;
-  export let type: "primary" | "secondary" | "tertiary" = "primary";
+  export let type: "primary" | "secondary" | "tertiary"|"quaternary" = "primary";
   export let size: "small" | "medium" | "large" = "medium";
   export let iconSize: "small" | "medium" | "large" = size;
   export let disabled: boolean = false;
@@ -24,6 +24,7 @@
   class:primary={type === "primary"}
   class:secondary={type === "secondary"}
   class:tertiary={type === "tertiary"}
+  class:quaternary={type === "quaternary"}
   class:small={size === "small"}
   class:medium={size === "medium"}
   class:large={size === "large"}

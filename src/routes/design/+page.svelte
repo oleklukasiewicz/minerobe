@@ -84,6 +84,7 @@
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { ShareItem, UnshareItem } from "$src/api/social";
   import AddVariantDialog from "$lib/components/dialog/AddVariantDialog.svelte";
+  import SocialInfoDialog from "$lib/components/dialog/SocialInfoDialog.svelte";
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -223,7 +224,7 @@
           layers[index].steve = newLayer;
         }
         $selectedLayer = layers[index];
-        newVariantLayer=$selectedLayer;
+        newVariantLayer = $selectedLayer;
         applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
         return layers;
       });
@@ -500,26 +501,23 @@
           {#if $itemPublisher.id == $currentUser?.id && $isMobileView}
             <div style="display: flex;">
               {#if $isItemSet}
-                <button
-                  id="import-package-action"
-                  title={$_("importOutfit")}
-                  style="flex:1;"
-                  class:disabled={!loaded}
+                <Button
                   on:click={openOutfitPicker}
-                  class="secondary">{@html AddIcon} {$_("importOutfit")}</button
-                >
+                  icon={AddIcon}
+                  disabled={!loaded}
+                  label={$_("importOutfit")}
+                  type="tertiary"
+                />
               {/if}
-              <button
-                id="add-layer-action"
-                style="flex:1;"
-                class="secondary"
-                class:disabled={!loaded}
+              <Button
                 on:click={importLayer}
-                >{@html ImportPackageIcon}
-                {$isItemSet
+                icon={ImportPackageIcon}
+                disabled={!loaded}
+                label={$isItemSet
                   ? $_("layersOpt.addLayer")
-                  : $_("layersOpt.addVariant")}</button
-              >
+                  : $_("layersOpt.addVariant")}
+                type="tertiary"
+              />
             </div>
             <br />
           {/if}
@@ -645,33 +643,23 @@
       {/if}
     </div>
   </div>
-  <Dialog bind:open={isOutfitPickerOpen}>
+  <Dialog bind:open={isOutfitPickerOpen} label="Pick outfit">
     <div class="outfit-picker-dialog">
-      <div>
-        <h1 style="flex:1;margin-top:0px;">Pick outfit</h1>
-        <button
-          style="margin: 0px 0px 16px"
-          class="icon tertiary"
-          on:click={() => {
-            isOutfitPickerOpen = false;
-          }}
-        >
-          {@html CloseIcon}
-        </button>
-      </div>
-      {#if isOutfitPickerOpen}
-        <OutfitPicker
-          bind:loading={isPickerLoading}
-          renderer={$defaultRenderer}
-          outfits={pickerOutfits}
-          categories={pickerCategories}
-          on:category={fetchByCategory}
-          on:select={(e) => addNewRemoteLayer(e.detail)}
-        />
-      {/if}
+      <OutfitPicker
+        bind:loading={isPickerLoading}
+        renderer={$defaultRenderer}
+        outfits={pickerOutfits}
+        categories={pickerCategories}
+        on:category={fetchByCategory}
+        on:select={(e) => addNewRemoteLayer(e.detail)}
+      />
     </div>
   </Dialog>
-  <Dialog bind:open={isDeleteDialogOpen} style="min-width:30vw">
+  <Dialog
+    bind:open={isDeleteDialogOpen}
+    style="min-width:30vw"
+    showTitleBar={false}
+  >
     <div style="text-align:center;margin:8px;">
       <h2>{$_("dialog.confirmDeleteItem")}</h2>
       <div style="display:flex;flex-direction:row; gap:8px">
@@ -698,72 +686,18 @@
       </div>
     </div></Dialog
   >
-  <Dialog bind:open={isShareDialogOpen}>
-    <div class="social-dialog">
-      <div>
-        <h1 style="flex:1;margin-top:0px;margin-bottom:0;">Social info</h1>
-        <button
-          style="margin: 0px"
-          class="icon tertiary"
-          on:click={() => {
-            isShareDialogOpen = false;
-          }}
-        >
-          {@html CloseIcon}
-        </button>
-      </div>
-      <SectionTitle label="Name" />
-      <h3 style="margin: 0px;">{$itemPackage.name}</h3>
-      <SectionTitle label="Author" />
-      <Label variant="unique">{$itemPublisher.name}</Label>
-      <SectionTitle label="Info" />
-      <div style="font-family: minecraft;margin:8px;" class="icon-small">
-        <div>
-          {@html HearthIcon}
-          <div style="margin-top:2px;margin-left:4px;">
-            {$itemPackage.social.likes}
-          </div>
-        </div>
-        &nbsp;&nbsp;&nbsp;
-        <div>
-          {@html DownloadIcon}
-          <div style="margin-top:2px;margin-left:4px;">
-            {$itemPackage.social.downloads || 0}
-          </div>
-        </div>
-      </div>
-      <br />
-      <SectionTitle label="Actions" />
-      <div style="display:flex;gap:8px;max-width:500px;">
-        <button
-          style="flex:1;"
-          id="item-page-action"
-          on:click={goToItemPage}
-          title={$_("goToItemPage")}
-          >{@html SpotlightIcon}
-
-          {$_("goToItemPage")}
-        </button>
-        <button
-          style="flex:1;"
-          id="unshare-package-action"
-          on:click={unSharePackage}
-          class:disabled={!loaded}
-          title={$_("unsharepackage")}
-          class="secondary"
-          >{@html CloseIcon}
-          {$_("unsharepackage")}</button
-        >
-      </div>
-    </div>
+  <Dialog bind:open={isShareDialogOpen} label="Social info">
+    <SocialInfoDialog
+      item={$itemPackage}
+      on:unshare={unSharePackage}
+      on:itempage={goToItemPage}
+    />
   </Dialog>
-  <Dialog bind:open={isAddVariantDialogOpen}>
-    {#if isAddVariantDialogOpen}
-      <AddVariantDialog
-        bind:layer={newVariantLayer}
-        on:uploadVariant={uploadImageForVariant}
-      />
-    {/if}
+  <Dialog bind:open={isAddVariantDialogOpen} label="Add layer variant">
+    <AddVariantDialog
+      bind:layer={newVariantLayer}
+      on:uploadVariant={uploadImageForVariant}
+    />
   </Dialog>
 </div>
 

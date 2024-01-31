@@ -78,7 +78,7 @@
     min-width: 65vw;
     display: flex;
     gap: 8px;
-    padding: 0px 16px 16px 16px;
+    padding: 0px 8px 8px 8px;
     box-sizing: border-box;
     flex-direction: row;
     .render {

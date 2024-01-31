@@ -173,4 +173,47 @@
       }
     }
   }
+  &.quaternary {
+    font-size: 12px;
+    background-color: transparent;
+    color: var(--color-theme-font);
+    font-family: minecraft-simple;
+    &:hover {
+      color: var(--color-accent-font);
+      background-color: var(--color-hover);
+      border-top-color: var(--color-hover-L1);
+      border-bottom-color: var(--color-hover-D1);
+    }
+    &:active {
+      color: var(--color-accent-font);
+      background-color: var(--color-active);
+      border-top-color: var(--color-active-L1);
+      border-bottom-color: var(--color-active-D1);
+    }
+    &.medium {
+      padding: 8px 12px 7px;
+      &.icon {
+        padding: 6px 7px;
+      }
+    }
+    &.large {
+      padding: 8px 14px 10px;
+      font-size: larger;
+      &.with-label {
+        .icon {
+          margin-right: 12px;
+          transform: translate(-6px,4px);
+        }
+      }
+      &.icon {
+        padding: 12px 12px;
+      }
+    }
+    &.small {
+      padding: 4px 6px 4px;
+      &.icon {
+        padding: 2px;
+      }
+    }
+  }
 }
