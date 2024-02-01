@@ -239,7 +239,7 @@
           {#if loaded}
             {$itemName}
           {:else}
-            <Placeholder style="height:42px;" />
+            <Placeholder style="height:30px;" />
           {/if}
         </div>
 
@@ -253,7 +253,7 @@
             <SocialInfo data={$localPackage.social} />
           </div>
         {:else}
-          <Placeholder style="height:24px;max-width:100px;" />
+          <Placeholder style="height:26px;max-width:100px;" />
         {/if}
       </div>
       <br />
@@ -308,10 +308,10 @@
       {:else if $isItemSet}
         <Placeholder style="height:66px;margin-bottom:12px;" />
       {:else}
-        <div style="display:flex;flex-wrap:wrap;margin-bottom:22px;">
+        <div style="display:flex;flex-wrap:wrap;margin-bottom:22px;gap:8px;">
           {#each new Array(8) as _}
             <Placeholder
-              style="height:68px;width:68px;margin-bottom:8px;margin-right:8px;"
+              style="height:68px;width:68px;"
             />
           {/each}
         </div>

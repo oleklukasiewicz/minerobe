@@ -3,7 +3,6 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    font-size-adjust: 5;
     src: url(/font/minecraftBold.ttf) format("truetype");
 }
 @font-face{
@@ -11,7 +10,6 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    font-size-adjust: 5;
     src: url(/font/minecraftSimple.ttf) format("truetype");
 }
 :root{

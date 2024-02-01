@@ -126,3 +126,7 @@ export const COLOR_TYPE={
   RGBA:"rgba",
   STRING_COLOR:"string_color"
 }
+export const COLLECTION_DISPLAY_MODE = {
+  GRID: "grid",
+  LIST: "list",
+};

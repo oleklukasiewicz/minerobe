@@ -42,6 +42,7 @@
     isMobileView,
     isReadyForData,
     userSettings,
+    showToast,
   } from "$data/cache";
 
   import DownloadIcon from "$icons/download.svg?raw";
@@ -226,6 +227,7 @@
         $selectedLayer = layers[index];
         newVariantLayer = $selectedLayer;
         applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
+        showToast($_("toast.variantAdded"));
         return layers;
       });
     });
@@ -304,7 +306,6 @@
     });
   };
   const downloadImage = async () => {
-    //await ChangeSkin($itemPackage.id,$itemModelType);
     await ExportImageLayers(rendererLayers, $itemModelType, $itemPackage.name);
     applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
   };

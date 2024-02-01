@@ -4,6 +4,7 @@
   import OutfitLayerRender from "./OutfitLayerRender.svelte";
   export let texture: string;
   export let modelName = "steve";
+  export let type = OUTFIT_TYPE.OUTFIT_SET;
   export let renderProvider: RenderProvider = null;
   export const snapshot: RenderSnapshot = new RenderSnapshot();
 
@@ -12,11 +13,11 @@
     item = {
       steve: {
         content: texture,
-        type: OUTFIT_TYPE.OUTFIT_SET,
+        type: type,
       },
       alex: {
         content: texture,
-        type: OUTFIT_TYPE.OUTFIT_SET,
+        type: type,
       },
     };
   }

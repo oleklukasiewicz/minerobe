@@ -7,7 +7,7 @@
 <span class="section-title">
 {#if placeholder}
   <!-- svelte-ignore missing-declaration -->
-  <Placeholder style="height:16px;width:64px;" />
+  <Placeholder style="height:14px;width:64px;" />
 {:else}
   {label}
 {/if}   

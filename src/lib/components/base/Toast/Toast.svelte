@@ -42,7 +42,7 @@
       {icon}
     </span>
   {/if}
-  <span class="message mc-font">
+  <span class="message mc-font-simple">
     {message}
   </span>
   {#if closeable}

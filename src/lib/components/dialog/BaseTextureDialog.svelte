@@ -5,6 +5,7 @@
     userSettings,
     alexModel,
     steveModel,
+    showToast,
   } from "$src/data/cache";
   import { mergeImages } from "$src/data/imageMerger";
   import { ImportImage } from "$src/helpers/imageOperationsHelper";
@@ -24,6 +25,7 @@
     if (filedata) {
       userSettings.update((v) => {
         v.baseTexture = filedata[0].content;
+        showToast("Base texture changed");
         return v;
       });
     }
