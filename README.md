@@ -41,6 +41,7 @@ To test all features of application you need to setup authentication and firesto
 ```
 
 ### 3. Add environment variables
+Create `.env` file in root directory of the project and add environment variables. You can find them in firebase settings.
 ```
 Firebase (client side)
 VITE_API_KEY=<value>
