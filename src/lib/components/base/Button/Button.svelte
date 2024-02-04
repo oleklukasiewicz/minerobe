@@ -1,8 +1,11 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
   export let href: string = null;
   export let label: string = null;
   export let icon: string = null;
-  export let type: "primary" | "secondary" | "tertiary"|"quaternary" = "primary";
+  export let type: "primary" | "secondary" | "tertiary" | "quaternary" =
+    "primary";
   export let size: "small" | "medium" | "large" = "medium";
   export let iconSize: "small" | "medium" | "large" = size;
   export let disabled: boolean = false;
@@ -11,11 +14,33 @@
   export let style = null;
   export let altStyle: boolean = false;
   export let target: "_blank" | "_self" = "_blank";
+  export let fab: "static" | "dynamic" | "expanded" | null = null;
+
+  let component = null;
+  let componentLabel = null;
+  const onHoverOut = function () {
+    const labelWidth = componentLabel.offsetWidth;
+    const marginRight=size==="small"? 6: size==="medium"? 12: 14;
+    if (componentLabel && fab === "dynamic") {
+      componentLabel.style.marginRight = `-${labelWidth+marginRight}px`;
+    }
+  };
+  const onHover = function () {
+    if (componentLabel && fab === "dynamic") {
+      componentLabel.style.marginRight = null;
+    }
+  };
+  onMount(() => {
+   setTimeout(onHoverOut, 1000)
+  });
 </script>
 
 <a
+  bind:this={component}
   on:click
   on:contextmenu
+  on:mouseenter={onHover}
+  on:mouseleave={onHoverOut}
   class="button"
   title={label}
   {style}
@@ -36,6 +61,10 @@
   class:text-center={textAlign === "center"}
   class:text-right={textAlign === "right"}
   class:alt-style={altStyle}
+  class:fab={fab != null}
+  class:fab-static={fab === "static"}
+  class:fab-dynamic={fab === "dynamic"}
+  class:fab-expanded={fab === "expanded"}
 >
   {#if icon != null}
     <div
@@ -48,7 +77,7 @@
     </div>
   {/if}
   {#if label != null && !onlyIcon}
-    <span>{label}</span>
+    <span bind:this={componentLabel}>{label}</span>
   {/if}
   <slot />
 </a>

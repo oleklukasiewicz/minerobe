@@ -7,6 +7,8 @@
 </script>
 
 <h1 id="view-title">Explore new outfits</h1>
+<Button fab="dynamic" icon={DownloadIcon} label="tets" size="small" />
+
 <style lang="scss">
   @import "style.scss";
 </style>

@@ -129,15 +129,18 @@ export class OutfitLayerLink {
 export class OutfitPackageLink {
   id: string;
   model: string;
+  variantId: string;
   type: string;
   constructor(
     linkId: string,
     model: string,
-    type: string = PACKAGE_TYPE.OUTFIT_SET_LINK
+    type: string = PACKAGE_TYPE.OUTFIT_SET_LINK,
+    variantId: string = null
   ) {
     this.id = linkId;
     this.model = model;
     this.type = type;
+    this.variantId = variantId;
   }
 }
 
@@ -249,40 +252,38 @@ export class SkinData {
     this.texture = texture;
   }
 }
-export class OutfitPackageCollection
-{
-  id:string;
-  name:string;
-  outfits:OutfitPackage[];
-  displayMode:string;
-  publisher:MinerobeUser;
-  isShared:boolean;
-  social:PackageSocialData;
-  description:string;
-  createdAt:Date;
-  modifiedAt:Date;
+export class OutfitPackageCollection {
+  id: string;
+  name: string;
+  outfits: OutfitPackage[] | OutfitPackageLink[];
+  displayMode: string;
+  publisher: MinerobeUser;
+  isShared: boolean;
+  social: PackageSocialData;
+  description: string;
+  createdAt: Date;
+  modifiedAt: Date;
   constructor(
-    id:string,
-    name:string,
-    outfits:OutfitPackage[],
-    displayMode:string,
-    publisher:MinerobeUser,
-    isShared:boolean,
-    social:PackageSocialData,
-    description:string,
-    createdAt:Date,
-    modifiedAt:Date
-  )
-  {
-    this.id=id;
-    this.name=name;
-    this.outfits=outfits;
-    this.displayMode=displayMode;
-    this.publisher=publisher;
-    this.isShared=isShared;
-    this.social=social;
-    this.description=description;
-    this.createdAt=createdAt;
-    this.modifiedAt=modifiedAt;
+    id: string,
+    name: string,
+    outfits: OutfitPackage[],
+    displayMode: string,
+    publisher: MinerobeUser,
+    isShared: boolean,
+    social: PackageSocialData,
+    description: string,
+    createdAt: Date,
+    modifiedAt: Date
+  ) {
+    this.id = id;
+    this.name = name;
+    this.outfits = outfits;
+    this.displayMode = displayMode;
+    this.publisher = publisher;
+    this.isShared = isShared;
+    this.social = social;
+    this.description = description;
+    this.createdAt = createdAt;
+    this.modifiedAt = modifiedAt;
   }
 }

@@ -1,7 +1,8 @@
 .button {
   display: block;
-  flex:1;
-  transition: background-color var(--time), color var(--time), border-color var(--time);
+  flex: 1;
+  transition: background-color var(--time), color var(--time),
+    width var(--time) cubic-bezier(0.1, 0.9, 0.2, 1), border-color var(--time);
   box-sizing: border-box;
   user-select: none;
   cursor: pointer;
@@ -32,7 +33,7 @@
     transform: translate(-6px, -2px);
   }
   &.icon {
-    flex:0;
+    flex: 0;
     .icon {
       transform: translate(-2px, 0);
     }
@@ -71,7 +72,7 @@
       &.with-label {
         .icon {
           margin-right: 12px;
-          transform: translate(-6px,0px);
+          transform: translate(-6px, 0px);
         }
       }
       &.icon {
@@ -116,7 +117,7 @@
       &.with-label {
         .icon {
           margin-right: 12px;
-          transform: translate(-6px,4px);
+          transform: translate(-6px, 4px);
         }
       }
       &.icon {
@@ -135,8 +136,7 @@
     background-color: transparent;
     color: var(--color-accent);
     font-family: minecraft-simple;
-    &.alt-style
-    {
+    &.alt-style {
       color: var(--color-accent-font);
     }
     &:hover {
@@ -163,7 +163,7 @@
       &.with-label {
         .icon {
           margin-right: 12px;
-          transform: translate(-6px,4px);
+          transform: translate(-6px, 4px);
         }
       }
       &.icon {
@@ -182,8 +182,7 @@
     background-color: transparent;
     color: var(--color-theme-font);
     font-family: minecraft-simple;
-    &.alt-style
-    {
+    &.alt-style {
       color: var(--color-accent-font);
     }
     &:hover {
@@ -210,7 +209,7 @@
       &.with-label {
         .icon {
           margin-right: 12px;
-          transform: translate(-6px,4px);
+          transform: translate(-6px, 4px);
         }
       }
       &.icon {
@@ -221,6 +220,39 @@
       padding: 4px 6px 4px;
       &.icon {
         padding: 2px;
+      }
+    }
+  }
+  &.fab {
+    position: absolute;
+    z-index: 10;
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    overflow: hidden;
+    gap: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    &.fab-dynamic {
+      &.large
+      {
+        padding-left: 16px;
+      }
+      &.small
+      {
+        padding:2px 3px 6px 7px;
+        span
+        {
+          padding-right: 4px;
+        }
+      }
+      span {
+        transition: var(--time) cubic-bezier(0.1, 0.9, 0.2, 1);
+        display: inline-table;
+      }
+      &:hover {
+        span {
+          margin-right: 0;
+        }
       }
     }
   }

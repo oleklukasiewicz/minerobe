@@ -27,6 +27,7 @@
   } from "$src/helpers/imageDataHelpers";
   import Search from "$component/base/Search/Search.svelte";
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
 
   let currentView = "sets";
   let loaded = false;
@@ -152,12 +153,14 @@
             </div>
           </div>
         </div>
-        <button class="fab dynamic" on:click={() => addNewSet()}>
-          <div>
-            {@html PlusIcon}
-            <span>Create set</span>
-          </div></button
-        >
+        <Button
+          on:click={addNewSet}
+          fab="dynamic"
+          size="large"
+          icon={PlusIcon}
+          label="Create set"
+          style="position:fixed"
+        />
         <div class="sets-list">
           <OutfitPackageSnapshotList
             dense={false}
@@ -190,12 +193,15 @@
             </div>
           </div>
         </div>
-        <button class="fab dynamic" on:click={() => addNewOutfit()}>
-          <div>
-            {@html PlusIcon}
-            <span>New outfit</span>
-          </div></button
-        >
+        <Button
+          on:click={addNewOutfit}
+          fab="dynamic"
+          size="large"
+          icon={PlusIcon}
+          label="New Outfit"
+          style="position:fixed"
+        />
+
         <div class="outfits-list">
           <OutfitPackageSnapshotList
             dense={false}

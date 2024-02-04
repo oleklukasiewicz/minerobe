@@ -9,6 +9,7 @@
   import { _ } from "svelte-i18n";
   import { createEventDispatcher } from "svelte";
   import Button from "../base/Button/Button.svelte";
+  import SocialInfo from "../social/SocialInfo/SocialInfo.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -28,20 +29,8 @@
   <SectionTitle label="Author" />
   <Label variant="unique">{item.publisher.name}</Label>
   <SectionTitle label="Info" />
-  <div style="font-family: minecraft;margin:8px;" class="icon-small">
-    <div>
-      {@html HearthIcon}
-      <div style="margin-top:2px;margin-left:4px;">
-        {item.social.likes}
-      </div>
-    </div>
-    &nbsp;&nbsp;&nbsp;
-    <div>
-      {@html DownloadIcon}
-      <div style="margin-top:2px;margin-left:4px;">
-        {item.social.downloads || 0}
-      </div>
-    </div>
+  <div style="font-family: minecraft;margin:8px 0px;" class="icon-small">
+    <SocialInfo data={item.social}/>
   </div>
   <br />
   <SectionTitle label="Actions" />
