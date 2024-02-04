@@ -19,15 +19,11 @@
   } from "$src/data/render";
   import { onMount } from "svelte";
   import { propertyStore } from "svelte-writable-derived";
-  import CloseIcon from "$icons/close.svg?raw";
-  import { mergeImages } from "$src/data/imageMerger";
-  import { ImportImage } from "$src/helpers/imageOperationsHelper";
   import { logoutUser } from "$src/api/auth";
   import { navigateToHome } from "$src/helpers/navigationHelper";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
   import Dialog from "$component/base/Dialog/Dialog.svelte";
-  import MinecraftAuth from "$component/other/MinecraftAuth/MinecraftAuth.svelte";
   import AvatarIcon from "$src/icons/avatar.svg?raw";
   import {
     LinkMinecraftAccount,
@@ -37,6 +33,7 @@
   import OutfitTextureRender from "$lib/components/render/OutfitTextureRender.svelte";
   import BaseTextureDialog from "$lib/components/dialog/BaseTextureDialog.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
+  import LinkAccountDialog from "$lib/components/dialog/LinkAccountDialog.svelte";
 
   const userModel = propertyStore(userSettings, "model");
 
@@ -193,7 +190,7 @@
 </div>
 <Dialog bind:open={isAuthDialogOpen} label={$_("link_to_mc")}>
   <div class="auth-dialog">
-    <MinecraftAuth
+    <LinkAccountDialog
       isAuthorized={!requireUserInteraction}
       {profile}
       {authCode}

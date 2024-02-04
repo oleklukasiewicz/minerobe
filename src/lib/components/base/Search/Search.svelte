@@ -19,12 +19,13 @@
 <div class="search" class:dense>
   <input
     type="text"
+    style="font-size: var(--size-font-caption);"
     placeholder="Search"
     bind:value
     class="search-input"
     on:input={onInput}
   />
-  <Button on:click={onSearch} onlyIcon icon={SearchIcon} label="Search"  style="padding: 5px 6px;"/>
+  <Button on:click={onSearch} onlyIcon icon={SearchIcon} label="Search"  style="padding: 4px 7px;"/>
 </div>
 
 <style lang="scss">
