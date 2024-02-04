@@ -69,6 +69,27 @@ export const AddDownload = async (id: string, type: string) => {
     downloads: increment(1),
   });
 };
+const ResetSocialLikes = async (id: string, type: string) => {
+  const dir =
+    type == PACKAGE_TYPE.OUTFIT
+      ? "outfits" + "/" + id + "/" + "data"
+      : "sets" + "/" + id + "/" + "data";
+  const isExist = await IsDocumentExist(dir, SOCIAL_PATH);
+  if (!isExist) return;
+  const res = await UpdateRawDocument(dir, SOCIAL_PATH, {
+    social: {
+      likes: 1,
+    },
+  });
+  const res2 = await UpdateRawDocument(dir, SNAPSHOT_PATH, {
+    social: {
+      likes: 1,
+    },
+  });
+  await UploadPartialQueryDataRaw(id, type, {
+    likes: 1,
+  });
+}
 export const FetchSocial = async (path: string) => {
   let obj = await GetDocument(path, SOCIAL_PATH);
 
@@ -91,8 +112,10 @@ export const UnshareItem = async function (item) {
   item.isShared = false;
   if (item.type == PACKAGE_TYPE.OUTFIT_SET) {
     await UploadOutfitSet(item);
+    await ResetSocialLikes(item.id, item.type);
   }
   if (item.type == PACKAGE_TYPE.OUTFIT) {
     await UploadOutfit(item);
+    await ResetSocialLikes(item.id, item.type);
   }
 };

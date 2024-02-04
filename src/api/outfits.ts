@@ -116,6 +116,7 @@ export const FetchOutfitLayerFromLink = async function (link: OutfitLayerLink) {
   layer.id = parsed.id;
   layer.type = LAYER_TYPE.REMOTE;
   layer.name = parsed.name + " - " + layer.name;
+  layer.isShared = parsed.isShared;
   return layer;
 };
 export const UploadOutfit = async function (

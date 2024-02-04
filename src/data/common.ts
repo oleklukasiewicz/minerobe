@@ -47,18 +47,21 @@ export class WardrobePackage {
   id: string;
   outfits: OutfitPackage[];
   sets: OutfitPackage[];
+  collections: OutfitPackageCollection[];
   studio: OutfitPackageLink;
   local: any;
   constructor(
     id: string,
     outfits: OutfitPackage[],
     sets: OutfitPackage[] = [],
-    studio: OutfitPackageLink = null
+    studio: OutfitPackageLink = null,
+    collections: OutfitPackageCollection[] = []
   ) {
     this.id = id;
     this.outfits = outfits;
     this.studio = studio;
     this.sets = sets;
+    this.collections = collections;
   }
 }
 
@@ -87,13 +90,15 @@ export class OutfitLayer {
   id: string;
   variantId: string;
   type: string;
+  isShared: boolean;
   constructor(
     name: string,
     steve: FileData,
     alex: FileData,
     id: string,
     type: string = LAYER_TYPE.LOCAL,
-    variantId: string = null
+    variantId: string = null,
+    isShared: boolean = false
   ) {
     this.name = name;
     this.variantId = variantId;
@@ -109,6 +114,7 @@ export class OutfitLayer {
       this.steve = steve;
       this.alex = alex;
     }
+    this.isShared = isShared;
   }
 }
 //links

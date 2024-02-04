@@ -1,7 +1,6 @@
 import { currentUser } from "$src/data/cache";
 import {
   OutfitPackageLink,
-  type OutfitPackage,
   WardrobePackage,
 } from "$src/data/common";
 import { GetDocument, SetDocument } from "$src/data/firebase";
@@ -14,10 +13,10 @@ const WARDROBE_PATH = "wardrobes";
 export const ParseWardrobeToDatabase = function (pack: WardrobePackage) {
   let data = Object.assign({}, pack);
   data.sets = data.sets.map(
-    (item) => new OutfitPackageLink(item.id, item.model) as OutfitPackage
+    (item) => new OutfitPackageLink(item.id, item.model) as any
   );
   data.outfits = data.outfits.map(
-    (item) => new OutfitPackageLink(item.id, item.model) as OutfitPackage
+    (item) => new OutfitPackageLink(item.id, item.model) as any
   );
   delete data.local;
   return data;
@@ -25,13 +24,13 @@ export const ParseWardrobeToDatabase = function (pack: WardrobePackage) {
 export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
   const parsedSets = Promise.all(
     data.sets.map(
-      async (item: OutfitPackageLink) =>
+      async (item: any) =>
         await FetchOutfitSetSnapshotFromLink(item)
     )
   );
   const parsedOutfits = Promise.all(
     data.outfits.map(
-      async (item: OutfitPackageLink) => await FetchOutfitSnapshotFromLink(item)
+      async (item: any) => await FetchOutfitSnapshotFromLink(item)
     )
   );
 

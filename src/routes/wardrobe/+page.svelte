@@ -17,6 +17,7 @@
   import CategoryMenuItem from "$component/other/CategoryMenuItem/CategoryMenuItem.svelte";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
+  import ListIcon from "$icons/list.svg?raw";
   import { OUTFIT_TYPE } from "$src/data/consts";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import { CreateOutfitSet } from "$src/api/sets";
@@ -114,6 +115,13 @@
         icon={ShoppingBagIcon}
         on:click={() => (currentView = "outfit")}
       />
+      <CategoryMenuItem
+        label="Collections"
+        minimal={$isMobileView}
+        selected={currentView == "collection"}
+        icon={ListIcon}
+        on:click={() => (currentView = "collection")}
+      />
       <span
         class="separator"
         style="width: calc(100% - 20px);"
@@ -174,7 +182,7 @@
           />
         </div>
       {/if}
-      {#if currentView != "sets"}
+      {#if currentView != "sets" && currentView != "collection"}
         <div style="display: flex;gap:8px; flex-wrap:wrap;max-width:100vw">
           {#if !$isMobileView}<h1 class="inline" style="margin: 0;">
               Outfits {OUTFIT_TYPE[currentView] != "ALL" &&
@@ -211,6 +219,16 @@
             items={outfitList}
             on:innerselect={onItemSelect}
           />
+        </div>
+      {/if}
+      {#if currentView == "collection"}
+      {#if !$isMobileView}<h1 class="inline" style="margin: 0;">
+        Collections
+      </h1>{/if}
+        <div class="placeholders">
+          {#each new Array(36) as item, index}
+            <Placeholder style="min-width:175px;height:268px;" />
+          {/each}
         </div>
       {/if}
     {:else}

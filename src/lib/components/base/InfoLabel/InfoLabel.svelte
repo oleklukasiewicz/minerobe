@@ -38,6 +38,7 @@
     }
     .description {
       font-size: var(--size-font-caption);
+      font-family: minecraft-simple;
     }
     &.hidden {
       display: none;
