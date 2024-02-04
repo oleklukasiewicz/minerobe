@@ -41,6 +41,7 @@ To test all features of application you need to setup authentication and firesto
 ```
 
 ### 3. Add environment variables
+```
 Firebase (client side)
 VITE_API_KEY=<value>
 VITE_AUTH_DOMAIN=<value>
@@ -66,6 +67,7 @@ VITE_UNIVERSE_DOMAIN=<value>
 Random values for users secret path
 VITE_USERS_SECRET_PATH=<value>
 VITE_USERS_SECRET_LOCAL_PATH=<value>
+```
 ---
 
 ## Screeenshots
