@@ -1,6 +1,7 @@
 <script lang="ts">
   import SearchIcon from "$icons/search.svg?raw";
   import { createEventDispatcher } from "svelte";
+  import Button from "../Button/Button.svelte";
 
   export let value = null;
   export let dense = true;
@@ -23,9 +24,7 @@
     class="search-input"
     on:input={onInput}
   />
-  <button class="icon icon-small" class:small={dense} on:click={onSearch}>
-    {@html SearchIcon}
-  </button>
+  <Button on:click={onSearch} onlyIcon icon={SearchIcon} label="Search"  style="padding: 5px 6px;"/>
 </div>
 
 <style lang="scss">

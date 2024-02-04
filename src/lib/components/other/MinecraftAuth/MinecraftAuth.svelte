@@ -1,23 +1,21 @@
 <script lang="ts">
   import Label from "$component/base/Label/Label.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
   import { createEventDispatcher } from "svelte";
 
-
   const dispatch = createEventDispatcher();
-  
+
   export let isAuthorized: boolean = false;
   export let profile: any = null;
   export let authUrl: string = "";
   export let authCode: string = "";
 
-  const unlink=function()
-  {
+  const unlink = function () {
     dispatch("unlink");
-  }
-  const link=function()
-  {
+  };
+  const link = function () {
     dispatch("link");
-  }
+  };
 </script>
 
 <div class="mc-auth">
@@ -27,7 +25,7 @@
     <br />
     <div><Label variant="unique">{profile.name}</Label></div>
     <br />
-    <button class="secondary"on:click={unlink} >Unlink account</button>
+    <Button on:click={unlink} label="Unlink account" />
   {:else}
     <br />
     <span>Copy code and click <b>link account</b> button</span>
@@ -36,7 +34,12 @@
     <br />
     <b>Refresh page after signing in (linking may take some time)</b>
     <br />
-    <a href={authUrl} target="_blank"><button on:click={link}>Link account</button></a>
+    <Button
+      type="primary"
+      on:click={link}
+      label="Link account"
+      href={authUrl}
+    />
   {/if}
 </div>
 

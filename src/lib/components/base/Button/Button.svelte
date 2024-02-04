@@ -19,10 +19,10 @@
   let component = null;
   let componentLabel = null;
   const onHoverOut = function () {
-    const labelWidth = componentLabel.offsetWidth;
-    const marginRight=size==="small"? 6: size==="medium"? 12: 14;
     if (componentLabel && fab === "dynamic") {
-      componentLabel.style.marginRight = `-${labelWidth+marginRight}px`;
+      const labelWidth = componentLabel.offsetWidth;
+      const marginRight = size === "small" ? 6 : size === "medium" ? 12 : 14;
+      componentLabel.style.marginRight = `-${labelWidth + marginRight}px`;
     }
   };
   const onHover = function () {
@@ -31,7 +31,7 @@
     }
   };
   onMount(() => {
-   setTimeout(onHoverOut, 1000)
+    setTimeout(onHoverOut, 1000);
   });
 </script>
 

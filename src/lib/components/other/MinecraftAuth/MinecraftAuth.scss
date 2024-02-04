@@ -1,12 +1,11 @@
-.mc-auth
-{
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    .code
-    {
-        background-color: var(--color-theme-D1);
-        padding: 12px 10px;
-        box-sizing: border-box;
-    }
+.mc-auth {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-width: 50vw;
+  .code {
+    background-color: var(--color-theme-D1);
+    padding: 12px 10px;
+    box-sizing: border-box;
+  }
 }

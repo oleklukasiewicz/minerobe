@@ -2,6 +2,7 @@
   import CloseIcon from "$icons/close.svg?raw";
   import { createEventDispatcher } from "svelte";
   import { cubicOut } from "svelte/easing";
+  import Button from "../Button/Button.svelte";
   export let message: string;
   export let type: "success" | "error" | "warning" | "info" = "info";
   export let mobile = false;
@@ -46,9 +47,7 @@
     {message}
   </span>
   {#if closeable}
-    <button class="tertiary small icon icon-small" on:click={onClose}
-      >{@html CloseIcon}</button
-    >
+    <Button type="quaternary" on:click={onClose} icon={CloseIcon} onlyIcon />
   {/if}
 </div>
 

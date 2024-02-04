@@ -1,5 +1,6 @@
 <script lang="ts">
   import DeleteIcon from "$src/icons/close.svg?raw";
+  import Button from "../Button/Button.svelte";
 
   export let label = "";
   export let description = "";
@@ -12,14 +13,15 @@
   <div style="display: flex;">
     <span class="label-text">{label}</span>
     {#if closeable}
-      <button
-        class="close-button icon-small icon tertiary small"
+      <Button
+        type="quaternary"
         on:click={() => {
           isClosed = true;
         }}
-      >
-        {@html DeleteIcon}
-      </button>
+        icon={DeleteIcon}
+        onlyIcon
+        size="small"
+      />
     {/if}
   </div>
   <span class="description">{description}</span>

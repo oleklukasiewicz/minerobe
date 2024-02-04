@@ -12,16 +12,7 @@ import {
 
 export const GET = async (event) => {
   const request = event.request;
-  // const authHeader = request.headers.get("authorization");
-  // if (
-  //   authHeader !== `Bearer ${import.meta.env.CRON_SECRET}` &&
-  //   authHeader !== `Bearer ${import.meta.env.VITE_CRON_SECRET}`
-  // ) {
-  //   return new Response("Unauthorized", {
-  //     status: 401,
-  //   });
-  // }
-
+  
   //most liked
   const q = await BuildCollectionQuery(
     "query",

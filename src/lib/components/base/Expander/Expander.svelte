@@ -7,6 +7,7 @@
 
   import ChevronUpIcon from "$icons/chevron-up.svg?raw";
   import ChevronDownIcon from "$icons/chevron-down.svg?raw";
+  import Button from "../Button/Button.svelte";
 
   const toggleExpander = () => {
     if (group == null) {
@@ -33,9 +34,14 @@
     <span class="expander-toggle">
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <button class="icon icon-small tertiary" on:click={toggleExpander}>
-        {@html (group == null ? opened : group == value) ? ChevronUpIcon : ChevronDownIcon}
-      </button>
+      <Button
+        type="quaternary"
+        on:click={toggleExpander}
+        onlyIcon
+        icon="{(group == null ? opened : group == value)
+          ? ChevronUpIcon
+          : ChevronDownIcon}}"
+      />
     </span>
   </div>
   <div class="expander-content">

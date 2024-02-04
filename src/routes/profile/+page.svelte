@@ -36,6 +36,7 @@
   import { GetFaceOfRemoteSkin } from "$src/helpers/imageDataHelpers";
   import OutfitTextureRender from "$lib/components/render/OutfitTextureRender.svelte";
   import BaseTextureDialog from "$lib/components/dialog/BaseTextureDialog.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
 
   const userModel = propertyStore(userSettings, "model");
 
@@ -118,6 +119,17 @@
   </div>
   <div class="profile-cards">
     <div class="profile-card">
+      <SectionTitle label="Profile page" placeholder={loading} />
+      {#if !loading}
+        <div class="main-data">
+          <span class="mc-font">{$currentUser?.name}</span>
+        </div>
+        <div class="actions">
+          <Button href="/profile/{$currentUser.id}" label="Profile page" />
+        </div>
+      {/if}
+    </div>
+    <div class="profile-card">
       <SectionTitle label="Base texture" placeholder={loading} />
       {#if !loading}
         <div>
@@ -129,8 +141,10 @@
           />
         </div>
         <div class="actions">
-          <button on:click={() => (isBaseTextureDialogOpen = true)}>Edit</button
-          >
+          <Button
+            on:click={() => (isBaseTextureDialogOpen = true)}
+            label="Edit"
+          />
         </div>
       {/if}
     </div>
@@ -151,25 +165,18 @@
         </div>
         <div class="actions">
           {#if $userSettings?.linkedMinecraftAccount?.name == null}
-            <button on:click={linkAccount}>Link account</button>
+            <Button
+              type="primary"
+              on:click={linkAccount}
+              label="Link account"
+            />
           {:else}
-            <button class="secondary" on:click={() => (isAuthDialogOpen = true)}
-              >Unlink account</button
-            >
+            <Button
+              on:click={() => (isAuthDialogOpen = true)}
+              label="Unlink account"
+              type="tertiary"
+            />
           {/if}
-        </div>
-      {/if}
-    </div>
-    <div class="profile-card">
-      <SectionTitle label="Profile page" placeholder={loading} />
-      {#if !loading}
-        <div class="main-data">
-          <span class="mc-font">{$currentUser?.name}</span>
-        </div>
-        <div class="actions">
-          <a href="/profile/{$currentUser.id}">
-            <button style="width: 100%;">profile page</button></a
-          >
         </div>
       {/if}
     </div>
@@ -179,7 +186,7 @@
         <span class="mc-font">Logout from your account</span>
       </div>
       <div class="actions">
-        <button class="secondary" on:click={logout}>Logout</button>
+        <Button on:click={logout} label="Logout" type="tertiary" />
       </div>
     </div>
   </div>

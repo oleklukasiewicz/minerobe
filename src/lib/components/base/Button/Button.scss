@@ -1,8 +1,8 @@
 .button {
   display: block;
+  text-decoration: none;
   flex: 1;
-  transition: background-color var(--time), color var(--time),
-    width var(--time) cubic-bezier(0.1, 0.9, 0.2, 1), border-color var(--time);
+  transition: background-color var(--time), color var(--time), border-color var(--time);
   box-sizing: border-box;
   user-select: none;
   cursor: pointer;
