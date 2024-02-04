@@ -1,6 +1,6 @@
  ![logo](https://github.com/oleklukasiewicz/minerobe/assets/69370471/f9277a21-f817-47bd-b242-0770ed38f14a)
 
-<h1 align="center">Digital wardrobe for minecraft skins</h1>
+<h1 align=<value>"center">Digital wardrobe for minecraft skins</h1>
 
 Minerobe is a project that allows for the customization of Minecraft skins through an advanced digital wardrobe. Designed with ease of sharing and combining different clothing items in mind, this program opens up new possibilities for the Minecraft community.
 
@@ -36,6 +36,33 @@ To test all features of application you need to setup authentication and firesto
 ├──sets                    // Sets of outfits created by users
 └──wardrobes               // Wardrobes of minerobe users
 ```
+
+### 3. Add environment variables
+Firebase (client side)
+VITE_API_KEY=<value>
+VITE_AUTH_DOMAIN=<value>
+VITE_PROJECT_ID=<value>
+VITE_STORAGE_BUCKET=<value>
+VITE_MESSAGING_SENDER_ID=<value>
+VITE_APP_ID=<value>
+VITE_MEASUREMENT_ID=<value>
+
+Firebase (server side)
+VITE_AZURE_APP_ID=<value>
+VITE_SERVICE_TYPE=<value>
+VITE_PRIVATE_KEY_ID=<value>
+VITE_PRIVATE_KEY=<value>
+VITE_CLIENT_EMAIL=<value>
+VITE_CLIENT_ID=<value>
+VITE_AUTH_URI=<value>
+VITE_TOKEN_URI=<value>
+VITE_AUTH_PROVIDER_X509_CERT_URL=<value>
+VITE_CLIENT_X509_CERT_URL=<value>
+VITE_UNIVERSE_DOMAIN=<value>
+
+Random values for users secret path
+VITE_USERS_SECRET_PATH=<value>
+VITE_USERS_SECRET_LOCAL_PATH=<value>
 ---
 
 ## Screeenshots
@@ -46,4 +73,4 @@ To test all features of application you need to setup authentication and firesto
 
 
 <!--# icons 
-https://iconduck.com/search?query=vectorSetIds:140](url)--!>
+https://iconduck.com/search?query=<value>vectorSetIds:140](url)--!>
