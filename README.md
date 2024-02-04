@@ -28,6 +28,9 @@ Minerobe uses **Firebase Firestore** as database and **Firebase Authentication**
 To test all features of application you need to setup authentication and firestore with this structure inside:
 
 ```
+├──collections             // Contains all outfit collections
+├──settings                // Contains settings for minerobe users
+├──secret                  // Contains secret data of minerobe users
 ├──public                  // Contains data of landing and explore view
 ├──query                   // Contains data about outfits for queries
 ├──user-link               // Link to minerobe users used by authentication
