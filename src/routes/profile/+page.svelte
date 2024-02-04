@@ -2,13 +2,10 @@
   import { _ } from "svelte-i18n";
   import SectionTitle from "$component/base/SectionTitle/SectionTitle.svelte";
   import {
-    alexModel,
     currentUser,
     defaultRenderer,
     isMobileView,
     isReadyForData,
-    planksTexture,
-    steveModel,
     userSettings,
     wardrobe,
   } from "$src/data/cache";
@@ -25,6 +22,7 @@
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
   import Dialog from "$component/base/Dialog/Dialog.svelte";
   import AvatarIcon from "$src/icons/avatar.svg?raw";
+  import LoginIcon from "$src/icons/login.svg?raw";
   import {
     LinkMinecraftAccount,
     UnlinkMinecraftAccount,
@@ -180,7 +178,7 @@
     <div class="profile-card">
       <SectionTitle label="Logout"></SectionTitle>
       <div class="main-data">
-        <span class="mc-font">Logout from your account</span>
+        <span class="icon-big">{@html LoginIcon}</span>
       </div>
       <div class="actions">
         <Button on:click={logout} label="Logout" type="tertiary" />
@@ -200,7 +198,7 @@
   </div>
 </Dialog>
 <Dialog bind:open={isBaseTextureDialogOpen} label="Base texture">
-  <BaseTextureDialog />
+  <BaseTextureDialog on:setTexture={() => (isBaseTextureDialogOpen = false)} />
 </Dialog>
 
 <style lang="scss">

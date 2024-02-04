@@ -8,6 +8,7 @@
   import ChevronLeftIcon from "$icons/chevron-left.svg?raw";
   import ChevronRightIcon from "$icons/chevron-right.svg?raw";
   import Search from "$component/base/Search/Search.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
 
   export let outfits: OutfitPackage[] = [];
   export let categories = ["ALL"];
@@ -16,6 +17,7 @@
   export let page = 0;
   export let pagesCount = 0;
   export let itemsPerPage = 24;
+  export let viewMode: "compact" | "full" = "full";
 
   let listReady = true;
 
@@ -62,7 +64,11 @@
       }
       return true;
     });
-    splitedOutfits = SplitOutfitPackages(filteredOutfits);
+    if (viewMode == "full") {
+      splitedOutfits = SplitOutfitPackages(filteredOutfits);
+    } else {
+      splitedOutfits = filteredOutfits;
+    }
     pagedItems = paginate(splitedOutfits);
     pagesCount = Math.ceil(splitedOutfits.length / itemsPerPage);
   };
@@ -118,20 +124,29 @@
     {/if}
   </div>
   {#if itemsPerPage != -1 && pagedItems.length > 0 && pagesCount > 1}
-    <div style="font-family:minecraft; text-align:right; margin-top:8px;">
-      <button
-        class="small icon"
-        class:disabled={page == 0}
-        on:click={() => (page = page - 1)}>{@html ChevronLeftIcon}</button
+    <div
+      style="margin-top:8px; display:flex;justify-content: flex-end;gap:8px;"
+    >
+      <Button
+        type="tertiary"
+        onlyIcon
+        icon={ChevronLeftIcon}
+        on:click={() => (page = page - 1)}
+        disabled={page == 0}
+      />
+      <span
+        class="mc-font-simple"
+        style="margin:8px 0px;font-size:var(--size-font-caption)"
       >
-      &nbsp;
-      {page + 1} / {pagesCount}
-      &nbsp;
-      <button
-        class="small icon"
-        class:disabled={page >= splitedOutfits.length / itemsPerPage - 1}
-        on:click={() => (page = page + 1)}>{@html ChevronRightIcon}</button
-      >
+        {page + 1} / {pagesCount}
+      </span>
+      <Button
+        type="tertiary"
+        onlyIcon
+        icon={ChevronRightIcon}
+        on:click={() => (page = page + 1)}
+        disabled={page >= splitedOutfits.length / itemsPerPage - 1}
+      />
     </div>
   {/if}
 </div>

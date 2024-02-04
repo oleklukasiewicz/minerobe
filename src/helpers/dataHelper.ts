@@ -16,3 +16,7 @@ export const normalizeNumber = (value: number): string => {
   }
   return newValue + suffix;
 };
+export const normalizeStringCase = (value: string): string => {
+  value= value.toLowerCase();
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}

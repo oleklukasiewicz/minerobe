@@ -9,7 +9,7 @@
   } from "$src/data/cache";
   import { mergeImages } from "$src/data/imageMerger";
   import { ImportImage } from "$src/helpers/imageOperationsHelper";
-  import { onMount } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import DynamicRender from "../render/DynamicRender.svelte";
   import { MODEL_TYPE } from "$src/data/consts";
   import DefaultAnimation from "$src/animation/default";
@@ -18,6 +18,8 @@
   import CloseIcon from "$icons/close.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import Button from "../base/Button/Button.svelte";
+
+  const dispatch = createEventDispatcher();
 
   let texture = $planksTexture;
   const importBaseImage = async () => {
@@ -47,6 +49,10 @@
       } else texture = $planksTexture;
     });
   });
+
+  const onSetTexture = function () {
+    dispatch("setTexture", texture);
+  };
 </script>
 
 <div class="base-texture-dialog">
@@ -68,8 +74,15 @@
         icon={ImportPackageIcon}
         on:click={importBaseImage}
       />
-      <Button label="Reset" type="tertiary" on:click={resetImage} icon={CloseIcon} />
+      <Button
+        label="Reset"
+        type="tertiary"
+        on:click={resetImage}
+        icon={CloseIcon}
+      />
     </div>
+    <div style="flex:1;"></div>
+    <Button label="Set texture" style="flex:0;" on:click={onSetTexture}/>
   </div>
 </div>
 
@@ -90,6 +103,8 @@
     }
     .data {
       flex: 3;
+      display: flex;
+      flex-direction: column;
     }
   }
   .actions {

@@ -6,6 +6,7 @@ import BottomIcon from "$icons/clothes/bottom.svg?raw";
 import ShoesIcon from "$icons/clothes/shoes.svg?raw";
 import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
 import { ConvertColor, GetColorFromFileData } from "./colorHelper";
+import { normalizeStringCase } from "./dataHelper";
 
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =
@@ -98,11 +99,12 @@ export const GetCategoriesFromList = function (list: OutfitPackage[]) {
     (x) => OUTFIT_TYPE[x] != OUTFIT_TYPE.OUTFIT_SET
   );
   let categoryCount = {};
-  categories.forEach((category) => {
+  categories.forEach((categoryName) => {
+    const category = normalizeStringCase(categoryName);
     categoryCount[category] = list.filter((outfit) => {
       if (outfit.layers.length == 0) return false;
       if (outfit.layers[0] == null) return false;
-      return outfit.layers[0]["steve"].type == OUTFIT_TYPE[category];
+      return outfit.layers[0]["steve"].type == OUTFIT_TYPE[categoryName];
     }).length;
   });
   return categoryCount;
@@ -131,7 +133,9 @@ export const sortOutfitLayersByColor = async function (
   let hues = [];
   for (let i = 0; i < layers.length; i++) {
     let color = ConvertColor(
-      await GetColorFromFileData(layers[i][modelType]),COLOR_TYPE.RGB, COLOR_TYPE.HSL
+      await GetColorFromFileData(layers[i][modelType]),
+      COLOR_TYPE.RGB,
+      COLOR_TYPE.HSL
     ) as any;
     hues.push({ h: color.h, item: layers[i] });
   }
@@ -166,7 +170,17 @@ export const GetFaceOfRemoteSkin = async function (skinUrl) {
   faceCanvas.height = face.height * scale;
   const faceContext = faceCanvas.getContext("2d");
   faceContext.imageSmoothingEnabled = false; // Keep the image sharp when scaling
-  faceContext.drawImage(canvas, 8, 8, 8, 8, 0, 0, faceCanvas.width, faceCanvas.height);
+  faceContext.drawImage(
+    canvas,
+    8,
+    8,
+    8,
+    8,
+    0,
+    0,
+    faceCanvas.width,
+    faceCanvas.height
+  );
   const faceUrl = faceCanvas.toDataURL();
 
   return faceUrl;

@@ -21,21 +21,22 @@
 <div class="mc-auth">
   {#if isAuthorized}
     <br />
-    <span class="mc-font-simple">Your are linked to account</span>
+    <span class="mc-font-simple" style="font-size: var(--size-font-caption);">Your are linked to account</span>
     <br />
     <div><Label variant="unique">{profile.name}</Label></div>
+    <br />
     <br />
     <Button on:click={unlink} label="Unlink account" />
   {:else}
     <br />
-    <span class="mc-font-simple"
+    <span class="mc-font-simple" style="font-size: var(--size-font-caption);"
       >Copy code and click <b>link account</b> button</span
     >
     <br />
     <b class="code mc-font">{authCode}</b>
     <br />
-    <b class="mc-font-simple"
-      >Refresh page after signing in (linking may take some time)</b
+    <span class="mc-font-simple" style="font-size: var(--size-font-caption);"
+      >Refresh page after signing in <br/> (linking may take some time)</span
     >
     <br />
     <Button
@@ -52,7 +53,7 @@
     text-align: center;
     display: flex;
     flex-direction: column;
-    min-width: 50vw;
+    min-width: 30vw;
     .code {
       background-color: var(--color-theme-D1);
       padding: 12px 10px;

@@ -54,7 +54,7 @@
       outfitList = $wardrobe.outfits.filter((x) => {
         if (x.layers.length == 0 || x.layers[0] == null) return false;
 
-        return x.layers[0]["steve"].type == OUTFIT_TYPE[currentView];
+        return x.layers[0]["steve"].type == OUTFIT_TYPE[currentView.toUpperCase()];
       });
   };
   const filterOutfits = function (e) {

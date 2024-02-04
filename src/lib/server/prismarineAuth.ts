@@ -1,8 +1,11 @@
 import { Authflow } from "prismarine-auth";
 import { GetSecret, SetSecret, UpdateDocument } from "./firebaseServer";
-const getCacheNameForUser = function (user) {
-  return import.meta.env.VITE_USERS_SECRET_PATH + "/"+user +"/"+import.meta.env.VITE_USERS_SECRET_LOCAL_PATH;
-}
+const getCacheNameForUser = (user) =>
+  import.meta.env.VITE_USERS_SECRET_PATH +
+  "/" +
+  user +
+  "/" +
+  import.meta.env.VITE_USERS_SECRET_LOCAL_PATH;
 
 export const authenticateWithPrismarine = async function (user, token) {
   let authPromise: Promise<any> = new Promise((resolve, reject) => {
@@ -31,7 +34,7 @@ export const authenticateWithPrismarine = async function (user, token) {
             linkedMinecraftAccount: {
               id: tokenAcc.profile.id,
               name: tokenAcc.profile.name,
-              skins:tokenAcc.profile.skins,
+              skins: tokenAcc.profile.skins,
             },
           },
           token
@@ -41,7 +44,7 @@ export const authenticateWithPrismarine = async function (user, token) {
           profile: {
             id: tokenAcc.profile.id,
             name: tokenAcc.profile.name,
-            skins:tokenAcc.profile.skins,
+            skins: tokenAcc.profile.skins,
           },
           token: tokenAcc.token,
         });
@@ -56,10 +59,20 @@ export const authenticateWithPrismarine = async function (user, token) {
         return cache || {};
       },
       async setCached(value) {
-        const cache = await SetSecret(getCacheNameForUser(id), id, value, token);
+        const cache = await SetSecret(
+          getCacheNameForUser(id),
+          id,
+          value,
+          token
+        );
       },
       async setCachedPartial(value) {
-        const cacheref = await GetSecret(getCacheNameForUser(id), id, token, user);
+        const cacheref = await GetSecret(
+          getCacheNameForUser(id),
+          id,
+          token,
+          user
+        );
         const cache = await SetSecret(
           getCacheNameForUser(id),
           id,

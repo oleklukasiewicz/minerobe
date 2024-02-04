@@ -312,7 +312,7 @@ export const CreateDynamicRender = async function (
   const _setModel = async function (model: string, modelName: string) {
     if (model == null) return;
     return new Promise((resolve) => {
-      _modelLoader.loadAsync(model, (gltf) => {
+      _modelLoader.load(model, (gltf) => {
         if (_loadedModelScene != null) {
           _provider.scene.remove(_loadedModelScene);
         }
