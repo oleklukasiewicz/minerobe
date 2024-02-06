@@ -128,6 +128,7 @@
   let isDeleteDialogOpen = false;
   let isShareDialogOpen = false;
   let isAddVariantDialogOpen = false;
+  let isCollectionDialogOpen = false;
 
   let newVariantLayer = null;
   let defaultProvider = null;
@@ -617,6 +618,7 @@
           />
           {#if $currentUser.id != null}
             <Button
+              on:click={() => (isCollectionDialogOpen = true)}
               label={"Add to collection"}
               onlyIcon={!$isMobileView}
               icon={ListIcon}
@@ -705,6 +707,8 @@
       bind:layer={newVariantLayer}
       on:uploadVariant={uploadImageForVariant}
     />
+  </Dialog>
+  <Dialog bind:open={isCollectionDialogOpen} label="Add to collections">
   </Dialog>
 </div>
 
