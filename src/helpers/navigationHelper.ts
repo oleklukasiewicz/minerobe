@@ -32,3 +32,6 @@ export const navigateToProfile = function () {
 export const navigateToHome = function () {
   goto(`/`);
 };
+export const navigateToCollection = function (id?: string) {
+  goto(`/collection/${id || ""}`);
+}

@@ -2,6 +2,7 @@ import {
   OutfitPackageLink,
   OutfitPackageCollection,
   PackageSocialData,
+  MinerobeUser,
 } from "$src/data/common";
 import { PACKAGE_TYPE } from "$src/data/consts";
 import {
@@ -14,6 +15,7 @@ import { FetchOutfitSetSnapshotFromLink } from "./sets";
 import { FetchOutfitSnapshotFromLink } from "./outfits";
 import { get } from "svelte/store";
 import { currentUser } from "$src/data/cache";
+import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 
 const COLLECTION_PATH = "collections";
 
@@ -43,10 +45,11 @@ const ParseOutfitCollectionToDatabase = async function (
       outfit.variantId
     );
   });
+  parsed.publisher = new MinerobeUser(parsed.publisher.id, null, null);
   return parsed;
 };
 export const FetchOutfitCollection = async function (id: string) {
-  const item = await GetDocument(COLLECTION_PATH + "/" + id, "data");
+  const item = await GetDocument(COLLECTION_PATH + "/" + id + "/data", "data");
   return ParseOutfitCollectionToLocal(item);
 };
 export const UploadOutfitCollection = async function (
@@ -54,7 +57,7 @@ export const UploadOutfitCollection = async function (
   isNew = true
 ) {
   const parsed = await ParseOutfitCollectionToDatabase(pack);
-  await SetDocument(COLLECTION_PATH + "/" + pack.id, "data", parsed);
+  await SetDocument(COLLECTION_PATH + "/" + pack.id + "/data", "data", parsed);
 };
 export const DeleteOutfitCollection = async function (id: string) {
   await DeleteCollection(COLLECTION_PATH + "/" + id);
@@ -75,5 +78,7 @@ export const CreateOutfitCollection = async function (
     new Date(),
     new Date()
   );
+  if (addToWardrobe) await AddItemToWardrobe(collection);
+  await UploadOutfitCollection(collection, true);
   return collection;
 };

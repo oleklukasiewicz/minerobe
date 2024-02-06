@@ -7,7 +7,7 @@ import {
 import { DeleteOutfitSet, UploadOutfitSet } from "$src/api/sets";
 import { AddLike, RemoveLike } from "$src/api/social";
 import { wardrobe } from "$src/data/cache";
-import { OutfitPackage } from "$src/data/common";
+import { OutfitPackage, OutfitPackageCollection } from "$src/data/common";
 import { PACKAGE_TYPE } from "$src/data/consts";
 import { QueryWhere } from "$src/data/firebase";
 import { get } from "svelte/store";
@@ -49,16 +49,21 @@ export const FetchFullWardrobe = async function () {
   }
   return wardrobeObj;
 };
-export const AddItemToWardrobe = function (item: OutfitPackage) {
+export const AddItemToWardrobe = function (
+  item: OutfitPackage | OutfitPackageCollection
+) {
   let wardrobeObj = get(wardrobe);
   if (!IsItemInWardrobe(item, wardrobeObj)) {
     AddLike(item.id, item.type);
   }
   if (item.type == PACKAGE_TYPE.OUTFIT_SET) {
-    wardrobeObj.sets.push(item);
+    wardrobeObj.sets.push(item as OutfitPackage);
   }
   if (item.type == PACKAGE_TYPE.OUTFIT) {
-    wardrobeObj.outfits.push(item);
+    wardrobeObj.outfits.push(item as OutfitPackage);
+  }
+  if(item.type == PACKAGE_TYPE.OUTFIT_COLLECTION){
+    wardrobeObj.collections.push(item as OutfitPackageCollection);
   }
   wardrobe.set(wardrobeObj);
   return true;
@@ -74,6 +79,11 @@ export const RemoveItemFromWardrobe = function (id, type) {
     );
     return false;
   }
+  if(type == PACKAGE_TYPE.OUTFIT_COLLECTION){
+    wardrobeObj.collections = wardrobeObj.collections.filter(
+      (collection) => collection?.id != id
+    );
+  }
   RemoveLike(id, type);
   wardrobe.update((wardrobe) => {
     wardrobe.sets = wardrobeObj.sets;
@@ -88,6 +98,9 @@ export const IsItemInWardrobe = function (item, wardrobe) {
   }
   if (item.type == PACKAGE_TYPE.OUTFIT) {
     return wardrobe.outfits.some((outfit) => outfit.id == item.id);
+  }
+  if(item.type == PACKAGE_TYPE.OUTFIT_COLLECTION){
+    return wardrobe.collections.some((collection) => collection.id == item.id);
   }
   return false;
 };
@@ -105,6 +118,8 @@ export const IsItemIdInWardrobe = function (id, wardrobe) {
   if (outfit != null) return outfit;
   const set = wardrobe.sets.find((set) => set.id == id);
   if (set != null) return set;
+  const collection = wardrobe.collections.find((collection) => collection.id == id);
+  if(collection != null) return collection;
   return null;
 };
 //other

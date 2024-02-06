@@ -1,5 +1,6 @@
 import { currentUser } from "$src/data/cache";
 import {
+  OutfitPackageCollectionLink,
   OutfitPackageLink,
   WardrobePackage,
 } from "$src/data/common";
@@ -7,6 +8,8 @@ import { GetDocument, SetDocument } from "$src/data/firebase";
 import { get } from "svelte/store";
 import { FetchOutfitSetSnapshotFromLink } from "./sets";
 import { FetchOutfitSnapshotFromLink } from "./outfits";
+import { PACKAGE_TYPE } from "$src/data/consts";
+import { FetchOutfitCollection } from "./collection";
 
 const WARDROBE_PATH = "wardrobes";
 
@@ -16,7 +19,10 @@ export const ParseWardrobeToDatabase = function (pack: WardrobePackage) {
     (item) => new OutfitPackageLink(item.id, item.model) as any
   );
   data.outfits = data.outfits.map(
-    (item) => new OutfitPackageLink(item.id, item.model) as any
+    (item) => new OutfitPackageLink(item.id, item.model,PACKAGE_TYPE.OUTFIT_LINK) as any
+  );
+  data.collections = data.collections.map(
+    (item) => new OutfitPackageCollectionLink(item.id,PACKAGE_TYPE.OUTFIT_COLLECTION_LINK) as any
   );
   delete data.local;
   return data;
@@ -33,9 +39,15 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
       async (item: any) => await FetchOutfitSnapshotFromLink(item)
     )
   );
+  const parsedCollections = Promise.all(
+    data.collections.map(
+      async (item: any) => await FetchOutfitCollection(item.id)
+    )
+  );
 
   data.sets = (await parsedSets).filter((item) => item != null);
   data.outfits = (await parsedOutfits).filter((item) => item != null);
+  data.collections = (await parsedCollections).filter((item) => item != null);
   let totalLikes = 0;
   let totalDownloads = 0;
   data.outfits.forEach((item) => {
@@ -43,6 +55,10 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
     totalDownloads += item.social.downloads || 0;
   });
   data.sets.forEach((item) => {
+    totalLikes += item.social.likes;
+    totalDownloads += item.social.downloads || 0;
+  });
+  data.collections.forEach((item) => {
     totalLikes += item.social.likes;
     totalDownloads += item.social.downloads || 0;
   });

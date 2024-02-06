@@ -100,6 +100,8 @@ export const PACKAGE_TYPE = {
   OUTFIT_SET: "outfit_set",
   OUTFIT_SET_LINK: "outfit_set_link",
   OUTFIT_LINK: "outfit_link",
+  OUTFIT_COLLECTION: "outfit_collection",
+  OUTFIT_COLLECTION_LINK: "outfit_collection_link",
 };
 export const APP_STATE = {
   LOADING: "loading",

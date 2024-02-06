@@ -269,6 +269,7 @@ export class OutfitPackageCollection {
   description: string;
   createdAt: Date;
   modifiedAt: Date;
+  type: string;
   constructor(
     id: string,
     name: string,
@@ -291,5 +292,14 @@ export class OutfitPackageCollection {
     this.description = description;
     this.createdAt = createdAt;
     this.modifiedAt = modifiedAt;
+    this.type = PACKAGE_TYPE.OUTFIT_COLLECTION;
+  }
+}
+export class OutfitPackageCollectionLink {
+  id: string;
+  type: string;
+  constructor(id: string, type: string = PACKAGE_TYPE.OUTFIT_COLLECTION_LINK) {
+    this.id = id;
+    this.type = type;
   }
 }

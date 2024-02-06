@@ -8,6 +8,7 @@
     userSettings,
   } from "$src/data/cache";
   import {
+    navigateToCollection,
     navigateToDesign,
     navigateToOutfitPackage,
   } from "$src/helpers/navigationHelper";
@@ -29,6 +30,8 @@
   import Search from "$component/base/Search/Search.svelte";
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
+  import { CreateOutfitCollection } from "$src/api/collection";
+  import { IsItemIdInWardrobe } from "$src/helpers/apiHelper";
 
   let currentView = "sets";
   let loaded = false;
@@ -49,13 +52,19 @@
     const newSet = await CreateOutfit(true);
     navigateToDesign(newSet);
   };
+  const addNewCollection = async function () {
+    const newCollection = await CreateOutfitCollection(true);
+    navigateToCollection(newCollection.id);
+  };
   const setOutfitsList = function (view) {
     if (view == "outfit") outfitList = $wardrobe.outfits;
     else
       outfitList = $wardrobe.outfits.filter((x) => {
         if (x.layers.length == 0 || x.layers[0] == null) return false;
 
-        return x.layers[0]["steve"].type == OUTFIT_TYPE[currentView.toUpperCase()];
+        return (
+          x.layers[0]["steve"].type == OUTFIT_TYPE[currentView.toUpperCase()]
+        );
       });
   };
   const filterOutfits = function (e) {
@@ -222,14 +231,25 @@
         </div>
       {/if}
       {#if currentView == "collection"}
-      {#if !$isMobileView}<h1 class="inline" style="margin: 0;">
-        Collections
-      </h1>{/if}
+        {#if !$isMobileView}<h1 class="inline" style="margin: 0;">
+            Collections
+          </h1>{/if}
         <div class="placeholders">
-          {#each new Array(36) as item, index}
-            <Placeholder style="min-width:175px;height:268px;" />
+          {#each $wardrobe.collections as item (item.id)}
+            <Button
+              label={item.name}
+              on:click={() => navigateToCollection(item.id)}
+            ></Button>
           {/each}
         </div>
+        <Button
+          on:click={addNewCollection}
+          fab="dynamic"
+          size="large"
+          icon={PlusIcon}
+          label="Create collection"
+          style="position:fixed"
+        />
       {/if}
     {:else}
       <div class="placeholders">
