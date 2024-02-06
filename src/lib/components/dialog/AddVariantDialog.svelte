@@ -57,7 +57,7 @@
   .add-variant-dialog {
     display: flex;
     gap: 8px;
-    min-width: 65vw;
+    max-width: 800px;
     flex-direction: row;
     align-items: center;
     padding: 8px;

@@ -48,9 +48,8 @@
   import DownloadIcon from "$icons/download.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
-  import HearthIcon from "$icons/heart.svg?raw";
   import CloudIcon from "$icons/cloud.svg?raw";
-  import SpotlightIcon from "$icons/spotlight.svg?raw";
+  import ListIcon from "$icons/list.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import TrashIcon from "$icons/trash.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
@@ -466,7 +465,7 @@
               bind:value={$itemPackage.name}
             />
             <Button
-             icon={TrashIcon}
+              icon={TrashIcon}
               label={$_("delete")}
               type="tertiary"
               on:click={() => (isDeleteDialogOpen = true)}
@@ -616,6 +615,14 @@
             disabled={$itemLayers.length == 0 || !loaded}
             size="large"
           />
+          {#if $currentUser.id != null}
+            <Button
+              label={"Add to collection"}
+              onlyIcon={!$isMobileView}
+              icon={ListIcon}
+              size="large"
+            />
+          {/if}
           {#if $itemPublisher.id == $currentUser?.id}
             {#if $itemPackage.isShared}
               <Button
@@ -667,20 +674,22 @@
       <span class="mc-font-simple">{$_("dialog.confirmDeleteItem")}</span>
       <div style="display:flex;flex-direction:row; gap:8px;margin-top:16px;">
         <Button
-         type="tertiary"
+          type="tertiary"
           on:click={() => {
             isDeleteDialogOpen = false;
           }}
           label={$_("cancel")}
-          icon = {CloseIcon}
+          icon={CloseIcon}
         />
-        <Button type="primary"
+        <Button
+          type="primary"
           on:click={() => {
             isDeleteDialogOpen = false;
             deletePackage();
           }}
           label={$_("delete")}
-          icon = {TrashIcon}/>
+          icon={TrashIcon}
+        />
       </div>
     </div></Dialog
   >

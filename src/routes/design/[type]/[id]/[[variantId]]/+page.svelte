@@ -41,6 +41,7 @@
 
   import DownloadIcon from "$icons/download.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
+  import ListIcon from "$icons/list.svg?raw";
 
   import DefaultAnimation from "$animation/default";
   import HandsUpAnimation from "$animation/handsup";
@@ -355,6 +356,14 @@
               disabled={$itemLayers.length == 0 || !loaded}
               size="large"
             />
+            {#if $currentUser.id != null}
+            <Button
+              label={"Add to collection"}
+              onlyIcon={!$isMobileView}
+              icon={ListIcon}
+              size="large"
+            />
+          {/if}
             {#if $localPackage.publisher?.id != $currentUser?.id && $currentUser != null}
               {#if isPackageInWardrobe == false || isGuest}
                 <Button
