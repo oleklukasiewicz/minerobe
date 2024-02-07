@@ -9,7 +9,7 @@ export const POST = async (params) => {
   const id =body.id;
   
   var outfitSet= type == "set" ? await FetchOutfitSet(id) : await FetchOutfit(id);
-  await UploadNewPackageFormat(outfitSet, path);
+  const uploaded=await UploadNewPackageFormat(outfitSet, path);
   const rep=await FetchNewPackageFormat(path, outfitSet.id, ["qiiEnk4NJxpxIrEsuArT"]);
   return new Response(JSON.stringify(rep), {
     headers: { "content-type": "application/json" },

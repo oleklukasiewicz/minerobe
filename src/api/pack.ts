@@ -7,9 +7,9 @@ import {
 import {
   BuildQuery,
   DeleteCollection,
+  DeleteDocumentAnonymous,
   FetchDocsFromQuery,
   GetDocument,
-  SetDocument,
   SetDocumentAnonymous,
   UpdateDocument,
 } from "$src/data/firebase";
@@ -153,6 +153,20 @@ export const UploadNewPackageFormat = async function (
       }
     })
   );
+  if (item.local?.oldlayers && item.local.oldlayers.length != item.layers.length) {
+    //remove layers that are removed
+    let layersToRemove = item.local.oldlayers.filter(
+      (x) => !item.layers.map((x) => x.variantId).includes(x)
+    );
+    await Promise.all(
+      layersToRemove.map(async (layer) => {
+        await DeleteDocumentAnonymous(
+          path + "/" + item.id + "/" + LAYERS_PATH,
+          layer.id || layer.variantId
+        );
+      })
+    );
+  }
   item.layers = item.layers.map((layer) => {
     return new OutfitLayerLink(layer.id, layer.variantId, layer.type);
   }) as any;
@@ -176,7 +190,7 @@ export const FetchNewPackageFormat = async function (
   let layersToDownload = [];
   if (typeof layers == "number") {
     if (layers == -1) layersToDownload = pack.layers;
-    else layersToDownload= pack.layers.slice(0, layers);
+    else layersToDownload = pack.layers.slice(0, layers);
   } else {
     pack.layers.find((layer) => {
       if (layers.includes(layer.variantId)) layersToDownload.push(layer);
@@ -190,15 +204,17 @@ export const FetchNewPackageFormat = async function (
           layer.id || layer.variantId
         );
       } else {
-        let lay= await GetDocument(
+        let lay = await GetDocument(
           layer.path + "/" + layer.id + "/" + LAYERS_PATH,
           layer.variantId
         );
-        lay.id=layer.id;
+        lay.id = layer.id;
         return lay;
       }
     })
   );
+  pack.local = {};
+  pack.local.oldlayers = pack.layers.map((layer) => layer.variantId);
   pack.layers = layersData;
   pack.publisher = await GetMinerobeUser(pack.publisher.id);
   return pack;

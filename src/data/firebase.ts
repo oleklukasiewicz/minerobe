@@ -181,6 +181,13 @@ export const SetDocumentAnonymous = async function (
   await setDoc(dataRef, dataJson);
   return data;
 };
+export const DeleteDocumentAnonymous = async function (
+  path: string,
+  documentName: string
+) {
+  const dataRef = doc(db, path, documentName);
+  await deleteDoc(dataRef);
+}
 export const BuildQuery = async function (
   path: string,
   localPath: string,
