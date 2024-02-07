@@ -122,6 +122,7 @@ export class OutfitLayerLink {
   id: string;
   type: string;
   variantId: string;
+  path: string;
   constructor(
     id: string,
     variantId: string = null,
@@ -130,6 +131,7 @@ export class OutfitLayerLink {
     this.id = id;
     this.variantId = variantId;
     this.type = type;
+    this.path = "public";
   }
 }
 export class OutfitPackageLink {
