@@ -2,14 +2,17 @@ import { currentUser } from "$src/data/cache";
 import {
   MinerobeUser,
   OutfitLayerLink,
+  PackageSocialData,
   type OutfitPackage,
 } from "$src/data/common";
 import {
   BuildQuery,
   DeleteCollection,
+  DeleteDocument,
   DeleteDocumentAnonymous,
   FetchDocsFromQuery,
   GetDocument,
+  SetDocument,
   SetDocumentAnonymous,
   UpdateDocument,
 } from "$src/data/firebase";
@@ -139,13 +142,15 @@ export const FetchPackagesByFilter = async function (
 
 export const UploadNewPackageFormat = async function (
   data: OutfitPackage,
-  path: string
+  path: string,
+  parser = (x) => x,
+  isNew = false
 ) {
-  let item = Object.assign({}, data);
+  let item = await parser(Object.assign({}, data));
   await Promise.all(
     item.layers.map(async (layer) => {
       if (layer.type == LAYER_TYPE.LOCAL) {
-        await SetDocumentAnonymous(
+        await SetDocument(
           path + "/" + item.id + "/" + LAYERS_PATH,
           layer.variantId || layer.id,
           layer
@@ -153,41 +158,51 @@ export const UploadNewPackageFormat = async function (
       }
     })
   );
-  if (item.local?.oldlayers && item.local.oldlayers.length != item.layers.length) {
-    //remove layers that are removed
+
+  if (
+    item.local?.oldlayers &&
+    item.local.oldlayers.length != item.layers.length
+  ) {
     let layersToRemove = item.local.oldlayers.filter(
       (x) => !item.layers.map((x) => x.variantId).includes(x)
     );
     await Promise.all(
       layersToRemove.map(async (layer) => {
-        await DeleteDocumentAnonymous(
+        await DeleteDocument(
           path + "/" + item.id + "/" + LAYERS_PATH,
           layer.id || layer.variantId
         );
       })
     );
   }
+
   item.layers = item.layers.map((layer) => {
     return new OutfitLayerLink(layer.id, layer.variantId, layer.type);
   }) as any;
-  delete item.social;
+
+  if (!isNew) delete item.social;
   delete item.local;
   item.publisher = new MinerobeUser(item.publisher.id, null, null);
-  await SetDocumentAnonymous(
-    path + "/" + item.id + "/" + DATA_PATH,
-    DATA_PATH,
-    item
-  );
+
+  await SetDocument(path + "/" + item.id + "/" + DATA_PATH, DATA_PATH, item);
   return item;
 };
 export const FetchNewPackageFormat = async function (
   path: string,
   id: string,
+  parser = (x) => x,
   layers: number | string[]
 ) {
   let pack = await GetDocument(path + "/" + id + "/" + DATA_PATH, DATA_PATH);
-  if (pack == null) return null;
+
+  if (
+    pack == null ||
+    (pack?.publisher?.id != get(currentUser)?.id && pack.isShared == false)
+  )
+    return null;
+
   let layersToDownload = [];
+
   if (typeof layers == "number") {
     if (layers == -1) layersToDownload = pack.layers;
     else layersToDownload = pack.layers.slice(0, layers);
@@ -196,6 +211,7 @@ export const FetchNewPackageFormat = async function (
       if (layers.includes(layer.variantId)) layersToDownload.push(layer);
     });
   }
+  
   let layersData = await Promise.all(
     layersToDownload.map(async (layer) => {
       if (layer.type == LAYER_TYPE.LOCAL) {
@@ -213,9 +229,10 @@ export const FetchNewPackageFormat = async function (
       }
     })
   );
+  
   pack.local = {};
   pack.local.oldlayers = pack.layers.map((layer) => layer.variantId);
   pack.layers = layersData;
   pack.publisher = await GetMinerobeUser(pack.publisher.id);
-  return pack;
+  return await parser(pack);
 };
