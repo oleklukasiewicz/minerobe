@@ -150,26 +150,35 @@ export const UploadNewPackageFormat = async function (
   await Promise.all(
     item.layers.map(async (layer) => {
       if (layer.type == LAYER_TYPE.LOCAL) {
-        await SetDocument(
-          path + "/" + item.id + "/" + LAYERS_PATH,
-          layer.variantId || layer.id,
-          layer
+        const oldContent = item.local?.oldlayers?.find(
+          (oldLayer) => oldLayer.variantId == layer.variantId
         );
+        if (oldContent == null || oldContent.content != JSON.stringify(layer)) {
+          await SetDocument(
+            path + "/" + item.id + "/" + LAYERS_PATH,
+            layer.variantId || layer.id,
+            layer
+          );
+        }
       }
     })
   );
-
   if (
     item.local?.oldlayers &&
     item.local.oldlayers.length != item.layers.length
   ) {
     let layersToRemove = item.local.oldlayers.filter(
-      (x) => !item.layers.map((x) => x.variantId).includes(x)
+      (oldLayer) =>
+        !item.layers.find(
+          (layer) =>
+            layer.variantId == oldLayer.variantId ||
+            layer.id == oldLayer.variantId
+        )
     );
     await Promise.all(
       layersToRemove.map(async (layer) => {
         await DeleteDocument(
-          path + "/" + item.id + "/" + LAYERS_PATH,
+          path + "/" + item.id + "/" + LAYERS_PATH + "/",
           layer.id || layer.variantId
         );
       })
@@ -211,7 +220,7 @@ export const FetchNewPackageFormat = async function (
       if (layers.includes(layer.variantId)) layersToDownload.push(layer);
     });
   }
-  
+
   let layersData = await Promise.all(
     layersToDownload.map(async (layer) => {
       if (layer.type == LAYER_TYPE.LOCAL) {
@@ -229,10 +238,13 @@ export const FetchNewPackageFormat = async function (
       }
     })
   );
-  
-  pack.local = {};
-  pack.local.oldlayers = pack.layers.map((layer) => layer.variantId);
   pack.layers = layersData;
   pack.publisher = await GetMinerobeUser(pack.publisher.id);
+
+  pack.local = {};
+  pack.local.oldlayers = pack.layers.map((layer) => ({
+    variantId: layer.variantId,
+    content: JSON.stringify(layer),
+  }));
   return await parser(pack);
 };

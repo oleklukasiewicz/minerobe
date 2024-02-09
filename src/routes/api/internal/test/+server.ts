@@ -7,10 +7,11 @@ export const POST = async (params) => {
   const path = body.path;
   const type = body.type;
   const id =body.id;
+  let rep=await FetchNewPackageFormat(path, id,undefined,-1);
+  //var outfitSet= type == "set" ? await FetchOutfitSet(id) : await FetchOutfit(id);
+  rep.layers=rep.layers.filter((layer) => layer.variantId != "bNwanW07ArO348nr0dkB");
+  const uploaded=await UploadNewPackageFormat(rep, path);
   
-  var outfitSet= type == "set" ? await FetchOutfitSet(id) : await FetchOutfit(id);
-  const uploaded=await UploadNewPackageFormat(outfitSet, path);
-  const rep=await FetchNewPackageFormat(path, outfitSet.id,undefined, ["qiiEnk4NJxpxIrEsuArT"]);
   return new Response(JSON.stringify(rep), {
     headers: { "content-type": "application/json" },
     status: 200,
