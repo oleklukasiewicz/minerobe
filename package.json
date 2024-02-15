@@ -22,7 +22,7 @@
 	"type": "module",
 	"dependencies": {
 		"color-diff": "^1.4.0",
-		"dotenv": "^16.4.1",
+		"dotenv": "^16.4.2",
 		"firebase": "^10.8.0",
 		"firebase-admin": "^12.0.0",
 		"firebase-functions": "^4.6.0",
