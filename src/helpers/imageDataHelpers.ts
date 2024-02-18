@@ -1,4 +1,4 @@
-import { COLOR_TYPE, OUTFIT_TYPE } from "$data/consts";
+import { COLOR_TYPE, MODEL_TYPE, OUTFIT_TYPE } from "$data/consts";
 import type { OutfitLayer, OutfitPackage } from "$src/data/common";
 import HatIcon from "$icons/clothes/hat.svg?raw";
 import TopIcon from "$icons/clothes/top.svg?raw";
@@ -7,6 +7,7 @@ import ShoesIcon from "$icons/clothes/shoes.svg?raw";
 import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
 import { ConvertColor, GetColorFromFileData } from "./colorHelper";
 import { normalizeStringCase } from "./dataHelper";
+import { mergeImages } from "$src/data/imageMerger";
 
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =
@@ -184,4 +185,15 @@ export const GetFaceOfRemoteSkin = async function (skinUrl) {
   const faceUrl = faceCanvas.toDataURL();
 
   return faceUrl;
+};
+export const MergePackageLayers = async function (
+  layers: OutfitLayer[],
+  model = MODEL_TYPE.STEVE
+) {
+  let merged = await mergeImages(
+    layers.map((x) => x[model].content).reverse(),
+    undefined,
+    model
+  );
+  return merged;
 };

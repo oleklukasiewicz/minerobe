@@ -246,9 +246,9 @@
       });
     });
     if ($isItemSet) {
-      await UploadSetLayer($itemPackage.id, $selectedLayer);
+      await UploadSetLayer($itemPackage, $selectedLayer);
     } else {
-      await UploadLayer($itemPackage.id, $selectedLayer);
+      await UploadLayer($itemPackage, $selectedLayer);
     }
   };
   const updateTexture = async () => {
@@ -275,6 +275,14 @@
       $itemModelType
     );
   };
+  const editLayer = async function (e) {
+    const layer = e.detail.texture;
+    if ($isItemSet) {
+      await UploadSetLayer($itemPackage, layer);
+    } else {
+      await UploadLayer($itemPackage, layer);
+    }
+  };
   const addNewRemoteLayer = async function (outfit: OutfitPackage) {
     isOutfitPickerOpen = false;
     let layer = outfit.layers[0];
@@ -295,11 +303,6 @@
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
       return layers;
     });
-    if ($isItemSet) {
-      await UploadSetLayer($itemPackage.id, $selectedLayer);
-    } else {
-      await UploadLayer($itemPackage.id, $selectedLayer);
-    }
   };
   const applyAnimations = function (
     pack: OutfitPackage,
@@ -329,9 +332,9 @@
       return layers;
     });
     if ($isItemSet) {
-      await UploadSetLayer($itemPackage.id, $selectedLayer);
+      await UploadSetLayer($itemPackage, $selectedLayer);
     } else {
-      await UploadLayer($itemPackage.id, $selectedLayer);
+      await UploadLayer($itemPackage, $selectedLayer);
     }
   };
   const downloadImage = async () => {
@@ -403,9 +406,9 @@
           newLayers.unshift(newOutfit);
           $selectedLayer = newOutfit;
           if ($isItemSet) {
-            await UploadSetLayer($itemPackage.id, $selectedLayer);
+            await UploadSetLayer($itemPackage, $selectedLayer);
           } else {
-            await UploadLayer($itemPackage.id, $selectedLayer);
+            await UploadLayer($itemPackage, $selectedLayer);
           }
         }
       }
@@ -449,9 +452,9 @@
     });
     applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
     if ($isItemSet) {
-      await UploadSetLayer($itemPackage.id, $selectedLayer);
+      await UploadSetLayer($itemPackage, $selectedLayer);
     } else {
-      await UploadLayer($itemPackage.id, $selectedLayer);
+      await UploadLayer($itemPackage, $selectedLayer);
     }
   };
   //subscribtions
@@ -465,7 +468,7 @@
         await UploadOutfitSet(data);
       } else await UploadOutfit(data);
     }
-    data.outfitType= data.layers[0]?.steve.type;
+    data.outfitType = data.layers[0]?.steve.type;
     UpdateItemInWardrobe($itemPackage);
   });
 </script>
@@ -582,6 +585,7 @@
                 on:up={upLayer}
                 on:remove={removeLayer}
                 on:dropvariant={addNewDropVariant}
+                on:edit={editLayer}
                 canUp={index != 0}
                 canDown={index != $itemLayers.length - 1}
                 selected={item?.variantId == $selectedLayer?.variantId}

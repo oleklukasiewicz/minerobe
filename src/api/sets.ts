@@ -5,7 +5,12 @@ import {
   OutfitPackageLink,
   PackageSocialData,
 } from "$src/data/common";
-import { DATA_PATH_CONFIG, LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+import {
+  DATA_PATH_CONFIG,
+  LAYER_TYPE,
+  MODEL_TYPE,
+  PACKAGE_TYPE,
+} from "$src/data/consts";
 import { GenerateIdForCollection } from "$src/data/firebase";
 import { get } from "svelte/store";
 import {
@@ -16,23 +21,37 @@ import {
   UploadPackageLayer,
 } from "./pack";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
+import { MergePackageLayers } from "$src/helpers/imageDataHelpers";
+import { t } from "svelte-i18n";
 
-const SETS_PATH =DATA_PATH_CONFIG.OUTFIT_SET;
+const SETS_PATH = DATA_PATH_CONFIG.OUTFIT_SET;
 
 export const GenerateIdForOutfitSet = () => GenerateIdForCollection(SETS_PATH);
+
+export const parseSnapshot = async function (
+  data: OutfitLayer,
+  pack: OutfitPackage
+) {
+  data.id = pack.id;
+  data.variantId = pack.id;
+  data.steve.content = await MergePackageLayers(pack.layers, MODEL_TYPE.STEVE);
+  data.alex.content = await MergePackageLayers(pack.layers, MODEL_TYPE.ALEX);
+  return [data];
+};
 
 export const UploadOutfitSet = async function (
   data: OutfitPackage,
   isNew = false
 ) {
-  return await UploadPackage(data, SETS_PATH, undefined, isNew);
+  return await UploadPackage(data, SETS_PATH, undefined, isNew,true,parseSnapshot);
 };
 export const FetchOutfitSet = async function (
   id: string,
   layers: any = -1,
-  model?: string
+  model?: string,
+  fetchSnapshot=false
 ) {
-  let parsed = await FetchPackage(SETS_PATH, id, undefined, layers);
+  let parsed = await FetchPackage(SETS_PATH, id, undefined, layers,fetchSnapshot);
   if (parsed == null) return null;
   parsed.model = model || parsed.model;
   return parsed;
@@ -61,14 +80,17 @@ export const CreateOutfitSet = async function (
 export const DeleteOutfitSet = async function (outfit: OutfitPackage) {
   await DeletePackage(SETS_PATH, outfit.id);
 };
-export const UploadSetLayer = async function (id: string, layer: OutfitLayer) {
+export const UploadSetLayer = async function (
+  pack: OutfitPackage,
+  layer: OutfitLayer
+) {
   if (layer.type == LAYER_TYPE.LOCAL) {
-    await UploadPackageLayer(id, layer, SETS_PATH);
+    await UploadPackageLayer(pack, layer, SETS_PATH, undefined);
   }
 };
 export const RemoveSetLayer = async function (id: string, layerId) {
   await DeletePackageLayer(id, layerId, SETS_PATH);
 };
 export const FetchOutfitSetFromLink = async function (link: OutfitPackageLink) {
-  return await FetchOutfitSet(link.id, link.variantId|| 2, link.model);
+  return await FetchOutfitSet(link.id, [link.id], link.model, true);
 };

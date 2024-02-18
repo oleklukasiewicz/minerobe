@@ -1,4 +1,4 @@
-import { currentUser } from "$src/data/cache";
+import { currentUser, defaultRenderer } from "$src/data/cache";
 import {
   OutfitPackage,
   OutfitPackageLink,
@@ -33,6 +33,9 @@ export const GenerateIdForOutfitLayer = () =>
 const parseToLocal = async function (data: OutfitPackage) {
   data.outfitType =
     data.layers.length > 0 ? data.layers[0].steve.type : OUTFIT_TYPE.DEFAULT;
+  return data;
+};
+const parseSnapshot = async function (data: OutfitLayer, pack: OutfitPackage) {
   return data;
 };
 
@@ -76,9 +79,12 @@ export const CreateOutfit = async function (
 export const DeleteOutfit = async function (outfit: OutfitPackage) {
   await DeletePackage(OUTFIT_PATH, outfit.id);
 };
-export const UploadLayer = async function (id: string, layer: OutfitLayer) {
+export const UploadLayer = async function (
+  pack: OutfitPackage,
+  layer: OutfitLayer
+) {
   if (layer.type == LAYER_TYPE.LOCAL) {
-    await UploadPackageLayer(id, layer, OUTFIT_PATH);
+    await UploadPackageLayer(pack, layer, OUTFIT_PATH);
   }
 };
 export const RemoveLayer = async function (id: string, layerId: string) {

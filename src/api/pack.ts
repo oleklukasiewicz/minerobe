@@ -17,7 +17,10 @@ import { increment } from "firebase/firestore";
 import { get } from "svelte/store";
 import { LAYER_TYPE } from "$src/data/consts";
 import { GetMinerobeUser } from "./auth";
-import { GenerateQueryEntriesForPackage, SetQueryEntriesForPackage } from "./query";
+import {
+  GenerateQueryEntriesForPackage,
+  SetQueryEntriesForPackage,
+} from "./query";
 
 const DATA_PATH = "itemdata";
 const SNAPSHOT_PATH = "snapshot";
@@ -34,7 +37,9 @@ export const UploadPackage = async function (
   data: OutfitPackage,
   path: string,
   parser = (x) => x,
-  isNew = false
+  isNew = false,
+  generateSnaphot = false,
+  snapshotParser = (x, p) => x
 ) {
   let item = await parser(Object.assign({}, data));
   if (!isNew) {
@@ -49,9 +54,30 @@ export const UploadPackage = async function (
     item.createdAt = new Date();
   }
   item.modifiedAt = new Date();
-  
-  var queryEntries=GenerateQueryEntriesForPackage(item);
+
+  var queryEntries = GenerateQueryEntriesForPackage(item);
   await SetQueryEntriesForPackage(queryEntries);
+
+  if (generateSnaphot && item.layers.length > 0) {
+    let snapshots = await snapshotParser(
+      Object.assign({}, item.layers[0]),
+      Object.assign({}, item)
+    );
+    for (let snapshot of snapshots) {
+      await SetDocument(
+        path + "/" + item.id + "/" + SNAPSHOT_PATH,
+        snapshot.variantId,
+        snapshot
+      );
+      await UpdateRawDocument(
+        path + "/" + item.id + "/" + SNAPSHOT_PATH,
+        snapshot.variantId,
+        {
+          modifiedAt: new Date(),
+        }
+      );
+    }
+  }
 
   item.layers = item.layers.map(
     (layer) => new OutfitLayerLink(layer.id, layer.variantId, layer.type)
@@ -73,7 +99,9 @@ export const FetchPackage = async function (
   path: string,
   id: string,
   parser = (x) => x,
-  layers: number | string[]
+  layers: number | string[],
+  fetchSnapshot = false,
+  parserSnapshot = (x) => x
 ) {
   let pack = await GetDocument(path + "/" + id + "/" + DATA_PATH, DATA_PATH);
   if (
@@ -95,21 +123,24 @@ export const FetchPackage = async function (
     if (layers == -1) layersToDownload = pack.layers;
     else layersToDownload = pack.layers.slice(0, layers);
   } else {
-    pack.layers.find((layer) => {
-      if (layers.includes(layer.variantId)) layersToDownload.push(layer);
-    });
+    if (layers.length > 0 && layers[0] == pack.id) {
+      layersToDownload.push(new OutfitLayerLink(pack.id, pack.id, LAYER_TYPE.LOCAL));
+    } else
+      pack.layers.find((layer) => {
+        if (layers.includes(layer.variantId)) layersToDownload.push(layer);
+      });
   }
-
+  const layersPath = fetchSnapshot ? SNAPSHOT_PATH : LAYERS_PATH;
   let layersData = await Promise.all(
     layersToDownload.map(async (layer) => {
       if (layer.type == LAYER_TYPE.LOCAL) {
         return await GetDocument(
-          path + "/" + id + "/" + LAYERS_PATH,
+          path + "/" + id + "/" + layersPath,
           layer.id || layer.variantId
         );
       } else {
         let lay = await GetDocument(
-          layer.path + "/" + layer.id + "/" + LAYERS_PATH,
+          layer.path + "/" + layer.id + "/" + layersPath,
           layer.variantId
         );
         lay.id = layer.id;
@@ -123,7 +154,7 @@ export const FetchPackage = async function (
   pack.publisher = await GetMinerobeUser(pack.publisher.id);
 
   pack.local = {};
-  return await parser(pack);
+  return fetchSnapshot ? await parserSnapshot(pack) : await parser(pack);
 };
 export const DeletePackage = async function (path: string, id: string) {
   await DeleteCollection(path + "/" + id + "/" + LAYERS_PATH);
@@ -131,33 +162,56 @@ export const DeletePackage = async function (path: string, id: string) {
   await DeleteCollection(path + "/" + id + "/" + SNAPSHOT_PATH);
 };
 export const UploadPackageLayer = async function (
-  itemId: string,
+  pack: OutfitPackage,
   data: OutfitLayer,
   path: string,
-  parser = (x) => x
+  parser = (x) => x,
+  generateSnaphot = false,
+  snapshotParser = (x, p) => x
 ) {
   let item = await parser(Object.assign({}, data));
   await SetDocument(
-    path + "/" + itemId + "/" + LAYERS_PATH,
+    path + "/" + pack.id + "/" + LAYERS_PATH,
     item.variantId,
     item
   );
-  await UpdateRawDocument(path + "/" + itemId + "/" + DATA_PATH, DATA_PATH, {
+  await UpdateRawDocument(path + "/" + pack.id + "/" + DATA_PATH, DATA_PATH, {
     modifiedAt: new Date(),
   });
+  if (generateSnaphot) {
+    let snapshots = await snapshotParser(Object.assign({}, data), pack);
+    for (let snapshot of snapshots) {
+      await SetDocument(
+        path + "/" + pack.id + "/" + SNAPSHOT_PATH,
+        item.variantId,
+        snapshot
+      );
+      await UpdateRawDocument(
+        path + "/" + pack.id + "/" + DATA_PATH,
+        DATA_PATH,
+        {
+          modifiedAt: new Date(),
+        }
+      );
+    }
+  }
+
   return item;
 };
 export const FetchPackageLayer = async function (
   itemId: string,
   layerId: string,
   path: string,
-  parser = (x) => x
+  parser = (x) => x,
+  fetchSnapshot = false,
+  parserSnapshot = (x) => x
 ) {
+  const layersPath = fetchSnapshot ? SNAPSHOT_PATH : LAYERS_PATH;
   let layer = await GetDocument(
-    path + "/" + itemId + "/" + LAYERS_PATH,
+    path + "/" + itemId + "/" + layersPath,
     layerId
   );
-  return await parser(layer);
+  return fetchSnapshot ? await parserSnapshot(layer) : await parser(layer);
 };
 export const DeletePackageLayer = async function (
   itemId: string,

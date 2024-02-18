@@ -32,7 +32,11 @@ export class DynamicRenderOptions {
   floorTexture: string = "";
   orbitControls: boolean = false;
 }
-export const RenderFromSnapshot = async function (snapshot: RenderSnapshot) {
+export const RenderFromSnapshot = async function (
+  snapshot: RenderSnapshot,
+  renderWidth: number = 300,
+  renderHeight: number = 300
+) {
   let camera = snapshot.provider.camera;
   let cameraOptions = snapshot.cameraOptions;
   let scene = snapshot.provider.scene;
@@ -73,10 +77,10 @@ export const RenderFromSnapshot = async function (snapshot: RenderSnapshot) {
     }
   });
 
-  const canvas = node;
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-  if(width==0 || height==0) return false;
+  const canvas = node || tempNode;
+  const width = canvas.clientWidth != 0 ? canvas.clientWidth : renderWidth;
+  const height = canvas.clientHeight != 0 ? canvas.clientHeight : renderHeight;
+  if (width == 0 || height == 0) return false;
   renderer.setPixelRatio(window.devicePixelRatio);
   const canvasSizeMultiplier = 2; // Adjust this value as needed
   renderer.setSize(
@@ -85,8 +89,9 @@ export const RenderFromSnapshot = async function (snapshot: RenderSnapshot) {
   );
   tempNode.appendChild(renderer.domElement);
   renderer.render(scene, camera);
-  node.src = renderer.domElement.toDataURL();
-  return true;
+  const dataUrl = renderer.domElement.toDataURL();
+  if (node) node.src = dataUrl;
+  return dataUrl;
 };
 export const PrepareSceneForRender = async function (model: string) {
   let scene = new THREE.Scene();

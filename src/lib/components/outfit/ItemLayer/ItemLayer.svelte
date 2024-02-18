@@ -73,6 +73,11 @@
       texture: item,
     });
   };
+  let edit = function (it) {
+    dispatch("edit", {
+      texture: item,
+    });
+  };
   function fadeInScale(node, { duration }) {
     return {
       duration,
@@ -80,6 +85,7 @@
       css: (t) => `opacity: ${t}; transform: scale(${0.9 + t * 0.1})`,
     };
   }
+  $: edit(item);
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -113,8 +119,8 @@
         {#if item.type == LAYER_TYPE.REMOTE}
           <Label variant="rare">{$_("layerType.remote")}</Label>
         {/if}
-        {#if item.type==LAYER_TYPE.REMOTE && !item.isShared}
-        <Label variant="ancient">Unshared</Label>
+        {#if item.type == LAYER_TYPE.REMOTE && !item.isShared}
+          <Label variant="ancient">Unshared</Label>
         {/if}
       {/if}
     </span>
@@ -155,7 +161,8 @@
           on:click={up}
           disabled={!canUp}
           onlyIcon
-          size="large"/>
+          size="large"
+        />
         <Button
           icon={DownIcon}
           label={$_("down")}
@@ -164,7 +171,8 @@
           on:click={down}
           disabled={!canDown}
           onlyIcon
-          size="large"/>
+          size="large"
+        />
       {/if}
       <div class="separator vertical" />
       <Button
@@ -174,7 +182,8 @@
         type="quaternary"
         on:click={remove}
         onlyIcon
-        size="large"/>
+        size="large"
+      />
     </div>
   {/if}
 </div>
