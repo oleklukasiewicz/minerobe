@@ -339,7 +339,7 @@
   };
   const downloadImage = async () => {
     let layersToExport = rendererLayers;
-    if ($userSettings?.baseTexture != null)
+    if ($userSettings?.baseTexture != null && $isItemSet)
       layersToExport.push(
         new FileData("base", $userSettings?.baseTexture, "image/png")
       );
