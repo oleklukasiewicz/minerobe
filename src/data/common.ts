@@ -92,10 +92,10 @@ export class OutfitLayer {
   type: string;
   isShared: boolean;
   constructor(
-    name: string,
-    steve: FileData,
-    alex: FileData,
-    id: string,
+    name: string="",
+    steve: FileData=null,
+    alex: FileData=null,
+    id: string=null,
     type: string = LAYER_TYPE.LOCAL,
     variantId: string = null,
     isShared: boolean = false

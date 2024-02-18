@@ -61,11 +61,11 @@ export const UploadPackage = async function (
   await SetQueryEntriesForPackage(queryEntries);
 
   if (generateSnaphot && item.layers.length > 0) {
-    let snap= Object.assign({}, data);
-    let snapshots = await snapshotParser(
-     Object.assign({}, snap.layers[0]),
-     snap
-    );
+    let snap = Object.assign({}, data);
+    const layerSnap = new OutfitLayer();
+    layerSnap.steve = Object.assign({}, data.layers[0].steve);
+    layerSnap.alex = Object.assign({}, data.layers[0].alex);
+    let snapshots = await snapshotParser(layerSnap, snap);
     for (let snapshot of snapshots) {
       await SetDocument(
         path + "/" + item.id + "/" + SNAPSHOT_PATH,
