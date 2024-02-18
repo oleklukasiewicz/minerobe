@@ -459,10 +459,15 @@
   };
   //subscribtions
   itemPackage.subscribe((pack) => {
+    if (!loaded) return;
     updateTexture();
   });
-  selectedLayer.subscribe((layer) => (!$isItemSet ? updateTexture() : null));
+  selectedLayer.subscribe((layer) => {
+    if (!loaded) return;
+    if (!$isItemSet) updateTexture();
+  });
   itemPackage.subscribe(async (data: OutfitPackage) => {
+    if (!loaded) return;
     if (data != null && data.id != null) {
       if (data.type == PACKAGE_TYPE.OUTFIT_SET) {
         await UploadOutfitSet(data);
