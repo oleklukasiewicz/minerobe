@@ -1,8 +1,9 @@
 import { OutfitPackageLink, type LandingPageData } from "$src/data/common";
 import { PACKAGE_TYPE } from "$src/data/consts";
 import { GetDocument } from "$src/data/firebase";
-import { FetchOutfitSnapshotFromLink } from "./outfits";
-import { FetchOutfitSetSnapshotFromLink } from "./sets";
+import { FetchOutfitFromLink } from "./outfits";
+import { FetchOutfitSetFromLink } from "./sets";
+
 
 export const FetchLandingPage = async () => {
   const obj = (await GetDocument("public", "landing")) as LandingPageData;
@@ -13,24 +14,24 @@ export const FetchLandingPage = async () => {
     obj.mostLiked.map(async (o) => {
       const link: OutfitPackageLink = o;
       if (link.type == PACKAGE_TYPE.OUTFIT_SET)
-        mostLikedpackages.push(await FetchOutfitSetSnapshotFromLink(link));
-      else mostLikedpackages.push(await FetchOutfitSnapshotFromLink(link));
+        mostLikedpackages.push(await FetchOutfitSetFromLink(link));
+      else mostLikedpackages.push(await FetchOutfitFromLink(link));
     })
   );
   await Promise.all(
     obj.mostDownloaded.map(async (o) => {
       const link: OutfitPackageLink = o;
       if (link.type == PACKAGE_TYPE.OUTFIT_SET)
-      mostDownloadedpackages.push(await FetchOutfitSetSnapshotFromLink(link));
-      else mostDownloadedpackages.push(await FetchOutfitSnapshotFromLink(link));
+      mostDownloadedpackages.push(await FetchOutfitSetFromLink(link));
+      else mostDownloadedpackages.push(await FetchOutfitFromLink(link));
     })
   );
   await Promise.all(
     obj.mostRecent.map(async (o) => {
       const link: OutfitPackageLink = o;
       if (link.type == PACKAGE_TYPE.OUTFIT_SET)
-      mostrecentpackages.push(await FetchOutfitSetSnapshotFromLink(link));
-      else mostrecentpackages.push(await FetchOutfitSnapshotFromLink(link));
+      mostrecentpackages.push(await FetchOutfitSetFromLink(link));
+      else mostrecentpackages.push(await FetchOutfitFromLink(link));
     })
   );
   obj.mostRecent = mostrecentpackages.filter((item) => item != null);

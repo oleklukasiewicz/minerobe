@@ -65,6 +65,8 @@
   import {
     FetchOutfit,
     GenerateIdForOutfitLayer,
+    RemoveLayer,
+    UploadLayer,
     UploadOutfit,
   } from "$src/api/outfits";
   import {
@@ -78,7 +80,12 @@
     navigateToOutfitPackage,
     navigateToWardrobe,
   } from "$src/helpers/navigationHelper";
-  import { FetchOutfitSet, UploadOutfitSet } from "$src/api/sets";
+  import {
+    FetchOutfitSet,
+    RemoveSetLayer,
+    UploadOutfitSet,
+    UploadSetLayer,
+  } from "$src/api/sets";
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
@@ -193,6 +200,13 @@
   };
   const removeLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
+    if ($itemLayers[index].type == LAYER_TYPE.LOCAL) {
+      if ($isItemSet) {
+        await RemoveSetLayer($itemPackage.id, $itemLayers[index].variantId);
+      } else {
+        await RemoveLayer($itemPackage.id, $itemLayers[index].variantId);
+      }
+    }
     itemLayers.update((layers) => {
       let refresh = false;
 
@@ -215,7 +229,7 @@
   };
   const uploadImageForVariant = async function (e) {
     const modelName = e.detail.modelName;
-    await ImportImage().then((layers) => {
+    await ImportImage().then(async (layers) => {
       const newLayer = layers[0];
       itemLayers.update((layers) => {
         const index = layers.indexOf(newVariantLayer);
@@ -231,6 +245,11 @@
         return layers;
       });
     });
+    if ($isItemSet) {
+      await UploadSetLayer($itemPackage.id, $selectedLayer);
+    } else {
+      await UploadLayer($itemPackage.id, $selectedLayer);
+    }
   };
   const updateTexture = async () => {
     if (!loaded) return;
@@ -276,6 +295,11 @@
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
       return layers;
     });
+    if ($isItemSet) {
+      await UploadSetLayer($itemPackage.id, $selectedLayer);
+    } else {
+      await UploadLayer($itemPackage.id, $selectedLayer);
+    }
   };
   const applyAnimations = function (
     pack: OutfitPackage,
@@ -304,6 +328,11 @@
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
       return layers;
     });
+    if ($isItemSet) {
+      await UploadSetLayer($itemPackage.id, $selectedLayer);
+    } else {
+      await UploadLayer($itemPackage.id, $selectedLayer);
+    }
   };
   const downloadImage = async () => {
     await ExportImageLayers(rendererLayers, $itemModelType, $itemPackage.name);
@@ -373,8 +402,14 @@
           newOutfit.variantId = GenerateIdForOutfitLayer();
           newLayers.unshift(newOutfit);
           $selectedLayer = newOutfit;
+          if ($isItemSet) {
+            await UploadSetLayer($itemPackage.id, $selectedLayer);
+          } else {
+            await UploadLayer($itemPackage.id, $selectedLayer);
+          }
         }
       }
+
       itemLayers.update((layers) => {
         layers = newLayers.concat(layers);
         return layers;
@@ -413,6 +448,11 @@
       return layers;
     });
     applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
+    if ($isItemSet) {
+      await UploadSetLayer($itemPackage.id, $selectedLayer);
+    } else {
+      await UploadLayer($itemPackage.id, $selectedLayer);
+    }
   };
   //subscribtions
   itemPackage.subscribe((pack) => {
@@ -708,8 +748,8 @@
       on:uploadVariant={uploadImageForVariant}
     />
   </Dialog>
-  <Dialog bind:open={isCollectionDialogOpen} label="Add to collections">
-  </Dialog>
+  <Dialog bind:open={isCollectionDialogOpen} label="Add to collections"
+  ></Dialog>
 </div>
 
 <style lang="scss">

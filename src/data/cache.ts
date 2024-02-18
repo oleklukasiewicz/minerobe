@@ -35,6 +35,7 @@ export const currentUser: Writable<MinerobeUser> = writable(null);
 export const wardrobe: Writable<WardrobePackage> = writable({
   id: null,
   outfits: [],
+  collections: [],
   sets: [],
   studio: null,
   local: null,

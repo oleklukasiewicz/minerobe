@@ -131,7 +131,7 @@ export class OutfitLayerLink {
     this.id = id;
     this.variantId = variantId;
     this.type = type;
-    this.path = "public";
+    this.path = "outfits-new";
   }
 }
 export class OutfitPackageLink {

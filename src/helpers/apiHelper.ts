@@ -1,10 +1,7 @@
 import {
-  DeleteOutfit,
-  FetchOutfitByFilter,
-  FetchRawOutfit,
-  UploadOutfit,
+  DeleteOutfit, FetchOutfitByFilter,
 } from "$src/api/outfits";
-import { DeleteOutfitSet, UploadOutfitSet } from "$src/api/sets";
+import { DeleteOutfitSet } from "$src/api/sets";
 import { AddLike, RemoveLike } from "$src/api/social";
 import { wardrobe } from "$src/data/cache";
 import { OutfitPackage, OutfitPackageCollection } from "$src/data/common";

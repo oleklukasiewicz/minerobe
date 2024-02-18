@@ -11,8 +11,6 @@ import {
   GetDocument,
   SetDocument,
 } from "$src/data/firebase";
-import { FetchOutfitSetSnapshotFromLink } from "./sets";
-import { FetchOutfitSnapshotFromLink } from "./outfits";
 import { get } from "svelte/store";
 import { currentUser } from "$src/data/cache";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
@@ -27,9 +25,9 @@ const ParseOutfitCollectionToLocal = async function (
   let parsed = Object.assign({}, pack);
   for (let i = 0; i < parsed.outfits.length; i++) {
     let outfit = parsed.outfits[i];
-    if (outfit.type == PACKAGE_TYPE.OUTFIT_SET_LINK)
-      return await FetchOutfitSetSnapshotFromLink(outfit as any);
-    else return await FetchOutfitSnapshotFromLink(outfit as any);
+    // if (outfit.type == PACKAGE_TYPE.OUTFIT_SET_LINK)
+    //   return await FetchOutfitSetSnapshotFromLink(outfit as any);
+    // else return await FetchOutfitSnapshotFromLink(outfit as any);
   }
   return parsed;
 };
