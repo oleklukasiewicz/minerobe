@@ -4,7 +4,7 @@ import {
   PackageSocialData,
   MinerobeUser,
 } from "$src/data/common";
-import { PACKAGE_TYPE } from "$src/data/consts";
+import { DATA_PATH_CONFIG, PACKAGE_TYPE } from "$src/data/consts";
 import {
   DeleteCollection,
   GenerateIdForCollection,
@@ -15,7 +15,7 @@ import { get } from "svelte/store";
 import { currentUser } from "$src/data/cache";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 
-const COLLECTION_PATH = "collections";
+const COLLECTION_PATH = DATA_PATH_CONFIG.OUTFIT_COLLECTION;
 
 export const GenerateIdForOutfitCollection = () =>
   GenerateIdForCollection(COLLECTION_PATH);

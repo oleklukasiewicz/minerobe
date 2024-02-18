@@ -132,3 +132,9 @@ export const COLLECTION_DISPLAY_MODE = {
   GRID: "grid",
   LIST: "list",
 };
+
+export const DATA_PATH_CONFIG = {
+  OUTFIT: "outfits-new",
+  OUTFIT_SET: "sets-new",
+  OUTFIT_COLLECTION: "collections",
+};

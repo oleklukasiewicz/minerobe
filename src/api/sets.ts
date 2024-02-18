@@ -5,7 +5,7 @@ import {
   OutfitPackageLink,
   PackageSocialData,
 } from "$src/data/common";
-import { LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+import { DATA_PATH_CONFIG, LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
 import { GenerateIdForCollection } from "$src/data/firebase";
 import { get } from "svelte/store";
 import {
@@ -17,7 +17,7 @@ import {
 } from "./pack";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 
-const SETS_PATH = "sets-new";
+const SETS_PATH =DATA_PATH_CONFIG.OUTFIT_SET;
 
 export const GenerateIdForOutfitSet = () => GenerateIdForCollection(SETS_PATH);
 

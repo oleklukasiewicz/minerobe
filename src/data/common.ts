@@ -1,5 +1,5 @@
 import { get } from "svelte/store";
-import { LAYER_TYPE, MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "./consts";
+import { DATA_PATH_CONFIG, LAYER_TYPE, MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "./consts";
 import { GenerateIdForCollection } from "./firebase";
 import { currentUser } from "./cache";
 
@@ -131,7 +131,7 @@ export class OutfitLayerLink {
     this.id = id;
     this.variantId = variantId;
     this.type = type;
-    this.path = "outfits-new";
+    this.path = DATA_PATH_CONFIG.OUTFIT;
   }
 }
 export class OutfitPackageLink {

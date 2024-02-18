@@ -6,6 +6,7 @@ import {
   OutfitLayer,
 } from "$src/data/common";
 import {
+  DATA_PATH_CONFIG,
   LAYER_TYPE,
   MODEL_TYPE,
   OUTFIT_TYPE,
@@ -22,7 +23,7 @@ import {
 } from "./pack";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 
-const OUTFIT_PATH = "outfits-new";
+const OUTFIT_PATH = DATA_PATH_CONFIG.OUTFIT;
 const OUTFIT_LAYER_PATH = "dummy";
 
 export const GenerateIdForOutfit = () => GenerateIdForCollection(OUTFIT_PATH);
