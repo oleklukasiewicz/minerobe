@@ -70,5 +70,5 @@ export const RemoveSetLayer = async function (id: string, layerId) {
   await DeletePackageLayer(id, layerId, SETS_PATH);
 };
 export const FetchOutfitSetFromLink = async function (link: OutfitPackageLink) {
-  return await FetchOutfitSet(link.id, 2, link.model);
+  return await FetchOutfitSet(link.id, link.variantId|| 2, link.model);
 };

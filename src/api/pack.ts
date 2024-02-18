@@ -17,6 +17,7 @@ import { increment } from "firebase/firestore";
 import { get } from "svelte/store";
 import { LAYER_TYPE } from "$src/data/consts";
 import { GetMinerobeUser } from "./auth";
+import { GenerateQueryEntriesForPackage, SetQueryEntriesForPackage } from "./query";
 
 const DATA_PATH = "itemdata";
 const SNAPSHOT_PATH = "snapshot";
@@ -44,6 +45,13 @@ export const UploadPackage = async function (
     );
     if (exists == null) return null;
   }
+  if (isNew || item.createdAt == null) {
+    item.createdAt = new Date();
+  }
+  item.modifiedAt = new Date();
+  
+  var queryEntries=GenerateQueryEntriesForPackage(item);
+  await SetQueryEntriesForPackage(queryEntries);
 
   item.layers = item.layers.map(
     (layer) => new OutfitLayerLink(layer.id, layer.variantId, layer.type)
@@ -134,6 +142,9 @@ export const UploadPackageLayer = async function (
     item.variantId,
     item
   );
+  await UpdateRawDocument(path + "/" + itemId + "/" + DATA_PATH, DATA_PATH, {
+    modifiedAt: new Date(),
+  });
   return item;
 };
 export const FetchPackageLayer = async function (
@@ -154,6 +165,9 @@ export const DeletePackageLayer = async function (
   path: string
 ) {
   await DeleteDocument(path + "/" + itemId + "/" + LAYERS_PATH, layerId);
+  await UpdateRawDocument(path + "/" + itemId + "/" + DATA_PATH, DATA_PATH, {
+    modifiedAt: new Date(),
+  });
 };
 export const GiveLike = async function (path: string, id: string) {
   await UpdateRawDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, {

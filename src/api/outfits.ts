@@ -92,5 +92,5 @@ export const FetchOutfitByFilter = async function (
   return outfits;
 };
 export const FetchOutfitFromLink = async function (link: OutfitPackageLink) {
-  return await FetchOutfit(link.id,2,link.model);
-}
+  return await FetchOutfit(link.id, link.variantId || 2, link.model);
+};

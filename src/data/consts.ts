@@ -137,4 +137,11 @@ export const DATA_PATH_CONFIG = {
   OUTFIT: "outfits-new",
   OUTFIT_SET: "sets-new",
   OUTFIT_COLLECTION: "collections",
+  QUERY: "query-new",
+};
+export const QUERY_DATA_TYPE = {
+  OUTFIT: "otf",
+  OUTFIT_SET: "set",
+  OUTFIT_COLLECTION: "col",
+  DEFAULT: "def",
 };
