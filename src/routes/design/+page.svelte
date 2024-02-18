@@ -338,7 +338,12 @@
     }
   };
   const downloadImage = async () => {
-    await ExportImageLayers(rendererLayers, $itemModelType, $itemPackage.name);
+    let layersToExport = rendererLayers;
+    if ($userSettings?.baseTexture != null)
+      layersToExport.push(
+        new FileData("base", $userSettings?.baseTexture, "image/png")
+      );
+    await ExportImageLayers(layersToExport, $itemModelType, $itemPackage.name);
     applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
   };
 
