@@ -1,25 +1,11 @@
-import { PackageSocialData } from "$src/data/common";
 import { PACKAGE_TYPE } from "$src/data/consts";
 import {
-  GetDocument,
-  IsDocumentExist,
-  UpdateDocument,
-  UpdateRawDocument,
-} from "$src/data/firebase";
-import { increment } from "firebase/firestore";
-import { UploadPartialQueryDataRaw } from "./query";
-import { UploadOutfitSet } from "./sets";
-import { UploadOutfit } from "./outfits";
-import {
   AddDownloadData,
-  FetchSocialData,
   GiveLike,
   SharePackage,
   UnsharePackage,
 } from "./pack";
 import { _ } from "svelte-i18n";
-const SOCIAL_PATH = "social";
-const SNAPSHOT_PATH = "snapshot";
 const _getDir = (type: string) => {
   return type == PACKAGE_TYPE.OUTFIT ? "outfits-new" : "sets-new";
 };

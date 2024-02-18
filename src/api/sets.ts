@@ -3,10 +3,7 @@ import {
   OutfitPackage,
   OutfitLayer,
   OutfitPackageLink,
-  MinerobeUser,
-  OutfitLayerLink,
   PackageSocialData,
-  FileData,
 } from "$src/data/common";
 import { LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
 import { GenerateIdForCollection } from "$src/data/firebase";
@@ -21,7 +18,6 @@ import {
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 
 const SETS_PATH = "sets-new";
-const OUTFIT_PATH = "outfits-new";
 
 export const GenerateIdForOutfitSet = () => GenerateIdForCollection(SETS_PATH);
 
@@ -31,13 +27,16 @@ export const UploadOutfitSet = async function (
 ) {
   return await UploadPackage(data, SETS_PATH, undefined, isNew);
 };
-export const FetchOutfitSet = async function(id: string,layers:any=-1, model?: string)
-{
-  let parsed = await FetchPackage(SETS_PATH, id,undefined,layers);
+export const FetchOutfitSet = async function (
+  id: string,
+  layers: any = -1,
+  model?: string
+) {
+  let parsed = await FetchPackage(SETS_PATH, id, undefined, layers);
   if (parsed == null) return null;
   parsed.model = model || parsed.model;
   return parsed;
-}
+};
 export const CreateOutfitSet = async function (
   addToWardrobe: boolean = false,
   isShared: boolean = false
@@ -53,7 +52,7 @@ export const CreateOutfitSet = async function (
     isShared,
     new PackageSocialData()
   );
-  const res=await UploadOutfitSet(data, true);
+  const res = await UploadOutfitSet(data, true);
   if (addToWardrobe) {
     await AddItemToWardrobe(res);
   }
@@ -63,13 +62,13 @@ export const DeleteOutfitSet = async function (outfit: OutfitPackage) {
   await DeletePackage(SETS_PATH, outfit.id);
 };
 export const UploadSetLayer = async function (id: string, layer: OutfitLayer) {
-  if(layer.type==LAYER_TYPE.LOCAL){
-    await UploadPackageLayer(id,layer,SETS_PATH);
+  if (layer.type == LAYER_TYPE.LOCAL) {
+    await UploadPackageLayer(id, layer, SETS_PATH);
   }
-}
+};
 export const RemoveSetLayer = async function (id: string, layerId) {
   await DeletePackageLayer(id, layerId, SETS_PATH);
-}
+};
 export const FetchOutfitSetFromLink = async function (link: OutfitPackageLink) {
-  return await FetchOutfitSet(link.id,2,link.model);
+  return await FetchOutfitSet(link.id, 2, link.model);
 };

@@ -2,7 +2,6 @@ import { currentUser } from "$src/data/cache";
 import {
   OutfitPackage,
   OutfitPackageLink,
-  OutfitLayerLink,
   PackageSocialData,
   OutfitLayer,
 } from "$src/data/common";
