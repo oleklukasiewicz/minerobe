@@ -22,6 +22,7 @@ import {
   UploadPackageLayer,
 } from "./pack";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
+import { FetchPackagesByFilter } from "$src/helpers/packQueryHelper";
 
 const OUTFIT_PATH = DATA_PATH_CONFIG.OUTFIT;
 const OUTFIT_LAYER_PATH = "dummy";
@@ -94,7 +95,7 @@ export const FetchOutfitByFilter = async function (
   ids: string[],
   clauses: any[]
 ) {
-  let outfits = await Promise.all(ids.map(async (id) => await FetchOutfit(id)));
+  let outfits = await FetchPackagesByFilter(ids, OUTFIT_PATH, clauses);
   return outfits;
 };
 export const FetchOutfitFromLink = async function (link: OutfitPackageLink) {

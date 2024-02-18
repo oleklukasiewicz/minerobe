@@ -7,22 +7,24 @@ import {
   OutfitLayer,
 } from "$src/data/common";
 import {
+  BuildQuery,
   DeleteCollection,
   DeleteDocument,
+  FetchDocsFromQuery,
   GetDocument,
   SetDocument,
   UpdateRawDocument,
 } from "$src/data/firebase";
-import { increment } from "firebase/firestore";
+import { increment, type DocumentData, Query } from "firebase/firestore";
 import { get } from "svelte/store";
-import { LAYER_TYPE } from "$src/data/consts";
+import { DATA_PATH_CONFIG, LAYER_TYPE } from "$src/data/consts";
 import { GetMinerobeUser } from "./auth";
 import {
   GenerateQueryEntriesForPackage,
   SetQueryEntriesForPackage,
 } from "./query";
 
-const DATA_PATH = "itemdata";
+const DATA_PATH = DATA_PATH_CONFIG.PACK_DATA;
 const SNAPSHOT_PATH = "snapshot";
 const LAYERS_PATH = "layers";
 const SOCIAL_PATH = "social";
@@ -124,7 +126,9 @@ export const FetchPackage = async function (
     else layersToDownload = pack.layers.slice(0, layers);
   } else {
     if (layers.length > 0 && layers[0] == pack.id) {
-      layersToDownload.push(new OutfitLayerLink(pack.id, pack.id, LAYER_TYPE.LOCAL));
+      layersToDownload.push(
+        new OutfitLayerLink(pack.id, pack.id, LAYER_TYPE.LOCAL)
+      );
     } else
       pack.layers.find((layer) => {
         if (layers.includes(layer.variantId)) layersToDownload.push(layer);
@@ -285,4 +289,30 @@ export const UnsharePackage = async function (
       );
     }
   }
+};
+export const PatchPackage = async function (pack: OutfitPackage, path: string) {
+  const layersPath = LAYERS_PATH;
+  let layersData = await Promise.all(
+    pack.layers.map(async (layer: any) => {
+      if (layer.type == LAYER_TYPE.LOCAL) {
+        return await GetDocument(
+          path + "/" + pack.id + "/" + layersPath,
+          layer.id || layer.variantId
+        );
+      } else {
+        let lay = await GetDocument(
+          layer.path + "/" + layer.id + "/" + layersPath,
+          layer.variantId
+        );
+        lay.id = layer.id;
+        lay.type = layer.type;
+        return lay;
+      }
+    })
+  );
+  pack.layers = layersData;
+  //pack.publisher = new MinerobeUser(pack.publisher.id, null, null);
+  pack.social = await FetchSocialData(path, pack.id);
+  pack.local = {};
+  return pack;
 };

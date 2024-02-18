@@ -1,5 +1,5 @@
 import {
-  DeleteOutfit, FetchOutfitByFilter,
+  DeleteOutfit, FetchOutfit, FetchOutfitByFilter,
 } from "$src/api/outfits";
 import { DeleteOutfitSet } from "$src/api/sets";
 import { AddLike, RemoveLike } from "$src/api/social";
@@ -41,7 +41,7 @@ export const UpdateItemInWardrobe = function (item: OutfitPackage) {
 export const FetchFullWardrobe = async function () {
   let wardrobeObj = get(wardrobe);
   for (let i = 0; i < wardrobeObj.outfits.length; i++) {
-    let outfit = await FetchRawOutfit(wardrobeObj.outfits[i].id);
+    let outfit = await FetchOutfit(wardrobeObj.outfits[i].id);
     wardrobeObj.outfits[i] = outfit;
   }
   return wardrobeObj;
