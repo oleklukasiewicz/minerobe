@@ -61,9 +61,10 @@ export const UploadPackage = async function (
   await SetQueryEntriesForPackage(queryEntries);
 
   if (generateSnaphot && item.layers.length > 0) {
+    let snap= Object.assign({}, data);
     let snapshots = await snapshotParser(
-      Object.assign({}, item.layers[0]),
-      Object.assign({}, item)
+     Object.assign({}, snap.layers[0]),
+     snap
     );
     for (let snapshot of snapshots) {
       await SetDocument(
@@ -164,6 +165,7 @@ export const DeletePackage = async function (path: string, id: string) {
   await DeleteCollection(path + "/" + id + "/" + LAYERS_PATH);
   await DeleteCollection(path + "/" + id + "/" + DATA_PATH);
   await DeleteCollection(path + "/" + id + "/" + SNAPSHOT_PATH);
+  await DeleteCollection(path + "/" + id + "/" + SOCIAL_PATH);
 };
 export const UploadPackageLayer = async function (
   pack: OutfitPackage,
@@ -234,7 +236,7 @@ export const GiveLike = async function (path: string, id: string) {
     },
   });
 };
-export const RemoveLike = async function (path: string, id: string) {
+export const RemoveLikeData = async function (path: string, id: string) {
   await UpdateRawDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, {
     social: {
       likes: increment(-1),

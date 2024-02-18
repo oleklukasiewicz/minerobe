@@ -2,6 +2,7 @@ import { DATA_PATH_CONFIG, PACKAGE_TYPE } from "$src/data/consts";
 import {
   AddDownloadData,
   GiveLike,
+  RemoveLikeData,
   SharePackage,
   UnsharePackage,
 } from "./pack";
@@ -15,7 +16,7 @@ export const AddLike = async (id: string, type: string) => {
 };
 export const RemoveLike = async (id: string, type: string) => {
   const dir = _getDir(type);
-  await RemoveLike(dir, id);
+  await RemoveLikeData(dir, id);
 };
 export const AddDownload = async (id: string, type: string) => {
   const dir = _getDir(type);
