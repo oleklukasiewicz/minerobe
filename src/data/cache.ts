@@ -79,7 +79,7 @@ export const userSettings: Writable<MinerobeUserSettings> = writable({
   currentSkinModel: null,
 });
 
-let wardrobeSubscription, settingsSubscription;
+let wardrobeSubscription, settingsSubscription, userSubscription;
 
 export const setup = function () {
   defaultRenderer.update((renderer: any) => {
@@ -96,7 +96,8 @@ export const setup = function () {
   matcher.addEventListener("change", (e) => {
     isMobileViewWritable.set(e.matches);
   });
-  currentUser.subscribe(async (user) => {
+  if (userSubscription) userSubscription();
+  userSubscription = currentUser.subscribe(async (user) => {
     if (user) {
       //settings up account
       if (get(appState) == APP_STATE.LOADING)
@@ -130,14 +131,14 @@ const setupSubscriptions = function () {
   });
 };
 
-export const currentToasts:Writable<any[]> = writable([]);
+export const currentToasts: Writable<any[]> = writable([]);
 export const showToast = function (
   message: string,
-  icon=null,
+  icon = null,
   type: string = "success",
-  action: any=()=>{},
+  action: any = () => {},
   closeable: boolean = true,
-  duration: number=3000,
+  duration: number = 3000
 ) {
   let toast = {
     message: message,
@@ -163,4 +164,4 @@ export const hideToast = function (toast: any) {
     toasts.splice(toasts.indexOf(toast), 1);
     return toasts;
   });
-}
+};

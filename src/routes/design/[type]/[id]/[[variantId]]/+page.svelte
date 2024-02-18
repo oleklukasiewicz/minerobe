@@ -356,7 +356,7 @@
               disabled={$itemLayers.length == 0 || !loaded}
               size="large"
             />
-            {#if $currentUser.id != null}
+            {#if $currentUser?.id != null}
             <Button
               label={"Add to collection"}
               onlyIcon={!$isMobileView}

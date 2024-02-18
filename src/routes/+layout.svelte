@@ -28,8 +28,8 @@
     await waitLocale();
   };
   onMount(async () => {
-    setup();
     await getCurrentUser();
+    setup();
   });
   const profileAction = async () => {
     if ($currentUser) {

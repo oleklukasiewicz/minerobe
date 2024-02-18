@@ -7,21 +7,14 @@ import {
   OutfitLayer,
 } from "$src/data/common";
 import {
-  BuildQuery,
   DeleteCollection,
   DeleteDocument,
-  DeleteDocumentAnonymous,
-  FetchDocsFromQuery,
   GetDocument,
   SetDocument,
-  SetDocumentAnonymous,
-  UpdateDocument,
+  UpdateRawDocument,
 } from "$src/data/firebase";
-import { AddItemToWardrobe } from "$src/helpers/apiHelper";
-import type { DocumentData, Query } from "firebase/firestore";
+import { increment } from "firebase/firestore";
 import { get } from "svelte/store";
-import { FetchSocial } from "./social";
-import { DeleteQueryData, UploadQueryData } from "./query";
 import { LAYER_TYPE } from "$src/data/consts";
 import { GetMinerobeUser } from "./auth";
 
@@ -29,7 +22,13 @@ const DATA_PATH = "itemdata";
 const SNAPSHOT_PATH = "snapshot";
 const LAYERS_PATH = "layers";
 const SOCIAL_PATH = "social";
-
+const _generateSocialData = async function () {
+  let social = new PackageSocialData();
+  social.likes = 1;
+  social.downloads = 0;
+  social.isFeatured = false;
+  return social;
+};
 export const UploadPackage = async function (
   data: OutfitPackage,
   path: string,
@@ -49,11 +48,17 @@ export const UploadPackage = async function (
   item.layers = item.layers.map(
     (layer) => new OutfitLayerLink(layer.id, layer.variantId, layer.type)
   );
-  if (!isNew) delete item.social;
+  delete item.social;
   delete item.local;
   item.publisher = new MinerobeUser(item.publisher.id, null, null);
 
   await SetDocument(path + "/" + item.id + "/" + DATA_PATH, DATA_PATH, item);
+  if (isNew)
+    await SetDocument(
+      path + "/" + item.id + "/" + SOCIAL_PATH,
+      SOCIAL_PATH,
+      await _generateSocialData()
+    );
   return item;
 };
 export const FetchPackage = async function (
@@ -63,16 +68,19 @@ export const FetchPackage = async function (
   layers: number | string[]
 ) {
   let pack = await GetDocument(path + "/" + id + "/" + DATA_PATH, DATA_PATH);
-  let social = await GetDocument(
-    path + "/" + id + "/" + SOCIAL_PATH,
-    SOCIAL_PATH
-  );
   if (
     pack == null ||
     (pack?.publisher?.id != get(currentUser)?.id && pack.isShared == false)
   )
     return null;
-
+  let social = await GetDocument(
+    path + "/" + id + "/" + SOCIAL_PATH,
+    SOCIAL_PATH
+  );
+  if (social == null) {
+    social = await _generateSocialData();
+    await SetDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, social);
+  }
   let layersToDownload = [];
 
   if (typeof layers == "number") {
@@ -146,4 +154,67 @@ export const DeletePackageLayer = async function (
   path: string
 ) {
   await DeleteDocument(path + "/" + itemId + "/" + LAYERS_PATH, layerId);
+};
+export const GiveLike = async function (path: string, id: string) {
+  await UpdateRawDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, {
+    social: {
+      likes: increment(1),
+    },
+  });
+};
+export const RemoveLike = async function (path: string, id: string) {
+  await UpdateRawDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, {
+    social: {
+      likes: increment(-1),
+    },
+  });
+};
+export const AddDownloadData = async function (path: string, id: string) {
+  await UpdateRawDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, {
+    downloads: increment(1),
+  });
+};
+export const ResetSocialLikes = async function (path: string, id: string) {
+  await SetDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, {
+    likes: 1,
+  });
+};
+export const FetchSocialData = async function (path: string, id: string) {
+  return await GetDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH);
+};
+export const SharePackage = async function (path: string, item: OutfitPackage) {
+  await UpdateRawDocument(path + "/" + item.id + "/" + DATA_PATH, DATA_PATH, {
+    isShared: true,
+  });
+  for (let layer of item.layers) {
+    if (layer.type == LAYER_TYPE.LOCAL) {
+      await UpdateRawDocument(
+        path + "/" + item.id + "/" + LAYERS_PATH,
+        layer.variantId,
+        {
+          isShared: true,
+        }
+      );
+    }
+  }
+};
+export const UnsharePackage = async function (
+  path: string,
+  item: OutfitPackage
+) {
+  await UpdateRawDocument(path + "/" + item.id + "/" + DATA_PATH, DATA_PATH, {
+    isShared: false,
+  });
+  await ResetSocialLikes(path, item.id);
+  for (let layer of item.layers) {
+    if (layer.type == LAYER_TYPE.LOCAL) {
+      await UpdateRawDocument(
+        path + "/" + item.id + "/" + LAYERS_PATH,
+        layer.variantId,
+        {
+          isShared: false,
+        }
+      );
+    }
+  }
 };
