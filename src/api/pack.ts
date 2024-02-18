@@ -148,17 +148,24 @@ export const FetchPackage = async function (
           layer.path + "/" + layer.id + "/" + layersPath,
           layer.variantId
         );
+        if(lay == null) return null;
         lay.id = layer.id;
         lay.type = layer.type;
         return lay;
       }
     })
   );
-  pack.layers = layersData;
+  pack.local = {};
+
+  if (pack.layers.length != layersData.filter((x) => x != null).length) {
+    Object.assign(pack.local, {
+      warnings: ["missingLayer"],
+    });
+  }
+  pack.layers = layersData.filter((x) => x != null);
   pack.social = social;
   pack.publisher = await GetMinerobeUser(pack.publisher.id);
-
-  pack.local = {};
+  
   return fetchSnapshot ? await parserSnapshot(pack) : await parser(pack);
 };
 export const DeletePackage = async function (path: string, id: string) {

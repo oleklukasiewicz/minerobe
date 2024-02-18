@@ -325,6 +325,7 @@
         else
           newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null, null);
         newOutfit.variantId = GenerateIdForOutfitLayer();
+        newOutfit.isShared= $itemPackage.isShared;
         layers.unshift(newOutfit);
       });
       $selectedLayer = newOutfit;
@@ -408,6 +409,7 @@
               null
             );
           newOutfit.variantId = GenerateIdForOutfitLayer();
+          newOutfit.isShared= $itemPackage.isShared;
           newLayers.unshift(newOutfit);
           $selectedLayer = newOutfit;
           if ($isItemSet) {
