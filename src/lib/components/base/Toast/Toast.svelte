@@ -38,17 +38,19 @@
   in:fadeInScale={{ duration: 300 }}
   out:fadeInScale={{ duration: 300 }}
 >
-  {#if icon}
-    <span class="icon">
-      {icon}
+  <div class="content">
+    {#if icon}
+      <span class="icon">
+        {icon}
+      </span>
+    {/if}
+    <span class="message mc-font-simple">
+      {message}
     </span>
-  {/if}
-  <span class="message mc-font-simple">
-    {message}
-  </span>
-  {#if closeable}
-    <Button type="quaternary" on:click={onClose} icon={CloseIcon} onlyIcon />
-  {/if}
+    {#if closeable}
+      <Button type="quaternary" altStyle on:click={onClose} icon={CloseIcon} onlyIcon />
+    {/if}
+  </div>
 </div>
 
 <style lang="scss">

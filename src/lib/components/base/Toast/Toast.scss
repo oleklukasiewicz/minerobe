@@ -20,13 +20,19 @@
   z-index: 20;
   &>*
   {
+    display: inline-table;
     color:var(--color-accent-font);
   }
   .message
   {
-    margin: 10px;
+    margin: 8px 8px 8px 12px;
     box-sizing: border-box;
     font-size: var(--size-font-caption);
+  }
+  .content
+  {
+    display: grid;
+   grid-template-columns: 1fr auto;
   }
   &.hidden {
     display: none;

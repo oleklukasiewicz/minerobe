@@ -465,6 +465,7 @@
         await UploadOutfitSet(data);
       } else await UploadOutfit(data);
     }
+    data.outfitType= data.layers[0]?.steve.type;
     UpdateItemInWardrobe($itemPackage);
   });
 </script>

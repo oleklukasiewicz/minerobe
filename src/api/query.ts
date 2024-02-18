@@ -42,7 +42,7 @@ const _generateEntryForPackage = function (pack: OutfitPackage) {
   entry.variantCount = pack.layers.length;
   entry.variantId = "none";
   entry.color = pack.layers[0]?.steve.color || "none";
-  entry.normalizedColor = FindColorTitle(entry.color);
+  entry.normalizedColor = pack.layers[0] ? FindColorTitle(entry.color) : "none";
   entry.outfitType = pack.outfitType || "none";
   return entry;
 };
