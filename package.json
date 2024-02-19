@@ -29,7 +29,7 @@
 		"gltf-loader": "^1.0.0",
 		"jszip": "^3.10.1",
 		"path": "^0.12.7",
-		"prismarine-auth": "^2.4.0",
+		"prismarine-auth": "^2.4.1",
 		"sass": "^1.70.0",
 		"svelte-i18n": "^4.0.0",
 		"svelte-writable-derived": "^3.1.0",
