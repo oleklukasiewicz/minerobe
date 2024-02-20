@@ -4,6 +4,8 @@ import {
   OutfitLayer,
   OutfitPackageLink,
   PackageSocialData,
+  OutfitPackageSnapshotConfig,
+  OutfitPackageSnapshotPackage,
 } from "$src/data/common";
 import {
   DATA_PATH_CONFIG,
@@ -22,27 +24,31 @@ import {
 } from "./pack";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 import { MergePackageLayers } from "$src/helpers/imageDataHelpers";
-import { t } from "svelte-i18n";
 
 const SETS_PATH = DATA_PATH_CONFIG.OUTFIT_SET;
 
 export const GenerateIdForOutfitSet = () => GenerateIdForCollection(SETS_PATH);
 
 export const parseSnapshot = async function (
-  data: OutfitLayer,
+  data: OutfitLayer[],
   pack: OutfitPackage
 ) {
-  data.id = pack.id;
-  data.variantId = pack.id;
-  data.steve.content = await MergePackageLayers(pack.layers, MODEL_TYPE.STEVE);
-  data.alex.content = await MergePackageLayers(pack.layers, MODEL_TYPE.ALEX);
-  return [data];
+  data[0].id = pack.id;
+  data[0].variantId = pack.id;
+  data[0].steve.content = await MergePackageLayers(pack.layers, MODEL_TYPE.STEVE);
+  data[0].alex.content = await MergePackageLayers(pack.layers, MODEL_TYPE.ALEX);
+  const config= new OutfitPackageSnapshotPackage();
+  config.isMerged=true;
+  config.snapshot=[data[0]];
+  return config;
 };
 
 export const UploadOutfitSet = async function (
   data: OutfitPackage,
   isNew = false
 ) {
+  data.snapshotConfig = new OutfitPackageSnapshotConfig();
+  data.snapshotConfig.isMerged = true;
   return await UploadPackage(data, SETS_PATH, undefined, isNew,true,parseSnapshot);
 };
 export const FetchOutfitSet = async function (

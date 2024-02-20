@@ -1,5 +1,11 @@
 import { get } from "svelte/store";
-import { DATA_PATH_CONFIG, LAYER_TYPE, MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "./consts";
+import {
+  DATA_PATH_CONFIG,
+  LAYER_TYPE,
+  MODEL_TYPE,
+  OUTFIT_TYPE,
+  PACKAGE_TYPE,
+} from "./consts";
 import { GenerateIdForCollection } from "./firebase";
 import { currentUser } from "./cache";
 
@@ -18,6 +24,7 @@ export class OutfitPackage {
   local: any;
   createdAt: Date;
   modifiedAt: Date;
+  snapshotConfig: OutfitPackageSnapshotConfig;
   constructor(
     name: string,
     model: string,
@@ -28,7 +35,8 @@ export class OutfitPackage {
     isShared: boolean = false,
     social: PackageSocialData = new PackageSocialData(),
     description: string = "",
-    outfitType: string = OUTFIT_TYPE.DEFAULT
+    outfitType: string = OUTFIT_TYPE.DEFAULT,
+    snapshotConfig: OutfitPackageSnapshotConfig = new OutfitPackageSnapshotConfig()
   ) {
     this.name = name;
     this.model = model;
@@ -41,6 +49,7 @@ export class OutfitPackage {
     this.description = description;
     this.outfitType = outfitType;
     this.createdAt = new Date();
+    this.snapshotConfig = snapshotConfig;
   }
 }
 export class WardrobePackage {
@@ -92,10 +101,10 @@ export class OutfitLayer {
   type: string;
   isShared: boolean;
   constructor(
-    name: string="",
-    steve: FileData=null,
-    alex: FileData=null,
-    id: string=null,
+    name: string = "",
+    steve: FileData = null,
+    alex: FileData = null,
+    id: string = null,
     type: string = LAYER_TYPE.LOCAL,
     variantId: string = null,
     isShared: boolean = false
@@ -304,4 +313,12 @@ export class OutfitPackageCollectionLink {
     this.id = id;
     this.type = type;
   }
+}
+
+export class OutfitPackageSnapshotPackage {
+  snapshot: OutfitLayer[];
+  isMerged: boolean;
+}
+export class OutfitPackageSnapshotConfig {
+  isMerged: boolean;
 }

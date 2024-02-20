@@ -4,6 +4,7 @@ import {
   OutfitPackageLink,
   PackageSocialData,
   OutfitLayer,
+  OutfitPackageSnapshotPackage,
 } from "$src/data/common";
 import {
   DATA_PATH_CONFIG,
@@ -36,8 +37,11 @@ const parseToLocal = async function (data: OutfitPackage) {
     data.layers.length > 0 ? data.layers[0].steve.type : OUTFIT_TYPE.DEFAULT;
   return data;
 };
-const parseSnapshot = async function (data: OutfitLayer, pack: OutfitPackage) {
-  return data;
+const parseSnapshot = async function (data: OutfitLayer[], pack: OutfitPackage) {
+  const config = new OutfitPackageSnapshotPackage();
+  config.isMerged = false;
+  config.snapshot = pack.layers;
+  return config;
 };
 
 export const FetchOutfit = async function (
@@ -54,7 +58,7 @@ export const UploadOutfit = async function (
   outfit: OutfitPackage,
   isNew: boolean = false
 ) {
-  return await UploadPackage(outfit, OUTFIT_PATH, undefined, isNew);
+  return await UploadPackage(outfit, OUTFIT_PATH, undefined, isNew, false,parseSnapshot);
 };
 export const CreateOutfit = async function (
   addToWardrobe: boolean = false,

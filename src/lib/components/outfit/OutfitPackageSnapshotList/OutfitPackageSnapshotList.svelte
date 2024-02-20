@@ -80,6 +80,7 @@
     {#each normalizedItems as item (item.id + item.layers[0]?.variantId)}
       <OutfitPackageSnapshotItem
         on:select={selectRenderedOutfit}
+        multiple={item.type == PACKAGE_TYPE.OUTFIT_SET ? 1 : 2}
         {item}
         {dense}
         renderProvider={item.model == MODEL_TYPE.STEVE

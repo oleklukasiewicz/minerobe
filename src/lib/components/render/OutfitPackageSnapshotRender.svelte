@@ -31,7 +31,10 @@
     if (item.type == OUTFIT_TYPE.OUTFIT_SET) {
       //merge layers
       let mergedLayers = await mergeImages(
-        item.layers.map((x) => x[item.model].content).reverse(),
+        item.layers
+          .filter((x) => x != null)
+          .map((x) => x[item.model].content)
+          .reverse(),
         undefined,
         item.model
       );
