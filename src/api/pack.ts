@@ -26,9 +26,9 @@ import {
 import { _ } from "svelte-i18n";
 
 const DATA_PATH = DATA_PATH_CONFIG.PACK_DATA;
-const SNAPSHOT_PATH = "snapshot";
-const LAYERS_PATH = "layers";
-const SOCIAL_PATH = "social";
+const SNAPSHOT_PATH = DATA_PATH_CONFIG.SNAPSHOT_DATA;
+const LAYERS_PATH = DATA_PATH_CONFIG.LAYERS_DATA;
+const SOCIAL_PATH = DATA_PATH_CONFIG.SOCIAL_DATA;
 
 //basic operations
 export const UploadPackage = async function (

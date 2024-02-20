@@ -138,7 +138,10 @@ export const DATA_PATH_CONFIG = {
   OUTFIT_SET: "sets-new",
   OUTFIT_COLLECTION: "collections",
   QUERY: "query-new",
-  PACK_DATA:"itemdata"
+  PACK_DATA:"itemdata",
+  SOCIAL_DATA:"social",
+  SNAPSHOT_DATA:"snapshot",
+  LAYERS_DATA:"layers",
 };
 export const QUERY_DATA_TYPE = {
   OUTFIT: "otf",
