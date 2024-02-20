@@ -130,7 +130,6 @@ const setupSubscriptions = function () {
     if (get(appState) == APP_STATE.READY && data) await UploadSettings(data);
   });
 };
-
 export const currentToasts: Writable<any[]> = writable([]);
 export const showToast = function (
   message: string,

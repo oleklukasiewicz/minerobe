@@ -39,6 +39,7 @@ export const authenticateWithPrismarine = async function (user, token) {
           },
           token
         );
+        //send event to client
         resolve({
           requireUserInteraction: false,
           profile: {
