@@ -9,10 +9,7 @@
   import CloudIcon from "$icons/cloud.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import { currentUser, userSettings } from "$src/data/cache";
-  import {
-    FindColorTitle,
-    FindColor
-  } from "$src/helpers/colorHelper";
+  import { FindColorTitle, FindColor } from "$src/helpers/colorHelper";
   import OutfitPackageSnapshotRender from "$component/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
@@ -33,9 +30,11 @@
     currentLayer = item.layers[0];
   });
   const updateRender = async function (layer) {
-    currentLayer = layer;
-    snapshot.texture = layer[item.model].content;
-    await RenderFromSnapshot(snapshot);
+    if (multiple > 1) {
+      currentLayer = layer;
+      snapshot.texture = layer[item.model].content;
+      await RenderFromSnapshot(snapshot);
+    }
   };
 
   $: aboveLimit = item.layers.length - multiple;
@@ -64,7 +63,11 @@
   {/if}
   <div class="render-area">
     <!-- svelte-ignore a11y-missing-attribute -->
-    <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />
+    {#if !item.local.isSnapshot}
+      <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />
+    {:else}
+      <img src={currentLayer?.alex.content} style="width: 100%;height:100%" />
+    {/if}
   </div>
   <div class="data-area">
     <div class="title-row">
@@ -92,9 +95,7 @@
             class="color-view"
             title={FindColorTitle(layer[item.model].color)}
             on:click|stopPropagation={() => updateRender(layer)}
-            style="background-color: {FindColor(
-              layer[item.model].color
-            )};"
+            style="background-color: {FindColor(layer[item.model].color)};"
           ></span>
         {/each}
         {#if aboveLimit > 0 && !isSet}

@@ -40,6 +40,7 @@ export const wardrobe: Writable<WardrobePackage> = writable({
   studio: null,
   local: null,
 });
+export const snapshotTemporaryNode= writable(null);
 export const baseTexture: Readable<string> = readable(get(planksTexture));
 export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
   let result: any = false;

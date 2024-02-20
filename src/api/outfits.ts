@@ -24,6 +24,7 @@ import {
 } from "./pack";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 import { FetchPackagesByFilter } from "$src/helpers/packQueryHelper";
+import { RenderTextureInTemporyNode } from "$src/data/render";
 
 const OUTFIT_PATH = DATA_PATH_CONFIG.OUTFIT;
 const OUTFIT_LAYER_PATH = "dummy";
@@ -37,19 +38,49 @@ const parseToLocal = async function (data: OutfitPackage) {
     data.layers.length > 0 ? data.layers[0].steve.type : OUTFIT_TYPE.DEFAULT;
   return data;
 };
-const parseSnapshot = async function (data: OutfitLayer[], pack: OutfitPackage) {
+const parseSnapshot = async function (
+  data: OutfitLayer[],
+  pack: OutfitPackage
+) {
   const config = new OutfitPackageSnapshotPackage();
   config.isMerged = false;
-  config.snapshot = pack.layers;
+  let layers = pack.layers;
+  for (let layer of layers) {
+    const steve = await RenderTextureInTemporyNode(
+      layer.steve.content,
+      MODEL_TYPE.STEVE,
+      layer.steve.type
+    );
+    console.log("steve", steve)
+    const alex = await RenderTextureInTemporyNode(
+      layer.alex.content,
+      MODEL_TYPE.ALEX,
+      layer.alex.type
+    );
+    layer.steve.content = steve;
+    layer.alex.content = alex;
+  }
+  config.snapshot = layers;
+
   return config;
 };
-
+const parseSnapshotLocal = async function (x: any,y:any) {
+  return y;
+};
 export const FetchOutfit = async function (
   id: string,
   layers: any = -1,
-  model?: string
+  model?: string,
+  snapshot: boolean = false
 ) {
-  let parsed = await FetchPackage(OUTFIT_PATH, id, parseToLocal, layers);
+  let parsed = await FetchPackage(
+    OUTFIT_PATH,
+    id,
+    parseToLocal,
+    layers,
+    snapshot,
+    parseSnapshotLocal
+  );
   if (parsed == null) return null;
   parsed.model = model || parsed.model;
   return parsed;
@@ -58,7 +89,14 @@ export const UploadOutfit = async function (
   outfit: OutfitPackage,
   isNew: boolean = false
 ) {
-  return await UploadPackage(outfit, OUTFIT_PATH, undefined, isNew, false,parseSnapshot);
+  return await UploadPackage(
+    outfit,
+    OUTFIT_PATH,
+    undefined,
+    isNew,
+    true,
+    parseSnapshot
+  );
 };
 export const CreateOutfit = async function (
   addToWardrobe: boolean = false,
@@ -103,5 +141,5 @@ export const FetchOutfitByFilter = async function (
   return outfits;
 };
 export const FetchOutfitFromLink = async function (link: OutfitPackageLink) {
-  return await FetchOutfit(link.id, link.variantId || 2, link.model);
+  return await FetchOutfit(link.id, link.variantId || 2, link.model, true);
 };

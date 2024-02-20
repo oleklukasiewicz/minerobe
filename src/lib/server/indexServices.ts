@@ -7,8 +7,6 @@ import {
   QueryWhere,
   SetDocumentAnonymous,
 } from "$src/data/firebase";
-import { minerobeWebSocketServer, minerobeWebSocketServerConnection } from "./websocketService";
-import WebSocket from "ws";
 
 export const IndexLandingPage = async function () {
   const q = await BuildCollectionQuery(
@@ -54,7 +52,6 @@ export const IndexLandingPage = async function () {
     mostRecent.map((d) => new OutfitPackageLink(d.id, d.model, d.type)) || []
   );
   await SetDocumentAnonymous("public", "landing", landingPage);
-  minerobeWebSocketServerConnection.send("landingUpdated")
   
   return landingPage;
 };

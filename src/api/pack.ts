@@ -88,7 +88,11 @@ export const FetchPackage = async function (
   parser = (x) => x,
   layers: number | string[],
   fetchSnapshot = false,
-  parserSnapshot = (x) => x
+  snapshotParser = (
+    x: OutfitLayer[],
+    p: OutfitPackage
+  ): OutfitPackageSnapshotPackage | Promise<OutfitPackageSnapshotPackage> =>
+    new OutfitPackageSnapshotPackage()
 ) {
   let pack = (await GetDocument(
     path + "/" + id + "/" + DATA_PATH,
@@ -108,19 +112,19 @@ export const FetchPackage = async function (
     await SetDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, social);
   }
   let layersToDownload = [];
-
-  if (typeof layers == "number") {
-    if (layers == -1) layersToDownload = pack.layers;
-    else layersToDownload = pack.layers.slice(0, layers);
+  if (fetchSnapshot && pack.snapshotConfig?.isMerged) {
+    layersToDownload.push(
+      new OutfitLayerLink(pack.id, pack.id, LAYER_TYPE.LOCAL)
+    );
   } else {
-    if (layers.length > 0 && layers[0] == pack.id) {
-      layersToDownload.push(
-        new OutfitLayerLink(pack.id, pack.id, LAYER_TYPE.LOCAL)
-      );
-    } else
+    if (typeof layers == "number") {
+      if (layers == -1) layersToDownload = pack.layers;
+      else layersToDownload = pack.layers.slice(0, layers);
+    } else {
       pack.layers.find((layer) => {
         if (layers.includes(layer.variantId)) layersToDownload.push(layer);
       });
+    }
   }
   let layersData = [];
   if (!fetchSnapshot) {
@@ -140,16 +144,20 @@ export const FetchPackage = async function (
       warnings: ["missingLayer"],
     });
   }
-  localStorage.isSnapshot = fetchSnapshot;
+  pack.local.isSnapshot = fetchSnapshot;
   const layersCount = pack.layers.length;
   pack.layers = layersData;
-  pack.layers = pack.layers.concat(
-    new Array(layersCount - pack.layers.length).fill(null)
-  );
+  if (layersCount > layersData.length) {
+    pack.layers = pack.layers.concat(
+      new Array(layersCount - pack.layers.length).fill(null)
+    );
+  }
   pack.social = social;
   pack.publisher = await GetMinerobeUser(pack.publisher.id);
 
-  return fetchSnapshot ? await parserSnapshot(pack) : await parser(pack);
+  return fetchSnapshot
+    ? await snapshotParser(pack.layers, pack)
+    : await parser(pack);
 };
 export const DeletePackage = async function (path: string, id: string) {
   await DeleteCollection(path + "/" + id + "/" + LAYERS_PATH);

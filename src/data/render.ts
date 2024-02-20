@@ -2,8 +2,15 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import type { RenderAnimation } from "./animation";
-import { alexModel, steveModel } from "./cache";
+import {
+  alexModel,
+  defaultRenderer,
+  snapshotTemporaryNode,
+  steveModel,
+} from "./cache";
 import { get } from "svelte/store";
+import { MODEL_TYPE } from "./consts";
+import { GetCameraConfigForType } from "$src/helpers/renderHelper";
 export class CameraConfig {
   rotation: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
   position: THREE.Vector3 = new THREE.Vector3(0, 0.05, 1);
@@ -412,4 +419,21 @@ export const CreateDefaultRenderProvider = async function (renderer) {
   alexListProvider.scene = alexScene.scene;
   alexListProvider.camera = alexScene.camera;
   return { steve: steveListProvider, alex: alexListProvider };
+};
+export const RenderTextureInTemporyNode = async function (
+  texture: string,
+  model: string,
+  outfitType: string
+) {
+  const defSnapshots = await CreateDefaultRenderProvider(get(defaultRenderer));
+  let snapshot = new RenderSnapshot();
+
+  snapshot.provider =
+    model == MODEL_TYPE.STEVE ? defSnapshots.steve : defSnapshots.alex;
+  snapshot.texture = texture;
+  snapshot.cameraOptions = GetCameraConfigForType(outfitType);
+  snapshot.provider.camera = new THREE.OrthographicCamera();
+  snapshot.tempNode=get(snapshotTemporaryNode);
+  snapshot.node = get(snapshotTemporaryNode);
+  return await RenderFromSnapshot(snapshot,300,300);
 };

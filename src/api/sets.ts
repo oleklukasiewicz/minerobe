@@ -11,6 +11,7 @@ import {
   DATA_PATH_CONFIG,
   LAYER_TYPE,
   MODEL_TYPE,
+  OUTFIT_TYPE,
   PACKAGE_TYPE,
 } from "$src/data/consts";
 import { GenerateIdForCollection } from "$src/data/firebase";
@@ -24,6 +25,7 @@ import {
 } from "./pack";
 import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 import { MergePackageLayers } from "$src/helpers/imageDataHelpers";
+import { RenderTextureInTemporyNode } from "$src/data/render";
 
 const SETS_PATH = DATA_PATH_CONFIG.OUTFIT_SET;
 
@@ -35,12 +37,16 @@ export const parseSnapshot = async function (
 ) {
   data[0].id = pack.id;
   data[0].variantId = pack.id;
-  data[0].steve.content = await MergePackageLayers(pack.layers, MODEL_TYPE.STEVE);
-  data[0].alex.content = await MergePackageLayers(pack.layers, MODEL_TYPE.ALEX);
+  data[0].steve.content = await RenderTextureInTemporyNode(await MergePackageLayers(pack.layers, MODEL_TYPE.STEVE), MODEL_TYPE.STEVE, OUTFIT_TYPE.OUTFIT_SET);
+  data[0].alex.content = await RenderTextureInTemporyNode(await MergePackageLayers(pack.layers, MODEL_TYPE.ALEX), MODEL_TYPE.ALEX, OUTFIT_TYPE.OUTFIT_SET);
+
   const config= new OutfitPackageSnapshotPackage();
   config.isMerged=true;
   config.snapshot=[data[0]];
   return config;
+};
+const parseSnapshotLocal = async function (x: any,y:any) {
+  return y;
 };
 
 export const UploadOutfitSet = async function (
@@ -57,7 +63,7 @@ export const FetchOutfitSet = async function (
   model?: string,
   fetchSnapshot=false
 ) {
-  let parsed = await FetchPackage(SETS_PATH, id, undefined, layers,fetchSnapshot);
+  let parsed = await FetchPackage(SETS_PATH, id, undefined, layers,fetchSnapshot,parseSnapshotLocal);
   if (parsed == null) return null;
   parsed.model = model || parsed.model;
   return parsed;
@@ -98,5 +104,5 @@ export const RemoveSetLayer = async function (id: string, layerId) {
   await DeletePackageLayer(id, layerId, SETS_PATH);
 };
 export const FetchOutfitSetFromLink = async function (link: OutfitPackageLink) {
-  return await FetchOutfitSet(link.id, [link.id], link.model, true);
+  return await FetchOutfitSet(link.id, -1, link.model, false);
 };

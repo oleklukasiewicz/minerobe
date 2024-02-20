@@ -16,6 +16,7 @@
     hideToast,
     isMobileView,
     setup,
+    snapshotTemporaryNode,
   } from "$src/data/cache";
   import { getCurrentUser, loginUser } from "$src/api/auth";
   import { navigateToProfile } from "$src/helpers/navigationHelper";
@@ -131,7 +132,7 @@
     <slot />
   </div>
 {/if}
-
+<div style="min-width: 300px;min-height:300px;max-width:300px; max-height:300px;display:none" bind:this={$snapshotTemporaryNode}></div>
 <style lang="scss">
   @import "layout_style.scss";
 </style>
