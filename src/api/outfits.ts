@@ -130,7 +130,7 @@ export const UploadLayer = async function (
   }
 };
 export const RemoveLayer = async function (id: string, layerId: string) {
-  await DeletePackageLayer(id, layerId, OUTFIT_PATH);
+  await DeletePackageLayer(id, layerId, OUTFIT_PATH,true);
 };
 export const FetchOutfitByFilter = async function (
   ids: string[],

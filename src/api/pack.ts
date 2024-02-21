@@ -204,9 +204,13 @@ export const FetchPackageLayer = async function (
 export const DeletePackageLayer = async function (
   itemId: string,
   layerId: string,
-  path: string
+  path: string,
+  hasSnapshot = false
 ) {
   await DeleteDocument(path + "/" + itemId + "/" + LAYERS_PATH, layerId);
+  if (hasSnapshot) {
+    await DeleteDocument(path + "/" + itemId + "/" + SNAPSHOT_PATH, layerId);
+  }
 };
 
 //social operations
