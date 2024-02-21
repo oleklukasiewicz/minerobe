@@ -60,12 +60,6 @@ export const UploadPackage = async function (
   var queryEntries = GenerateQueryEntriesForPackage(item);
   await SetQueryEntriesForPackage(queryEntries);
 
-  if (generateSnaphot && item.layers.length > 0) {
-    const snap = await _generateDataForSnapshot(item);
-    let snapshots = await snapshotParser(snap.layers, snap);
-    await _generateSnapshot(snapshots, path, item);
-  }
-
   item.layers = item.layers.map(
     (layer) => new OutfitLayerLink(layer.id, layer.variantId, layer.type)
   );
@@ -183,8 +177,11 @@ export const UploadPackageLayer = async function (
     item
   );
   if (generateSnaphot) {
-    let snapshots = await snapshotParser([Object.assign({}, data)], pack);
-    await _generateSnapshot(snapshots, path, pack);
+    let packSnap = Object.assign({}, pack);
+    packSnap.layers = [item];
+    const snap = await _generateDataForSnapshot(packSnap);
+    let snapshots = await snapshotParser(snap.layers, snap);
+    await _generateSnapshot(snapshots, path, packSnap);
   }
 
   return item;
@@ -236,7 +233,7 @@ export const AddDownloadData = async function (path: string, id: string) {
 };
 export const ResetSocialLikes = async function (path: string, id: string) {
   await UpdateDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, {
-   social: {
+    social: {
       likes: 1,
     },
   });
@@ -323,7 +320,6 @@ const _generateSnapshot = async function (
 ) {
   const isMerged = config.isMerged;
   const snapshots = config.snapshot;
-
   for (let snapshot of snapshots) {
     //snapshot.modifiedAt = new Date();
     await SetDocument(
@@ -391,6 +387,7 @@ const _fetchLayers = async function (
 const _generateDataForSnapshot = async function (data: OutfitPackage) {
   let snap = Object.assign({}, data);
   const layers = [];
+  console.log(data);
   for (let layer of data.layers) {
     let layerSnap = new OutfitLayer();
     layerSnap = Object.assign({}, layer);

@@ -126,7 +126,7 @@ export const UploadLayer = async function (
   layer: OutfitLayer
 ) {
   if (layer.type == LAYER_TYPE.LOCAL) {
-    await UploadPackageLayer(pack, layer, OUTFIT_PATH);
+    await UploadPackageLayer(pack, layer, OUTFIT_PATH,undefined,true,parseSnapshot);
   }
 };
 export const RemoveLayer = async function (id: string, layerId: string) {

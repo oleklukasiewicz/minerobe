@@ -85,7 +85,6 @@
       css: (t) => `opacity: ${t}; transform: scale(${0.9 + t * 0.1})`,
     };
   }
-  $: edit(item);
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -112,6 +111,7 @@
     <span
       ><input
         bind:value={label}
+        on:input={edit}
         class:disabled={item.type == LAYER_TYPE.REMOTE || readonly}
       />
       <br />
