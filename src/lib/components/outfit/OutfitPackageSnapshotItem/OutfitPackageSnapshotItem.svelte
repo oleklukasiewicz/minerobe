@@ -32,8 +32,10 @@
   const updateRender = async function (layer) {
     if (multiple > 1) {
       currentLayer = layer;
-      snapshot.texture = layer[item.model].content;
-      await RenderFromSnapshot(snapshot);
+      if (snapshot) {
+        snapshot.texture = layer[item.model].content;
+        await RenderFromSnapshot(snapshot);
+      }
     }
   };
 
@@ -66,7 +68,10 @@
     {#if !item.local.isSnapshot}
       <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />
     {:else}
-      <img src={currentLayer?.alex.content} style="width: 100%;height:100%" />
+      <img
+        src={currentLayer != null ? currentLayer[item.model].content : null}
+        style="width: 100%;height:100%"
+      />
     {/if}
   </div>
   <div class="data-area">

@@ -139,7 +139,7 @@ export const DATA_PATH_CONFIG = {
   OUTFIT_COLLECTION: "collections",
   QUERY: "query-new",
   PACK_DATA:"itemdata",
-  SOCIAL_DATA:"social",
+  SOCIAL_DATA:"itemdata",
   SNAPSHOT_DATA:"snapshot",
   LAYERS_DATA:"layers",
 };

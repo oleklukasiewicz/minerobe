@@ -114,15 +114,18 @@
         bind:value={label}
         class:disabled={item.type == LAYER_TYPE.REMOTE || readonly}
       />
-      <br /><Label variant="common">{item[modelName].type}</Label>
-      {#if showLabels}
-        {#if item.type == LAYER_TYPE.REMOTE}
-          <Label variant="rare">{$_("layerType.remote")}</Label>
+      <br />
+      <div style="display:flex; gap:4px;margin-top:4px;">
+        <Label variant="common">{item[modelName].type}</Label>
+        {#if showLabels}
+          {#if item.type == LAYER_TYPE.REMOTE}
+            <Label variant="rare">{$_("layerType.remote")}</Label>
+          {/if}
+          {#if item.type == LAYER_TYPE.REMOTE && !item.isShared}
+            <Label variant="ancient">Unshared</Label>
+          {/if}
         {/if}
-        {#if item.type == LAYER_TYPE.REMOTE && !item.isShared}
-          <Label variant="ancient">Unshared</Label>
-        {/if}
-      {/if}
+      </div>
     </span>
   </div>
   {#if link}

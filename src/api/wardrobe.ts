@@ -6,8 +6,8 @@ import {
 } from "$src/data/common";
 import { GetDocument, SetDocument } from "$src/data/firebase";
 import { get } from "svelte/store";
-import { FetchOutfitSet, FetchOutfitSetFromLink } from "./sets";
-import { FetchOutfit, FetchOutfitFromLink } from "./outfits";
+import { FetchOutfitSetFromLink } from "./sets";
+import { FetchOutfitFromLink } from "./outfits";
 import { PACKAGE_TYPE } from "$src/data/consts";
 import { FetchOutfitCollection } from "./collection";
 

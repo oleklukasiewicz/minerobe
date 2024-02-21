@@ -90,8 +90,7 @@
 .current-flag
 {
   position: absolute;
-  background: linear-gradient(var(--color-ancient), var(--color-ancient-A1));
-  box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.6);
+  background: var(--color-ancient);
   height: 24px;
   width: 24px;
   top: 4px;

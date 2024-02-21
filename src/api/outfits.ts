@@ -51,7 +51,6 @@ const parseSnapshot = async function (
       MODEL_TYPE.STEVE,
       layer.steve.type
     );
-    console.log("steve", steve)
     const alex = await RenderTextureInTemporyNode(
       layer.alex.content,
       MODEL_TYPE.ALEX,

@@ -13,6 +13,7 @@ import {
   GetDocument,
   IsDocumentExist,
   SetDocument,
+  UpdateDocument,
   UpdateRawDocument,
 } from "$src/data/firebase";
 import { increment } from "firebase/firestore";
@@ -69,17 +70,14 @@ export const UploadPackage = async function (
     (layer) => new OutfitLayerLink(layer.id, layer.variantId, layer.type)
   );
 
-  delete item.social;
   delete item.local;
   item.publisher = new MinerobeUser(item.publisher.id, null, null);
+  if (isNew) item.social = _generateSocialData();
+  else {
+    delete item.social;
+  }
 
-  await SetDocument(path + "/" + item.id + "/" + DATA_PATH, DATA_PATH, item);
-  if (isNew)
-    await SetDocument(
-      path + "/" + item.id + "/" + SOCIAL_PATH,
-      SOCIAL_PATH,
-      await _generateSocialData()
-    );
+  await UpdateDocument(path + "/" + item.id + "/" + DATA_PATH, DATA_PATH, item);
   return item;
 };
 export const FetchPackage = async function (
@@ -103,13 +101,13 @@ export const FetchPackage = async function (
     (pack?.publisher?.id != get(currentUser)?.id && pack.isShared == false)
   )
     return null;
-  let social = await GetDocument(
-    path + "/" + id + "/" + SOCIAL_PATH,
-    SOCIAL_PATH
-  );
-  if (social == null) {
-    social = await _generateSocialData();
-    await SetDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, social);
+  if (pack.social == null) {
+    pack.social = await _generateSocialData();
+    await UpdateDocument(
+      path + "/" + id + "/" + SOCIAL_PATH,
+      SOCIAL_PATH,
+      pack
+    );
   }
   let layersToDownload = [];
   if (fetchSnapshot && pack.snapshotConfig?.isMerged) {
@@ -152,7 +150,6 @@ export const FetchPackage = async function (
       new Array(layersCount - pack.layers.length).fill(null)
     );
   }
-  pack.social = social;
   pack.publisher = await GetMinerobeUser(pack.publisher.id);
 
   return fetchSnapshot
@@ -232,12 +229,16 @@ export const RemoveLikeData = async function (path: string, id: string) {
 };
 export const AddDownloadData = async function (path: string, id: string) {
   await UpdateRawDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, {
-    downloads: increment(1),
+    social: {
+      downloads: increment(1),
+    },
   });
 };
 export const ResetSocialLikes = async function (path: string, id: string) {
-  await SetDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, {
-    likes: 1,
+  await UpdateDocument(path + "/" + id + "/" + SOCIAL_PATH, SOCIAL_PATH, {
+   social: {
+      likes: 1,
+    },
   });
 };
 export const FetchSocialData = async function (path: string, id: string) {
