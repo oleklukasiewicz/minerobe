@@ -65,7 +65,7 @@
   {/if}
   <div class="render-area">
     <!-- svelte-ignore a11y-missing-attribute -->
-    {#if !item.local.isSnapshot}
+    {#if !item.local?.isSnapshot}
       <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />
     {:else}
       <img
