@@ -1,4 +1,4 @@
-import { currentUser, defaultRenderer } from "$src/data/cache";
+import { currentUser } from "$src/data/cache";
 import {
   OutfitPackage,
   OutfitPackageLink,
@@ -8,30 +8,18 @@ import {
 } from "$src/data/common";
 import {
   DATA_PATH_CONFIG,
-  LAYER_TYPE,
   MODEL_TYPE,
   OUTFIT_TYPE,
   PACKAGE_TYPE,
 } from "$src/data/consts";
 import { GenerateIdForCollection } from "$src/data/firebase";
 import { get } from "svelte/store";
-import {
-  DeletePackage,
-  DeletePackageLayer,
-  FetchPackage,
-  UploadPackage,
-  UploadPackageLayer,
-} from "./pack";
-import { AddItemToWardrobe } from "$src/helpers/apiHelper";
 import { FetchPackagesByFilter } from "$src/helpers/packQueryHelper";
 import { RenderTextureInTemporyNode } from "$src/data/render";
+import { OutfitPackageInstance, OutfitPackageInstanceConfig } from "$src/helpers/outfitPackageHelper";
 
 const OUTFIT_PATH = DATA_PATH_CONFIG.OUTFIT;
 const OUTFIT_LAYER_PATH = "dummy";
-
-export const GenerateIdForOutfit = () => GenerateIdForCollection(OUTFIT_PATH);
-export const GenerateIdForOutfitLayer = () =>
-  GenerateIdForCollection(OUTFIT_LAYER_PATH);
 
 const parseToLocal = async function (data: OutfitPackage) {
   data.outfitType =
@@ -63,45 +51,19 @@ const parseSnapshot = async function (
 
   return config;
 };
-const parseSnapshotLocal = async function (x: any,y:any) {
+const parseSnapshotLocal = async function (x: any, y: any) {
   return y;
 };
-export const FetchOutfit = async function (
-  id: string,
-  layers: any = -1,
-  model?: string,
-  snapshot: boolean = false
-) {
-  let parsed = await FetchPackage(
-    OUTFIT_PATH,
-    id,
-    parseToLocal,
-    layers,
-    snapshot,
-    parseSnapshotLocal
-  );
-  if (parsed == null) return null;
-  parsed.model = model || parsed.model;
-  return parsed;
-};
-export const UploadOutfit = async function (
-  outfit: OutfitPackage,
-  isNew: boolean = false
-) {
-  return await UploadPackage(
-    outfit,
-    OUTFIT_PATH,
-    undefined,
-    isNew,
-    true,
-    parseSnapshot
-  );
-};
-export const CreateOutfit = async function (
-  addToWardrobe: boolean = false,
-  isShared: boolean = false
-) {
-  console.log("Creating new outfit");
+
+const config = new OutfitPackageInstanceConfig();
+config.sourcePath = OUTFIT_PATH;
+config.isMerged = false;
+config.generateSnapshot = true;
+config.layerCountfromLink = 2;
+config.snapshotParser = parseSnapshot;
+config.parserLocal = parseToLocal;
+config.snapshotParserLocal = parseSnapshotLocal;
+config.newPackage = function () {
   let outfit = new OutfitPackage(
     "New outfit",
     MODEL_TYPE.ALEX,
@@ -109,28 +71,51 @@ export const CreateOutfit = async function (
     PACKAGE_TYPE.OUTFIT,
     get(currentUser),
     GenerateIdForOutfit(),
-    isShared,
+    false,
     new PackageSocialData()
   );
-  const res = await UploadOutfit(outfit, true);
-  if (addToWardrobe) {
-    await AddItemToWardrobe(res);
-  }
+  return outfit;
+};
+
+const instance = OutfitPackageInstance(config);
+
+export const GenerateIdForOutfit = () => instance.generateId();
+export const GenerateIdForOutfitLayer = () =>
+  GenerateIdForCollection(OUTFIT_LAYER_PATH);
+
+export const FetchOutfit = async function (
+  id: string,
+  layers: any = -1,
+  model?: string,
+  snapshot: boolean = false
+) {
+  return await instance.fetch(id, layers, model, snapshot);
+};
+export const UploadOutfit = async function (
+  outfit: OutfitPackage,
+  isNew: boolean = false
+) {
+  return await instance.upload(outfit, isNew);
+};
+export const CreateOutfit = async function (
+  addToWardrobe: boolean = false,
+  isShared: boolean = false
+) {
+  console.log("Creating new outfit");
+  let outfit = await instance.create(addToWardrobe, isShared);
   return outfit;
 };
 export const DeleteOutfit = async function (outfit: OutfitPackage) {
-  await DeletePackage(OUTFIT_PATH, outfit.id);
+  return await instance.delete(outfit.id);
 };
 export const UploadLayer = async function (
   pack: OutfitPackage,
   layer: OutfitLayer
 ) {
-  if (layer.type == LAYER_TYPE.LOCAL) {
-    await UploadPackageLayer(pack, layer, OUTFIT_PATH,undefined,true,parseSnapshot);
-  }
+  await instance.uploadLayer(pack, layer);
 };
 export const RemoveLayer = async function (id: string, layerId: string) {
-  await DeletePackageLayer(id, layerId, OUTFIT_PATH,true);
+  instance.removeLayer(id, layerId);
 };
 export const FetchOutfitByFilter = async function (
   ids: string[],
@@ -140,5 +125,5 @@ export const FetchOutfitByFilter = async function (
   return outfits;
 };
 export const FetchOutfitFromLink = async function (link: OutfitPackageLink) {
-  return await FetchOutfit(link.id, link.variantId || 2, link.model, true);
+  return await instance.fetchFromLink(link);
 };
