@@ -13,7 +13,7 @@
   </b>
   <div class="data">
     <div class="labels">
-      {#if !item.isShared}
+      {#if item.isShared}
         <Label variant="rare" text="Shared" />
       {/if}
     </div>

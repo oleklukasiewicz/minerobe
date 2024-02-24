@@ -3,6 +3,7 @@ import {
   OutfitPackageCollection,
   PackageSocialData,
   MinerobeUser,
+  OutfitPackage,
 } from "$src/data/common";
 import { DATA_PATH_CONFIG, PACKAGE_TYPE } from "$src/data/consts";
 import {
@@ -14,6 +15,8 @@ import {
 import { get } from "svelte/store";
 import { currentUser } from "$src/data/cache";
 import { AddItemToWardrobe } from "$src/helpers/other/apiHelper";
+import { setsIntance } from "./sets";
+import { outfitsInstance } from "./outfits";
 
 const COLLECTION_PATH = DATA_PATH_CONFIG.OUTFIT_COLLECTION;
 
@@ -23,26 +26,31 @@ const ParseOutfitCollectionToLocal = async function (
   pack: OutfitPackageCollection
 ) {
   let parsed = Object.assign({}, pack);
+  let outfits: OutfitPackage[] = [];
   for (let i = 0; i < parsed.outfits.length; i++) {
     let outfit = parsed.outfits[i];
-    // if (outfit.type == PACKAGE_TYPE.OUTFIT_SET_LINK)
-    //   return await FetchOutfitSetSnapshotFromLink(outfit as any);
-    // else return await FetchOutfitSnapshotFromLink(outfit as any);
+    if (outfit.type == PACKAGE_TYPE.OUTFIT_SET_LINK)
+      outfits.push(await setsIntance.fetchFromLink(outfit as any));
+    else outfits.push(await outfitsInstance.fetchFromLink(outfit as any));
   }
+  parsed.outfits = outfits;
   return parsed;
 };
 const ParseOutfitCollectionToDatabase = async function (
   pack: OutfitPackageCollection
 ) {
   let parsed = Object.assign({}, pack);
-  parsed.outfits.map((outfit) => {
-    new OutfitPackageLink(
-      outfit.id,
-      outfit.model,
-      outfit.type,
-      outfit.variantId
-    );
-  });
+  parsed.outfits = parsed.outfits.map(
+    (outfit: any) =>
+      new OutfitPackageLink(
+        outfit.id,
+        outfit.model,
+        outfit.type == PACKAGE_TYPE.OUTFIT_SET
+          ? PACKAGE_TYPE.OUTFIT_SET_LINK
+          : PACKAGE_TYPE.OUTFIT_LINK,
+        outfit.variantId
+      )
+  ) as any;
   parsed.publisher = new MinerobeUser(parsed.publisher.id, null, null);
   return parsed;
 };

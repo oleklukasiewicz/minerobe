@@ -37,7 +37,12 @@
     userSettings,
     isMobileView,
   } from "$data/cache";
-  import { CHANGE_TYPE, LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
+  import {
+    CHANGE_TYPE,
+    LAYER_TYPE,
+    MODEL_TYPE,
+    PACKAGE_TYPE,
+  } from "$data/consts";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
@@ -51,18 +56,23 @@
   import { mergeImages } from "$src/data/imageMerger.js";
   import {
     AddItemToWardrobe,
+    AddToCollection,
+    IsItemInCollection,
     IsItemInWardrobe,
+    RemoveFromCollection,
     RemoveItemFromWardrobe,
   } from "$src/helpers/other/apiHelper";
 
   import { outfitsInstance } from "$src/api/outfits";
-  import {  setsIntance } from "$src/api/sets";
+  import { setsIntance } from "$src/api/sets";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
   import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
   import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper.js";
+  import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
+  import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -99,6 +109,8 @@
   let isDragging = false;
   let rendererLayers: FileData[] = [];
   let defaultRenderProvider;
+
+  let isCollectionDialogOpen = false;
 
   let isPackageInWardrobe = false;
   let updateAnimation: (animation: any) => void = () => {};
@@ -213,6 +225,14 @@
     const anims = GetAnimationForPackageChange(pack, changeType, layerIndex);
     if (anims.filter((x) => x).length == 1) return;
     anims.forEach((anim) => updateAnimation(anim));
+  };
+  //collection
+  const addToCollection = async function (e) {
+    const collection = e.detail.collection;
+    if (IsItemInCollection(collection, $localPackage))
+      RemoveFromCollection(collection, $localPackage);
+    else await AddToCollection(collection, $localPackage);
+    isCollectionDialogOpen = false;
   };
   //subs
   itemModelType.subscribe((model) => updateTexture());
@@ -369,8 +389,9 @@
             disabled={$itemLayers.length == 0 || !loaded}
             size="large"
           />
-          {#if $currentUser?.id != null}
+          {#if $currentUser.id != null}
             <Button
+              on:click={() => (isCollectionDialogOpen = true)}
               label={"Add to collection"}
               onlyIcon={!$isMobileView}
               icon={ListIcon}
@@ -408,6 +429,12 @@
       {/if}
     </div>
   </div>
+  <Dialog bind:open={isCollectionDialogOpen} label="Add to collections"
+    ><CollectionPicker
+      items={$wardrobe.collections}
+      on:select={addToCollection}
+    />
+  </Dialog>
 </div>
 
 <style lang="scss">

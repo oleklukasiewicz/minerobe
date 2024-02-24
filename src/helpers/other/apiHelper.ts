@@ -1,6 +1,5 @@
-import {
-  FetchOutfitByFilter, outfitsInstance,
-} from "$src/api/outfits";
+import { UploadOutfitCollection } from "$src/api/collection";
+import { FetchOutfitByFilter, outfitsInstance } from "$src/api/outfits";
 import { setsIntance } from "$src/api/sets";
 import { AddLike, RemoveLike } from "$src/api/social";
 import { wardrobe } from "$src/data/cache";
@@ -51,7 +50,7 @@ export const AddItemToWardrobe = function (
   if (item.type == PACKAGE_TYPE.OUTFIT) {
     wardrobeObj.outfits.push(item as OutfitPackage);
   }
-  if(item.type == PACKAGE_TYPE.OUTFIT_COLLECTION){
+  if (item.type == PACKAGE_TYPE.OUTFIT_COLLECTION) {
     wardrobeObj.collections.push(item as OutfitPackageCollection);
   }
   wardrobe.set(wardrobeObj);
@@ -68,7 +67,7 @@ export const RemoveItemFromWardrobe = function (id, type) {
     );
     return false;
   }
-  if(type == PACKAGE_TYPE.OUTFIT_COLLECTION){
+  if (type == PACKAGE_TYPE.OUTFIT_COLLECTION) {
     wardrobeObj.collections = wardrobeObj.collections.filter(
       (collection) => collection?.id != id
     );
@@ -88,7 +87,7 @@ export const IsItemInWardrobe = function (item, wardrobe) {
   if (item.type == PACKAGE_TYPE.OUTFIT) {
     return wardrobe.outfits.some((outfit) => outfit.id == item.id);
   }
-  if(item.type == PACKAGE_TYPE.OUTFIT_COLLECTION){
+  if (item.type == PACKAGE_TYPE.OUTFIT_COLLECTION) {
     return wardrobe.collections.some((collection) => collection.id == item.id);
   }
   return false;
@@ -118,4 +117,36 @@ export const SplitOutfitPackages = function (packs: OutfitPackage[]) {
     splited = splited.concat(SplitOutfitPackage(pack));
   });
   return splited;
+};
+export const AddToCollection = async function (
+  collection: OutfitPackageCollection,
+  item: OutfitPackage
+) {
+  if (
+    !collection.outfits.some(
+      (outfit) => outfit.id == item.id && outfit.type == item.type
+    )
+  ) {
+    collection.outfits.push(item as any);
+  }
+  const resp = await UploadOutfitCollection(collection);
+  return resp;
+};
+export const RemoveFromCollection = async function (
+  collection: OutfitPackageCollection,
+  item: OutfitPackage
+) {
+  collection.outfits = collection.outfits.filter(
+    (outfit) => outfit.id != item.id || outfit.type != item.type
+  );
+  const resp = await UploadOutfitCollection(collection);
+  return resp;
+};
+export const IsItemInCollection = function (
+  collection: OutfitPackageCollection,
+  item: OutfitPackage
+) {
+  return collection.outfits.some(
+    (outfit) => outfit.id == item.id && outfit.type == item.type
+  );
 };

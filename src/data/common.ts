@@ -272,7 +272,7 @@ export class SkinData {
 export class OutfitPackageCollection {
   id: string;
   name: string;
-  outfits: OutfitPackage[] | OutfitPackageLink[];
+  outfits: (OutfitPackage)[];
   displayMode: string;
   publisher: MinerobeUser;
   isShared: boolean;

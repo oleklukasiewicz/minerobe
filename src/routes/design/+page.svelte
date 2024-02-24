@@ -65,8 +65,11 @@
   import { outfitsInstance } from "$src/api/outfits";
   import {
     AddItemToWardrobe,
+    AddToCollection,
     FetchWardrobeOutfitsByCategory,
+    IsItemInCollection,
     IsItemInWardrobe,
+    RemoveFromCollection,
     RemoveItem,
     UpdateItemInWardrobe,
   } from "$src/helpers/other/apiHelper";
@@ -83,7 +86,6 @@
   import SocialInfoDialog from "$lib/components/dialog/SocialInfoDialog.svelte";
   import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper";
   import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
-
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -438,6 +440,14 @@
     applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
     currentInstance.uploadLayer($itemPackage, $selectedLayer);
   };
+  //collections
+  const addToCollection = async function (e) {
+    const collection = e.detail.collection;
+    if (IsItemInCollection(collection, $itemPackage))
+      RemoveFromCollection(collection, $itemPackage);
+    else await AddToCollection(collection, $itemPackage);
+    isCollectionDialogOpen = false;
+  };
   //subscribtions
   itemPackage.subscribe((pack) => {
     if (!loaded) return;
@@ -742,7 +752,10 @@
     />
   </Dialog>
   <Dialog bind:open={isCollectionDialogOpen} label="Add to collections"
-    ><CollectionPicker items={$wardrobe.collections} />
+    ><CollectionPicker
+      items={$wardrobe.collections}
+      on:select={addToCollection}
+    />
   </Dialog>
 </div>
 

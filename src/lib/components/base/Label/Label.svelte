@@ -20,6 +20,7 @@ export let style: string = "";
     text-shadow: 0 1px rgba(255, 255, 255, 0.6);
     user-select: none;
     text-align: end;
+    color: var(--color-theme-font);
   }
   .label.dense {
     padding: 1px 6px;
