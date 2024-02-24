@@ -21,8 +21,6 @@
   import ListIcon from "$icons/list.svg?raw";
   import { OUTFIT_TYPE } from "$src/data/consts";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
-  import { CreateOutfitSet } from "$src/api/sets";
-  import { CreateOutfit } from "$src/api/outfits";
   import {
     GetCategoriesFromList,
     GetOutfitIconFromType,
@@ -31,7 +29,8 @@
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import { CreateOutfitCollection } from "$src/api/collection";
-  import { IsItemIdInWardrobe } from "$src/helpers/apiHelper";
+  import { setsIntance } from "$src/api/sets";
+  import { outfitsInstance } from "$src/api/outfits";
 
   let currentView = "sets";
   let loaded = false;
@@ -45,11 +44,11 @@
     });
   });
   const addNewSet = async function () {
-    const newSet = await CreateOutfitSet(true);
+    const newSet = await setsIntance.create(true);
     navigateToDesign(newSet);
   };
   const addNewOutfit = async function () {
-    const newSet = await CreateOutfit(true);
+    const newSet = await outfitsInstance.create(true);
     navigateToDesign(newSet);
   };
   const addNewCollection = async function () {

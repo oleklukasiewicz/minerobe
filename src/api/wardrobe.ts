@@ -6,10 +6,10 @@ import {
 } from "$src/data/common";
 import { GetDocument, SetDocument } from "$src/data/firebase";
 import { get } from "svelte/store";
-import { FetchOutfitSetFromLink } from "./sets";
-import { FetchOutfitFromLink } from "./outfits";
 import { PACKAGE_TYPE } from "$src/data/consts";
 import { FetchOutfitCollection } from "./collection";
+import { setsIntance } from "./sets";
+import { outfitsInstance } from "./outfits";
 
 const WARDROBE_PATH = "wardrobes";
 
@@ -31,12 +31,12 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
   const parsedSets = Promise.all(
     data.sets.map(
       async (item: any) =>
-        await FetchOutfitSetFromLink(item)
+        await setsIntance.fetchFromLink(item)
     )
   );
   const parsedOutfits = Promise.all(
     data.outfits.map(
-      async (item: any) => await FetchOutfitFromLink(item)
+      async (item: any) => await outfitsInstance.fetchFromLink(item)
     )
   );
   const parsedCollections = Promise.all(

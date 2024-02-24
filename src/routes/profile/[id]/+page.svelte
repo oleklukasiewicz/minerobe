@@ -9,9 +9,8 @@
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import { OutfitPackageLink } from "$src/data/common";
   import { OUTFIT_TYPE } from "$src/data/consts";
-  import { FetchOutfitSetFromLink } from "$src/api/sets";
-  import { FetchOutfitFromLink } from "$src/api/outfits";
-
+  import { setsIntance } from "$src/api/sets";
+  import { outfitsInstance } from "$src/api/outfits";
   export let data: any;
 
   let items = [];
@@ -30,9 +29,9 @@
     for (let i = 0; i < itemsLinks.length; i++) {
       const item = itemsLinks[i];
       if (item.type == OUTFIT_TYPE.OUTFIT_SET) {
-        items.push(await FetchOutfitSetFromLink(item));
+        items.push(await setsIntance.fetchFromLink(item));
       } else {
-        items.push(await FetchOutfitFromLink(item));
+        items.push(await outfitsInstance.fetchFromLink(item));
       }
     }
       laoded = true;
