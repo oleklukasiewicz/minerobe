@@ -14,9 +14,9 @@ import {
 } from "$src/data/consts";
 import { GenerateIdForCollection } from "$src/data/firebase";
 import { get } from "svelte/store";
-import { FetchPackagesByFilter } from "$src/helpers/packQueryHelper";
+import { FetchPackagesByFilter } from "$src/helpers/package/packQueryHelper";
 import { RenderTextureInTemporyNode } from "$src/data/render";
-import { OutfitPackageInstance, OutfitPackageInstanceConfig } from "$src/helpers/outfitPackageHelper";
+import { OutfitPackageInstance, OutfitPackageInstanceConfig } from "$src/helpers/package/packageInstanceHelper";
 
 const OUTFIT_PATH = DATA_PATH_CONFIG.OUTFIT;
 const OUTFIT_LAYER_PATH = "dummy";

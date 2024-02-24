@@ -46,14 +46,14 @@
   import DefaultAnimation from "$animation/default";
   import HandsUpAnimation from "$animation/handsup";
 
-  import { ExportImageLayers } from "$src/helpers/imageOperationsHelper.js";
-  import { sortOutfitLayersByColor } from "$src/helpers/imageDataHelpers.js";
+  import { ExportImageLayers } from "$src/helpers/data/dataTransferHelper.js";
+  import { sortOutfitLayersByColor } from "$src/helpers/image/imageDataHelpers.js";
   import { mergeImages } from "$src/data/imageMerger.js";
   import {
     AddItemToWardrobe,
     IsItemInWardrobe,
     RemoveItemFromWardrobe,
-  } from "$src/helpers/apiHelper";
+  } from "$src/helpers/other/apiHelper";
 
   import { outfitsInstance } from "$src/api/outfits";
   import {  setsIntance } from "$src/api/sets";
@@ -61,8 +61,8 @@
   import { AddDownload } from "$src/api/social";
   import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import { GetAnimationForPackageChange } from "$src/helpers/animationHelper.js";
-  import type { OutfitPackageInstance } from "$src/helpers/outfitPackageHelper.js";
+  import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
+  import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper.js";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(

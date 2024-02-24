@@ -10,7 +10,7 @@ import {
 } from "./cache";
 import { get } from "svelte/store";
 import { MODEL_TYPE } from "./consts";
-import { GetCameraConfigForType } from "$src/helpers/renderHelper";
+import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
 export class CameraConfig {
   rotation: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
   position: THREE.Vector3 = new THREE.Vector3(0, 0.05, 1);

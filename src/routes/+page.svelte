@@ -3,7 +3,7 @@
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import { FetchLandingPage } from "$src/api/landing";
   import { defaultRenderer, isMobileView, userSettings } from "$src/data/cache";
-  import { navigateToOutfitPackage } from "$src/helpers/navigationHelper";
+  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
 
   let mostLiked = [];

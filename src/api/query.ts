@@ -10,7 +10,7 @@ import {
   QUERY_DATA_TYPE,
 } from "$src/data/consts";
 import { SetDocument } from "$src/data/firebase";
-import { FindColorTitle } from "$src/helpers/colorHelper";
+import { FindColorTitle } from "$src/helpers/image/colorHelper";
 
 const QUERY_PATH = DATA_PATH_CONFIG.QUERY;
 

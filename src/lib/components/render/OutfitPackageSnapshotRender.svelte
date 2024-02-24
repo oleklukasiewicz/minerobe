@@ -8,7 +8,7 @@
     RenderProvider,
     RenderSnapshot,
   } from "$src/data/render";
-  import { GetCameraConfigForType } from "$src/helpers/renderHelper";
+  import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
   import { onMount } from "svelte";
   import { mergeImages } from "$src/data/imageMerger";
 

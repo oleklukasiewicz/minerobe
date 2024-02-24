@@ -13,9 +13,9 @@ import {
   PACKAGE_TYPE,
 } from "$src/data/consts";
 import { get } from "svelte/store";
-import { MergePackageLayers } from "$src/helpers/imageDataHelpers";
+import { MergePackageLayers } from "$src/helpers/image/imageDataHelpers";
 import { RenderTextureInTemporyNode } from "$src/data/render";
-import { OutfitPackageInstance, OutfitPackageInstanceConfig } from "$src/helpers/outfitPackageHelper";
+import { OutfitPackageInstance, OutfitPackageInstanceConfig } from "$src/helpers/package/packageInstanceHelper";
 
 const parseSnapshot = async function (
   data: OutfitLayer[],

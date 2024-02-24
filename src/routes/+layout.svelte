@@ -19,7 +19,7 @@
     snapshotTemporaryNode,
   } from "$src/data/cache";
   import { getCurrentUser, loginUser } from "$src/api/auth";
-  import { navigateToProfile } from "$src/helpers/navigationHelper";
+  import { navigateToProfile } from "$src/helpers/other/navigationHelper";
   import Toast from "$component/base/Toast/Toast.svelte";
 
   export const load = async () => {

@@ -9,7 +9,7 @@
   import CloudIcon from "$icons/cloud.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import { currentUser, userSettings } from "$src/data/cache";
-  import { FindColorTitle, FindColor } from "$src/helpers/colorHelper";
+  import { FindColorTitle, FindColor } from "$src/helpers/image/colorHelper";
   import OutfitPackageSnapshotRender from "$component/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";

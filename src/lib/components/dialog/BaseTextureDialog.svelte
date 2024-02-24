@@ -8,7 +8,7 @@
     showToast,
   } from "$src/data/cache";
   import { mergeImages } from "$src/data/imageMerger";
-  import { ImportImage } from "$src/helpers/imageOperationsHelper";
+  import { ImportImage } from "$src/helpers/data/dataTransferHelper";
   import { createEventDispatcher, onMount } from "svelte";
   import DynamicRender from "../render/DynamicRender.svelte";
   import { MODEL_TYPE } from "$src/data/consts";

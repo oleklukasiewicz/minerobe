@@ -60,7 +60,7 @@
     ExportImageLayers,
     ImportImage,
     ImportLayerFromFile,
-  } from "$src/helpers/imageOperationsHelper";
+  } from "$src/helpers/data/dataTransferHelper";
   import { mergeImages } from "$src/data/imageMerger";
   import { outfitsInstance } from "$src/api/outfits";
   import {
@@ -69,21 +69,21 @@
     IsItemInWardrobe,
     RemoveItem,
     UpdateItemInWardrobe,
-  } from "$src/helpers/apiHelper";
+  } from "$src/helpers/other/apiHelper";
   import {
     navigateToOutfitPackage,
     navigateToWardrobe,
-  } from "$src/helpers/navigationHelper";
+  } from "$src/helpers/other/navigationHelper";
   import { setsIntance } from "$src/api/sets";
-  import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
-  import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
+  import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper";
+  import { GetCategoriesFromList } from "$src/helpers/image/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { ShareItem, UnshareItem } from "$src/api/social";
   import AddVariantDialog from "$lib/components/dialog/AddVariantDialog.svelte";
   import SocialInfoDialog from "$lib/components/dialog/SocialInfoDialog.svelte";
-  import type { OutfitPackageInstance } from "$src/helpers/outfitPackageHelper";
+  import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper";
   import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
-  import { collection } from "firebase/firestore";
+
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(

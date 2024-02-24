@@ -17,7 +17,7 @@
   import { onMount } from "svelte";
   import { propertyStore } from "svelte-writable-derived";
   import { logoutUser } from "$src/api/auth";
-  import { navigateToHome } from "$src/helpers/navigationHelper";
+  import { navigateToHome } from "$src/helpers/other/navigationHelper";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
   import Dialog from "$component/base/Dialog/Dialog.svelte";
@@ -27,7 +27,7 @@
     LinkMinecraftAccount,
     UnlinkMinecraftAccount,
   } from "$src/api/settings";
-  import { GetFaceOfRemoteSkin } from "$src/helpers/imageDataHelpers";
+  import { GetFaceOfRemoteSkin } from "$src/helpers/image/imageDataHelpers";
   import OutfitTextureRender from "$lib/components/render/OutfitTextureRender.svelte";
   import BaseTextureDialog from "$lib/components/dialog/BaseTextureDialog.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
@@ -46,9 +46,9 @@
   let authUrl = "";
   let loading = true;
   onMount(async () => {
-    providers = await CreateDefaultRenderProvider($defaultRenderer);
-    isReadyForData.subscribe((v) => {
+    isReadyForData.subscribe(async (v) => {
       if (v.wardrobe) {
+        providers = await CreateDefaultRenderProvider($defaultRenderer);
         loading = false;
       }
     });

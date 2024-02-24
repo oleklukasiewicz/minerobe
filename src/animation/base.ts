@@ -6,7 +6,7 @@ import {
 } from "$data/animation";
 import {
   CreateModelAnimationData,
-} from "$src/helpers/animationHelper";
+} from "$src/helpers/render/animationHelper";
 const BaseAnimation = new RenderAnimation(
   function (scene, keepData = false, modelName) {
     const data = CreateModelAnimationData(scene,modelName);

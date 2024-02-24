@@ -2,7 +2,7 @@
   import type { OutfitPackage } from "$src/data/common";
   import * as THREE from "three";
   import { createEventDispatcher, onMount } from "svelte";
-  import { SplitOutfitPackages } from "$src/helpers/apiHelper";
+  import { SplitOutfitPackages } from "$src/helpers/other/apiHelper";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import ChevronLeftIcon from "$icons/chevron-left.svg?raw";

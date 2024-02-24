@@ -2,8 +2,6 @@
   import type { OutfitPackage } from "$src/data/common";
   import Label from "../base/Label/Label.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
-  import HearthIcon from "$icons/heart.svg?raw";
-  import DownloadIcon from "$icons/download.svg?raw";
   import SpotlightIcon from "$icons/spotlight.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import { _ } from "svelte-i18n";

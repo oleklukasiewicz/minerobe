@@ -6,7 +6,7 @@ import {
   AnimationStepManager,
   AnimationStepState,
   CreateModelAnimationData,
-} from "$src/helpers/animationHelper";
+} from "$src/helpers/render/animationHelper";
 const HandsUpAnimation = new RenderAnimation(
   function (scene, keepData = false, modelName) {
     let data: any = CreateModelAnimationData(scene, modelName);

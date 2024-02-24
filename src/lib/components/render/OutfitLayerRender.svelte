@@ -6,7 +6,7 @@
     RenderProvider,
     RenderSnapshot,
   } from "$src/data/render";
-  import { GetCameraConfigForType } from "$src/helpers/renderHelper";
+  import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
   import { onMount } from "svelte";
 
   export let item: OutfitLayer = null;

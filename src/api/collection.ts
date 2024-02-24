@@ -13,7 +13,7 @@ import {
 } from "$src/data/firebase";
 import { get } from "svelte/store";
 import { currentUser } from "$src/data/cache";
-import { AddItemToWardrobe } from "$src/helpers/apiHelper";
+import { AddItemToWardrobe } from "$src/helpers/other/apiHelper";
 
 const COLLECTION_PATH = DATA_PATH_CONFIG.OUTFIT_COLLECTION;
 

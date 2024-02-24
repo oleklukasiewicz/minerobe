@@ -38,14 +38,6 @@ export const UpdateItemInWardrobe = function (item: OutfitPackage) {
   }
   wardrobe.set(wardrobeObj);
 };
-export const FetchFullWardrobe = async function () {
-  let wardrobeObj = get(wardrobe);
-  for (let i = 0; i < wardrobeObj.outfits.length; i++) {
-    let outfit = await outfitsInstance.fetch(wardrobeObj.outfits[i].id);
-    wardrobeObj.outfits[i] = outfit;
-  }
-  return wardrobeObj;
-};
 export const AddItemToWardrobe = function (
   item: OutfitPackage | OutfitPackageCollection
 ) {
@@ -110,17 +102,7 @@ export const FetchWardrobeOutfitsByCategory = async function (category) {
   let outfits = await FetchOutfitByFilter(outfitsIds, clauses);
   return outfits;
 };
-export const IsItemIdInWardrobe = function (id, wardrobe) {
-  const outfit = wardrobe.outfits.find((outfit) => outfit.id == id);
-  if (outfit != null) return outfit;
-  const set = wardrobe.sets.find((set) => set.id == id);
-  if (set != null) return set;
-  const collection = wardrobe.collections.find((collection) => collection.id == id);
-  if(collection != null) return collection;
-  return null;
-};
 //other
-
 export const SplitOutfitPackage = function (pack: OutfitPackage) {
   let splited = [];
   pack.layers.forEach((layer) => {

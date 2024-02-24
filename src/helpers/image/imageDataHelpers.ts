@@ -6,7 +6,7 @@ import BottomIcon from "$icons/clothes/bottom.svg?raw";
 import ShoesIcon from "$icons/clothes/shoes.svg?raw";
 import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
 import { ConvertColor, GetColorFromFileData } from "./colorHelper";
-import { normalizeStringCase } from "./dataHelper";
+import { normalizeStringCase } from "../data/dataHelper";
 import { mergeImages } from "$src/data/imageMerger";
 
 export const GetOutfitType = function (imageContext: any) {

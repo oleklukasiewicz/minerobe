@@ -5,7 +5,7 @@ import {
   AnimationPropertyStep,
   AnimationStep,
   CreateModelAnimationData,
-} from "$src/helpers/animationHelper";
+} from "$src/helpers/render/animationHelper";
 const NewOutfitBottomAlt2Animation = new RenderAnimation(
   function (scene, keepData = false, modelName) {
     let data: any = CreateModelAnimationData(scene, modelName);

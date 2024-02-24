@@ -11,7 +11,7 @@
     navigateToCollection,
     navigateToDesign,
     navigateToOutfitPackage,
-  } from "$src/helpers/navigationHelper";
+  } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
   import PlusIcon from "$icons/plus.svg?raw";
   import CategoryMenu from "$component/other/CategoryMenu/CategoryMenu.svelte";
@@ -24,7 +24,7 @@
   import {
     GetCategoriesFromList,
     GetOutfitIconFromType,
-  } from "$src/helpers/imageDataHelpers";
+  } from "$src/helpers/image/imageDataHelpers";
   import Search from "$component/base/Search/Search.svelte";
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
