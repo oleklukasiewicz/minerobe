@@ -51,7 +51,7 @@ config.generateSnapshot = false;
 config.snapshotParser = parseSnapshot;
 config.snapshotParserLocal = parseSnapshotLocal;
 config.newPackage = function () {
-  return new OutfitPackage(
+  const set= new OutfitPackage(
     "New Outfit set",
     MODEL_TYPE.ALEX,
     [],
@@ -61,44 +61,6 @@ config.newPackage = function () {
     false,
     new PackageSocialData()
   );
+  return set;
 };
-const instance = OutfitPackageInstance(config);
-
-export const GenerateIdForOutfitSet = () => instance.generateId();
-
-export const UploadOutfitSet = async function (
-  data: OutfitPackage,
-  isNew = false
-) {
-  return await instance.upload(data, isNew);
-};
-export const FetchOutfitSet = async function (
-  id: string,
-  layers: any = -1,
-  model?: string,
-  fetchSnapshot = false
-) {
-  return await instance.fetch(id, layers, model, fetchSnapshot);
-};
-export const CreateOutfitSet = async function (
-  addToWardrobe: boolean = false,
-  isShared: boolean = false
-) {
-  console.log("Creating new outfit set");
-  return await instance.create(addToWardrobe, isShared);
-};
-export const DeleteOutfitSet = async function (outfit: OutfitPackage) {
-  await instance.delete(outfit.id);
-};
-export const UploadSetLayer = async function (
-  pack: OutfitPackage,
-  layer: OutfitLayer
-) {
-  await instance.uploadLayer(pack, layer);
-};
-export const RemoveSetLayer = async function (id: string, layerId) {
-  await instance.removeLayer(id, layerId);
-};
-export const FetchOutfitSetFromLink = async function (link: OutfitPackageLink) {
-  return await instance.fetchFromLink(link);
-};
+export const setsIntance = new OutfitPackageInstance(config);

@@ -62,13 +62,7 @@
     ImportLayerFromFile,
   } from "$src/helpers/imageOperationsHelper";
   import { mergeImages } from "$src/data/imageMerger";
-  import {
-    FetchOutfit,
-    GenerateIdForOutfitLayer,
-    RemoveLayer,
-    UploadLayer,
-    UploadOutfit,
-  } from "$src/api/outfits";
+  import {outfitsInstance } from "$src/api/outfits";
   import {
     AddItemToWardrobe,
     FetchWardrobeOutfitsByCategory,
@@ -80,18 +74,14 @@
     navigateToOutfitPackage,
     navigateToWardrobe,
   } from "$src/helpers/navigationHelper";
-  import {
-    FetchOutfitSet,
-    RemoveSetLayer,
-    UploadOutfitSet,
-    UploadSetLayer,
-  } from "$src/api/sets";
+  import { setsIntance } from "$src/api/sets";
   import { GetAnimationForPackageChange } from "$src/helpers/animationHelper";
   import { GetCategoriesFromList } from "$src/helpers/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { ShareItem, UnshareItem } from "$src/api/social";
   import AddVariantDialog from "$lib/components/dialog/AddVariantDialog.svelte";
   import SocialInfoDialog from "$lib/components/dialog/SocialInfoDialog.svelte";
+  import type { OutfitPackageInstance } from "$src/helpers/outfitPackageHelper";
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -121,6 +111,7 @@
     ($itemModelType) =>
       $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel
   );
+  let currentInstance: OutfitPackageInstance = null;
 
   let modelTexture: string = null;
   let loaded = false;
@@ -155,10 +146,12 @@
       }
       if ($wardrobe?.studio != null) {
         if ($wardrobe.studio.type == PACKAGE_TYPE.OUTFIT_SET_LINK) {
-          $itemPackage = await FetchOutfitSet($wardrobe.studio.id);
+          currentInstance = setsIntance;
         } else {
-          $itemPackage = await FetchOutfit($wardrobe.studio.id);
+          currentInstance = outfitsInstance;
         }
+
+        $itemPackage = await currentInstance.fetch($wardrobe.studio.id);
         loaded = true;
         const categoryCounts = GetCategoriesFromList($wardrobe.outfits);
         pickerCategories = Object.keys(categoryCounts).filter(
@@ -201,11 +194,10 @@
   const removeLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
     if ($itemLayers[index].type == LAYER_TYPE.LOCAL) {
-      if ($isItemSet) {
-        await RemoveSetLayer($itemPackage.id, $itemLayers[index].variantId);
-      } else {
-        await RemoveLayer($itemPackage.id, $itemLayers[index].variantId);
-      }
+      currentInstance.removeLayer(
+        $itemPackage.id,
+        $itemLayers[index].variantId
+      );
     }
     itemLayers.update((layers) => {
       let refresh = false;
@@ -245,11 +237,7 @@
         return layers;
       });
     });
-    if ($isItemSet) {
-      await UploadSetLayer($itemPackage, $selectedLayer);
-    } else {
-      await UploadLayer($itemPackage, $selectedLayer);
-    }
+    currentInstance.uploadLayer($itemPackage, $selectedLayer);
   };
   const updateTexture = async () => {
     if (!loaded) return;
@@ -277,11 +265,7 @@
   };
   const editLayer = async function (e) {
     const layer = e.detail.texture;
-    if ($isItemSet) {
-      await UploadSetLayer($itemPackage, layer);
-    } else {
-      await UploadLayer($itemPackage, layer);
-    }
+    currentInstance.uploadLayer($itemPackage, layer);
   };
   const addNewRemoteLayer = async function (outfit: OutfitPackage) {
     isOutfitPickerOpen = false;
@@ -324,19 +308,15 @@
           newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer, null);
         else
           newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null, null);
-        newOutfit.variantId = GenerateIdForOutfitLayer();
-        newOutfit.isShared= $itemPackage.isShared;
+        newOutfit.variantId = currentInstance.generateLayerId();
+        newOutfit.isShared = $itemPackage.isShared;
         layers.unshift(newOutfit);
       });
       $selectedLayer = newOutfit;
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
       return layers;
     });
-    if ($isItemSet) {
-      await UploadSetLayer($itemPackage, $selectedLayer);
-    } else {
-      await UploadLayer($itemPackage, $selectedLayer);
-    }
+    currentInstance.uploadLayer($itemPackage, $selectedLayer);
   };
   const downloadImage = async () => {
     let layersToExport = rendererLayers;
@@ -408,15 +388,11 @@
               null,
               null
             );
-          newOutfit.variantId = GenerateIdForOutfitLayer();
-          newOutfit.isShared= $itemPackage.isShared;
+          newOutfit.variantId = currentInstance.generateLayerId();
+          newOutfit.isShared = $itemPackage.isShared;
           newLayers.unshift(newOutfit);
           $selectedLayer = newOutfit;
-          if ($isItemSet) {
-            await UploadSetLayer($itemPackage, $selectedLayer);
-          } else {
-            await UploadLayer($itemPackage, $selectedLayer);
-          }
+          currentInstance.uploadLayer($itemPackage, $selectedLayer);
         }
       }
 
@@ -458,11 +434,7 @@
       return layers;
     });
     applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
-    if ($isItemSet) {
-      await UploadSetLayer($itemPackage, $selectedLayer);
-    } else {
-      await UploadLayer($itemPackage, $selectedLayer);
-    }
+    currentInstance.uploadLayer($itemPackage, $selectedLayer);
   };
   //subscribtions
   itemPackage.subscribe((pack) => {
@@ -476,9 +448,7 @@
   itemPackage.subscribe(async (data: OutfitPackage) => {
     if (!loaded) return;
     if (data != null && data.id != null) {
-      if (data.type == PACKAGE_TYPE.OUTFIT_SET) {
-        await UploadOutfitSet(data);
-      } else await UploadOutfit(data);
+      await currentInstance.upload(data);
     }
     data.outfitType = data.layers[0]?.steve.type;
     UpdateItemInWardrobe($itemPackage);

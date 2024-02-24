@@ -59,7 +59,6 @@ export const UploadPackage = async function (
 
   var queryEntries = GenerateQueryEntriesForPackage(item);
   await SetQueryEntriesForPackage(queryEntries);
-
   item.layers = item.layers.map(
     (layer) => new OutfitLayerLink(layer.id, layer.variantId, layer.type)
   );

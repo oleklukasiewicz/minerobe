@@ -55,12 +55,13 @@
     RemoveItemFromWardrobe,
   } from "$src/helpers/apiHelper";
 
-  import { FetchOutfit } from "$src/api/outfits";
-  import { FetchOutfitSet } from "$src/api/sets";
+  import { outfitsInstance } from "$src/api/outfits";
+  import {  setsIntance } from "$src/api/sets";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
   import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
+  import type { OutfitPackageInstanceClass } from "$src/helpers/outfitPackageHelper.js";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -89,6 +90,7 @@
 
   const selectedVariant: Writable<OutfitLayer> = writable(null);
 
+  let currentInstance: OutfitPackageInstanceClass = null;
   let sortedItemLayers = [];
   let modelTexture: string = null;
   let loaded = false;
@@ -112,10 +114,9 @@
       }
       isGuest = readyness.user == null;
       if (!loaded && readyness.fullReadyness) {
-        outfitPackage =
-          type == PACKAGE_TYPE.OUTFIT
-            ? await FetchOutfit(id)
-            : await FetchOutfitSet(id);
+        currentInstance =
+          type == PACKAGE_TYPE.OUTFIT ? outfitsInstance : setsIntance;
+        outfitPackage = await currentInstance.fetch(id);
         if (outfitPackage) {
           localPackage.set(outfitPackage);
         }
@@ -311,9 +312,7 @@
       {:else}
         <div style="display:flex;flex-wrap:wrap;margin-bottom:22px;gap:8px;">
           {#each new Array(8) as _}
-            <Placeholder
-              style="height:68px;width:68px;"
-            />
+            <Placeholder style="height:68px;width:68px;" />
           {/each}
         </div>
       {/if}
@@ -345,18 +344,18 @@
               texture={modelTexture}
               style="flex:1;"
             />
-          {/if}      
-            <Button
-              on:click={downloadImage}
-              label={$_("download")}
-              onlyIcon={!$isMobileView &&
-                $isItemSet &&
-                $userSettings?.linkedMinecraftAccount?.name != null}
-              icon={DownloadIcon}
-              disabled={$itemLayers.length == 0 || !loaded}
-              size="large"
-            />
-            {#if $currentUser?.id != null}
+          {/if}
+          <Button
+            on:click={downloadImage}
+            label={$_("download")}
+            onlyIcon={!$isMobileView &&
+              $isItemSet &&
+              $userSettings?.linkedMinecraftAccount?.name != null}
+            icon={DownloadIcon}
+            disabled={$itemLayers.length == 0 || !loaded}
+            size="large"
+          />
+          {#if $currentUser?.id != null}
             <Button
               label={"Add to collection"}
               onlyIcon={!$isMobileView}
@@ -364,28 +363,28 @@
               size="large"
             />
           {/if}
-            {#if $localPackage.publisher?.id != $currentUser?.id && $currentUser != null}
-              {#if isPackageInWardrobe == false || isGuest}
-                <Button
-                  on:click={addToWardrobe}
-                  onlyIcon={!$isMobileView}
-                  icon={HearthIcon}
-                  disabled={!loaded || isGuest}
-                  size="large"
-                  type="tertiary"
-                  label="Add to wardrobe"
-                />
-              {:else}
-                <Button
-                  on:click={removeFromWardrobe}
-                  onlyIcon={!$isMobileView}
-                  icon={HearthIcon}
-                  disabled={!loaded || isGuest}
-                  size="large"
-                  label="Remove from wardrobe"
-                />
-              {/if}
+          {#if $localPackage.publisher?.id != $currentUser?.id && $currentUser != null}
+            {#if isPackageInWardrobe == false || isGuest}
+              <Button
+                on:click={addToWardrobe}
+                onlyIcon={!$isMobileView}
+                icon={HearthIcon}
+                disabled={!loaded || isGuest}
+                size="large"
+                type="tertiary"
+                label="Add to wardrobe"
+              />
+            {:else}
+              <Button
+                on:click={removeFromWardrobe}
+                onlyIcon={!$isMobileView}
+                icon={HearthIcon}
+                disabled={!loaded || isGuest}
+                size="large"
+                label="Remove from wardrobe"
+              />
             {/if}
+          {/if}
         </div>
       {:else}
         <div style="display: flex; gap:8px; margin-top:36px;">

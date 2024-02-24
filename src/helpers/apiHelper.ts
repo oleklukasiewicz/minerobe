@@ -1,7 +1,7 @@
 import {
-  DeleteOutfit, FetchOutfit, FetchOutfitByFilter,
+  FetchOutfitByFilter, outfitsInstance,
 } from "$src/api/outfits";
-import { DeleteOutfitSet } from "$src/api/sets";
+import { setsIntance } from "$src/api/sets";
 import { AddLike, RemoveLike } from "$src/api/social";
 import { wardrobe } from "$src/data/cache";
 import { OutfitPackage, OutfitPackageCollection } from "$src/data/common";
@@ -17,8 +17,8 @@ export const RemoveItem = function (item: OutfitPackage) {
       return wardrobe;
     });
   }
-  if (item.type == PACKAGE_TYPE.OUTFIT_SET) DeleteOutfitSet(item);
-  if (item.type == PACKAGE_TYPE.OUTFIT) DeleteOutfit(item);
+  if (item.type == PACKAGE_TYPE.OUTFIT_SET) setsIntance.delete(item.id);
+  if (item.type == PACKAGE_TYPE.OUTFIT) outfitsInstance.delete(item.id);
   if (IsItemInWardrobe(item, get(wardrobe)))
     RemoveItemFromWardrobe(item.id, item.type);
 };
@@ -41,7 +41,7 @@ export const UpdateItemInWardrobe = function (item: OutfitPackage) {
 export const FetchFullWardrobe = async function () {
   let wardrobeObj = get(wardrobe);
   for (let i = 0; i < wardrobeObj.outfits.length; i++) {
-    let outfit = await FetchOutfit(wardrobeObj.outfits[i].id);
+    let outfit = await outfitsInstance.fetch(wardrobeObj.outfits[i].id);
     wardrobeObj.outfits[i] = outfit;
   }
   return wardrobeObj;

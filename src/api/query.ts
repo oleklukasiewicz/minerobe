@@ -41,8 +41,11 @@ const _generateEntryForPackage = function (pack: OutfitPackage) {
   //layers data
   entry.variantCount = pack.layers.length;
   entry.variantId = "none";
-  entry.color = pack.layers[0]?.steve.color || "none";
-  entry.normalizedColor = pack.layers[0] ? FindColorTitle(entry.color) : "none";
+  entry.color = pack.layers[0]?.steve.color;
+  if (entry.color)
+    entry.normalizedColor = pack.layers[0]
+      ? FindColorTitle(entry.color)
+      : null;
   entry.outfitType = pack.outfitType || "none";
   return entry;
 };
@@ -70,7 +73,7 @@ const _generateEntryForLayer = function (
   entry.variantCount = 1;
   entry.variantId = layer.variantId;
   entry.color = layer.steve.color;
-  entry.normalizedColor = FindColorTitle(entry.color);
+  if (entry.color) entry.normalizedColor = FindColorTitle(entry.color);
   entry.outfitType = layer.steve.type;
   return entry;
 };

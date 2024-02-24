@@ -70,53 +70,15 @@ config.newPackage = function () {
     [],
     PACKAGE_TYPE.OUTFIT,
     get(currentUser),
-    GenerateIdForOutfit(),
+    undefined,
     false,
     new PackageSocialData()
   );
   return outfit;
 };
 
-const instance = OutfitPackageInstance(config);
+export const outfitsInstance = new OutfitPackageInstance(config);
 
-export const GenerateIdForOutfit = () => instance.generateId();
-export const GenerateIdForOutfitLayer = () =>
-  GenerateIdForCollection(OUTFIT_LAYER_PATH);
-
-export const FetchOutfit = async function (
-  id: string,
-  layers: any = -1,
-  model?: string,
-  snapshot: boolean = false
-) {
-  return await instance.fetch(id, layers, model, snapshot);
-};
-export const UploadOutfit = async function (
-  outfit: OutfitPackage,
-  isNew: boolean = false
-) {
-  return await instance.upload(outfit, isNew);
-};
-export const CreateOutfit = async function (
-  addToWardrobe: boolean = false,
-  isShared: boolean = false
-) {
-  console.log("Creating new outfit");
-  let outfit = await instance.create(addToWardrobe, isShared);
-  return outfit;
-};
-export const DeleteOutfit = async function (outfit: OutfitPackage) {
-  return await instance.delete(outfit.id);
-};
-export const UploadLayer = async function (
-  pack: OutfitPackage,
-  layer: OutfitLayer
-) {
-  await instance.uploadLayer(pack, layer);
-};
-export const RemoveLayer = async function (id: string, layerId: string) {
-  instance.removeLayer(id, layerId);
-};
 export const FetchOutfitByFilter = async function (
   ids: string[],
   clauses: any[]
@@ -124,6 +86,4 @@ export const FetchOutfitByFilter = async function (
   let outfits = await FetchPackagesByFilter(ids, OUTFIT_PATH, clauses);
   return outfits;
 };
-export const FetchOutfitFromLink = async function (link: OutfitPackageLink) {
-  return await instance.fetchFromLink(link);
-};
+
