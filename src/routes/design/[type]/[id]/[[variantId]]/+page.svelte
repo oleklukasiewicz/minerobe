@@ -37,7 +37,7 @@
     userSettings,
     isMobileView,
   } from "$data/cache";
-  import { LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
+  import { CHANGE_TYPE, LAYER_TYPE, MODEL_TYPE, PACKAGE_TYPE } from "$data/consts";
 
   import DownloadIcon from "$icons/download.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
@@ -61,7 +61,8 @@
   import { AddDownload } from "$src/api/social";
   import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import type { OutfitPackageInstanceClass } from "$src/helpers/outfitPackageHelper.js";
+  import { GetAnimationForPackageChange } from "$src/helpers/animationHelper.js";
+  import type { OutfitPackageInstance } from "$src/helpers/outfitPackageHelper.js";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -90,7 +91,7 @@
 
   const selectedVariant: Writable<OutfitLayer> = writable(null);
 
-  let currentInstance: OutfitPackageInstanceClass = null;
+  let currentInstance: OutfitPackageInstance = null;
   let sortedItemLayers = [];
   let modelTexture: string = null;
   let loaded = false;
@@ -204,9 +205,22 @@
     );
     $localPackage.social.likes -= 1;
   };
+  const applyAnimations = function (
+    pack: OutfitPackage,
+    changeType,
+    layerIndex: number
+  ) {
+    const anims = GetAnimationForPackageChange(pack, changeType, layerIndex);
+    if (anims.filter((x) => x).length == 1) return;
+    anims.forEach((anim) => updateAnimation(anim));
+  };
   //subs
   itemModelType.subscribe((model) => updateTexture());
   selectedVariant.subscribe((variant) => updateTexture());
+  itemModelType.subscribe(async (model) => {
+    if (!loaded || !$isItemSet) return;
+    applyAnimations($localPackage, CHANGE_TYPE.MODEL_TYPE_CHANGE, 0);
+  });
 </script>
 
 <div class="item-page">

@@ -78,7 +78,7 @@ export const GetAnimationForPackageChange = function (
   index: number
 ): RenderAnimation[] {
   if (type == CHANGE_TYPE.MODEL_TYPE_CHANGE) {
-    return [];
+    return [NewOutfitBottomAnimation, DefaultAnimation];
   }
   if (type == CHANGE_TYPE.LAYER_ADD) {
     return [

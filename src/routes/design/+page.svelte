@@ -152,12 +152,12 @@
         }
 
         $itemPackage = await currentInstance.fetch($wardrobe.studio.id);
-        loaded = true;
         const categoryCounts = GetCategoriesFromList($wardrobe.outfits);
         pickerCategories = Object.keys(categoryCounts).filter(
           (x) => categoryCounts[x] > 0
         );
         let isPackageInWardrobe = IsItemInWardrobe($itemPackage, $wardrobe);
+        loaded = true;
         //patching
         if (!isPackageInWardrobe && $itemPublisher.id == $currentUser?.id)
           AddItemToWardrobe($itemPackage);
@@ -452,6 +452,10 @@
     }
     data.outfitType = data.layers[0]?.steve.type;
     UpdateItemInWardrobe($itemPackage);
+  });
+  itemModelType.subscribe(async (model) => {
+    if (!loaded || !$isItemSet) return;
+    applyAnimations($itemPackage, CHANGE_TYPE.MODEL_TYPE_CHANGE, 0);
   });
 </script>
 
