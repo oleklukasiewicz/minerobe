@@ -1,0 +1,24 @@
+.outfit-collection-item {
+  padding: 8px;
+  max-width: 300px;
+  transition: var(--time);
+  background-color: var(--color-theme-D1);
+  &:hover {
+    background-color: var(--color-theme-D2);
+  }
+  &:active {
+    background-color: var(--color-theme-D3);
+  }
+  .data {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+    margin-right: 4px;
+    min-height: 26px;
+    flex-direction: row;
+    .labels {
+        flex:1;
+    }
+  }
+}

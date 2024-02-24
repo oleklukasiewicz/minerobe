@@ -323,6 +323,7 @@ button.fab.dynamic:hover
     font-family: minecraft;
     font-size: var(--size-font-subheader);
     border: 0;
+    padding-bottom: 4px;
     background-color: transparent;
     outline: 0;
     border-bottom: 2px solid transparent;

@@ -59,13 +59,6 @@
     .item-actions {
       display: flex;
       gap: 8px;
-      button {
-        flex: 1;
-        font-size: larger;
-      }
-      button.icon {
-        flex: 0;
-      }
     }
   }
 }

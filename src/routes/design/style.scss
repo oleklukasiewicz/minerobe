@@ -37,15 +37,12 @@
     }
     .item-name {
       #item-title {
-        margin: 4px 0px 10px;
+        margin: 4px 8px 10px 0px;
       }
     }
     .item-layers {
       display: flex;
       flex-direction: column;
-      button {
-        font-size: medium;
-      }
     }
     #item-description {
       width: 100%;
@@ -63,23 +60,12 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
-      button {
-        flex: 1;
-        font-size: larger;
-      }
-      button.icon {
-        flex: 0;
-      }
     }
   }
 }
 .outfit-picker-dialog {
   min-width: 60vw;
   margin: 16px;
-  div {
-    display: flex;
-    flex-direction: row;
-  }
 }
 
 @media only screen and (max-width: 700px) {

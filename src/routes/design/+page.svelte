@@ -62,7 +62,7 @@
     ImportLayerFromFile,
   } from "$src/helpers/imageOperationsHelper";
   import { mergeImages } from "$src/data/imageMerger";
-  import {outfitsInstance } from "$src/api/outfits";
+  import { outfitsInstance } from "$src/api/outfits";
   import {
     AddItemToWardrobe,
     FetchWardrobeOutfitsByCategory,
@@ -82,6 +82,8 @@
   import AddVariantDialog from "$lib/components/dialog/AddVariantDialog.svelte";
   import SocialInfoDialog from "$lib/components/dialog/SocialInfoDialog.svelte";
   import type { OutfitPackageInstance } from "$src/helpers/outfitPackageHelper";
+  import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
+  import { collection } from "firebase/firestore";
 
   const itemPackage: Writable<OutfitPackage> = writable(
     new OutfitPackage(
@@ -740,7 +742,8 @@
     />
   </Dialog>
   <Dialog bind:open={isCollectionDialogOpen} label="Add to collections"
-  ></Dialog>
+    ><CollectionPicker items={$wardrobe.collections} />
+  </Dialog>
 </div>
 
 <style lang="scss">

@@ -31,6 +31,7 @@
   import { CreateOutfitCollection } from "$src/api/collection";
   import { setsIntance } from "$src/api/sets";
   import { outfitsInstance } from "$src/api/outfits";
+  import OutfitPackageCollectionItem from "$lib/components/outfit/OutfitPackageCollectionItem/OutfitPackageCollectionItem.svelte";
 
   let currentView = "sets";
   let loaded = false;
@@ -235,10 +236,10 @@
           </h1>{/if}
         <div class="placeholders">
           {#each $wardrobe.collections as item (item.id)}
-            <Button
-              label={item.name}
+            <OutfitPackageCollectionItem
+              {item}
               on:click={() => navigateToCollection(item.id)}
-            ></Button>
+            />
           {/each}
         </div>
         <Button
