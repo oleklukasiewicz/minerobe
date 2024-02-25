@@ -443,9 +443,13 @@
   //collections
   const addToCollection = async function (e) {
     const collection = e.detail.collection;
-    if (IsItemInCollection(collection, $itemPackage))
-      RemoveFromCollection(collection, $itemPackage);
-    else await AddToCollection(collection, $itemPackage);
+    if (!IsItemInCollection(collection, $itemPackage))
+      await AddToCollection(collection, $itemPackage);
+    isCollectionDialogOpen = false;
+  };
+  const removeFromCollection = async function (e) {
+    const collection = e.detail.collection;
+    RemoveFromCollection(collection, $itemPackage);
     isCollectionDialogOpen = false;
   };
   //subscribtions
@@ -753,8 +757,10 @@
   </Dialog>
   <Dialog bind:open={isCollectionDialogOpen} label="Add to collections"
     ><CollectionPicker
+      pack={$itemPackage}
       items={$wardrobe.collections}
-      on:select={addToCollection}
+      on:add={addToCollection}
+      on:remove={removeFromCollection}
     />
   </Dialog>
 </div>
