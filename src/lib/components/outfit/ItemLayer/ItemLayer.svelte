@@ -127,17 +127,17 @@
         {/if}
       </div>
     </span>
-  </div>
   {#if link}
-    <Button
-      icon={ExternalLinkIcon}
-      label={"Go to outfit page"}
-      type="tertiary"
-      href={link}
-      onlyIcon
-      size="large"
-      style="margin:10px;"
-    />
+    <div style="padding:10px;">
+      <Button
+        icon={ExternalLinkIcon}
+        label={"Go to outfit page"}
+        type="tertiary"
+        href={link}
+        onlyIcon
+        size="large"
+      />
+    </div>
   {/if}
   {#if !readonly}
     <div class="actions">
@@ -189,6 +189,7 @@
       />
     </div>
   {/if}
+  </div>  
 </div>
 
 <style lang="scss">

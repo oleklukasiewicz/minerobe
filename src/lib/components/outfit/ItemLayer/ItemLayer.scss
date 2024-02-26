@@ -24,6 +24,7 @@
   .data {
     flex: 1;
     display: flex;
+    flex-wrap: wrap;
     min-width: 300px;
     .render {
       height: 58px;
