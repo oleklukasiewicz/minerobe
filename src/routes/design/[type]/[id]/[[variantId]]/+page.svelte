@@ -229,9 +229,13 @@
   //collection
   const addToCollection = async function (e) {
     const collection = e.detail.collection;
-    if (IsItemInCollection(collection, $localPackage))
-      RemoveFromCollection(collection, $localPackage);
-    else await AddToCollection(collection, $localPackage);
+    if (!IsItemInCollection(collection, $localPackage))
+      await AddToCollection(collection, $localPackage);
+    isCollectionDialogOpen = false;
+  };
+  const removeFromCollection = async function (e) {
+    const collection = e.detail.collection;
+    RemoveFromCollection(collection, $localPackage);
     isCollectionDialogOpen = false;
   };
   //subs
@@ -431,8 +435,10 @@
   </div>
   <Dialog bind:open={isCollectionDialogOpen} label="Add to collections"
     ><CollectionPicker
+      pack={$localPackage}
       items={$wardrobe.collections}
-      on:select={addToCollection}
+     on:add={addToCollection}
+     on:remove={removeFromCollection}
     />
   </Dialog>
 </div>
