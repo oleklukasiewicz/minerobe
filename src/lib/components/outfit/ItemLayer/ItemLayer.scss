@@ -13,9 +13,6 @@
   &.drop-hover {
     outline-color: var(--color-accent);
   }
-  &.disabled {
-    opacity: 1;
-  }
   .actions {
     display: flex;
     padding: 10px;

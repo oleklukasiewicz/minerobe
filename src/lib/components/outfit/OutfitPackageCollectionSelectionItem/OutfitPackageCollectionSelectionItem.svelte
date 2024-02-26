@@ -30,8 +30,9 @@
     </b>
     <div>
       <Button
-        label={!IsItemInCollection(item, pack) ? "Add" : "remove"}
+        label={!IsItemInCollection(item, pack) ? "Add outfit" : "Remove outfit"}
         size="small"
+        type={!IsItemInCollection(item, pack) ? "primary" : "tertiary"}
         on:click={() => {
           !IsItemInCollection(item, pack) ? onAdd() : onRemove();
         }}

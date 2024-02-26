@@ -433,7 +433,7 @@
       {/if}
     </div>
   </div>
-  <Dialog bind:open={isCollectionDialogOpen} label="Add to collections"
+  <Dialog bind:open={isCollectionDialogOpen} label="Collections"
     ><CollectionPicker
       pack={$localPackage}
       items={$wardrobe.collections}

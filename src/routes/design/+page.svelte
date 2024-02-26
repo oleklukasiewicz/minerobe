@@ -755,7 +755,7 @@
       on:uploadVariant={uploadImageForVariant}
     />
   </Dialog>
-  <Dialog bind:open={isCollectionDialogOpen} label="Add to collections"
+  <Dialog bind:open={isCollectionDialogOpen} label="Collections"
     ><CollectionPicker
       pack={$itemPackage}
       items={$wardrobe.collections}
