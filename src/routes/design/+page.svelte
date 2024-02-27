@@ -203,20 +203,20 @@
         $itemLayers[index].variantId
       );
     }
+    let refresh = false;
     itemLayers.update((layers) => {
-      let refresh = false;
 
       if (!$isItemSet && $selectedLayer.name == layers[index].name) {
         refresh = true;
       }
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_REMOVE, index);
       layers.splice(index, 1);
-      if (refresh) {
-        if ($itemLayers.length > 0) $selectedLayer = layers[0];
-        else $selectedLayer = null;
-      }
       return layers;
     });
+    if (refresh) {
+        if ($itemLayers.length > 0) $selectedLayer = $itemLayers[0];
+        else $selectedLayer = null;
+      }
   };
   const addImageVariant = async function (data) {
     const layer = data.detail.texture;
@@ -394,7 +394,7 @@
             );
           newOutfit.variantId = currentInstance.generateLayerId();
           newOutfit.isShared = $itemPackage.isShared;
-          newLayers.unshift(newOutfit);
+          newLayers.push(newOutfit);
           $selectedLayer = newOutfit;
           currentInstance.uploadLayer($itemPackage, $selectedLayer);
         }
