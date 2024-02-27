@@ -16,13 +16,22 @@ export const navigateToDesign = function (packag: OutfitPackage) {
   });
   goto(`/design`);
 };
-export const navigateToWardrobe = function () {
-  goto(`/wardrobe`);
+export const navigateToWardrobe = function (page: string = "sets") {
+  goto(`/wardrobe/${page}`);
 };
-export const navigateToOutfitPackage = function (packag: OutfitPackage,variantId?:string) {
-  const varaint=variantId?variantId:packag.layers[0].variantId
-  goto(`/design/${packag.type==OUTFIT_TYPE.OUTFIT_SET? PACKAGE_TYPE.OUTFIT_SET:PACKAGE_TYPE.OUTFIT}/${packag.id}/${varaint||""}`);
-}
+export const navigateToOutfitPackage = function (
+  packag: OutfitPackage,
+  variantId?: string
+) {
+  const varaint = variantId ? variantId : packag.layers[0].variantId;
+  goto(
+    `/design/${
+      packag.type == OUTFIT_TYPE.OUTFIT_SET
+        ? PACKAGE_TYPE.OUTFIT_SET
+        : PACKAGE_TYPE.OUTFIT
+    }/${packag.id}/${varaint || ""}`
+  );
+};
 export const navigate = function (path: string) {
   goto(path);
 };
@@ -34,4 +43,4 @@ export const navigateToHome = function () {
 };
 export const navigateToCollection = function (id?: string) {
   goto(`/collection/${id || ""}`);
-}
+};

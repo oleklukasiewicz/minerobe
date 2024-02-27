@@ -11,6 +11,7 @@
     navigateToCollection,
     navigateToDesign,
     navigateToOutfitPackage,
+    navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
   import PlusIcon from "$icons/plus.svg?raw";
@@ -32,6 +33,7 @@
   import { setsIntance } from "$src/api/sets";
   import { outfitsInstance } from "$src/api/outfits";
   import OutfitPackageCollectionItem from "$lib/components/outfit/OutfitPackageCollectionItem/OutfitPackageCollectionItem.svelte";
+  import { page } from "$app/stores";
 
   let currentView = "sets";
   let loaded = false;
@@ -42,6 +44,9 @@
   onMount(() => {
     isReadyForData.subscribe((readyness) => {
       loaded = readyness?.wardrobe != null;
+      page.subscribe((value) => {
+        currentView = value.params.page || "sets";
+      });
     });
   });
   const addNewSet = async function () {
@@ -115,21 +120,21 @@
         minimal={$isMobileView}
         selected={currentView == "sets"}
         icon={AnimationIcon}
-        on:click={() => (currentView = "sets")}
+        on:click={() => navigateToWardrobe("sets")}
       />
       <CategoryMenuItem
         label="Outfits"
         minimal={$isMobileView}
         selected={currentView == "outfit"}
         icon={ShoppingBagIcon}
-        on:click={() => (currentView = "outfit")}
+        on:click={() => navigateToWardrobe("outfit")}
       />
       <CategoryMenuItem
         label="Collections"
         minimal={$isMobileView}
         selected={currentView == "collection"}
         icon={ListIcon}
-        on:click={() => (currentView = "collection")}
+        on:click={() => navigateToWardrobe("collection")}
       />
       <span
         class="separator"
