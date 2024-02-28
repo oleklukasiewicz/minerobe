@@ -8,23 +8,35 @@
   grid-template-rows: auto;
   height: calc(100vh - 60px);
   box-sizing: border-box;
-  .outfits-list,
-  .sets-list {
-    margin-top: 16px;
-  }
   .search-btn {
     width: 300px;
+  }
+  .header {
+    display: flex;
+    padding: 12px 12px 4px;
+  }
+  .collection-list
+  {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(175px, 300px));
+    gap: 4px;
   }
   &.mobile {
     display: flex;
     flex-direction: column;
-    .outfits-list,
-    .sets-list {
-      margin-top: 4px;
-    }
     .wardrobe-categories {
       position: static;
       height: auto !important;
+    }
+    .collection-list
+  {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+    gap: 4px;
+  }
+    .header
+    {
+      padding: 4px 4px 0px;
     }
     .search-btn {
       width: 100%;

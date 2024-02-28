@@ -15,6 +15,7 @@
     currentUser,
     hideToast,
     isMobileView,
+    preSetup,
     setup,
     snapshotTemporaryNode,
   } from "$src/data/cache";
@@ -29,6 +30,7 @@
     await waitLocale();
   };
   onMount(async () => {
+    await preSetup();
     await getCurrentUser();
     setup();
   });

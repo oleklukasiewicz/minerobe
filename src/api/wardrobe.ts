@@ -73,7 +73,7 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
 export const FetchWardrobe = async function () {
   let dt = await GetDocument(WARDROBE_PATH, get(currentUser).id);
   if (dt == null) return new WardrobePackage("default_wardrobe", [], []);
-  return ParseWardrobeToLocal(dt);
+  return dt;
 };
 export const UploadWardrobe = async function (data: WardrobePackage) {
   await SetDocument(

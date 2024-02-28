@@ -16,8 +16,8 @@ export const navigateToDesign = function (packag: OutfitPackage) {
   });
   goto(`/design`);
 };
-export const navigateToWardrobe = function (page: string = "sets") {
-  goto(`/wardrobe/${page}`);
+export const navigateToWardrobe = function (page: string = "sets",params?: string) {
+  goto(`/wardrobe/${page}/${params || ""}`);
 };
 export const navigateToOutfitPackage = function (
   packag: OutfitPackage,

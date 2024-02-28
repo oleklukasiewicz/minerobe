@@ -40,7 +40,7 @@ export const wardrobe: Writable<WardrobePackage> = writable({
   studio: null,
   local: null,
 });
-export const snapshotTemporaryNode= writable(null);
+export const snapshotTemporaryNode = writable(null);
 export const baseTexture: Readable<string> = readable(get(planksTexture));
 export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
   let result: any = false;
@@ -81,7 +81,13 @@ export const userSettings: Writable<MinerobeUserSettings> = writable({
 });
 
 let wardrobeSubscription, settingsSubscription, userSubscription;
-
+export const preSetup = function () {
+  const matcher = window.matchMedia("(max-width: 768px)");
+  isMobileViewWritable.set(matcher.matches);
+  matcher.addEventListener("change", (e) => {
+    isMobileViewWritable.set(e.matches);
+  });
+};
 export const setup = function () {
   defaultRenderer.update((renderer: any) => {
     renderer = new THREE.WebGLRenderer({
@@ -90,12 +96,6 @@ export const setup = function () {
     renderer.shadowMap.enabled = true;
     renderer.outputEncoding = 1;
     return renderer;
-  });
-
-  const matcher = window.matchMedia("(max-width: 768px)");
-  isMobileViewWritable.set(matcher.matches);
-  matcher.addEventListener("change", (e) => {
-    isMobileViewWritable.set(e.matches);
   });
   if (userSubscription) userSubscription();
   userSubscription = currentUser.subscribe(async (user) => {
