@@ -16,11 +16,9 @@
   {#if icon}
     <div class="icon-small">{@html icon}</div>
   {/if}
-  {#if !minimal}
-    <span>{label}</span>
-    {#if badge}
-      <span class="badge">{badge}</span>
-    {/if}
+  <span>{label}</span>
+  {#if badge}
+    <span class="badge">{badge}</span>
   {/if}
 </button>
 

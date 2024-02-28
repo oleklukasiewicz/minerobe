@@ -1,10 +1,9 @@
 .category-menu-item {
   height: 100%;
-  &.minimal
-  {
-    height: 40px;
-    width: 40px;
-    padding: 6px 8px;
+  &.minimal {
+    flex: 1;
+    padding: 6px 6px;
+    text-align: center;
   }
   text-align: left;
   &.tertiary {
@@ -20,8 +19,7 @@
     font-family: minecraft-simple;
     font-size: 10px;
   }
-  .badge
-  {
+  .badge {
     float: right;
     padding: 0px 4px;
     box-sizing: border-box;
