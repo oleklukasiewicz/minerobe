@@ -22,13 +22,13 @@
 
   import {
     CHANGE_TYPE,
+    DefaultPackage,
     LAYER_TYPE,
     MODEL_TYPE,
     PACKAGE_TYPE,
   } from "$data/consts";
   import {
     FileData,
-    MinerobeUser,
     OutfitLayer,
     OutfitPackage,
   } from "$data/common";
@@ -36,7 +36,6 @@
     alexModel,
     steveModel,
     currentUser,
-    baseTexture,
     defaultRenderer,
     wardrobe,
     isMobileView,
@@ -61,8 +60,6 @@
     ImportImage,
     ImportLayerFromFile,
   } from "$src/helpers/data/dataTransferHelper";
-  import { mergeImages } from "$src/data/imageMerger";
-  import { outfitsInstance } from "$src/api/outfits";
   import {
     AddItemToWardrobe,
     AddToCollection,
@@ -77,7 +74,6 @@
     navigateToOutfitPackage,
     navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper";
-  import { setsIntance } from "$src/api/sets";
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper";
   import { GetCategoriesFromList } from "$src/helpers/image/imageDataHelpers";
   import { CreateDefaultRenderProvider } from "$src/data/render";
@@ -86,17 +82,13 @@
   import SocialInfoDialog from "$lib/components/dialog/SocialInfoDialog.svelte";
   import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper";
   import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
+  import {
+    getLayersForRender,
+    getPackageInstanceForType,
+    prepareLayersForRender,
+  } from "$src/helpers/view/designHelper";
 
-  const itemPackage: Writable<OutfitPackage> = writable(
-    new OutfitPackage(
-      "",
-      MODEL_TYPE.ALEX,
-      [],
-      PACKAGE_TYPE.OUTFIT,
-      new MinerobeUser("", "", "")
-    )
-  );
-
+  const itemPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
     "layers"
@@ -149,11 +141,7 @@
         return;
       }
       if ($wardrobe?.studio != null) {
-        if ($wardrobe.studio.type == PACKAGE_TYPE.OUTFIT_SET_LINK) {
-          currentInstance = setsIntance;
-        } else {
-          currentInstance = outfitsInstance;
-        }
+        currentInstance= getPackageInstanceForType($wardrobe.studio.type);
 
         $itemPackage = await currentInstance.fetch($wardrobe.studio.id);
         const categoryCounts = GetCategoriesFromList($wardrobe.outfits);
@@ -205,7 +193,6 @@
     }
     let refresh = false;
     itemLayers.update((layers) => {
-
       if (!$isItemSet && $selectedLayer.name == layers[index].name) {
         refresh = true;
       }
@@ -214,9 +201,9 @@
       return layers;
     });
     if (refresh) {
-        if ($itemLayers.length > 0) $selectedLayer = $itemLayers[0];
-        else $selectedLayer = null;
-      }
+      if ($itemLayers.length > 0) $selectedLayer = $itemLayers[0];
+      else $selectedLayer = null;
+    }
   };
   const addImageVariant = async function (data) {
     const layer = data.detail.texture;
@@ -245,25 +232,18 @@
   };
   const updateTexture = async () => {
     if (!loaded) return;
+    if ($selectedLayer == null && $itemLayers.length > 0)
+      $selectedLayer = $itemLayers[0];
 
-    if ($isItemSet) rendererLayers = $itemLayers.map((x) => x[$itemModelType]);
-    else {
-      if ($itemLayers.length > 0) {
-        if ($selectedLayer == null) $selectedLayer = $itemLayers[0];
-        rendererLayers = [$selectedLayer[$itemModelType]];
-      } else {
-        rendererLayers = [];
-      }
-    }
-    modelTexture = await mergeImages(
-      [
-        ...rendererLayers.map((x) => x.content),
-        $isItemSet == true ? $userSettings?.baseTexture : null,
-        $baseTexture,
-      ]
-        .reverse()
-        .filter((x) => x && x.length > 0),
-      undefined,
+    rendererLayers = prepareLayersForRender(
+      $itemLayers,
+      $selectedLayer,
+      $itemModelType,
+      $isItemSet
+    );
+    modelTexture = await getLayersForRender(
+      rendererLayers,
+      $isItemSet,
       $itemModelType
     );
   };
@@ -466,7 +446,6 @@
     if (data != null && data.id != null) {
       await currentInstance.upload(data);
     }
-    data.outfitType = data.layers[0]?.steve.type;
     UpdateItemInWardrobe($itemPackage);
   });
   itemModelType.subscribe(async (model) => {

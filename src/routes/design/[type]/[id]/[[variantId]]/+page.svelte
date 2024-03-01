@@ -22,7 +22,6 @@
 
   import {
     FileData,
-    MinerobeUser,
     OutfitLayer,
     OutfitPackage,
   } from "$data/common";
@@ -31,7 +30,6 @@
     steveModel,
     currentUser,
     wardrobe,
-    baseTexture,
     defaultRenderer,
     isReadyForData,
     userSettings,
@@ -39,6 +37,7 @@
   } from "$data/cache";
   import {
     CHANGE_TYPE,
+    DefaultPackage,
     LAYER_TYPE,
     MODEL_TYPE,
     PACKAGE_TYPE,
@@ -53,7 +52,6 @@
 
   import { ExportImageLayers } from "$src/helpers/data/dataTransferHelper.js";
   import { sortOutfitLayersByColor } from "$src/helpers/image/imageDataHelpers.js";
-  import { mergeImages } from "$src/data/imageMerger.js";
   import {
     AddItemToWardrobe,
     AddToCollection,
@@ -63,8 +61,6 @@
     RemoveItemFromWardrobe,
   } from "$src/helpers/other/apiHelper";
 
-  import { outfitsInstance } from "$src/api/outfits";
-  import { setsIntance } from "$src/api/sets";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
   import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
@@ -73,18 +69,14 @@
   import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper.js";
   import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
   import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
+  import {
+    getLayersForRender,
+    getPackageInstanceForType,
+    prepareLayersForRender,
+  } from "$src/helpers/view/designHelper.js";
+  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper.js";
   export let data;
-  const localPackage: Writable<OutfitPackage> = writable(
-    new OutfitPackage(
-      "New skin",
-      MODEL_TYPE.ALEX,
-      [],
-      PACKAGE_TYPE.OUTFIT,
-      new MinerobeUser(null, null, null),
-      null,
-      false
-    )
-  );
+  const localPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     localPackage,
     "layers"
@@ -127,8 +119,8 @@
       }
       isGuest = readyness.user == null;
       if (!loaded && readyness.fullReadyness) {
-        currentInstance =
-          type == PACKAGE_TYPE.OUTFIT ? outfitsInstance : setsIntance;
+        currentInstance = getPackageInstanceForType(type);
+
         outfitPackage = await currentInstance.fetch(id);
         if (outfitPackage) {
           localPackage.set(outfitPackage);
@@ -142,11 +134,7 @@
           const varaint = outfitPackage.layers.find(
             (x) => x.variantId == variantId
           );
-          if (varaint) {
-            selectedVariant.set(varaint);
-          } else {
-            $selectedVariant = $itemLayers[0];
-          }
+          if (varaint) selectedVariant.set(varaint);
           updateTexture();
           //patching
           if (
@@ -177,26 +165,22 @@
   const updateTexture = async () => {
     if (!loaded) return;
 
-    if ($isItemSet) rendererLayers = $itemLayers.map((x) => x[$itemModelType]);
-    else {
-      if ($itemLayers.length > 0) {
-        if ($selectedVariant == null) $selectedVariant = $itemLayers[0];
-        rendererLayers = [$selectedVariant[$itemModelType]];
-      } else {
-        rendererLayers = [];
-      }
-    }
-    modelTexture = await mergeImages(
-      [
-        ...rendererLayers.map((x) => x.content),
-        $isItemSet == true ? $userSettings?.baseTexture : null,
-        $baseTexture,
-      ]
-        .reverse()
-        .filter((x) => x != null && x.length > 0),
-      undefined,
+    if ($selectedVariant == null && $itemLayers.length > 0)
+      $selectedVariant = $itemLayers[0];
+
+    rendererLayers = prepareLayersForRender(
+      $itemLayers,
+      $selectedVariant,
+      $itemModelType,
+      $isItemSet
+    );
+    modelTexture = await getLayersForRender(
+      rendererLayers,
+      $isItemSet,
       $itemModelType
     );
+
+    navigateToOutfitPackage($localPackage, $selectedVariant.variantId);
   };
   const sortLayersByColor = async function () {
     sortedItemLayers = await sortOutfitLayersByColor(
@@ -437,8 +421,8 @@
     ><CollectionPicker
       pack={$localPackage}
       items={$wardrobe.collections}
-     on:add={addToCollection}
-     on:remove={removeFromCollection}
+      on:add={addToCollection}
+      on:remove={removeFromCollection}
     />
   </Dialog>
 </div>

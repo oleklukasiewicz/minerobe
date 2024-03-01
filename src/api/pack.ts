@@ -35,7 +35,7 @@ const SOCIAL_PATH = DATA_PATH_CONFIG.SOCIAL_DATA;
 export const UploadPackage = async function (
   data: OutfitPackage,
   path: string,
-  parser = (x:OutfitPackage):OutfitPackage| Promise<OutfitPackage> => x,
+  parser = (x: OutfitPackage): OutfitPackage | Promise<OutfitPackage> => x,
   isNew = false,
   generateSnaphot = false,
   snapshotParser = (
@@ -44,7 +44,7 @@ export const UploadPackage = async function (
   ): OutfitPackageSnapshotPackage | Promise<OutfitPackageSnapshotPackage> =>
     new OutfitPackageSnapshotPackage()
 ) {
-  let item = await parser(Object.assign({}, data)) as any;
+  let item = (await parser(Object.assign({}, data))) as any;
   if (!isNew) {
     let exists = await IsDocumentExist(
       path + "/" + item.id + "/" + DATA_PATH,
@@ -59,6 +59,7 @@ export const UploadPackage = async function (
 
   var queryEntries = GenerateQueryEntriesForPackage(item);
   await SetQueryEntriesForPackage(queryEntries);
+  item.outfitType = item.layers[0]?.steve.type;
   item.layers = item.layers.map(
     (layer) => new OutfitLayerLink(layer.id, layer.variantId, layer.type)
   );
@@ -76,14 +77,13 @@ export const UploadPackage = async function (
 export const FetchPackage = async function (
   path: string,
   id: string,
-  parser = (x:OutfitPackage):Promise<OutfitPackage>| OutfitPackage => x,
+  parser = (x: OutfitPackage): Promise<OutfitPackage> | OutfitPackage => x,
   layers: number | string[],
   fetchSnapshot = false,
   snapshotParser = (
     x: OutfitLayer[],
     p: OutfitPackage
-  ): OutfitPackage | Promise<OutfitPackage> =>
-    p
+  ): OutfitPackage | Promise<OutfitPackage> => p
 ) {
   let pack = (await GetDocument(
     path + "/" + id + "/" + DATA_PATH,

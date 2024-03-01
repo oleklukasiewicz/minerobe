@@ -121,13 +121,13 @@ export const CHANGE_TYPE = {
   DOWNLOAD: "download",
   SHARE: "share",
 };
-export const COLOR_TYPE={
-  RGB:"rgb",
-  HEX:"hex",
-  HSL:"hsl",
-  RGBA:"rgba",
-  STRING_COLOR:"string_color"
-}
+export const COLOR_TYPE = {
+  RGB: "rgb",
+  HEX: "hex",
+  HSL: "hsl",
+  RGBA: "rgba",
+  STRING_COLOR: "string_color",
+};
 export const COLLECTION_DISPLAY_MODE = {
   GRID: "grid",
   LIST: "list",
@@ -138,10 +138,10 @@ export const DATA_PATH_CONFIG = {
   OUTFIT_SET: "sets-new",
   OUTFIT_COLLECTION: "collections",
   QUERY: "query-new",
-  PACK_DATA:"itemdata",
-  SOCIAL_DATA:"itemdata",
-  SNAPSHOT_DATA:"snapshot",
-  LAYERS_DATA:"layers",
+  PACK_DATA: "itemdata",
+  SOCIAL_DATA: "itemdata",
+  SNAPSHOT_DATA: "snapshot",
+  LAYERS_DATA: "layers",
 };
 export const QUERY_DATA_TYPE = {
   OUTFIT: "otf",
@@ -149,3 +149,19 @@ export const QUERY_DATA_TYPE = {
   OUTFIT_COLLECTION: "col",
   DEFAULT: "def",
 };
+export const DefaultPackage = {
+  name: "Default",
+  model: MODEL_TYPE.STEVE,
+  type: PACKAGE_TYPE.OUTFIT,
+  layers: [],
+  publisher: null,
+  description: "Default outfit",
+  outfitType: OUTFIT_TYPE.DEFAULT,
+  isShared: false,
+  social:null,
+  id: "dummy",
+  snapshotConfig: null,
+  createdAt: new Date(),
+  modifiedAt: new Date(),
+  local: {},
+}

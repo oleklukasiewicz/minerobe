@@ -34,7 +34,7 @@ export const ExportImageLayers = async function (
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-}
+};
 export const ExportImagePackageJson = async function (
   outfitPackage: OutfitPackage
 ) {
@@ -51,7 +51,7 @@ export const ExportImagePackageJson = async function (
   link.click();
   document.body.removeChild(link);
 };
-export const ImportImagePackageJson = async function (context:OutfitPackage) {
+export const ImportImagePackageJson = async function (context: OutfitPackage) {
   //create node for fle download
   const input = document.createElement("input");
   input.type = "file";
@@ -61,11 +61,14 @@ export const ImportImagePackageJson = async function (context:OutfitPackage) {
   return new Promise<OutfitPackage>((resolve) => {
     input.onchange = (event: any) => {
       let file = event.target.files[0];
-      resolve(ImportImagePackageJsonFromFile(file,context));
+      resolve(ImportImagePackageJsonFromFile(file, context));
     };
   });
 };
-export const ImportImagePackageJsonFromFile = async function (file: File,context:OutfitPackage) {
+export const ImportImagePackageJsonFromFile = async function (
+  file: File,
+  context: OutfitPackage
+) {
   return new Promise<OutfitPackage>((resolve) => {
     const reader = new FileReader();
     reader.onload = async (event) => {
@@ -84,14 +87,16 @@ export const ImportImage = async function () {
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
-  input.multiple=true;
+  input.multiple = true;
   input.click();
 
   return new Promise<FileData[]>((resolve) => {
     input.onchange = (event: any) => {
       let files = Array.from(event.target.files) as any[];
       event.target.value = null;
-      const promises=Promise.all([...files].map(async (file) => await ImportLayerFromFile(file)));
+      const promises = Promise.all(
+        [...files].map(async (file) => await ImportLayerFromFile(file))
+      );
       resolve(promises);
     };
   });
