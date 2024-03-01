@@ -20,11 +20,7 @@
   import SectionTitle from "$component/base/SectionTitle/SectionTitle.svelte";
   import ModelSelection from "$component/outfit/ModelSelection/ModelSelection.svelte";
 
-  import {
-    FileData,
-    OutfitLayer,
-    OutfitPackage,
-  } from "$data/common";
+  import { FileData, OutfitLayer, OutfitPackage } from "$data/common";
   import {
     alexModel,
     steveModel,
@@ -75,6 +71,8 @@
     prepareLayersForRender,
   } from "$src/helpers/view/designHelper.js";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper.js";
+  import { replaceState } from "$app/navigation";
+  import { page } from "$app/stores";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -128,23 +126,21 @@
         defaultRenderProvider =
           await CreateDefaultRenderProvider($defaultRenderer);
 
-        loaded = true;
         if (!isGuest) {
           isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
           const varaint = outfitPackage.layers.find(
             (x) => x.variantId == variantId
           );
           if (varaint) selectedVariant.set(varaint);
-          updateTexture();
           //patching
           if (
             !isPackageInWardrobe &&
             outfitPackage.publisher.id == $currentUser?.id
           )
             addToWardrobe();
-        } else {
-          updateTexture();
         }
+        loaded = true;
+        updateTexture();
         if (!$isItemSet) sortLayersByColor();
       }
     });
@@ -179,8 +175,6 @@
       $isItemSet,
       $itemModelType
     );
-
-    navigateToOutfitPackage($localPackage, $selectedVariant.variantId);
   };
   const sortLayersByColor = async function () {
     sortedItemLayers = await sortOutfitLayersByColor(
@@ -223,8 +217,23 @@
     isCollectionDialogOpen = false;
   };
   //subs
-  itemModelType.subscribe((model) => updateTexture());
-  selectedVariant.subscribe((variant) => updateTexture());
+  itemModelType.subscribe((model) => {
+    if (!loaded) return;
+    updateTexture();
+  });
+  selectedVariant.subscribe((variant) => {
+    if (!loaded) return;
+    updateTexture();
+    replaceState(
+      "/design/" +
+        $localPackage.type +
+        "/" +
+        $localPackage.id +
+        "/" +
+        $selectedVariant.variantId,
+     null
+    );
+  });
   itemModelType.subscribe(async (model) => {
     if (!loaded || !$isItemSet) return;
     applyAnimations($localPackage, CHANGE_TYPE.MODEL_TYPE_CHANGE, 0);
@@ -420,7 +429,7 @@
   <Dialog bind:open={isCollectionDialogOpen} label="Collections"
     ><CollectionPicker
       pack={$localPackage}
-      items={$wardrobe.collections|| []}
+      items={$wardrobe.collections || []}
       on:add={addToCollection}
       on:remove={removeFromCollection}
     />

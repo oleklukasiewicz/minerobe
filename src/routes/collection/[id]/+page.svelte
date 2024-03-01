@@ -5,8 +5,9 @@
     FetchOutfitCollection,
     UploadOutfitCollection,
   } from "$src/api/collection";
-  import { defaultRenderer, isReadyForData } from "$src/data/cache";
+  import { defaultRenderer, isReadyForData, userSettings } from "$src/data/cache";
   import type { OutfitPackageCollection } from "$src/data/common";
+  import { UpdateCollectionInWardrobe } from "$src/helpers/other/apiHelper";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
@@ -35,11 +36,15 @@
   localCollection.subscribe(async (value) => {
     if (loaded) {
       await UploadOutfitCollection(value);
+      await UpdateCollectionInWardrobe(value);
     }
   });
 </script>
 
 <div>
+  <div id="header">
+    <input  class="title-input" bind:value={$localCollection.name}/>
+  </div>
   <div class="outfits">
     {#if loaded}
       <OutfitPackageSnapshotList
@@ -48,6 +53,8 @@
         fillMethod="auto-fill"
         renderer={$defaultRenderer}
         items={$localCollection.outfits}
+        withBaseTexture={$userSettings?.baseTexture != null}
+        baseTexture={$userSettings?.baseTexture}
         on:innerselect={goToItemPage}
       />
     {:else}

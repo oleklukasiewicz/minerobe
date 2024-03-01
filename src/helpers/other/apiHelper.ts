@@ -37,6 +37,13 @@ export const UpdateItemInWardrobe = function (item: OutfitPackage) {
   }
   wardrobe.set(wardrobeObj);
 };
+export const UpdateCollectionInWardrobe = function (item: OutfitPackageCollection) {
+  let wardrobeObj = get(wardrobe);
+  wardrobeObj.collections = wardrobeObj.collections.map((collection) =>
+    collection.id == item.id ? item : collection
+  );
+  wardrobe.set(wardrobeObj);
+};
 export const AddItemToWardrobe = function (
   item: OutfitPackage | OutfitPackageCollection
 ) {
