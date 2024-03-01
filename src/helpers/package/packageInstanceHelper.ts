@@ -74,12 +74,11 @@ export class OutfitPackageInstance {
     return parsed;
   }
 
-  async create(
-    addToWardrobe: boolean = false,
-    isShared: boolean = false
-  ) {
+  async create(addToWardrobe: boolean = false, isShared: boolean = false) {
     let pack = await this._config.newPackage();
     pack.id = this._self.generateId();
+    pack.local = {};
+    pack.local.isNew = true;
     if (isShared) pack.isShared = true;
     //if (addToWardrobe) await _addItemToWardrobe(pack);
     await this.upload(pack, true);
@@ -119,5 +118,11 @@ export class OutfitPackageInstance {
       link.model,
       this._config.generateSnapshot
     );
+  }
+  async getDefault() {
+    const def = await this._config.newPackage();
+    def.local={};
+    def.local.isNew = true;
+    return def;
   }
 }

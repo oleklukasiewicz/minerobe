@@ -164,9 +164,11 @@ export const DefaultPackage = {
   outfitType: OUTFIT_TYPE.DEFAULT,
   isShared: false,
   social:null,
-  id: "dummy",
+  id: null,
   snapshotConfig: null,
   createdAt: new Date(),
   modifiedAt: new Date(),
-  local: {},
+  local: {
+    isNew: true,
+  },
 }
