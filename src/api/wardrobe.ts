@@ -47,7 +47,6 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
 
   data.sets = (await parsedSets).filter((item) => item != null);
   data.outfits = (await parsedOutfits).filter((item) => item != null);
-  data.collections = (await parsedCollections).filter((item) => item != null);
   let totalLikes = 0;
   let totalDownloads = 0;
   data.outfits.forEach((item) => {
@@ -73,6 +72,13 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
 export const FetchWardrobe = async function () {
   let dt = await GetDocument(WARDROBE_PATH, get(currentUser).id);
   if (dt == null) return new WardrobePackage("default_wardrobe", [], []);
+  
+  const parsedCollections = Promise.all(
+    dt.collections.map(
+      async (item: any) => await FetchOutfitCollection(item.id)
+    )
+  );
+  dt.collections = (await parsedCollections).filter((item) => item != null);
   return dt;
 };
 export const UploadWardrobe = async function (data: WardrobePackage) {

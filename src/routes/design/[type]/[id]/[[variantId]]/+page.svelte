@@ -420,7 +420,7 @@
   <Dialog bind:open={isCollectionDialogOpen} label="Collections"
     ><CollectionPicker
       pack={$localPackage}
-      items={$wardrobe.collections}
+      items={$wardrobe.collections|| []}
       on:add={addToCollection}
       on:remove={removeFromCollection}
     />

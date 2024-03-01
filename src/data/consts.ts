@@ -154,7 +154,12 @@ export const DefaultPackage = {
   model: MODEL_TYPE.STEVE,
   type: PACKAGE_TYPE.OUTFIT,
   layers: [],
-  publisher: null,
+  publisher: 
+  {
+    id: "dummy",
+    name: "dummy",
+    avatar: "dummy",
+  },
   description: "Default outfit",
   outfitType: OUTFIT_TYPE.DEFAULT,
   isShared: false,
