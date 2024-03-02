@@ -99,7 +99,7 @@
   };
   const onItemSelect = function (e) {
     const item = e.detail.item;
-    if (item.publisher.id != $currentUser.id) navigateToOutfitPackage(item);
+    if (item.publisher.id != $currentUser?.id) navigateToOutfitPackage(item);
     else navigateToDesign(item);
   };
 </script>

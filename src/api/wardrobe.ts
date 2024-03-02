@@ -70,7 +70,7 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
   return data;
 };
 export const FetchWardrobe = async function () {
-  let dt = await GetDocument(WARDROBE_PATH, get(currentUser).id);
+  let dt = await GetDocument(WARDROBE_PATH, get(currentUser)?.id);
   if (dt == null) return new WardrobePackage("default_wardrobe", [], []);
   
   const parsedCollections = Promise.all(
@@ -84,7 +84,7 @@ export const FetchWardrobe = async function () {
 export const UploadWardrobe = async function (data: WardrobePackage) {
   await SetDocument(
     WARDROBE_PATH,
-    get(currentUser).id,
+    get(currentUser)?.id,
     await ParseWardrobeToDatabase(data)
   );
 };

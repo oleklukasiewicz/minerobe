@@ -84,7 +84,7 @@ const createUser = async function (user: any): Promise<MinerobeUser> {
 };
 export const SetMinerobeUser = async function (user: MinerobeUser) {
   if (get(currentUser) && user != null) {
-    return await SetDocument(USER_PATH, get(currentUser).id, user);
+    return await SetDocument(USER_PATH, get(currentUser)?.id, user);
   }
 };
 export const GetMinerobeUser = async function (id: string) {

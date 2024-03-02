@@ -26,7 +26,7 @@ export const SetCurrentSkin = async function (id, model, texture) {
   settins.currentSkin = new SkinData(id, model, texture);
   await UploadSettings(settins);
   const resp = await FetchWithTokenAuth(
-    "/api/service/set_skin/" + id + "/" + model + "/" + get(currentUser).id,
+    "/api/service/set_skin/" + id + "/" + model + "/" + get(currentUser)?.id,
     "GET"
   );
   if (resp.status != 200) {
@@ -39,7 +39,7 @@ export const SetCurrentSkin = async function (id, model, texture) {
 };
 export const UnlinkMinecraftAccount = async function () {
   await FetchWithTokenAuth(
-    "/api/internal/unlink/" + get(currentUser).id,
+    "/api/internal/unlink/" + get(currentUser)?.id,
     "GET"
   );
   const settins = get(userSettings);
@@ -49,7 +49,7 @@ export const UnlinkMinecraftAccount = async function () {
 };
 export const LinkMinecraftAccount = async function () {
   const resp = await FetchWithTokenAuth(
-    "/api/internal/link/" + get(currentUser).id,
+    "/api/internal/link/" + get(currentUser)?.id,
     "GET"
   );
   return await resp.json();

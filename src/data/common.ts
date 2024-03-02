@@ -251,7 +251,7 @@ export class MinerobeUserSettings {
   constructor(
     baseTexture: string,
     theme: string,
-    userId: string = get(currentUser).id
+    userId: string = get(currentUser)?.id
   ) {
     this.baseTexture = baseTexture;
     this.theme = theme;

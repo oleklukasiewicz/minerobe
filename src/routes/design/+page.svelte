@@ -642,7 +642,7 @@
             disabled={$itemLayers.length == 0 || !loaded}
             size="large"
           />
-          {#if $currentUser.id != null}
+          {#if $currentUser?.id != null}
             <Button
               on:click={() => (isCollectionDialogOpen = true)}
               label={"Add to collection"}

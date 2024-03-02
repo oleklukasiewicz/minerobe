@@ -120,7 +120,7 @@
           <span class="mc-font">{$currentUser?.name}</span>
         </div>
         <div class="actions">
-          <Button href="/profile/{$currentUser.id}" label="Profile page" />
+          <Button href="/profile/{$currentUser?.id}" label="Profile page" />
         </div>
       {/if}
     </div>
