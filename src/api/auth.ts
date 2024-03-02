@@ -88,6 +88,6 @@ export const SetMinerobeUser = async function (user: MinerobeUser) {
   }
 };
 export const GetMinerobeUser = async function (id: string) {
-  if (id == get(currentUser).id) return get(currentUser);
+  if (id == get(currentUser)?.id) return get(currentUser);
   return await GetDocument(USER_PATH, id);
 };
