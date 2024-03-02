@@ -56,7 +56,7 @@
       closeable={toast.closeable}
       type={toast.type}
       on:click={toast.action}
-      on:close={()=>hideToast(toast)}
+      on:close={() => hideToast(toast)}
     />
   {/each}
   <div id="nav" class:opened={isMenuOpened} class:closed={!isMenuOpened}>
@@ -91,40 +91,34 @@
 
       {#if $isMobileView}
         <div class="spacer" style="flex:1;" />
-        <button class="dark" style="text-align: left;" on:click={profileAction}>
-          {#if $currentUser != null}
-            <img src={$currentUser.avatar} alt="Avatar" />
-            {$currentUser?.name}
-          {:else}
-            <span class="icon-small"> {@html AvatarIcon}</span>
-            <span
-              style="vertical-align: top;
-            margin-top: 4px;
-            display: inline-block;">{$_("navigation.login")}</span
-            >
-          {/if}
-        </button>
+        <NavigationItem
+        on:click={profileAction}
+        label={$currentUser ? $currentUser?.name : $_("navigation.login")}
+        iconImage={$currentUser ? $currentUser?.avatar : null}
+        icon={$currentUser == null ? AvatarIcon : null}
+        viewId={"profile"}
+        customCall
+      />
       {/if}
     </div>
     {#if !$isMobileView}
       <div class="spacer" style="flex:1;" />
     {/if}
-    <a href="/wardrobe" class:disabled={$currentUser == null}>
-      <button
-        class="icon subscribtion-button dark"
-        class:selected={$page.route.id == "/wardrobe"}
-      >
-        <span class="icon-small"> {@html SubscriptionIcon}</span>
-      </button>
-    </a>
+    <NavigationItem
+      icon={SubscriptionIcon}
+      minimal
+      viewId="wardrobe"
+      disabled={$currentUser?.id == null}
+    />
     {#if !$isMobileView}
-      <button class="icon avatar-button dark" on:click={profileAction}>
-        {#if $currentUser != null}
-          <img src={$currentUser.avatar} alt="Avatar" />
-        {:else}
-          <span class="icon-small"> {@html AvatarIcon}</span>
-        {/if}
-      </button>
+      <NavigationItem
+        on:click={profileAction}
+        minimal
+        iconImage={$currentUser ? $currentUser?.avatar : null}
+        icon={$currentUser == null ? AvatarIcon : null}
+        viewId={"profile"}
+        customCall
+      />
     {/if}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -134,7 +128,11 @@
     <slot />
   </div>
 {/if}
-<div style="min-width: 300px;min-height:300px;max-width:300px; max-height:300px;display:none" bind:this={$snapshotTemporaryNode}></div>
+<div
+  style="min-width: 300px;min-height:300px;max-width:300px; max-height:300px;display:none"
+  bind:this={$snapshotTemporaryNode}
+></div>
+
 <style lang="scss">
   @import "layout_style.scss";
 </style>

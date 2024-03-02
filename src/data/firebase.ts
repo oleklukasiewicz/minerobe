@@ -82,7 +82,7 @@ export const login = async () => {
     // ...
   });
   cUser = res?.user;
-  cToken = await cUser.getIdToken();
+  if (cUser) cToken = await cUser.getIdToken();
   return res?.user;
 };
 
@@ -187,7 +187,7 @@ export const DeleteDocumentAnonymous = async function (
 ) {
   const dataRef = doc(db, path, documentName);
   await deleteDoc(dataRef);
-}
+};
 export const BuildQuery = async function (
   path: string,
   localPath: string,

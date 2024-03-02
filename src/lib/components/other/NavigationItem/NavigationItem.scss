@@ -4,7 +4,9 @@ a {
     color: var(--color-theme);
     box-sizing: border-box;
     padding: 7px 16px;
-    display: inline-table;
+    gap: 8px;
+    display: inline-flex;
+    flex-direction: row;
     cursor: pointer;
     transition: background-color var(--time), border-color var(--time),
         color var(--time);
@@ -12,6 +14,14 @@ a {
     border-top: 2px solid transparent;
     border-bottom: 2px solid transparent;
     float: left;
+    &.minimal {
+        padding: 7px 9px;
+    }
+    &>.item-label
+    {
+       flex:1;
+       padding: 2px;
+    }
 }
 a:hover {
     color: var(--color-theme-D2);
@@ -36,4 +46,9 @@ a.selected:active {
     background-color: var(--color-active);
     border-top-color: var(--color-active-L1);
     border-bottom-color: var(--color-active-D1);
+}
+a img
+{
+    width: 24px;
+    height: 24px;
 }

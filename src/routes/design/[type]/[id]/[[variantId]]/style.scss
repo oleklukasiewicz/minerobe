@@ -2,6 +2,7 @@
   display: flex;
   margin: 30px;
   .render-data {
+    overflow: hidden;
     flex: 1;
     display: block;
     max-height: calc(100vh - 120px);
