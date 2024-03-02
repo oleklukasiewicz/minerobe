@@ -30,6 +30,7 @@
     isReadyForData,
     userSettings,
     isMobileView,
+    isUserGuest,
   } from "$data/cache";
   import {
     CHANGE_TYPE,
@@ -70,9 +71,7 @@
     getPackageInstanceForType,
     prepareLayersForRender,
   } from "$src/helpers/view/designHelper.js";
-  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper.js";
   import { replaceState } from "$app/navigation";
-  import { page } from "$app/stores";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -95,7 +94,6 @@
   let sortedItemLayers = [];
   let modelTexture: string = null;
   let loaded = false;
-  let isGuest = false;
   let isDragging = false;
   let rendererLayers: FileData[] = [];
   let defaultRenderProvider;
@@ -115,34 +113,31 @@
       if (loaded || !readyness) {
         loaded = false;
       }
-      isGuest = readyness.user == null;
-      if (!loaded && readyness.fullReadyness) {
-        currentInstance = getPackageInstanceForType(type);
+      if (loaded || !readyness.fullReadyness) return;
 
-        outfitPackage = await currentInstance.fetch(id);
-        if (outfitPackage) {
-          localPackage.set(outfitPackage);
-        }
-        defaultRenderProvider =
-          await CreateDefaultRenderProvider($defaultRenderer);
+      currentInstance = getPackageInstanceForType(type);
+      outfitPackage = await currentInstance.fetch(id);
+      if (outfitPackage) localPackage.set(outfitPackage);
 
-        if (!isGuest) {
-          isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
-          const varaint = outfitPackage.layers.find(
-            (x) => x.variantId == variantId
-          );
-          if (varaint) selectedVariant.set(varaint);
-          //patching
-          if (
-            !isPackageInWardrobe &&
-            outfitPackage.publisher.id == $currentUser?.id
-          )
-            addToWardrobe();
-        }
-        loaded = true;
-        updateTexture();
-        if (!$isItemSet) sortLayersByColor();
+      defaultRenderProvider =
+        await CreateDefaultRenderProvider($defaultRenderer);
+
+      if (!$isUserGuest) {
+        const varaint = outfitPackage.layers.find(
+          (x) => x.variantId == variantId
+        );
+        if (varaint) selectedVariant.set(varaint);
+        //patching
+        isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
+        if (
+          !isPackageInWardrobe &&
+          outfitPackage.publisher.id == $currentUser?.id
+        )
+          addToWardrobe();
       }
+      loaded = true;
+      updateTexture();
+      if (!$isItemSet) sortLayersByColor();
     });
   });
 
@@ -195,6 +190,8 @@
     );
     $localPackage.social.likes -= 1;
   };
+
+  //animation
   const applyAnimations = function (
     pack: OutfitPackage,
     changeType,
@@ -224,15 +221,16 @@
   selectedVariant.subscribe((variant) => {
     if (!loaded) return;
     updateTexture();
-    replaceState(
-      "/design/" +
-        $localPackage.type +
-        "/" +
-        $localPackage.id +
-        "/" +
-        $selectedVariant.variantId,
-     null
-    );
+    if (!$isItemSet)
+      replaceState(
+        "/design/" +
+          $localPackage.type +
+          "/" +
+          $localPackage.id +
+          "/" +
+          $selectedVariant.variantId,
+        null
+      );
   });
   itemModelType.subscribe(async (model) => {
     if (!loaded || !$isItemSet) return;
@@ -386,7 +384,7 @@
             disabled={$itemLayers.length == 0 || !loaded}
             size="large"
           />
-          {#if $currentUser?.id != null}
+          {#if !$isUserGuest}
             <Button
               on:click={() => (isCollectionDialogOpen = true)}
               label={"Add to collection"}
@@ -395,13 +393,13 @@
               size="large"
             />
           {/if}
-          {#if $localPackage.publisher?.id != $currentUser?.id && $currentUser != null}
-            {#if isPackageInWardrobe == false || isGuest}
+          {#if $localPackage.publisher?.id != $currentUser?.id && !$isUserGuest}
+            {#if isPackageInWardrobe == false || $isUserGuest}
               <Button
                 on:click={addToWardrobe}
                 onlyIcon={!$isMobileView}
                 icon={HearthIcon}
-                disabled={!loaded || isGuest}
+                disabled={!loaded || $isUserGuest}
                 size="large"
                 type="tertiary"
                 label="Add to wardrobe"
@@ -411,7 +409,7 @@
                 on:click={removeFromWardrobe}
                 onlyIcon={!$isMobileView}
                 icon={HearthIcon}
-                disabled={!loaded || isGuest}
+                disabled={!loaded || $isUserGuest}
                 size="large"
                 label="Remove from wardrobe"
               />

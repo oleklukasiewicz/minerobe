@@ -79,6 +79,7 @@ export const userSettings: Writable<MinerobeUserSettings> = writable({
   currentSkin: null,
   currentSkinModel: null,
 });
+export const isUserGuest: Readable<boolean> = derived(currentUser, ($user) => $user?.id == null);
 
 let wardrobeSubscription, settingsSubscription, userSubscription;
 export const preSetup = function () {
