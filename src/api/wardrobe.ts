@@ -39,34 +39,9 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
       async (item: any) => await outfitsInstance.fetchFromLink(item)
     )
   );
-  const parsedCollections = Promise.all(
-    data.collections.map(
-      async (item: any) => await FetchOutfitCollection(item.id)
-    )
-  );
 
   data.sets = (await parsedSets).filter((item) => item != null);
   data.outfits = (await parsedOutfits).filter((item) => item != null);
-  let totalLikes = 0;
-  let totalDownloads = 0;
-  data.outfits.forEach((item) => {
-    totalLikes += item.social?.likes;
-    totalDownloads += item.social?.downloads || 0;
-  });
-  data.sets.forEach((item) => {
-    totalLikes += item.social?.likes;
-    totalDownloads += item.social?.downloads || 0;
-  });
-  data.collections.forEach((item) => {
-    totalLikes += item.social?.likes;
-    totalDownloads += item.social?.downloads || 0;
-  });
-  const local = {
-    totalLikes,
-    totalDownloads,
-  };
-  data.local = local;
-
   return data;
 };
 export const FetchWardrobe = async function () {

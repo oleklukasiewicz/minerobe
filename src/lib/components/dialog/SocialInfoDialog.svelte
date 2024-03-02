@@ -22,17 +22,25 @@
 </script>
 
 <div class="social-dialog">
-  <SectionTitle label="Name" />
-  <h3 style="margin: 0px;">{item.name}</h3>
-  <SectionTitle label="Author" />
-  <Label variant="unique">{item.publisher.name}</Label>
-  <SectionTitle label="Info" />
-  <div style="font-family: minecraft;margin:8px 0px;" class="icon-small">
-    <SocialInfo data={item.social}/>
+  <div class="data">
+    <div style="flex:1;">
+      <SectionTitle label="Name" />
+      <h3 style="margin: 0px;">{item.name}</h3>
+    </div>
+    <div>
+      <SectionTitle label="Author" />
+      <Label variant="unique">{item.publisher.name}</Label>
+    </div>
+    <div>
+      <SectionTitle label="Social" />
+      <div style="font-family: minecraft;margin:8px 0px;" class="icon-small">
+        <SocialInfo data={item.social} />
+      </div>
+    </div>
   </div>
   <br />
   <SectionTitle label="Actions" />
-  <div style="display:flex;gap:8px;max-width:500px;">
+  <div style="display:flex;gap:8px;max-width:calc(100vw - 16px);">
     <Button
       on:click={goToItemPage}
       label={$_("goToItemPage")}
@@ -50,10 +58,13 @@
 <style lang="scss">
   .social-dialog {
     margin: 8px;
-    min-width: 500px;
-    div {
-      display: flex;
-      flex-direction: row;
+    min-width:min(400px, calc(100vw - 16px));
+    & > .data {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      max-width: calc( 100vw - 16px);
+      gap: 32px;
+      margin-right: 8px;
     }
   }
 </style>

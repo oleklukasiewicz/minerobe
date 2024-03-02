@@ -101,16 +101,6 @@
         <Placeholder style="height:46px;margin-bottom:16px;min-width:200px" />
       {/if}
     </div>
-    <div class="header-social">
-      <SectionTitle label="Total" placeholder={loading} />
-      <SocialInfo
-        data={{
-          likes: $wardrobe.local?.totalLikes,
-          downloads: $wardrobe.local?.totalDownloads,
-          isFeatured: false,
-        }}
-      />
-    </div>
   </div>
   <div class="profile-cards">
     <div class="profile-card">

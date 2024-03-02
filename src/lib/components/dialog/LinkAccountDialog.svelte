@@ -21,7 +21,9 @@
 <div class="mc-auth">
   {#if isAuthorized}
     <br />
-    <span class="mc-font-simple" style="font-size: var(--size-font-caption);">Your are linked to account</span>
+    <span class="mc-font-simple" style="font-size: var(--size-font-caption);"
+      >Do you want to unlink from account</span
+    >
     <br />
     <div><Label variant="unique">{profile.name}</Label></div>
     <br />
@@ -36,7 +38,7 @@
     <b class="code mc-font">{authCode}</b>
     <br />
     <span class="mc-font-simple" style="font-size: var(--size-font-caption);"
-      >Refresh page after signing in <br/> (linking may take some time)</span
+      >Refresh page after signing in <br /> (linking may take some time)</span
     >
     <br />
     <Button
