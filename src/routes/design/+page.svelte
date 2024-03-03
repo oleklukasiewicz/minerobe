@@ -649,6 +649,7 @@
               onlyIcon={!$isMobileView}
               icon={ListIcon}
               size="large"
+              type="tertiary"
             />
           {/if}
           {#if $itemPublisher.id == $currentUser?.id}

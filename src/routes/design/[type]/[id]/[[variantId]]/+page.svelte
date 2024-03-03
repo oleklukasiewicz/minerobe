@@ -386,6 +386,7 @@
           />
           {#if !$isUserGuest}
             <Button
+            type="tertiary"
               on:click={() => (isCollectionDialogOpen = true)}
               label={"Add to collection"}
               onlyIcon={!$isMobileView}
