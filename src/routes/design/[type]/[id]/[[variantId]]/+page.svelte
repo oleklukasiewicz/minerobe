@@ -377,12 +377,14 @@
           <Button
             on:click={downloadImage}
             label={$_("download")}
+            fab={!$isMobileView? null : "dynamic"}
             onlyIcon={!$isMobileView &&
               $isItemSet &&
               $userSettings?.linkedMinecraftAccount?.name != null}
             icon={DownloadIcon}
             disabled={$itemLayers.length == 0 || !loaded}
             size="large"
+            style={$isMobileView? "position:fixed" : null}
           />
           {#if !$isUserGuest}
             <Button
@@ -414,6 +416,9 @@
                 label="Remove from wardrobe"
               />
             {/if}
+          {/if}
+          {#if $isItemSet && $isMobileView}
+          <div style="margin-top:46px"></div>
           {/if}
         </div>
       {:else}
