@@ -6,6 +6,8 @@
 
   export let data: PackageSocialData;
   export let dense = false;
+  export let showLikes = true;
+  export let showDownloads = true;
 
   let normalizedLikes: string = "";
   let normalizedDownloads: string = "";
@@ -23,16 +25,16 @@
 </script>
 
 <div class="social-info" class:dense>
-  {#if data?.likes > 0}
-    <div class="icon-custom-small mc-font">
+  {#if data?.likes > 0 && showLikes}
+    <div class="icon-custom-small mc-font data">
       {@html HeartSmallIcon}
       <div class="info-text">
         {normalizedLikes}
       </div>
     </div>
   {/if}
-  {#if data?.downloads > 0}
-    <div class="icon-custom-small mc-font">
+  {#if data?.downloads > 0 && showDownloads}
+    <div class="icon-custom-small mc-font data">
       {@html DownloadSmallIcon}
       <div class="info-text">
         {normalizedDownloads}
@@ -44,14 +46,16 @@
 <style lang="scss">
   .social-info {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     margin-top: 2px;
     &.dense {
       height: 22px;
     }
-  }
-  .icon-custom-small > svg {
-    transform: scale(0.79);
+    &>.data
+    {
+      min-width: 35px;
+    }
   }
   .info-text {
     vertical-align: top;

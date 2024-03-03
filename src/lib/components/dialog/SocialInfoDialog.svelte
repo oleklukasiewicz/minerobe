@@ -33,7 +33,7 @@
     </div>
     <div>
       <SectionTitle label="Social" />
-      <div style="font-family: minecraft;margin:8px 0px;" class="icon-small">
+      <div style="font-family: minecraft;margin:8px 8px 8px 8px;" class="icon-small">
         <SocialInfo data={item.social} />
       </div>
     </div>

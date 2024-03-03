@@ -196,6 +196,7 @@
             <OutfitPackageSnapshotList
               dense={false}
               maxItemWidth="1fr"
+              minItemWidth="175px"
               fillMethod="auto-fill"
               renderer={$defaultRenderer}
               items={filteredList}
@@ -211,7 +212,7 @@
             fab="dynamic"
             size="large"
             icon={PlusIcon}
-            label="New Outfit"
+            label="Create Outfit"
             style="position:fixed"
           />
 
@@ -219,6 +220,7 @@
             <OutfitPackageSnapshotList
               dense={false}
               maxItemWidth="1fr"
+              minItemWidth="175px"
               fillMethod="auto-fill"
               renderer={$defaultRenderer}
               items={filteredList}
@@ -247,7 +249,7 @@
       {:else}
         <div class="placeholders">
           {#each new Array(36) as item, index}
-            <Placeholder style="min-width:175px;height:268px;" />
+            <Placeholder style="min-width:135px;height:268px;" />
           {/each}
         </div>
       {/if}

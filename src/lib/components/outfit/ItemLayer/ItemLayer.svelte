@@ -127,8 +127,7 @@
         {/if}
       </div>
     </span>
-  </div>
-  {#if link}
+    {#if link}
     <Button
       icon={ExternalLinkIcon}
       label={"Go to outfit page"}
@@ -139,6 +138,7 @@
       style="margin:10px;"
     />
   {/if}
+  </div>
   {#if !readonly}
     <div class="actions">
       {#if multiVariant && item.type != LAYER_TYPE.REMOTE}

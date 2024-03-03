@@ -10,7 +10,7 @@
   export let renderer = null;
   export let dense = true;
   export let ready = false;
-  export let minItemWidth = "175px";
+  export let minItemWidth = "135px";
   export let fillMethod="auto-fit"
   export let maxItemWidth = "1fr";
   export let withBaseTexture = false;
