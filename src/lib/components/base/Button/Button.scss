@@ -159,8 +159,12 @@
     }
     &.large {
       padding: 8px 14px 10px;
-      font-size: larger;
+      font-size: var(--font-size-subtitle);
       &.with-label {
+        & span
+        {
+          vertical-align: middle;
+        }
         .icon {
           margin-right: 12px;
           transform: translate(-6px, 4px);
