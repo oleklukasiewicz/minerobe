@@ -61,14 +61,11 @@
     ImportLayerFromFile,
   } from "$src/helpers/data/dataTransferHelper";
   import {
-    AddItemToWardrobe,
     AddToCollection,
     FetchWardrobeOutfitsByCategory,
     IsItemInCollection,
-    IsItemInWardrobe,
     RemoveFromCollection,
     RemoveItem,
-    UpdateItemInWardrobe,
   } from "$src/helpers/other/apiHelper";
   import {
     navigateToOutfitPackage,
@@ -87,6 +84,7 @@
     getPackageInstanceForType,
     prepareLayersForRender,
   } from "$src/helpers/view/designHelper";
+  import { AddItemToWardrobe, IsItemInWardrobe, UpdateItemInWardrobe } from "$src/api/wardrobe";
 
   const itemPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -152,7 +150,7 @@
         loaded = true;
         //patching
         if (!isPackageInWardrobe && $itemPublisher.id == $currentUser?.id)
-          AddItemToWardrobe($itemPackage);
+          await AddItemToWardrobe($itemPackage);
         updateTexture();
       }
     });

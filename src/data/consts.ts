@@ -142,6 +142,7 @@ export const DATA_PATH_CONFIG = {
   SOCIAL_DATA: "itemdata",
   SNAPSHOT_DATA: "snapshot",
   LAYERS_DATA: "layers",
+  WARDROBE: "wardrobes",
 };
 export const QUERY_DATA_TYPE = {
   OUTFIT: "otf",

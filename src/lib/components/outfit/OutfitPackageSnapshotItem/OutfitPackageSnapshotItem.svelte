@@ -95,7 +95,7 @@
       {#if multiple > 0}
         {#each item.layers
           .slice(0, !isSet ? multiple : 1)
-          .filter((x) => x[item.model].color != null) as layer (layer.variantId)}
+          .filter((x) =>x!=null&& x[item.model].color != null) as layer (layer.variantId)}
           <span
             class="color-view"
             title={FindColorTitle(layer[item.model].color)}

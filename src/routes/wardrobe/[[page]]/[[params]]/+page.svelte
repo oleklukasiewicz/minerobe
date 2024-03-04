@@ -20,7 +20,7 @@
   import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
-  import { OUTFIT_TYPE } from "$src/data/consts";
+  import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import {
     GetCategoriesFromList,
@@ -60,10 +60,10 @@
         itemsLoaded = false;
         switch (currentView) {
           case "sets":
-            currentList = $wardrobe.sets;
+            currentList = $wardrobe.outfits.filter(x=> x.type == PACKAGE_TYPE.OUTFIT_SET);
             break;
           case "outfits":
-            currentList = $wardrobe.outfits.filter((x) => {
+            currentList = $wardrobe.outfits.filter(x=> x.type == PACKAGE_TYPE.OUTFIT).filter((x) => {
               return currentViewParams == ""
                 ? true
                 : x.outfitType.toLowerCase() == currentViewParams.toLowerCase();
@@ -196,7 +196,7 @@
             <OutfitPackageSnapshotList
               dense={false}
               maxItemWidth="1fr"
-              minItemWidth="175px"
+              minItemWidth="155px"
               fillMethod="auto-fill"
               renderer={$defaultRenderer}
               items={filteredList}
@@ -220,7 +220,7 @@
             <OutfitPackageSnapshotList
               dense={false}
               maxItemWidth="1fr"
-              minItemWidth="175px"
+              minItemWidth="155px"
               fillMethod="auto-fill"
               renderer={$defaultRenderer}
               items={filteredList}

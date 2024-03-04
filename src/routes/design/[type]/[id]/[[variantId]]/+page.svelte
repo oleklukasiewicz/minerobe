@@ -50,12 +50,9 @@
   import { ExportImageLayers } from "$src/helpers/data/dataTransferHelper.js";
   import { sortOutfitLayersByColor } from "$src/helpers/image/imageDataHelpers.js";
   import {
-    AddItemToWardrobe,
     AddToCollection,
     IsItemInCollection,
-    IsItemInWardrobe,
     RemoveFromCollection,
-    RemoveItemFromWardrobe,
   } from "$src/helpers/other/apiHelper";
 
   import { CreateDefaultRenderProvider } from "$src/data/render";
@@ -72,6 +69,7 @@
     prepareLayersForRender,
   } from "$src/helpers/view/designHelper.js";
   import { replaceState } from "$app/navigation";
+  import { AddItemToWardrobe, IsItemInWardrobe, RemoveItemFromWardrobe } from "$src/api/wardrobe.js";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(

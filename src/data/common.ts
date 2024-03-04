@@ -55,21 +55,18 @@ export class OutfitPackage {
 export class WardrobePackage {
   id: string;
   outfits: OutfitPackage[];
-  sets: OutfitPackage[];
   collections: OutfitPackageCollection[];
   studio: OutfitPackage;
   local: any;
   constructor(
     id: string,
     outfits: OutfitPackage[],
-    sets: OutfitPackage[] = [],
     studio: OutfitPackage = null,
     collections: OutfitPackageCollection[] = []
   ) {
     this.id = id;
     this.outfits = outfits;
     this.studio = studio;
-    this.sets = sets;
     this.collections = collections;
   }
 }

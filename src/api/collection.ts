@@ -14,9 +14,9 @@ import {
 } from "$src/data/firebase";
 import { get } from "svelte/store";
 import { currentUser } from "$src/data/cache";
-import { AddItemToWardrobe } from "$src/helpers/other/apiHelper";
 import { setsIntance } from "./sets";
 import { outfitsInstance } from "./outfits";
+import { AddItemToWardrobe } from "./wardrobe";
 
 const COLLECTION_PATH = DATA_PATH_CONFIG.OUTFIT_COLLECTION;
 
