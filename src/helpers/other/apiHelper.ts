@@ -1,17 +1,14 @@
 import { UploadOutfitCollection } from "$src/api/collection";
 import { FetchOutfitByFilter, outfitsInstance } from "$src/api/outfits";
 import { setsIntance } from "$src/api/sets";
-import { AddLike, RemoveLike } from "$src/api/social";
 import { IsItemInWardrobe, RemoveItemFromWardrobe } from "$src/api/wardrobe";
-import { currentUser, wardrobe } from "$src/data/cache";
+import {  wardrobe } from "$src/data/cache";
 import {
   OutfitPackage,
-  OutfitPackageCollection,
-  OutfitPackageLink,
+  OutfitPackageCollection
 } from "$src/data/common";
-import { DATA_PATH_CONFIG, PACKAGE_TYPE } from "$src/data/consts";
-import { QueryWhere, UpdateRawDocument } from "$src/data/firebase";
-import { FieldValue, arrayRemove, arrayUnion } from "firebase/firestore";
+import {PACKAGE_TYPE } from "$src/data/consts";
+import { QueryWhere, } from "$src/data/firebase";
 import { get } from "svelte/store";
 
 //helpers
