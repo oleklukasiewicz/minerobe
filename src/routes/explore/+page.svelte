@@ -3,6 +3,8 @@
   import DownloadIcon from "$icons/download.svg?raw";
   import { showToast } from "$src/data/cache";
   import { onMount } from "svelte";
+  import Menu from "$lib/components/other/Menu/Menu.svelte";
+  import MenuItem from "$lib/components/other/MenuItem/MenuItem.svelte";
 
   onMount(() => {
     console.log("mounted");
@@ -17,6 +19,9 @@
   size="small"
   on:click={() => showToast("skin changed")}
 />
+<Menu label="Wardrobe">
+  <MenuItem label="Download" icon={DownloadIcon} selected/>
+</Menu>
 
 <style lang="scss">
   @import "style.scss";
