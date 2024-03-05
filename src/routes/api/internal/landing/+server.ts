@@ -1,4 +1,4 @@
-import { IndexLandingPage } from "$lib/server/indexServices";
+import { IndexLandingPage } from "$lib/server/services/indexServices";
 
 
 export const GET = async (event) => {

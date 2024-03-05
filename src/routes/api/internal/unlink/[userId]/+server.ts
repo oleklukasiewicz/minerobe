@@ -1,4 +1,4 @@
-import { refreshWithPrismarine } from "$lib/server/prismarineAuth";
+import { refreshWithPrismarine } from "$lib/server/services/prismarineAuth";
 
 export const GET = async (params) => {
   const rep = await refreshWithPrismarine(
