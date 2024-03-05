@@ -95,7 +95,7 @@ export const setup = function () {
       alpha: true,
     });
     renderer.shadowMap.enabled = true;
-    renderer.outputEncoding = 1;
+    renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     return renderer;
   });
   if (userSubscription) userSubscription();

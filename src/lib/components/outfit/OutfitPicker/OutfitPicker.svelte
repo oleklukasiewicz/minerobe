@@ -38,7 +38,7 @@
     if (renderer == null) {
       renderer = new THREE.WebGLRenderer({ alpha: true });
       renderer.shadowMap.enabled = true;
-      renderer.outputEncoding = 1;
+      renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     }
     refreshPagination(outfits);
   });

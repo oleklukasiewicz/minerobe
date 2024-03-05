@@ -31,7 +31,7 @@
         alpha: true,
       });
       provider.renderer.shadowMap.enabled = true;
-      provider.renderer.outputEncoding = 1;
+      provider.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 
       provider.scene = new THREE.Scene();
       provider.scene.position.y = -1;
