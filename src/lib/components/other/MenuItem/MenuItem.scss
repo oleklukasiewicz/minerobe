@@ -8,7 +8,7 @@
   color: var(--color-accent-font);
   font-family: minecraft-simple;
   box-sizing: border-box;
-  padding: 4px 7px 2px 6px;
+  padding: 4px 7px 2px 7px;
   display: block;
   flex-direction: row;
   gap: 8px;
@@ -23,6 +23,11 @@
   }
   & div {
     display: inline-block;
+  }
+  & .badge
+  {
+    float: right;
+    margin: 2px 8px;
   }
   &.selected {
     background-color: var(--color-accent);

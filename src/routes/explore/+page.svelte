@@ -4,7 +4,6 @@
   import { showToast } from "$src/data/cache";
   import { onMount } from "svelte";
   import Menu from "$lib/components/other/Menu/Menu.svelte";
-  import MenuItem from "$lib/components/other/MenuItem/MenuItem.svelte";
 
   onMount(() => {
     console.log("mounted");
@@ -19,8 +18,15 @@
   size="small"
   on:click={() => showToast("skin changed")}
 />
-<Menu label="Wardrobe">
-  <MenuItem label="Download" icon={DownloadIcon} selected/>
+<Menu label="Wardrobe" open items={
+  [
+    { label: "All", icon: DownloadIcon },
+    { label: "Tops", icon: DownloadIcon,type: "separator"},
+    { label: "Bottoms", icon: DownloadIcon,type: "header"},
+    { label: "Shoes", icon: DownloadIcon,badge:"4" },
+    { label: "Accessories", icon: DownloadIcon },
+  ]
+}>
 </Menu>
 
 <style lang="scss">

@@ -3,6 +3,7 @@
   export let icon: string = null;
   export let minimal: boolean = false;
   export let selected: boolean = false;
+  export let badge: string = null;
 </script>
 
 <!-- svelte-ignore a11y-missing-attribute -->
@@ -14,6 +15,9 @@
   {/if}
   {#if label && !minimal}
     <span>{label}</span>
+  {/if}
+  {#if badge && !minimal}
+    <div class="badge">{badge}</div>
   {/if}
 </a>
 
