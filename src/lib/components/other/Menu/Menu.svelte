@@ -10,13 +10,17 @@
   export let label: string = null;
   export let items: any[] = [];
   export let footerItems: any[] = [];
+  export let value: string = null;
+  export let comparer: (a: any, b: any) => boolean = (a, b) => a == b;
 
   const onSelect = (item) => {
-   dispatch("select", item);
+    dispatch("select", item);
   };
 </script>
 
-<div class="menu">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="menu" on:click>
   <div class="header">
     {#if label && open}
       <span>{label}</span>
@@ -27,9 +31,16 @@
       {#if item.type === "separator"}
         <MenuItemSeparator minimal={!open} />
       {:else if item.type === "header"}
-        <MenuItemHeader {...item} minimal={!open} />
+        <MenuItemHeader label={item.label} minimal={!open} />
       {:else}
-        <MenuItem {...item} minimal={!open} on:click={()=> onSelect(item)} />
+        <MenuItem
+          icon={item.icon}
+          label={item.label}
+          badge={item.badge}
+          minimal={!open}
+          on:click={() => onSelect(item)}
+          selected={comparer(item, value)}
+        />
       {/if}
     {/each}
     <slot />
@@ -39,9 +50,16 @@
       {#if item.type === "separator"}
         <MenuItemSeparator minimal={!open} />
       {:else if item.type === "header"}
-        <MenuItemHeader {...item} minimal={!open} />
+        <MenuItemHeader label={item?.label} minimal={!open} />
       {:else}
-        <MenuItem {...item} minimal={!open} on:click={()=> onSelect(item)}/>
+        <MenuItem
+          icon={item?.icon}
+          label={item?.label}
+          badge={item?.badge}
+          minimal={!open}
+          on:click={() => onSelect(item)}
+          selected={comparer(item, value)}
+        />
       {/if}
     {/each}
     <slot name="footer" />

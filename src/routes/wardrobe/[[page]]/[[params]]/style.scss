@@ -27,6 +27,7 @@
     .wardrobe-categories {
       position: static;
       height: auto !important;
+      width: 100vw;
     }
     .collection-list
   {
@@ -51,6 +52,7 @@
     position: fixed;
     z-index: 5;
     height: calc(100vh - 60px);
+    min-width: 300px;
   }
   .filler {
     width: 300px;

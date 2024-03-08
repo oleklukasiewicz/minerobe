@@ -7,7 +7,9 @@
 </script>
 
 <!-- svelte-ignore a11y-missing-attribute -->
-<a class="menu-item" class:selected>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<a class="menu-item" class:selected={selected} on:click>
   {#if icon}
     <div class="icon-small">
       {@html icon}

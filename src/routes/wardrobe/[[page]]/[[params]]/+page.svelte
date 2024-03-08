@@ -15,12 +15,10 @@
   } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
   import PlusIcon from "$icons/plus.svg?raw";
-  import CategoryMenu from "$component/other/CategoryMenu/CategoryMenu.svelte";
-  import CategoryMenuItem from "$component/other/CategoryMenuItem/CategoryMenuItem.svelte";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
-  import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+  import { PACKAGE_TYPE } from "$src/data/consts";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import {
     GetCategoriesFromList,
@@ -37,37 +35,80 @@
   import { writable, type Writable } from "svelte/store";
   import type { WardrobePackage } from "$src/data/common";
   import { ParseWardrobeToLocal } from "$src/api/wardrobe";
+  import Menu from "$lib/components/other/Menu/Menu.svelte";
+  import { _ } from "svelte-i18n";
 
-  let currentView = "sets";
-  let currentViewParams = "";
+  let currentView: any = {};
   let loaded = false;
   let itemsLoaded = false;
   let currentList = [];
   let filteredList = [];
   let outfitsCount = {};
-  const localWardrobe:Writable<WardrobePackage> = writable(null);
+  let menuItems: any[] = [
+    {
+      label: "Sets",
+      icon: AnimationIcon,
+      value: "sets",
+    },
+    {
+      label: "Outfits",
+      icon: ShoppingBagIcon,
+      value: "outfits",
+    },
+    {
+      label: "Collections",
+      icon: ListIcon,
+      value: "collection",
+    },
+  ];
+  const localWardrobe: Writable<WardrobePackage> = writable(null);
 
   onMount(() => {
-
     isReadyForData.subscribe(async (readyness) => {
       loaded = readyness?.wardrobe != null;
       if (loaded) {
         localWardrobe.set(await ParseWardrobeToLocal($wardrobe));
+        outfitsCount = GetCategoriesFromList($wardrobe.outfits);
+        const outfitsMenuItems = Object.keys(outfitsCount)
+          .map((x) => {
+            return {
+              label: x,
+              value: "outfits",
+              icon: GetOutfitIconFromType(x),
+              params: x,
+              badge: outfitsCount[x],
+            };
+          })
+          .filter((x) => x.badge > 0);
+        if (!$isMobileView) {
+          menuItems.push({
+            type: "separator",
+          });
+          menuItems.push(...outfitsMenuItems);
+        }
       }
       page.subscribe((value) => {
-        currentView = value.params.page || "sets";
-        currentViewParams = value.params.params || "";
+        currentView = {
+          value: value.params.page || "sets",
+          params: value.params.params,
+        };
+
         itemsLoaded = false;
-        switch (currentView) {
+        switch (currentView.value) {
           case "sets":
-            currentList = $wardrobe.outfits.filter(x=> x.type == PACKAGE_TYPE.OUTFIT_SET);
+            currentList = $wardrobe.outfits.filter(
+              (x) => x.type == PACKAGE_TYPE.OUTFIT_SET
+            );
             break;
           case "outfits":
-            currentList = $wardrobe.outfits.filter(x=> x.type == PACKAGE_TYPE.OUTFIT).filter((x) => {
-              return currentViewParams == ""
-                ? true
-                : x.outfitType.toLowerCase() == currentViewParams.toLowerCase();
-            });
+            currentList = $wardrobe.outfits
+              .filter((x) => x.type == PACKAGE_TYPE.OUTFIT)
+              .filter((x) => {
+                return currentView.params == "" || currentView.params == null
+                  ? true
+                  : x.outfitType?.toLowerCase() ==
+                      currentView?.params?.toLowerCase();
+              });
             break;
           case "collection":
             currentList = $wardrobe.collections;
@@ -76,7 +117,6 @@
         filteredList = currentList;
         itemsLoaded = true;
       });
-      outfitsCount = GetCategoriesFromList($wardrobe.outfits);
     });
   });
   const addNewSet = async function () {
@@ -102,6 +142,13 @@
     if (item.publisher.id != $currentUser?.id) navigateToOutfitPackage(item);
     else navigateToDesign(item);
   };
+  const onMenuItemSelect = function (e) {
+    const target = e.detail;
+    navigateToWardrobe(target.value, target.params);
+  };
+  const compare = (a, b) => {
+    return a?.value == b?.value && a?.params == b?.params;
+  };
 </script>
 
 <div class="wardrobe-view" class:mobile={$isMobileView}>
@@ -109,67 +156,18 @@
     <div class="filler"></div>
   {/if}
   <div class="wardrobe-categories">
-    <CategoryMenu
-      label={"Wardrobe" +
-        ($isMobileView
-          ? OUTFIT_TYPE[currentView] != "ALL" &&
-            OUTFIT_TYPE[currentView] != null &&
-            currentView != "sets"
-            ? " - " + OUTFIT_TYPE[currentView]
-            : ""
-          : "")}
-      horizontal={$isMobileView}
-    >
-      <CategoryMenuItem
-        label="Sets"
-        minimal={$isMobileView}
-        selected={currentView == "sets"}
-        icon={AnimationIcon}
-        on:click={() => navigateToWardrobe("sets")}
-      />
-      <CategoryMenuItem
-        label="Outfits"
-        minimal={$isMobileView}
-        selected={currentView == "outfits" && currentViewParams.length == 0}
-        icon={ShoppingBagIcon}
-        on:click={() => navigateToWardrobe("outfits")}
-      />
-      <CategoryMenuItem
-        label="Collections"
-        minimal={$isMobileView}
-        selected={currentView == "collection"}
-        icon={ListIcon}
-        on:click={() => navigateToWardrobe("collection")}
-      />
-      {#if !$isMobileView}
-        <span
-          class="separator"
-          style="width: calc(100% - 20px);"
-          class:horizontal={!$isMobileView}
-          class:vertical={$isMobileView}
-        />
-      {/if}
-      {#if $currentUser && !$isMobileView}
-        {#each Object.keys(outfitsCount) as item, index}
-          {#if outfitsCount[item] > 0}
-            <CategoryMenuItem
-              label={item}
-              minimal={$isMobileView}
-              selected={currentView == "outfits" &&
-                currentViewParams.toLowerCase() == item}
-              icon={GetOutfitIconFromType(item)}
-              badge={outfitsCount[item]}
-              on:click={() => navigateToWardrobe("outfits", item.toLowerCase())}
-            />
-          {/if}
-        {/each}
-      {/if}
-    </CategoryMenu>
+    <Menu
+      items={menuItems}
+      open
+      value={currentView}
+      on:select={onMenuItemSelect}
+      comparer={compare}
+    />
   </div>
   <div>
     <div class="header">
       {#if !$isMobileView}
-        <h1 class="inline" style="margin: 0px;">{currentView}</h1>
+        <h1 class="inline" style="margin: 0px;">{currentView.value}</h1>
       {/if}
       <div style="flex:1;">
         <div style="float: right;" class="search-btn">
@@ -183,7 +181,7 @@
     </div>
     <div class="outfits">
       {#if loaded && itemsLoaded}
-        {#if currentView == "sets"}
+        {#if currentView.value == "sets"}
           <Button
             on:click={addNewSet}
             fab="dynamic"
@@ -206,7 +204,7 @@
             />
           </div>
         {/if}
-        {#if currentView == "outfits"}
+        {#if currentView.value == "outfits"}
           <Button
             on:click={addNewOutfit}
             fab="dynamic"
@@ -228,7 +226,7 @@
             />
           </div>
         {/if}
-        {#if currentView == "collection"}
+        {#if currentView.value == "collection"}
           <div class="list collection-list">
             {#each filteredList as item (item.id)}
               <OutfitPackageCollectionItem
