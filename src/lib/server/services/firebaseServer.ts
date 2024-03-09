@@ -14,7 +14,7 @@ const firebaseConfig = {
   clientC509CertUrl: import.meta.env.VITE_CLIENT_X509_CERT_URL,
   universeDomain: import.meta.env.VITE_UNIVERSE_DOMAIN,
 };
-const app =
+export const app =
   global.firebaseApp ??
   admin.initializeApp(
     {

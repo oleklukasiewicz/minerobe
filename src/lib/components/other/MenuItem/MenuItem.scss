@@ -8,12 +8,14 @@
   color: var(--color-accent-font);
   font-family: minecraft-simple;
   box-sizing: border-box;
-  padding: 4px 7px 2px 7px;
+  padding: 6px 9px 4px 9px;
   display: block;
   flex-direction: row;
   gap: 8px;
   font-size: 12px;
   user-select: none;
+  max-width: 100vw;
+  min-width: 300px;
   cursor: pointer;
   & span {
     display: inline-block;
@@ -46,5 +48,9 @@
     background-color: var(--color-active);
     border-top-color: var(--color-active-L1);
     border-bottom-color: var(--color-active-D1);
+  }
+  &.minimal
+  {
+    min-width: 0px;
   }
 }

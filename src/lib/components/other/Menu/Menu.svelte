@@ -3,6 +3,7 @@
   import MenuItem from "../MenuItem/MenuItem.svelte";
   import MenuItemHeader from "../MenuItemHeader/MenuItemHeader.svelte";
   import MenuItemSeparator from "../MenuItemSeparator/MenuItemSeparator.svelte";
+  import MenuIcon from "$src/icons/menu.svg?raw";
 
   const dispatch = createEventDispatcher();
 
@@ -11,6 +12,7 @@
   export let items: any[] = [];
   export let footerItems: any[] = [];
   export let value: string = null;
+  export let toggleable: boolean = true;
   export let comparer: (a: any, b: any) => boolean = (a, b) => a == b;
 
   const onSelect = (item) => {
@@ -22,7 +24,14 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="menu" on:click>
   <div class="header">
-    {#if label && open}
+    {#if toggleable}
+      <MenuItem minimal icon={MenuIcon} on:click={() => (open = !open)}>
+        {#if label && open}
+          <span>{label}</span>
+        {/if}
+      </MenuItem>
+    {/if}
+    {#if label && open && !toggleable}
       <span>{label}</span>
     {/if}
   </div>

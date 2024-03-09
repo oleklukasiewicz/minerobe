@@ -152,13 +152,12 @@
 </script>
 
 <div class="wardrobe-view" class:mobile={$isMobileView}>
-  {#if !$isMobileView}
-    <div class="filler"></div>
-  {/if}
   <div class="wardrobe-categories">
     <Menu
       items={menuItems}
       open
+      toggleable={!$isMobileView}
+      label={$isMobileView ? null : "Wardrobe"}
       value={currentView}
       on:select={onMenuItemSelect}
       comparer={compare}
@@ -167,7 +166,9 @@
   <div>
     <div class="header">
       {#if !$isMobileView}
-        <h1 class="inline" style="margin: 0px;">{currentView.value}</h1>
+        <h1 class="inline" style="margin: 0px;">
+          {currentView.value || "Wardrobe"}
+        </h1>
       {/if}
       <div style="flex:1;">
         <div style="float: right;" class="search-btn">

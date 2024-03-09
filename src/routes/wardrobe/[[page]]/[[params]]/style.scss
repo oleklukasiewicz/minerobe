@@ -6,7 +6,6 @@
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto;
-  height: calc(100vh - 60px);
   box-sizing: border-box;
   .search-btn {
     width: 300px;
@@ -49,13 +48,10 @@
     }
   }
   .wardrobe-categories {
-    position: fixed;
+    position: sticky;
+    top: 60px;
     z-index: 5;
     height: calc(100vh - 60px);
-    min-width: 300px;
-  }
-  .filler {
-    width: 300px;
   }
 }
 .placeholders {

@@ -9,7 +9,7 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<a class="menu-item" class:selected={selected} on:click>
+<a class="menu-item" class:selected={selected} on:click class:minimal>
   {#if icon}
     <div class="icon-small">
       {@html icon}
@@ -18,6 +18,7 @@
   {#if label && !minimal}
     <span>{label}</span>
   {/if}
+  <slot/>
   {#if badge && !minimal}
     <div class="badge">{badge}</div>
   {/if}
