@@ -69,7 +69,11 @@
     prepareLayersForRender,
   } from "$src/helpers/view/designHelper.js";
   import { replaceState } from "$app/navigation";
-  import { AddItemToWardrobe, IsItemInWardrobe, RemoveItemFromWardrobe } from "$src/api/wardrobe.js";
+  import {
+    AddItemToWardrobe,
+    IsItemInWardrobe,
+    RemoveItemFromWardrobe,
+  } from "$src/api/wardrobe.js";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -120,11 +124,12 @@
       defaultRenderProvider =
         await CreateDefaultRenderProvider($defaultRenderer);
 
+      const varaint = outfitPackage.layers.find(
+        (x) => x.variantId == variantId
+      );
+      if (varaint) selectedVariant.set(varaint);
+
       if (!$isUserGuest) {
-        const varaint = outfitPackage.layers.find(
-          (x) => x.variantId == variantId
-        );
-        if (varaint) selectedVariant.set(varaint);
         //patching
         isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
         if (
@@ -384,7 +389,7 @@
           />
           {#if !$isUserGuest}
             <Button
-            type="tertiary"
+              type="tertiary"
               on:click={() => (isCollectionDialogOpen = true)}
               label={"Add to collection"}
               onlyIcon={!$isMobileView}

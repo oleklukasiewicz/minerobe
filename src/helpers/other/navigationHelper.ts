@@ -11,7 +11,7 @@ export const navigateToDesign = function (packag: OutfitPackage) {
       packag.type == PACKAGE_TYPE.OUTFIT_SET
         ? PACKAGE_TYPE.OUTFIT_SET_LINK
         : PACKAGE_TYPE.OUTFIT_LINK
-    );
+    ) as any;
     return wardrobe;
   });
   goto(`/design`);
