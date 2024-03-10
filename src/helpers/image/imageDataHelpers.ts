@@ -41,13 +41,16 @@ export const GetOutfitType = function (imageContext: any) {
   }
   if (hatPercentage > 0) {
     if (bodyPercentage > 0.3) {
-      return OUTFIT_TYPE.HOODIE;
+      if (legsPercentage > 0.1) return OUTFIT_TYPE.SUIT;
+      else return OUTFIT_TYPE.HOODIE;
     } else {
-      return OUTFIT_TYPE.HAT;
+      if (legsPercentage > 0) return OUTFIT_TYPE.SUIT;
+      else return OUTFIT_TYPE.HAT;
     }
   }
   //body
   if (bodyPercentage > 0.3) {
+    if (legsPercentage > 0.1) return OUTFIT_TYPE.SUIT;
     return OUTFIT_TYPE.TOP;
   }
   //shoes / bottom
@@ -104,8 +107,8 @@ export const GetCategoriesFromList = function (list: OutfitPackage[]) {
     const category = normalizeStringCase(categoryName);
     categoryCount[category] = list.filter((outfit) => {
       if (outfit.layers?.length == 0) return false;
-      if(outfit.type == OUTFIT_TYPE.OUTFIT_SET) return false;
-      if(outfit.layers == null) return false;
+      if (outfit.type == OUTFIT_TYPE.OUTFIT_SET) return false;
+      if (outfit.layers == null) return false;
       if (outfit.layers[0] == null) return false;
       return outfit.layers[0]["steve"].type == OUTFIT_TYPE[categoryName];
     }).length;
