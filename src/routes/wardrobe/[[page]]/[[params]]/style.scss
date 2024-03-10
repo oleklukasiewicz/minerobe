@@ -26,7 +26,7 @@
     .wardrobe-categories {
       position: static;
       height: auto !important;
-      width: 100vw;
+      max-width: 100vw;
     }
     .collection-list
   {

@@ -5,11 +5,12 @@
   max-width: 100vw;
   width: 100%;
   height: 100%;
+  &.open {
+    min-width: 300px;
+  }
   .header {
-   
-
     box-sizing: border-box;
-    &  span {
+    & span {
       font-family: minecraft;
       margin: 2px;
       height: 100%;
@@ -23,5 +24,11 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+  }
+  &.top {
+    min-width: 0px;
+    .items {
+      flex-direction: row;
+    }
   }
 }

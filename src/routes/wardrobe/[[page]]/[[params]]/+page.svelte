@@ -61,6 +61,7 @@
       value: "collection",
     },
   ];
+  const mobileMenuItems = Array.from(menuItems);
   const localWardrobe: Writable<WardrobePackage> = writable(null);
 
   onMount(() => {
@@ -80,12 +81,10 @@
             };
           })
           .filter((x) => x.badge > 0);
-        if (!$isMobileView) {
-          menuItems.push({
-            type: "separator",
-          });
-          menuItems.push(...outfitsMenuItems);
-        }
+        menuItems.push({
+          type: "separator",
+        });
+        menuItems.push(...outfitsMenuItems);
       }
       page.subscribe((value) => {
         currentView = {
@@ -153,15 +152,28 @@
 
 <div class="wardrobe-view" class:mobile={$isMobileView}>
   <div class="wardrobe-categories">
-    <Menu
-      items={menuItems}
-      open
-      toggleable={!$isMobileView}
-      label={$isMobileView ? null : "Wardrobe"}
-      value={currentView}
-      on:select={onMenuItemSelect}
-      comparer={compare}
-    />
+    {#if $isMobileView}
+      <Menu
+        items={mobileMenuItems}
+        open
+        top
+        toggleable={!$isMobileView}
+        label={$isMobileView ? null : "Wardrobe"}
+        value={currentView}
+        on:select={onMenuItemSelect}
+        comparer={compare}
+      />
+    {:else}
+      <Menu
+        items={menuItems}
+        open
+        toggleable={!$isMobileView}
+        label={$isMobileView ? null : "Wardrobe"}
+        value={currentView}
+        on:select={onMenuItemSelect}
+        comparer={compare}
+      />
+    {/if}
   </div>
   <div>
     <div class="header">

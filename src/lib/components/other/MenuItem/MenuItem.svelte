@@ -4,12 +4,13 @@
   export let minimal: boolean = false;
   export let selected: boolean = false;
   export let badge: string = null;
+  export let top: boolean = false;
 </script>
 
 <!-- svelte-ignore a11y-missing-attribute -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<a class="menu-item" class:selected={selected} on:click class:minimal>
+<a class="menu-item" class:selected={selected} on:click class:minimal class:top>
   {#if icon}
     <div class="icon-small">
       {@html icon}

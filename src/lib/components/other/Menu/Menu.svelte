@@ -12,6 +12,7 @@
   export let items: any[] = [];
   export let footerItems: any[] = [];
   export let value: string = null;
+  export let top: boolean = false;
   export let toggleable: boolean = true;
   export let comparer: (a: any, b: any) => boolean = (a, b) => a == b;
 
@@ -22,10 +23,10 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="menu" on:click>
+<div class="menu" on:click class:top class:open>
   <div class="header">
     {#if toggleable}
-      <MenuItem minimal icon={MenuIcon} on:click={() => (open = !open)}>
+      <MenuItem minimal icon={MenuIcon} on:click={() => (open = !open)} {top}>
         {#if label && open}
           <span>{label}</span>
         {/if}
@@ -43,6 +44,7 @@
         <MenuItemHeader label={item.label} minimal={!open} />
       {:else}
         <MenuItem
+          {top}
           icon={item.icon}
           label={item.label}
           badge={item.badge}
