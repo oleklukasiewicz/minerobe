@@ -20,6 +20,7 @@
 
 <Button
   on:click={setSkin}
+  {style}
   disabled={item.layers.length == 0}
   icon={skinIsSetting ? LoaderIcon : HumanHandsUpIcon}
   label={skinIsSetting ? $_("skinIsSetting") : $_("setSkin")}

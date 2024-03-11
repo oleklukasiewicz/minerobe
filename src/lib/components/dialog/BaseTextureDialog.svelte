@@ -107,12 +107,4 @@
       flex-direction: column;
     }
   }
-  .actions {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    button {
-      width: 100%;
-    }
-  }
 </style>

@@ -7,7 +7,7 @@
   export let group: any;
 </script>
 
-<div class="item-model">
+<div class="item-model" class:disabled>
   <RatioGroup
     bind:value={group}
     values={[

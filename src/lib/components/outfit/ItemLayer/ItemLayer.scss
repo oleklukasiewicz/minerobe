@@ -32,11 +32,6 @@
       padding:  4px 8px 8px;
       flex: 1;
       font-family: minecraft-simple;
-      .label {
-        margin: 6px 0px 0px;
-        padding: 1px 8px;
-        //transform: translateY(-2px);
-      }
     }
   }
   &.selectable {
@@ -44,11 +39,7 @@
     &:hover {
       background-color: var(--color-theme-D2);
     }
-    &.active {
-      background-color: var(--color-theme-D3);
-    }
     &.selected {
-      & .icon,
       input {
         color: var(--color-accent-font);
       }

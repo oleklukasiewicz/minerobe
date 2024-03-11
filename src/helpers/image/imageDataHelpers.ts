@@ -110,7 +110,7 @@ export const GetCategoriesFromList = function (list: OutfitPackage[]) {
       if (outfit.type == OUTFIT_TYPE.OUTFIT_SET) return false;
       if (outfit.layers == null) return false;
       if (outfit.layers[0] == null) return false;
-      return outfit.layers[0]["steve"].type == OUTFIT_TYPE[categoryName];
+      return outfit.outfitType == OUTFIT_TYPE[categoryName];
     }).length;
   });
   return categoryCount;

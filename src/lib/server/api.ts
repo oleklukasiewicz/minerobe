@@ -18,4 +18,14 @@ const IsAuthorized = async function (token: string) {
   }
 };
 
-
+export const FetchDocument = async function (path: string, token: string) {
+  const isAuthorized = await IsAuthorized(token);
+  if (isAuthorized) {
+    const isReadAllowed = await IsReadAllowed(path);
+    if (isReadAllowed) {
+      // fetch the document
+    } else {
+      // throw error
+    }
+  }
+}

@@ -2,7 +2,7 @@
   export let minimal = false;
 </script>
 
-<div class="separator"></div>
+<div class="separator" class:minimal></div>
 
 <style lang="scss">
   .separator {
