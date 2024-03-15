@@ -1,8 +1,26 @@
 {
-    "crons": [
-      {
-        "path": "/api/internal/landing",
-        "schedule": "0 1 * * *"
-      }
-    ]
-  }
+  "crons": [
+    {
+      "path": "/api/internal/landing",
+      "schedule": "0 1 * * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "http://$1",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-forwarded-port",
+          "value": "5128"
+        },
+        {
+          "type": "header",
+          "key": "x-forwarded-proto",
+          "value": "https"
+        }
+      ]
+    }
+  ]
+}
