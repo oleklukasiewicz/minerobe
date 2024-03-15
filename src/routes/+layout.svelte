@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from "$app/stores";
   import { browser } from "$app/environment";
   import NavigationItem from "$component/other/NavigationItem/NavigationItem.svelte";
   import "$locales/locales";
@@ -22,7 +21,6 @@
   import { getCurrentUser, loginUser } from "$src/api/auth";
   import { navigateToProfile } from "$src/helpers/other/navigationHelper";
   import Toast from "$component/base/Toast/Toast.svelte";
-
   export const load = async () => {
     if (browser) {
       locale.set(window.navigator.language);

@@ -7,6 +7,8 @@ import {
   readonly,
   derived,
 } from "svelte/store";
+import { page } from "$app/stores";
+import ioClient from "socket.io-client";
 import { APP_STATE } from "$data/consts";
 import { MinerobeUserSettings, type MinerobeUser } from "./common";
 import alexModelData from "$src/model/alex.gltf?raw";
@@ -101,6 +103,17 @@ export const setup = function () {
   if (userSubscription) userSubscription();
   userSubscription = currentUser.subscribe(async (user) => {
     if (user) {
+      //settings up sockets
+      const io = ioClient("http://"+ get(page).url.hostname + ":5128");
+      io.on("connect", () => {
+        console.log("Connected to server");
+        io.emit("join",user.id);
+      });
+      io.on("authFinished", async () => {
+        console.log("Auth finished");
+        const sets=await FetchSettings(user.id)
+        userSettings.set(sets);
+      });
       //settings up account
       if (get(appState) == APP_STATE.LOADING)
         appState.set(APP_STATE.USER_READY);

@@ -1,7 +1,8 @@
 <script lang="ts">
   import Label from "$component/base/Label/Label.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import { createEventDispatcher } from "svelte";
+  import { GetFaceOfRemoteSkin } from "$src/helpers/image/imageDataHelpers";
+  import { createEventDispatcher, onMount } from "svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -9,11 +10,24 @@
   export let profile: any = null;
   export let authUrl: string = "";
   export let authCode: string = "";
+  let linkText = "Link account";
+
+  let profilePhoto = "";
+  const loadPhoto = async (prof) => {
+    if (!profile) return;
+    let skinUrl = profile.skins.find((s) => s.state == "ACTIVE").url;
+    skinUrl = skinUrl.replace("http://", "https://");
+    profilePhoto = await GetFaceOfRemoteSkin(skinUrl);
+  };
+
+  $: loadPhoto(profile);
 
   const unlink = function () {
+    linkText = "Unlinking...";
     dispatch("unlink");
   };
   const link = function () {
+    linkText = "Linking...";
     dispatch("link");
   };
 </script>
@@ -21,9 +35,12 @@
 <div class="mc-auth">
   {#if isAuthorized}
     <br />
-    <span class="mc-font-simple" style="font-size: var(--size-font-caption);"
-      >Do you want to unlink from account</span
+    <span class="mc-font" style="font-size: var(--size-font-title);"
+      >You are linked to</span
     >
+    <br />
+    <!-- svelte-ignore a11y-missing-attribute -->
+    <div><img src={profilePhoto} style="min-width: calc(25%);" /></div>
     <br />
     <div><Label variant="unique">{profile.name}</Label></div>
     <br />
@@ -37,14 +54,10 @@
     <br />
     <b class="code mc-font">{authCode}</b>
     <br />
-    <span class="mc-font-simple" style="font-size: var(--size-font-caption);"
-      >Refresh page after signing in <br /> (linking may take some time)</span
-    >
-    <br />
     <Button
       type="primary"
       on:click={link}
-      label="Link account"
+      label={linkText}
       href={authUrl}
     />
   {/if}
