@@ -7,7 +7,7 @@ export let socket;
 
 export const configureSocket = (userId) => {
   console.log("Configuring socket");
-  socket = new WebSocket("ws://"+get(page).url.hostname+":5128?userId=" + userId);
+  socket = new WebSocket("wss://"+get(page).url.hostname+":5128?userId=" + userId);
   socket.onopen = function (event) {
     console.log("Socket opened");
     socket.send(JSON.stringify({ type: "join", userId: userId }));
