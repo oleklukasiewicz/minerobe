@@ -26,30 +26,33 @@ export const authenticateWithPrismarine = async function (user, token) {
         });
       }
     );
-    const tokenAcc = await flow.getMinecraftJavaToken({ fetchProfile: true });
-    await UpdateDocument(
-      "settings",
-      user,
-      {
-        linkedMinecraftAccount: {
-          id: tokenAcc.profile.id,
-          name: tokenAcc.profile.name,
-          skins: tokenAcc.profile.skins,
-        },
-      },
-      token
-    );
-    await emitAuthFinished(user);
-    //send event to client
-    resolve({
-      requireUserInteraction: false,
-      profile: {
-        id: tokenAcc.profile.id,
-        name: tokenAcc.profile.name,
-        skins: tokenAcc.profile.skins,
-      },
-      token: tokenAcc.token,
-    });
+    await flow
+      .getMinecraftJavaToken({ fetchProfile: true })
+      .then(async (tokenAcc) => {
+        await UpdateDocument(
+          "settings",
+          user,
+          {
+            linkedMinecraftAccount: {
+              id: tokenAcc.profile.id,
+              name: tokenAcc.profile.name,
+              skins: tokenAcc.profile.skins,
+            },
+          },
+          token
+        );
+        await emitAuthFinished(user);
+        //send event to client
+        resolve({
+          requireUserInteraction: false,
+          profile: {
+            id: tokenAcc.profile.id,
+            name: tokenAcc.profile.name,
+            skins: tokenAcc.profile.skins,
+          },
+          token: tokenAcc.token,
+        });
+      });
   });
   function InMemoryCache(user, userToken) {
     const id = user;
