@@ -9,3 +9,13 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
   return resolve(event);
 };
+
+//infinite loop tat send console.log every 5 sec
+
+setTimeout(async () => {
+  while (true) {
+    console.log("Server is alive");
+    await new Promise((r) => setTimeout(r, 5000));
+  }
+});
+
