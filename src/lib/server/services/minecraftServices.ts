@@ -1,5 +1,4 @@
 import { MODEL_TYPE } from "$data/consts";
-import { socketServer } from "./socketService";
 import { authenticateWithPrismarine } from "./prismarineAuth";
 export const ChangeSkin = async function (
   id: string,
