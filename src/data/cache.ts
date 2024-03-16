@@ -16,7 +16,6 @@ import type { WardrobePackage } from "./common";
 import { FetchWardrobe, UploadWardrobe } from "$src/api/wardrobe";
 import * as THREE from "three";
 import { FetchSettings, UploadSettings } from "$src/api/settings";
-import { configureSocket } from "./socket";
 
 const isMobileViewWritable: Writable<boolean> = writable(false);
 export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
@@ -102,7 +101,6 @@ export const setup = function () {
   if (userSubscription) userSubscription();
   userSubscription = currentUser.subscribe(async (user) => {
     if (user) {
-      configureSocket(user.id);
       //settings up account
       if (get(appState) == APP_STATE.LOADING)
         appState.set(APP_STATE.USER_READY);
