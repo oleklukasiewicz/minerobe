@@ -41,7 +41,7 @@ export const authenticateWithPrismarine = async function (user, token) {
           },
           token
         );
-        emitAuthFinished(user);
+        await emitAuthFinished(user);
         //send event to client
         resolve({
           requireUserInteraction: false,
@@ -103,6 +103,6 @@ export const refreshWithPrismarine = async function (id, token) {
     token
   );
 };
-const emitAuthFinished = function (userId) {
-  pusherServer.trigger(userId, "authFinished", {});
+const emitAuthFinished =async function (userId) {
+  await pusherServer.trigger(userId, "authFinished", {});
 };
