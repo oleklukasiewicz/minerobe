@@ -30,10 +30,11 @@
 		"gltf-loader": "^1.0.0",
 		"path": "^0.12.7",
 		"prismarine-auth": "^2.4.1",
+		"pusher": "^5.2.0",
+		"pusher-js": "^8.4.0-rc2",
 		"sass": "^1.71.1",
 		"svelte-i18n": "^4.0.0",
 		"svelte-writable-derived": "^3.1.0",
-		"three": "^0.162.0",
-		"ws": "^8.16.0"
+		"three": "^0.162.0"
 	}
 }

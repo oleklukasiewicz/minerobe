@@ -27,6 +27,9 @@ It will create copy of the repository on your local machine.
 Minerobe uses **Firebase Firestore** as database and **Firebase Authentication**.</br>
 To test all features of application you need to setup authentication and firestore with this structure inside:
 
+### 3. Setup Pusher 
+Setup Pusher instance for realtime messages from server
+
 ```
 ├──collections             // Contains all outfit collections
 ├──settings                // Contains settings for minerobe users
@@ -69,6 +72,12 @@ Random values for users secret path
 VITE_USERS_SECRET_PATH=<value>
 VITE_USERS_SECRET_LOCAL_PATH=<value>
 ```
+
+Pusher variables
+VITE_PUSHER_APP_ID=<value>
+VITE_PUSHER_KEY=<value>
+VITE_PUSHER_SECRET=<value>
+VITE_PUSHER_CLUSTER=<value>
 ---
 
 ## Screeenshots

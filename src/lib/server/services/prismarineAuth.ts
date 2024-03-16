@@ -1,7 +1,7 @@
 import auth from "prismarine-auth";
 const { Authflow, Titles } = auth;
 import { GetSecret, SetSecret, UpdateDocument } from "./firebaseServer";
-import { socketServer, socketTo } from "./socketService";
+import { pusherServer } from "./socketService";
 const getCacheNameForUser = (user) =>
   import.meta.env.VITE_USERS_SECRET_PATH +
   "/" +
@@ -104,5 +104,5 @@ export const refreshWithPrismarine = async function (id, token) {
   );
 };
 const emitAuthFinished = function (userId) {
-  socketTo(userId, { type: "authFinished" });
+  pusherServer.trigger(userId, "authFinished", {});
 };
