@@ -10,7 +10,7 @@ const getCacheNameForUser = (user) =>
   import.meta.env.VITE_USERS_SECRET_LOCAL_PATH;
 
 export const authenticateWithPrismarine = async function (user, token) {
-  let authPromise: Promise<any> = new Promise((resolve, reject) => {
+  let authPromise: Promise<any> = new Promise(async (resolve, reject) => {
     const flow = new Authflow(
       import.meta.env.VITE_AZURE_APP_ID,
       cacheFactory,
@@ -26,7 +26,7 @@ export const authenticateWithPrismarine = async function (user, token) {
         });
       }
     );
-    flow
+    await flow
       .getMinecraftJavaToken({ fetchProfile: true })
       .then(async (tokenAcc) => {
         await UpdateDocument(
