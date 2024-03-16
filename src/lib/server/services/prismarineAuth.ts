@@ -26,33 +26,30 @@ export const authenticateWithPrismarine = async function (user, token) {
         });
       }
     );
-    await flow
-      .getMinecraftJavaToken({ fetchProfile: true })
-      .then(async (tokenAcc) => {
-        await UpdateDocument(
-          "settings",
-          user,
-          {
-            linkedMinecraftAccount: {
-              id: tokenAcc.profile.id,
-              name: tokenAcc.profile.name,
-              skins: tokenAcc.profile.skins,
-            },
-          },
-          token
-        );
-        await emitAuthFinished(user);
-        //send event to client
-        resolve({
-          requireUserInteraction: false,
-          profile: {
-            id: tokenAcc.profile.id,
-            name: tokenAcc.profile.name,
-            skins: tokenAcc.profile.skins,
-          },
-          token: tokenAcc.token,
-        });
-      });
+    const tokenAcc = await flow.getMinecraftJavaToken({ fetchProfile: true });
+    await UpdateDocument(
+      "settings",
+      user,
+      {
+        linkedMinecraftAccount: {
+          id: tokenAcc.profile.id,
+          name: tokenAcc.profile.name,
+          skins: tokenAcc.profile.skins,
+        },
+      },
+      token
+    );
+    await emitAuthFinished(user);
+    //send event to client
+    resolve({
+      requireUserInteraction: false,
+      profile: {
+        id: tokenAcc.profile.id,
+        name: tokenAcc.profile.name,
+        skins: tokenAcc.profile.skins,
+      },
+      token: tokenAcc.token,
+    });
   });
   function InMemoryCache(user, userToken) {
     const id = user;
@@ -92,6 +89,7 @@ export const authenticateWithPrismarine = async function (user, token) {
   }
   return authPromise;
 };
+
 export const refreshWithPrismarine = async function (id, token) {
   const cache = await SetSecret(getCacheNameForUser(id), id, {}, token);
   await UpdateDocument(
@@ -103,6 +101,6 @@ export const refreshWithPrismarine = async function (id, token) {
     token
   );
 };
-const emitAuthFinished =async function (userId) {
+const emitAuthFinished = async function (userId) {
   await pusherServer.trigger(userId, "authFinished", {});
 };
