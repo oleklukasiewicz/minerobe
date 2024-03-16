@@ -1,12 +1,13 @@
 import { FetchSettings } from "$src/api/settings";
 import { get } from "svelte/store";
 import { currentUser, userSettings } from "./cache";
+import { page } from "$app/stores";
 
 export let socket;
 
 export const configureSocket = (userId) => {
   console.log("Configuring socket");
-  socket = new WebSocket("ws://localhost:5128?userId=" + userId);
+  socket = new WebSocket("ws://"+get(page).url.hostname+":5128?userId=" + userId);
   socket.onopen = function (event) {
     console.log("Socket opened");
     socket.send(JSON.stringify({ type: "join", userId: userId }));
