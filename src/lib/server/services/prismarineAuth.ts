@@ -42,7 +42,6 @@ export const authenticateWithPrismarine = async function (user, token) {
           token
         );
         await emitAuthFinished(user);
-        //send event to client
         resolve({
           requireUserInteraction: false,
           profile: {
