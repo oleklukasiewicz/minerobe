@@ -54,9 +54,3 @@
     height: calc(100vh - 60px);
   }
 }
-.placeholders {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
-  gap: 4px;
-  margin-top: 16px;
-}
