@@ -35,7 +35,7 @@
   import { writable, type Writable } from "svelte/store";
   import type { WardrobePackage } from "$src/data/common";
   import { ParseWardrobeToLocal } from "$src/api/wardrobe";
-  import Menu from "$lib/components/other/Menu/Menu.svelte";
+  import Menu from "$lib/components/base/Menu/Menu.svelte";
   import { _ } from "svelte-i18n";
 
   let currentView: any = {};

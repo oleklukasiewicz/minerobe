@@ -3,7 +3,7 @@
   import DownloadIcon from "$icons/download.svg?raw";
   import { showToast } from "$src/data/cache";
   import { onMount } from "svelte";
-  import Menu from "$lib/components/other/Menu/Menu.svelte";
+  import Menu from "$lib/components/base/Menu/Menu.svelte";
 
   onMount(() => {
     console.log("mounted");
