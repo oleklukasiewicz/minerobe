@@ -65,6 +65,10 @@
   const localWardrobe: Writable<WardrobePackage> = writable(null);
 
   onMount(() => {
+    currentView = {
+      value: $page.params.page || "sets",
+      params: $page.params.params,
+    };
     isReadyForData.subscribe(async (readyness) => {
       loaded = readyness?.wardrobe != null;
       if (loaded) {
@@ -205,7 +209,7 @@
         <div class="list">
           <OutfitPackageSnapshotList
             dense={false}
-            loading={!itemsLoaded}
+            loading={!loaded || !itemsLoaded}
             maxItemWidth="1fr"
             minItemWidth="155px"
             fillMethod="auto-fill"
@@ -230,7 +234,7 @@
         <div class="list">
           <OutfitPackageSnapshotList
             dense={false}
-            loading={!itemsLoaded}
+            loading={!loaded || !itemsLoaded}
             maxItemWidth="1fr"
             minItemWidth="155px"
             fillMethod="auto-fill"
