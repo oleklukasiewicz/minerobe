@@ -18,6 +18,7 @@
   export let dense = false;
   export let renderProvider: RenderProvider = null;
   export let multiple = 2;
+  export let style = "";
 
   const dispatch = createEventDispatcher();
   let aboveLimit = 0;
@@ -52,6 +53,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
+  {style}
   on:click={onClick}
   class="outfit-package-item"
   class:outfit-set={item.type == OUTFIT_TYPE.OUTFIT_SET}
@@ -65,7 +67,7 @@
   {/if}
   <div class="render-area">
     <!-- svelte-ignore a11y-missing-attribute -->
-    {#if !item.local?.isSnapshot}
+    {#if item.local?.isSnapshot == false}
       <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />
     {:else}
       <img
@@ -95,7 +97,7 @@
       {#if multiple > 0}
         {#each item.layers
           .slice(0, !isSet ? multiple : 1)
-          .filter((x) =>x!=null&& x[item.model].color != null) as layer (layer.variantId)}
+          .filter((x) => x != null && x[item.model].color != null) as layer (layer.variantId)}
           <span
             class="color-view"
             title={FindColorTitle(layer[item.model].color)}

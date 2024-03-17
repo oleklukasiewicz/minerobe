@@ -193,76 +193,70 @@
       </div>
     </div>
     <div class="outfits">
-      {#if loaded && itemsLoaded}
-        {#if currentView.value == "sets"}
-          <Button
-            on:click={addNewSet}
-            fab="dynamic"
-            size="large"
-            icon={PlusIcon}
-            label="Create set"
-            style="position:fixed"
+      {#if currentView.value == "sets"}
+        <Button
+          on:click={addNewSet}
+          fab="dynamic"
+          size="large"
+          icon={PlusIcon}
+          label="Create set"
+          style="position:fixed"
+        />
+        <div class="list">
+          <OutfitPackageSnapshotList
+            dense={false}
+            loading={!itemsLoaded}
+            maxItemWidth="1fr"
+            minItemWidth="155px"
+            fillMethod="auto-fill"
+            renderer={$defaultRenderer}
+            items={filteredList}
+            withBaseTexture={$userSettings?.baseTexture != null}
+            baseTexture={$userSettings?.baseTexture}
+            on:innerselect={onItemSelect}
           />
-          <div class="list">
-            <OutfitPackageSnapshotList
-              dense={false}
-              maxItemWidth="1fr"
-              minItemWidth="155px"
-              fillMethod="auto-fill"
-              renderer={$defaultRenderer}
-              items={filteredList}
-              withBaseTexture={$userSettings?.baseTexture != null}
-              baseTexture={$userSettings?.baseTexture}
-              on:innerselect={onItemSelect}
-            />
-          </div>
-        {/if}
-        {#if currentView.value == "outfits"}
-          <Button
-            on:click={addNewOutfit}
-            fab="dynamic"
-            size="large"
-            icon={PlusIcon}
-            label="Create Outfit"
-            style="position:fixed"
-          />
+        </div>
+      {/if}
+      {#if currentView.value == "outfits"}
+        <Button
+          on:click={addNewOutfit}
+          fab="dynamic"
+          size="large"
+          icon={PlusIcon}
+          label="Create Outfit"
+          style="position:fixed"
+        />
 
-          <div class="list">
-            <OutfitPackageSnapshotList
-              dense={false}
-              maxItemWidth="1fr"
-              minItemWidth="155px"
-              fillMethod="auto-fill"
-              renderer={$defaultRenderer}
-              items={filteredList}
-              on:innerselect={onItemSelect}
-            />
-          </div>
-        {/if}
-        {#if currentView.value == "collection"}
-          <div class="list collection-list">
-            {#each filteredList as item (item.id)}
-              <OutfitPackageCollectionItem
-                {item}
-                on:click={() => navigateToCollection(item.id)}
-              />
-            {/each}
-          </div>
-          <Button
-            on:click={addNewCollection}
-            fab="dynamic"
-            size="large"
-            icon={PlusIcon}
-            label="Create collection"
-            style="position:fixed"
+        <div class="list">
+          <OutfitPackageSnapshotList
+            dense={false}
+            loading={!itemsLoaded}
+            maxItemWidth="1fr"
+            minItemWidth="155px"
+            fillMethod="auto-fill"
+            renderer={$defaultRenderer}
+            items={filteredList}
+            on:innerselect={onItemSelect}
           />
-        {/if}
-      {:else}
-        <div class="placeholders">
-          {#each new Array(36) as item, index}
-            <Placeholder style="min-width:135px;height:268px;" />
+        </div>
+      {/if}
+      {#if currentView.value == "collection"}
+        <div class="list collection-list">
+          {#each filteredList as item (item.id)}
+            <OutfitPackageCollectionItem
+              {item}
+              on:click={() => navigateToCollection(item.id)}
+            />
           {/each}
         </div>
+        <Button
+          on:click={addNewCollection}
+          fab="dynamic"
+          size="large"
+          icon={PlusIcon}
+          label="Create collection"
+          style="position:fixed"
+        />
       {/if}
     </div>
   </div>
