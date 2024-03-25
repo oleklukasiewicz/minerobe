@@ -81,9 +81,10 @@ export const outfitsInstance = new OutfitPackageInstance(config);
 
 export const FetchOutfitByFilter = async function (
   ids: string[],
-  clauses: any[]
+  clauses: any[],
+  isSnapshot = false
 ) {
-  let outfits = await FetchPackagesByFilter(ids, OUTFIT_PATH, clauses);
+  let outfits = await FetchPackagesByFilter(ids, OUTFIT_PATH, clauses, isSnapshot);
   return outfits;
 };
 

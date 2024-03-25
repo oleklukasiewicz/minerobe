@@ -35,13 +35,13 @@ export const UpdateCollectionInWardrobe = function (
   );
   wardrobe.set(wardrobeObj);
 };
-export const FetchWardrobeOutfitsByCategory = async function (category) {
+export const FetchWardrobeOutfitsByCategory = async function (category,isSnapshot=false) {
   let outfitsIds = get(wardrobe).outfits.map((outfit) => outfit.id);
   let clauses =
     category == "ALL"
       ? []
       : [new QueryWhere("outfitType", "==", category.toLowerCase())];
-  let outfits = await FetchOutfitByFilter(outfitsIds, clauses);
+  let outfits = await FetchOutfitByFilter(outfitsIds, clauses,isSnapshot);
   return outfits;
 };
 //other

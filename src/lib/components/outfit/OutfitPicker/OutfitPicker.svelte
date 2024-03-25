@@ -19,8 +19,6 @@
   export let itemsPerPage = 24;
   export let viewMode: "compact" | "full" = "full";
 
-  let listReady = true;
-
   let pagedItems = [];
   let splitedOutfits = [];
   let search = "";
@@ -110,7 +108,7 @@
     <div class:hidden={loading}>
       <OutfitPackageSnapshotList
         {renderer}
-        bind:loading={listReady}
+        {loading}
         items={pagedItems}
         on:select={selectOutfit}
       />

@@ -7,13 +7,14 @@ const DATA_PATH = DATA_PATH_CONFIG.PACK_DATA;
 export const FetchPackagesByFilter = async function (
   packsIds: string[],
   path: string,
-  filter: any
+  filter: any,
+  isSnapshot = false
 ) {
   let query = await BuildQuery(path, DATA_PATH, DATA_PATH, packsIds, filter);
   let docs = (await FetchDocsFromQuery(query)).filter((x) => x.length > 0);
   let patched = await Promise.all(
     docs.map(async (doc) => {
-      return await PatchPackage(doc[0] as OutfitPackage, path);
+      return await PatchPackage(doc[0] as OutfitPackage, path,isSnapshot);
     })
   );
   return patched;

@@ -330,12 +330,12 @@
   const openOutfitPicker = async function () {
     isOutfitPickerOpen = true;
     isPickerLoading = true;
-    pickerOutfits = await FetchWardrobeOutfitsByCategory("ALL");
+    pickerOutfits = await FetchWardrobeOutfitsByCategory("ALL",true);
     isPickerLoading = false;
   };
   const fetchByCategory = async function (e) {
     isPickerLoading = true;
-    pickerOutfits = await FetchWardrobeOutfitsByCategory(e.detail);
+    pickerOutfits = await FetchWardrobeOutfitsByCategory(e.detail,true);
     isPickerLoading = false;
   };
 

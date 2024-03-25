@@ -282,18 +282,18 @@ export const UnsharePackage = async function (
 };
 
 //helpers
-export const PatchPackage = async function (pack: OutfitPackage, path: string) {
+export const PatchPackage = async function (pack: OutfitPackage, path: string, isSnapshot = false) {
   const layersPath = LAYERS_PATH;
   let layersData = await Promise.all(
     pack.layers.map(async (layer: any) => {
       if (layer.type == LAYER_TYPE.LOCAL) {
         return await GetDocument(
-          path + "/" + pack.id + "/" + layersPath,
+          path + "/" + pack.id + "/" + (isSnapshot? SNAPSHOT_PATH:  layersPath),
           layer.id || layer.variantId
         );
       } else {
         let lay = await GetDocument(
-          layer.path + "/" + layer.id + "/" + layersPath,
+          layer.path + "/" + layer.id + "/" + (isSnapshot? SNAPSHOT_PATH:  layersPath),
           layer.variantId
         );
         lay.id = layer.id;

@@ -24,30 +24,30 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="outfit-collection-item" on:click>
-  <div style="display:flex;flex-direction:row; gap:8px;`">
+  <div style="display:flex;flex-direction:row; gap:8px;margin-right:2px;">
     <b class="mc-font" style="flex:1;margin-top:4px;">
       {item.name}
     </b>
     <div>
-      <Button
-        label={!IsItemInCollection(item, pack) ? "Add outfit" : "Remove outfit"}
-        size="small"
-        type={!IsItemInCollection(item, pack) ? "primary" : "tertiary"}
-        on:click={() => {
-          !IsItemInCollection(item, pack) ? onAdd() : onRemove();
-        }}
-      />
+      <div class="labels">
+        {#if item.isShared}
+          <Label variant="rare" text="Shared" />
+        {/if}
+      </div>
+      <div class="mc-font">
+        {item.outfits.length}
+      </div>
     </div>
   </div>
   <div class="data">
-    <div class="labels">
-      {#if item.isShared}
-        <Label variant="rare" text="Shared" />
-      {/if}
-    </div>
-    <div class="mc-font">
-      {item.outfits.length}
-    </div>
+    <Button
+      label={!IsItemInCollection(item, pack) ? "Add outfit" : "Remove outfit"}
+      size="small"
+      type={!IsItemInCollection(item, pack) ? "primary" : "tertiary"}
+      on:click={() => {
+        !IsItemInCollection(item, pack) ? onAdd() : onRemove();
+      }}
+    />
   </div>
 </div>
 
@@ -60,7 +60,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
-      margin-top: 8px;
+      margin-top: 12px;
       margin-right: 4px;
       min-height: 26px;
       flex-direction: row;
