@@ -1,6 +1,5 @@
 <script lang="ts">
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
-  import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import { FetchLandingPage } from "$src/api/landing";
   import { defaultRenderer, isMobileView, userSettings } from "$src/data/cache";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
@@ -32,10 +31,10 @@
       in your own Minecraft worlds or use them as a base for your own skins.
     </p>
   </div>
-  {#if landingLoaded}
     <h2 class="list-title">Most Recent</h2>
     <OutfitPackageSnapshotList
       items={mostRecent}
+      loading={!landingLoaded}
       renderer={$defaultRenderer}
       withBaseTexture={$userSettings?.baseTexture != null}
       baseTexture={$userSettings?.baseTexture}
@@ -45,6 +44,7 @@
     <h2 class="list-title">Most Liked</h2>
     <OutfitPackageSnapshotList
       items={mostLiked}
+      loading={!landingLoaded}
       renderer={$defaultRenderer}
       withBaseTexture={$userSettings?.baseTexture != null}
       baseTexture={$userSettings?.baseTexture}
@@ -54,35 +54,13 @@
     <h2 class="list-title">Most Downloaded</h2>
     <OutfitPackageSnapshotList
       items={mostDownloaded}
+      loading={!landingLoaded}
       renderer={$defaultRenderer}
       withBaseTexture={$userSettings?.baseTexture != null}
       baseTexture={$userSettings?.baseTexture}
       dense={false}
       on:innerselect={goToItemPage}
     />
-  {:else}
-    <br />
-    <Placeholder style="height:48px;margin-bottom:8px;" />
-    <div class="placeholders">
-      {#each Array(10) as _}
-        <Placeholder style="min-width:175px;height:268px;" />
-      {/each}
-    </div>
-    <br />
-    <Placeholder style="height:48px;margin-bottom:8px;" />
-    <div class="placeholders">
-      {#each Array(10) as _}
-        <Placeholder style="min-width:175px;height:268px;" />
-      {/each}
-    </div>
-    <br />
-    <Placeholder style="height:48px;margin-bottom:8px;" />
-    <div class="placeholders">
-      {#each Array(10) as _}
-        <Placeholder style="min-width:175px;height:268px;" />
-      {/each}
-    </div>
-  {/if}
 </div>
 
 <style lang="scss">

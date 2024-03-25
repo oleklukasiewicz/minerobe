@@ -5,13 +5,14 @@
   import { createEventDispatcher, onMount } from "svelte";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
 
   export let items: OutfitPackage[] = [];
   export let renderer = null;
   export let dense = true;
-  export let ready = false;
+  export let loading = false;
   export let minItemWidth = "135px";
-  export let fillMethod="auto-fit"
+  export let fillMethod = "auto-fit";
   export let maxItemWidth = "1fr";
   export let withBaseTexture = false;
   export let baseTexture = null;
@@ -32,8 +33,6 @@
     const providers = await CreateDefaultRenderProvider(renderer);
     steveListProvider = providers.steve;
     alexListProvider = providers.alex;
-
-    ready = true;
   });
 
   const normalizeItems = async function (itemsToNormalize) {
@@ -76,7 +75,7 @@
   class:dense
   style="grid-template-columns: repeat({fillMethod}, minmax({minItemWidth}, {maxItemWidth}));"
 >
-  {#if ready}
+  {#if !loading && steveListProvider && alexListProvider}
     {#each normalizedItems as item (item.id + item.layers[0]?.variantId)}
       <OutfitPackageSnapshotItem
         on:select={selectRenderedOutfit}
@@ -87,6 +86,10 @@
           ? steveListProvider
           : alexListProvider}
       />
+    {/each}
+  {:else}
+    {#each Array(10) as _}
+      <Placeholder style="aspect-ratio:5/8;height:100%" />
     {/each}
   {/if}
 </div>

@@ -110,7 +110,7 @@
     <div class:hidden={loading}>
       <OutfitPackageSnapshotList
         {renderer}
-        bind:ready={listReady}
+        bind:loading={listReady}
         items={pagedItems}
         on:select={selectOutfit}
       />
