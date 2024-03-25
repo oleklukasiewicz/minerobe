@@ -3,7 +3,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url(/font/minecraftBold.ttf) format("truetype");
+    src: url(/font/minecraftBolder.ttf) format("truetype");
 }
 @font-face{
     font-family: minecraft-simple;
