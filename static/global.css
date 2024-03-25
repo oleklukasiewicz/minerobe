@@ -3,6 +3,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
+    ascent-override: 100%;
     src: url(/font/minecraftBolder.ttf) format("truetype");
 }
 @font-face{
