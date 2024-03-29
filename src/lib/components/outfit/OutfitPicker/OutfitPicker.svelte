@@ -107,6 +107,7 @@
   <div class="list">
     <div class:hidden={loading}>
       <OutfitPackageSnapshotList
+        minItemWidth="200px"
         {renderer}
         {loading}
         items={pagedItems}

@@ -282,18 +282,30 @@ export const UnsharePackage = async function (
 };
 
 //helpers
-export const PatchPackage = async function (pack: OutfitPackage, path: string, isSnapshot = false) {
+export const PatchPackage = async function (
+  pack: OutfitPackage,
+  path: string,
+  isSnapshot = false
+) {
   const layersPath = LAYERS_PATH;
   let layersData = await Promise.all(
     pack.layers.map(async (layer: any) => {
       if (layer.type == LAYER_TYPE.LOCAL) {
         return await GetDocument(
-          path + "/" + pack.id + "/" + (isSnapshot? SNAPSHOT_PATH:  layersPath),
+          path +
+            "/" +
+            pack.id +
+            "/" +
+            (isSnapshot ? SNAPSHOT_PATH : layersPath),
           layer.id || layer.variantId
         );
       } else {
         let lay = await GetDocument(
-          layer.path + "/" + layer.id + "/" + (isSnapshot? SNAPSHOT_PATH:  layersPath),
+          layer.path +
+            "/" +
+            layer.id +
+            "/" +
+            (isSnapshot ? SNAPSHOT_PATH : layersPath),
           layer.variantId
         );
         lay.id = layer.id;
@@ -305,6 +317,7 @@ export const PatchPackage = async function (pack: OutfitPackage, path: string, i
   pack.layers = layersData;
   pack.social = await FetchSocialData(path, pack.id);
   pack.local = {};
+  pack.local.isSnapshot = isSnapshot;
   return pack;
 };
 
