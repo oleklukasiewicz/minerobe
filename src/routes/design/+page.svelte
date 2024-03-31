@@ -85,6 +85,7 @@
     prepareLayersForRender,
   } from "$src/helpers/view/designHelper";
   import { AddItemToWardrobe, IsItemInWardrobe, UpdateItemInWardrobe } from "$src/api/wardrobe";
+  import { outfitsInstance } from "$src/api/outfits";
 
   const itemPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -251,7 +252,7 @@
   };
   const addNewRemoteLayer = async function (outfit: OutfitPackage) {
     isOutfitPickerOpen = false;
-    let layer = outfit.layers[0];
+    let layer = await outfitsInstance.fetchHelper.fetchLayer(outfit.id,outfit.layers[0].variantId);
     //check if layer already exists
     if (
       $itemLayers.find(
@@ -330,12 +331,12 @@
   const openOutfitPicker = async function () {
     isOutfitPickerOpen = true;
     isPickerLoading = true;
-    pickerOutfits = await FetchWardrobeOutfitsByCategory("ALL",false);
+    pickerOutfits = await FetchWardrobeOutfitsByCategory("ALL",true);
     isPickerLoading = false;
   };
   const fetchByCategory = async function (e) {
     isPickerLoading = true;
-    pickerOutfits = await FetchWardrobeOutfitsByCategory(e.detail,false);
+    pickerOutfits = await FetchWardrobeOutfitsByCategory(e.detail,true);
     isPickerLoading = false;
   };
 

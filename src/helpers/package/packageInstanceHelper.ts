@@ -2,6 +2,7 @@ import {
   DeletePackage,
   DeletePackageLayer,
   FetchPackage,
+  FetchPackageLayer,
   UploadPackage,
   UploadPackageLayer,
 } from "$src/api/pack";
@@ -37,10 +38,12 @@ export class OutfitPackageInstanceConfig {
 export class OutfitPackageInstance {
   private _self;
   private _config: OutfitPackageInstanceConfig;
+  fetchHelper: OutfitPackageInstanceFetchHelper;
 
   constructor(config: OutfitPackageInstanceConfig) {
     this._self = this;
     this._config = config;
+    this.fetchHelper = new OutfitPackageInstanceFetchHelper(this._config);
   }
   generateId = () => GenerateIdForCollection(this._config.sourcePath);
   generateLayerId = () => GenerateIdForCollection("dummy");
@@ -121,8 +124,34 @@ export class OutfitPackageInstance {
   }
   async getDefault() {
     const def = await this._config.newPackage();
-    def.local={};
+    def.local = {};
     def.local.isNew = true;
     return def;
+  }
+}
+class OutfitPackageInstanceFetchHelper {
+  private _self;
+  private _config: OutfitPackageInstanceConfig;
+  constructor(config: OutfitPackageInstanceConfig) {
+    this._self = this;
+    this._config = config;
+  }
+  async fetchLayer(id: string, layerId: string) {
+    return await FetchPackageLayer(
+      id,
+      layerId,
+      this._config.sourcePath,
+      this._config.layerParserLocal,
+      false
+    );
+  }
+  async fetchLayerSnapshot(id: string, layerId: string) {
+    return await FetchPackageLayer(
+      id,
+      layerId,
+      this._config.sourcePath,
+      this._config.layerParserLocal,
+      true
+    );
   }
 }
