@@ -24,7 +24,7 @@
 	"dependencies": {
 		"color-diff": "^1.4.0",
 		"dotenv": "^16.4.5",
-		"firebase": "^10.9.0",
+		"firebase": "^10.10.0",
 		"firebase-admin": "^12.0.0",
 		"firebase-functions": "^4.8.1",
 		"gltf-loader": "^1.0.0",
