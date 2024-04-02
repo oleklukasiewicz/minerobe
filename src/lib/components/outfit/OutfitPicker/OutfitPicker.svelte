@@ -88,6 +88,7 @@
   <div>
     <button
       class="small"
+      style="padding-bottom:4px;"
       class:secondary={selectedCategory != "ALL"}
       on:click={() => selectCategory("ALL")}>ALL</button
     >
@@ -96,7 +97,7 @@
       <button
         class="small"
         class:secondary={selectedCategory != category}
-        style="margin-left:4px"
+        style="margin-left:4px;padding-bottom:4px;"
         on:click={() => selectCategory(category)}>{category}</button
       >
     {/each}
