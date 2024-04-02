@@ -1,9 +1,11 @@
 import { MODEL_TYPE } from "$data/consts";
+import { ALEX_TEXTURE_MAP, STEVE_TEXTURE_MAP } from "$src/helpers/render/modelHelper";
+import type { ModelMap, ModelPart } from "./model";
 
 // Defaults
 const defaultOptions = {
   format: "image/png",
-  quality: 0.92,
+  quality: 1,
   width: undefined,
   height: undefined,
   Canvas: undefined,
@@ -50,9 +52,9 @@ export let mergeImages = function (
     });
 
     // Get canvas context
-    var ctx = canvas.getContext("2d",{ willReadFrequently: true });
+    var ctx = canvas.getContext("2d", { willReadFrequently: true });
     var tempCanvas = window.document.createElement("canvas");
-    var tempCtx = tempCanvas.getContext("2d",{ willReadFrequently: true });
+    var tempCtx = tempCanvas.getContext("2d", { willReadFrequently: true });
 
     // When sources have loaded
     resolve(
@@ -76,27 +78,24 @@ export let mergeImages = function (
         images.forEach(function (image) {
           ctx.globalAlpha = image.opacity ? image.opacity : 1;
           //set temp canvas
-          tempCtx.drawImage(
-            image.img,
-            image.x || 0,
-            image.y || 0
-          );
+          tempCtx.drawImage(image.img, image.x || 0, image.y || 0);
           //update image
           //head
-          replaceLowerLayer(tempCtx, ctx, 0, 0, 32, 0, 32, 16);
-          //body
-          replaceLowerLayer(tempCtx, ctx, 16, 16, 16, 32, 24, 16);
-          //legs
-          replaceLowerLayer(tempCtx, ctx, 0, 16, 0, 32, 16, 16);
-          replaceLowerLayer(tempCtx, ctx, 16, 48, 0, 48, 16, 16);
-          //arms
+          let modelMap: ModelMap;
           if (skinType == MODEL_TYPE.ALEX) {
-            replaceLowerLayer(tempCtx, ctx, 40, 16, 40, 32, 14, 16);
-            replaceLowerLayer(tempCtx, ctx, 32, 48, 48, 48, 14, 16);
+            modelMap = ALEX_TEXTURE_MAP;
           } else {
-            replaceLowerLayer(tempCtx, ctx, 40, 16, 40, 34, 16, 16);
-            replaceLowerLayer(tempCtx, ctx, 32, 48, 48, 52, 16, 16);
+            modelMap = STEVE_TEXTURE_MAP;
           }
+          
+          replaceLowerPart(tempCtx, ctx, modelMap.head);
+          replaceLowerPart(tempCtx, ctx, modelMap.body);
+          replaceLowerPart(tempCtx, ctx, modelMap.leftLeg);
+          replaceLowerPart(tempCtx, ctx, modelMap.rightLeg);
+          replaceLowerPart(tempCtx, ctx, modelMap.leftArm);
+          replaceLowerPart(tempCtx, ctx, modelMap.rightArm);
+
+
           tempCtx.clearRect(0, 0, canvas.width, canvas.height);
 
           let drawed = ctx.drawImage(image.img, image.x || 0, image.y || 0);
@@ -109,25 +108,31 @@ export let mergeImages = function (
     );
   });
 };
-let replaceLowerLayer = function (
+const replaceLowerPart = function (
   imgContext,
   lowerLayerContext,
-  sourceX,
-  sourceY,
-  x,
-  y,
-  width,
-  height
+  part: ModelPart
 ) {
-  let imageData = imgContext.getImageData(sourceX, sourceY, width, height,{
-    willReadFrequently: true,
-  });
-  let sourcePixels = imageData.data;
-
-  let destData = lowerLayerContext.getImageData(x, y, width, height,{
-    willReadFrequently: true,
-  });
-  let destPixels = destData.data;
+  const imageData = imgContext.getImageData(
+    part.textureArea.x,
+    part.textureArea.y,
+    part.textureArea.width,
+    part.textureArea.height,
+    {
+      willReadFrequently: true,
+    }
+  );
+  const sourcePixels = imageData.data;
+  const destData = lowerLayerContext.getImageData(
+    part.outerTextureArea.x,
+    part.outerTextureArea.y,
+    part.outerTextureArea.width,
+    part.outerTextureArea.height,
+    {
+      willReadFrequently: true,
+    }
+  );
+  const destPixels = destData.data;
   for (let i = 0; i < sourcePixels.length; i += 4) {
     const r = sourcePixels[i];
     const g = sourcePixels[i + 1];
@@ -140,5 +145,9 @@ let replaceLowerLayer = function (
       destPixels[i + 3] = 0;
     }
   }
-  lowerLayerContext.putImageData(destData, x, y);
+  lowerLayerContext.putImageData(
+    destData,
+    part.outerTextureArea.x,
+    part.outerTextureArea.y
+  );
 };

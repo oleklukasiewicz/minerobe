@@ -146,7 +146,6 @@ export const sortOutfitLayersByColor = async function (
   }
   return hues.sort((a, b) => a.h - b.h).map((x) => x.item);
 };
-
 export const GetFaceOfRemoteSkin = async function (skinUrl) {
   //fetch skin
   let blob;
