@@ -27,11 +27,7 @@
     MODEL_TYPE,
     PACKAGE_TYPE,
   } from "$data/consts";
-  import {
-    FileData,
-    OutfitLayer,
-    OutfitPackage,
-  } from "$data/common";
+  import { FileData, OutfitLayer, OutfitPackage } from "$data/common";
   import {
     alexModel,
     steveModel,
@@ -84,8 +80,13 @@
     getPackageInstanceForType,
     prepareLayersForRender,
   } from "$src/helpers/view/designHelper";
-  import { AddItemToWardrobe, IsItemInWardrobe, UpdateItemInWardrobe } from "$src/api/wardrobe";
+  import {
+    AddItemToWardrobe,
+    IsItemInWardrobe,
+    UpdateItemInWardrobe,
+  } from "$src/api/wardrobe";
   import { outfitsInstance } from "$src/api/outfits";
+  import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
 
   const itemPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -140,7 +141,7 @@
         return;
       }
       if ($wardrobe?.studio != null) {
-        currentInstance= getPackageInstanceForType($wardrobe.studio.type);
+        currentInstance = getPackageInstanceForType($wardrobe.studio.type);
 
         $itemPackage = await currentInstance.fetch($wardrobe.studio.id);
         const categoryCounts = GetCategoriesFromList($wardrobe.outfits);
@@ -252,7 +253,10 @@
   };
   const addNewRemoteLayer = async function (outfit: OutfitPackage) {
     isOutfitPickerOpen = false;
-    let layer = await outfitsInstance.fetchHelper.fetchLayer(outfit.id,outfit.layers[0].variantId);
+    let layer = await outfitsInstance.fetchHelper.fetchLayer(
+      outfit.id,
+      outfit.layers[0].variantId
+    );
     //check if layer already exists
     if (
       $itemLayers.find(
@@ -331,12 +335,12 @@
   const openOutfitPicker = async function () {
     isOutfitPickerOpen = true;
     isPickerLoading = true;
-    pickerOutfits = await FetchWardrobeOutfitsByCategory("ALL",true);
+    pickerOutfits = await FetchWardrobeOutfitsByCategory("ALL", true);
     isPickerLoading = false;
   };
   const fetchByCategory = async function (e) {
     isPickerLoading = true;
-    pickerOutfits = await FetchWardrobeOutfitsByCategory(e.detail,true);
+    pickerOutfits = await FetchWardrobeOutfitsByCategory(e.detail, true);
     isPickerLoading = false;
   };
 
@@ -623,56 +627,16 @@
       <br />
       <br />
       {#if loaded}
-        <div class="item-actions">
-          {#if $userSettings?.linkedMinecraftAccount?.name != null && $isItemSet}
-            <SetSkinButton
-              item={$itemPackage}
-              texture={modelTexture}
-              style="flex:1;"
-            />
-          {/if}
-          <Button
-            on:click={downloadImage}
-            label={$_("download")}
-            onlyIcon={!$isMobileView &&
-              $isItemSet &&
-              $userSettings?.linkedMinecraftAccount?.name != null}
-            icon={DownloadIcon}
-            disabled={$itemLayers.length == 0 || !loaded}
-            size="large"
+          <OutfitActions
+            outfitPackage={$itemPackage}
+            {modelTexture}
+            loading={!loaded}
+            mobile={$isMobileView}
+            on:share={sharePackage}
+            on:download={downloadImage}
+            on:shareDialog={() => (isShareDialogOpen = true)}
+            on:collectionDialog={() => (isCollectionDialogOpen = true)}
           />
-          {#if $currentUser?.id != null}
-            <Button
-              on:click={() => (isCollectionDialogOpen = true)}
-              label={"Add to collection"}
-              onlyIcon={!$isMobileView}
-              icon={ListIcon}
-              size="large"
-              type="tertiary"
-            />
-          {/if}
-          {#if $itemPublisher.id == $currentUser?.id}
-            {#if $itemPackage.isShared}
-              <Button
-                on:click={() => (isShareDialogOpen = true)}
-                type="tertiary"
-                icon={MoreHorizontalIcon}
-                onlyIcon={!$isMobileView}
-                label={$_("shareinfo")}
-                size="large"
-              />
-            {:else}
-              <Button
-                on:click={sharePackage}
-                type="tertiary"
-                icon={CloudIcon}
-                onlyIcon={!$isMobileView}
-                label={$_("sharePackage")}
-                size="large"
-              />
-            {/if}
-          {/if}
-        </div>
       {:else}
         <div style="display: flex; gap:8px;">
           <Placeholder style="height:48px;margin-bottom:8px;" />

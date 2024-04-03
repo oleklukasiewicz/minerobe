@@ -16,7 +16,7 @@ export const IndexLandingPage = async function () {
       new QueryWhere("variantId", "==", "none"),
     ],
     [new QueryOrderBy("likes", "desc")],
-    100
+    6
   );
   const mostLiked = (await FetchDocsFromQuery([q]))[0] as any[];
   //most downlaoded
@@ -27,7 +27,7 @@ export const IndexLandingPage = async function () {
       new QueryWhere("variantId", "==", "none"),
     ],
     [new QueryOrderBy("downloads", "desc")],
-    100
+    6
   );
   const mostDownloaded = (await FetchDocsFromQuery([q2]))[0] as any[];
 
@@ -38,7 +38,7 @@ export const IndexLandingPage = async function () {
       new QueryWhere("variantId", "==", "none"),
     ],
     [new QueryOrderBy("createdAt", "desc")],
-    100
+    6
   );
   const mostRecent = (await FetchDocsFromQuery([q3]))[0] as any[];
 

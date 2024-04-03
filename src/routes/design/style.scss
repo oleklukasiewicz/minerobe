@@ -21,7 +21,7 @@
       aspect-ratio: 1/1;
       box-sizing: border-box;
       &.drop-hover {
-       box-shadow: 0px 0px 0px 5px var(--color-accent);
+        box-shadow: 0px 0px 0px 5px var(--color-accent);
       }
     }
   }
@@ -57,11 +57,6 @@
       box-sizing: border-box;
       letter-spacing: 0.1px;
     }
-    .item-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
   }
 }
 .outfit-picker-dialog {
@@ -76,8 +71,7 @@
     flex-direction: column;
     .render-data {
       position: static;
-      .render
-      {
+      .render {
         margin: 0px;
       }
     }
@@ -90,10 +84,5 @@
         max-width: 100%;
       }
     }
-  }
-  .item-actions {
-    display: grid !important;
-    grid-template-rows: 1fr 1fr;
-    grid-template-columns: 1fr;
   }
 }

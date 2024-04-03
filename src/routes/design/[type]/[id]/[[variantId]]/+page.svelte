@@ -74,6 +74,7 @@
     IsItemInWardrobe,
     RemoveItemFromWardrobe,
   } from "$src/api/wardrobe.js";
+  import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -369,57 +370,18 @@
         <Placeholder style="height:48px;margin-bottom:8px;" />
       {/if}
       {#if loaded}
-        <div class="item-actions">
-          {#if $userSettings?.linkedMinecraftAccount?.name != null && $isItemSet}
-            <SetSkinButton
-              item={$localPackage}
-              texture={modelTexture}
-              style="flex:1;"
-            />
-          {/if}
-          <Button
-            on:click={downloadImage}
-            label={$_("download")}
-            onlyIcon={!$isMobileView &&
-              $isItemSet &&
-              $userSettings?.linkedMinecraftAccount?.name != null}
-            icon={DownloadIcon}
-            disabled={$itemLayers.length == 0 || !loaded}
-            size="large"
-          />
-          {#if !$isUserGuest}
-            <Button
-              type="tertiary"
-              on:click={() => (isCollectionDialogOpen = true)}
-              label={"Add to collection"}
-              onlyIcon={!$isMobileView}
-              icon={ListIcon}
-              size="large"
-            />
-          {/if}
-          {#if $localPackage.publisher?.id != $currentUser?.id && !$isUserGuest}
-            {#if isPackageInWardrobe == false || $isUserGuest}
-              <Button
-                on:click={addToWardrobe}
-                onlyIcon={!$isMobileView}
-                icon={HearthIcon}
-                disabled={!loaded || $isUserGuest}
-                size="large"
-                type="tertiary"
-                label="Add to wardrobe"
-              />
-            {:else}
-              <Button
-                on:click={removeFromWardrobe}
-                onlyIcon={!$isMobileView}
-                icon={HearthIcon}
-                disabled={!loaded || $isUserGuest}
-                size="large"
-                label="Remove from wardrobe"
-              />
-            {/if}
-          {/if}
-        </div>
+        <OutfitActions
+          readonly={true}
+          isPackageInWardrobe={isPackageInWardrobe}
+          outfitPackage={$localPackage}
+          {modelTexture}
+          loading={!loaded}
+          mobile={$isMobileView}
+          on:download={downloadImage}
+          on:collectionDialog={() => (isCollectionDialogOpen = true)}
+          on:addToWardrobe={addToWardrobe}
+          on:removeFromWardrobe={removeFromWardrobe}
+        />
       {:else}
         <div style="display: flex; gap:8px; margin-top:36px;">
           <Placeholder style="height:42px;margin-bottom:8px;" />
