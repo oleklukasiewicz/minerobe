@@ -1,5 +1,8 @@
 import { MODEL_TYPE } from "$data/consts";
-import { ALEX_TEXTURE_MAP, STEVE_TEXTURE_MAP } from "$src/helpers/render/modelHelper";
+import {
+  ALEX_TEXTURE_MAP,
+  STEVE_TEXTURE_MAP,
+} from "$src/helpers/render/modelHelper";
 import type { ModelMap, ModelPart } from "./model";
 
 // Defaults
@@ -87,14 +90,13 @@ export let mergeImages = function (
           } else {
             modelMap = STEVE_TEXTURE_MAP;
           }
-          
-          replaceLowerPart(tempCtx, ctx, modelMap.head);
-          replaceLowerPart(tempCtx, ctx, modelMap.body);
-          replaceLowerPart(tempCtx, ctx, modelMap.leftLeg);
-          replaceLowerPart(tempCtx, ctx, modelMap.rightLeg);
-          replaceLowerPart(tempCtx, ctx, modelMap.leftArm);
-          replaceLowerPart(tempCtx, ctx, modelMap.rightArm);
 
+          const k = Object.keys(modelMap);
+          for (let i = 0; i < k.length; i++) {
+            let part: ModelPart = modelMap[k[i]];
+            if (part.outerTextureArea != null && part.textureArea != null)
+              replaceLowerPart(tempCtx, ctx, part);
+          }
 
           tempCtx.clearRect(0, 0, canvas.width, canvas.height);
 
