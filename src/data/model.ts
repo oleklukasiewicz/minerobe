@@ -18,6 +18,7 @@ export class ModelPart {
 export class ModelMap {
   public constructor(
     public name: string,
+    public model: string = null,
     public head: ModelPart,
     public body: ModelPart,
     public leftLeg: ModelPart,
@@ -31,5 +32,12 @@ export class ModelExportConfig {
     public modelType: string = MODEL_TYPE.STEVE,
     public flat: boolean = false,
     public excludedFromFlat: string[] = ["head"]
+  ) {}
+}
+export class ModelRenderConfig {
+  public constructor(
+    public modelMap: ModelMap = null,
+    public isFlatten: boolean = false,
+    public excludedPartsFromFlat: string[] = []
   ) {}
 }
