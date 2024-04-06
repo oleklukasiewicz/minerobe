@@ -5,14 +5,15 @@ import {
   MergeFileDataToImage,
   MergeLayersToImage,
 } from "../../data/imageMerger";
+import type { ModelExportConfig } from "$src/data/model";
 
 export const ExportImage = async function (
   layers: OutfitLayer[],
-  modelType: string,
+  config: ModelExportConfig,
   fileName: string
 ) {
   const link = document.createElement("a");
-  link.href = await MergeLayersToImage(layers, modelType);
+  link.href = await MergeLayersToImage(layers, config);
   link.download = fileName.toLowerCase() + ".png";
   document.body.appendChild(link);
   link.click();
@@ -20,12 +21,22 @@ export const ExportImage = async function (
 };
 export const ExportImageLayers = async function (
   layers: FileData[],
-  modelType: string,
-  fileName: string,
-  flat: boolean = false
+  config: ModelExportConfig,
+  fileName: string
 ) {
   const link = document.createElement("a");
-  link.href = await MergeFileDataToImage(layers, modelType, flat);
+  link.href = await MergeFileDataToImage(layers, config);
+  link.download = fileName.toLowerCase() + ".png";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+export const ExportImageString = async function (
+  base64: string,
+  fileName: string
+) {
+  const link = document.createElement("a");
+  link.href = base64;
   link.download = fileName.toLowerCase() + ".png";
   document.body.appendChild(link);
   link.click();

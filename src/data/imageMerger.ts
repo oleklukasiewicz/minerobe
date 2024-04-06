@@ -4,7 +4,7 @@ import {
   STEVE_TEXTURE_MAP,
 } from "$src/helpers/render/modelHelper";
 import type { FileData, OutfitLayer } from "./common";
-import type { ModelMap, ModelPart } from "./model";
+import type { ModelExportConfig, ModelMap, ModelPart } from "./model";
 
 // Defaults
 const defaultOptions = {
@@ -213,43 +213,37 @@ const flatPart = function (imgContext, part: ModelPart) {
 };
 export const MergeLayersToImage = async function (
   layers: OutfitLayer[],
-  modelType: string,
-  flat = false,
-  excludeFromFlat = ["head"]
+  config: ModelExportConfig
 ) {
   return await mergeImages(
-    layers.map((x) => x[modelType].content).reverse(),
+    layers.map((x) => x[config.modelType].content).reverse(),
     undefined,
-    modelType,
-    flat,
-    excludeFromFlat
+    config.modelType,
+    config.flat,
+    config.excludedFromFlat
   );
 };
 export const MergeFileDataToImage = async function (
   layers: FileData[],
-  modelType: string,
-  flat = false,
-  excludeFromFlat = ["head"]
+  config: ModelExportConfig
 ) {
   return await mergeImages(
     layers.map((x) => x.content).reverse(),
     undefined,
-    modelType,
-    flat,
-    excludeFromFlat
+    config.modelType,
+    config.flat,
+    config.excludedFromFlat
   );
 };
 export const MergeStringToImage = async function (
   layers: string[],
-  modelType: string,
-  flat = false,
-  excludeFromFlat = ["head"]
+ config: ModelExportConfig
 ) {
   return await mergeImages(
     layers.reverse(),
     undefined,
-    modelType,
-    flat,
-    excludeFromFlat
+    config.modelType,
+    config.flat,
+    config.excludedFromFlat
   );
 };

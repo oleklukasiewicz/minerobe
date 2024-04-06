@@ -8,6 +8,7 @@ import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
 import { ConvertColor, GetColorFromFileData } from "./colorHelper";
 import { normalizeStringCase } from "../data/dataHelper";
 import { MergeLayersToImage } from "$src/data/imageMerger";
+import { ModelExportConfig } from "$src/data/model";
 
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =
@@ -193,6 +194,8 @@ export const MergePackageLayers = async function (
   layers: OutfitLayer[],
   model = MODEL_TYPE.STEVE
 ) {
-  let merged = await MergeLayersToImage(layers, model);
+  let config = new ModelExportConfig();
+  config.modelType = model;
+  let merged = await MergeLayersToImage(layers, config);
   return merged;
 };

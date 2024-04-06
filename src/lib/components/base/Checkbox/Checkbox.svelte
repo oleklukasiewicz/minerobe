@@ -13,8 +13,8 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="checkbox-container">
-  <div class="checkbox" on:click={toggleValue} class:selected={value}>
+<div class="checkbox-container" on:click={toggleValue}>
+  <div class="checkbox" class:selected={value}>
     {#if value}
       {@html CheckIcon}
     {/if}

@@ -43,7 +43,10 @@
   import DefaultAnimation from "$animation/default";
   import HandsUpAnimation from "$animation/handsup";
 
-  import { ExportImageLayers } from "$src/helpers/data/dataTransferHelper.js";
+  import {
+    ExportImageLayers,
+    ExportImageString,
+  } from "$src/helpers/data/dataTransferHelper.js";
   import { sortOutfitLayersByColor } from "$src/helpers/image/imageDataHelpers.js";
   import {
     AddToCollection,
@@ -70,6 +73,7 @@
   } from "$src/api/wardrobe.js";
   import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
+  import { ModelExportConfig } from "$src/data/model.js";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -87,6 +91,9 @@
   );
 
   const selectedVariant: Writable<OutfitLayer> = writable(null);
+  const modelExportConfig: Writable<ModelExportConfig> = writable(
+    new ModelExportConfig()
+  );
 
   let currentInstance: OutfitPackageInstance = null;
   let sortedItemLayers = [];
@@ -143,7 +150,7 @@
 
   //export
   const downloadImage = async () => {
-    await ExportImageLayers(rendererLayers, $itemModelType, $itemName,flatRender);
+    await ExportImageString(modelTexture, $localPackage.name);
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
     await AddDownload($localPackage.id, $localPackage.type);
@@ -159,18 +166,15 @@
     if ($selectedVariant == null && $itemLayers.length > 0)
       $selectedVariant = $itemLayers[0];
 
+    $modelExportConfig.modelType = $itemModelType;
+    $modelExportConfig.flat = flatRender;
     rendererLayers = prepareLayersForRender(
       $itemLayers,
       $selectedVariant,
       $itemModelType,
       $isItemSet
     );
-    modelTexture = await getLayersForRender(
-      rendererLayers,
-      $isItemSet,
-      $itemModelType,
-      flatRender
-    );
+    modelTexture = await getLayersForRender(rendererLayers, $isItemSet, $modelExportConfig);
   };
   const sortLayersByColor = async function () {
     sortedItemLayers = await sortOutfitLayersByColor(
@@ -364,19 +368,23 @@
       {:else}
         <Placeholder style="height:48px;margin-bottom:8px;" />
       {/if}
-      <div>
-        <br />
-        {#if loaded}
-          <Checkbox label="Old format model" bind:value={flatRender} on:change={updateTexture} />
-        {:else}
-          <Placeholder style="height:24px;width:200px;" />
-        {/if}
-      </div>
+      <br />
+      {#if loaded}
+        <div style="margin-left:12px;">
+          <Checkbox
+            label="Old format model"
+            bind:value={flatRender}
+            on:change={updateTexture}
+          />
+        </div>
+      {:else}
+        <Placeholder style="height:24px;width:200px;" />
+      {/if}
       <br />
       {#if loaded}
         <OutfitActions
           readonly={true}
-          isPackageInWardrobe={isPackageInWardrobe}
+          {isPackageInWardrobe}
           outfitPackage={$localPackage}
           {modelTexture}
           loading={!loaded}

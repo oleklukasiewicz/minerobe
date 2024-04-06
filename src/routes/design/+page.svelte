@@ -83,6 +83,7 @@
   import { outfitsInstance } from "$src/api/outfits";
   import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
+  import { ModelExportConfig } from "$src/data/model";
 
   const itemPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -91,6 +92,9 @@
   );
   const itemModelType: Writable<string> = propertyStore(itemPackage, "model");
   const itemPublisher = propertyStore(itemPackage, "publisher");
+  const modelExportConfig: Writable<ModelExportConfig> = writable(
+    new ModelExportConfig()
+  );
 
   const selectedLayer: Writable<OutfitLayer> = writable(null);
 
@@ -232,17 +236,20 @@
     if ($selectedLayer == null && $itemLayers.length > 0)
       $selectedLayer = $itemLayers[0];
 
+    $modelExportConfig.modelType = $itemModelType;
+    $modelExportConfig.flat = flatRender;
+    
     rendererLayers = prepareLayersForRender(
       $itemLayers,
       $selectedLayer,
       $itemModelType,
       $isItemSet
     );
+
     modelTexture = await getLayersForRender(
       rendererLayers,
       $isItemSet,
-      $itemModelType,
-      flatRender
+      $modelExportConfig
     );
   };
   const editLayer = async function (e) {
@@ -309,7 +316,11 @@
       layersToExport.push(
         new FileData("base", $userSettings?.baseTexture, "image/png")
       );
-    await ExportImageLayers(layersToExport, $itemModelType, $itemPackage.name,flatRender);
+    await ExportImageLayers(
+      layersToExport,
+      $modelExportConfig,
+      $itemPackage.name
+    );
     applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
   };
 
@@ -609,14 +620,19 @@
       {:else}
         <Placeholder style="height:48px;margin-bottom:8px;" />
       {/if}
-      <div>
-        <br />
-        {#if loaded}
-          <Checkbox label="Old format model" bind:value={flatRender} on:change={updateTexture} />
-        {:else}
-          <Placeholder style="height:24px;width:200px;" />
-        {/if}
-      </div>
+      <br />
+      {#if loaded}
+        <div style="margin-left:12px;">
+          <Checkbox
+            label="Old format model"
+            bind:value={flatRender}
+            on:change={updateTexture}
+          />
+        </div>
+      {:else}
+        <Placeholder style="height:24px;width:200px;" />
+      {/if}
+
       <br />
       <SectionTitle label={$_("description")} placeholder={!loaded} />
       {#if !loaded}

@@ -4,6 +4,7 @@ import { baseTexture, userSettings } from "$src/data/cache";
 import type { FileData, OutfitLayer } from "$src/data/common";
 import { PACKAGE_TYPE } from "$src/data/consts";
 import { MergeStringToImage } from "$src/data/imageMerger";
+import type { ModelExportConfig } from "$src/data/model";
 import { get } from "svelte/store";
 
 export const prepareLayersForRender = function (
@@ -20,8 +21,7 @@ export const prepareLayersForRender = function (
 export const getLayersForRender = async function (
   layers: FileData[],
   isSet: boolean,
-  model: string,
-  flat: boolean=false
+  config: ModelExportConfig
 ) {
   const exportLayers = [];
   exportLayers.push(...layers.map((x) => x.content));
@@ -29,7 +29,7 @@ export const getLayersForRender = async function (
     exportLayers.push(get(userSettings).baseTexture);
   }
   exportLayers.push(get(baseTexture));
-  return await MergeStringToImage(exportLayers, model, flat);
+  return await MergeStringToImage(exportLayers, config);
 };
 export const getPackageInstanceForType = function (type: string) {
   if (type == PACKAGE_TYPE.OUTFIT || type == PACKAGE_TYPE.OUTFIT_LINK)

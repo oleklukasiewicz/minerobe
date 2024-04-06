@@ -18,6 +18,7 @@
   import CloseIcon from "$icons/close.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import Button from "../base/Button/Button.svelte";
+  import { ModelExportConfig } from "$src/data/model";
 
   const dispatch = createEventDispatcher();
 
@@ -41,9 +42,11 @@
   onMount(async () => {
     userSettings.subscribe(async (v) => {
       if (v.baseTexture) {
+        const config = new ModelExportConfig();
+        config.modelType = v.model;
         texture = await MergeStringToImage(
           [$planksTexture, v.baseTexture],
-          v.model
+          config
         );
       } else texture = $planksTexture;
     });
