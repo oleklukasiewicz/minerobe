@@ -17,7 +17,6 @@
   import Dialog from "$component/base/Dialog/Dialog.svelte";
   import OutfitPicker from "$component/outfit/OutfitPicker/OutfitPicker.svelte";
   import Label from "$component/base/Label/Label.svelte";
-  import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
 
   import {
@@ -40,14 +39,10 @@
     showToast,
   } from "$data/cache";
 
-  import DownloadIcon from "$icons/download.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
-  import CloudIcon from "$icons/cloud.svg?raw";
-  import ListIcon from "$icons/list.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import TrashIcon from "$icons/trash.svg?raw";
-  import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
 
   import DefaultAnimation from "$animation/default";
 
@@ -87,6 +82,7 @@
   } from "$src/api/wardrobe";
   import { outfitsInstance } from "$src/api/outfits";
   import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
+  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
 
   const itemPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -117,6 +113,7 @@
   let pickerOutfits = [];
   let pickerCategories = ["ALL"];
   let isPickerLoading = true;
+  let flatRender = false;
 
   let isOutfitPickerOpen = false;
   let isDeleteDialogOpen = false;
@@ -244,7 +241,8 @@
     modelTexture = await getLayersForRender(
       rendererLayers,
       $isItemSet,
-      $itemModelType
+      $itemModelType,
+      flatRender
     );
   };
   const editLayer = async function (e) {
@@ -311,7 +309,7 @@
       layersToExport.push(
         new FileData("base", $userSettings?.baseTexture, "image/png")
       );
-    await ExportImageLayers(layersToExport, $itemModelType, $itemPackage.name);
+    await ExportImageLayers(layersToExport, $itemModelType, $itemPackage.name,flatRender);
     applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
   };
 
@@ -611,6 +609,14 @@
       {:else}
         <Placeholder style="height:48px;margin-bottom:8px;" />
       {/if}
+      <div>
+        <br />
+        {#if loaded}
+          <Checkbox label="Old format model" bind:value={flatRender} on:change={updateTexture} />
+        {:else}
+          <Placeholder style="height:24px;width:200px;" />
+        {/if}
+      </div>
       <br />
       <SectionTitle label={$_("description")} placeholder={!loaded} />
       {#if !loaded}
@@ -627,16 +633,16 @@
       <br />
       <br />
       {#if loaded}
-          <OutfitActions
-            outfitPackage={$itemPackage}
-            {modelTexture}
-            loading={!loaded}
-            mobile={$isMobileView}
-            on:share={sharePackage}
-            on:download={downloadImage}
-            on:shareDialog={() => (isShareDialogOpen = true)}
-            on:collectionDialog={() => (isCollectionDialogOpen = true)}
-          />
+        <OutfitActions
+          outfitPackage={$itemPackage}
+          {modelTexture}
+          loading={!loaded}
+          mobile={$isMobileView}
+          on:share={sharePackage}
+          on:download={downloadImage}
+          on:shareDialog={() => (isShareDialogOpen = true)}
+          on:collectionDialog={() => (isCollectionDialogOpen = true)}
+        />
       {:else}
         <div style="display: flex; gap:8px;">
           <Placeholder style="height:48px;margin-bottom:8px;" />

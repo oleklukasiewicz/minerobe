@@ -87,4 +87,5 @@ VITE_PUSHER_CLUSTER=<value>
 
 
 <!--# icons 
-https://iconduck.com/search?query=<value>vectorSetIds:140](url)--!>
+https://iconduck.com/search?query=vectorSetIds:140
+](url)--!>

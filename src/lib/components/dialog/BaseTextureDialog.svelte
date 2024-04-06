@@ -7,7 +7,7 @@
     steveModel,
     showToast,
   } from "$src/data/cache";
-  import { mergeImages } from "$src/data/imageMerger";
+  import { MergeStringToImage } from "$src/data/imageMerger";
   import { ImportImage } from "$src/helpers/data/dataTransferHelper";
   import { createEventDispatcher, onMount } from "svelte";
   import DynamicRender from "../render/DynamicRender.svelte";
@@ -41,9 +41,8 @@
   onMount(async () => {
     userSettings.subscribe(async (v) => {
       if (v.baseTexture) {
-        texture = await mergeImages(
+        texture = await MergeStringToImage(
           [$planksTexture, v.baseTexture],
-          undefined,
           v.model
         );
       } else texture = $planksTexture;
@@ -82,7 +81,7 @@
       />
     </div>
     <div style="flex:1;"></div>
-    <Button label="Set texture" style="flex:0;" on:click={onSetTexture}/>
+    <Button label="Set texture" style="flex:0;" on:click={onSetTexture} />
   </div>
 </div>
 

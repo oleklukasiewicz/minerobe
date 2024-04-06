@@ -6,7 +6,7 @@ export const STEVE_TEXTURE_MAP = new ModelMap(
   new ModelPart(
     "head",
     new ModelTextureArea(0, 0, 32, 16),
-    new ModelTextureArea(32, 8, 32, 16)
+    new ModelTextureArea(32, 0, 32, 16)
   ),
   new ModelPart(
     "body",
@@ -31,7 +31,7 @@ export const STEVE_TEXTURE_MAP = new ModelMap(
   new ModelPart(
     "rightArm",
     new ModelTextureArea(40, 16, 16, 16),
-    new ModelTextureArea(40, 34, 16, 16)
+    new ModelTextureArea(40, 32, 16, 16)
   )
 );
 export const ALEX_TEXTURE_MAP = new ModelMap(
@@ -43,11 +43,11 @@ export const ALEX_TEXTURE_MAP = new ModelMap(
   new ModelPart(
     "leftArm",
     new ModelTextureArea(32, 48, 14, 16),
-    new ModelTextureArea(48, 52, 14, 16)
+    new ModelTextureArea(48, 48, 14, 16)
   ),
   new ModelPart(
     "rightArm",
     new ModelTextureArea(40, 16, 14, 16),
-    new ModelTextureArea(40, 34, 14, 16)
+    new ModelTextureArea(40, 32, 14, 16)
   )
 );

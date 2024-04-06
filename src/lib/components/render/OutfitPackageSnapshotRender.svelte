@@ -10,7 +10,7 @@
   } from "$src/data/render";
   import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
   import { onMount } from "svelte";
-  import { mergeImages } from "$src/data/imageMerger";
+  import { MergeLayersToImage } from "$src/data/imageMerger";
 
   export let item: OutfitPackage = null;
   export let renderProvider: RenderProvider = null;
@@ -30,12 +30,8 @@
     snapshot.texture = item.layers[0][item.model].content;
     if (item.type == OUTFIT_TYPE.OUTFIT_SET) {
       //merge layers
-      let mergedLayers = await mergeImages(
-        item.layers
-          .filter((x) => x != null)
-          .map((x) => x[item.model].content)
-          .reverse(),
-        undefined,
+      let mergedLayers = await MergeLayersToImage(
+        item.layers.filter((x) => x != null),
         item.model
       );
       snapshot.texture = mergedLayers;

@@ -4,6 +4,7 @@
   import { showToast } from "$src/data/cache";
   import { onMount } from "svelte";
   import Menu from "$lib/components/base/Menu/Menu.svelte";
+  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
 
   onMount(() => {
     console.log("mounted");
@@ -28,7 +29,7 @@
   ]
 }>
 </Menu>
-
+<Checkbox value={true} />
 <style lang="scss">
   @import "style.scss";
 </style>

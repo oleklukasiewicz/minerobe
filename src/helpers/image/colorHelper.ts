@@ -48,34 +48,7 @@ const StringToRgb = (rgbString: string) => {
 };
 export const GetDominantColorFromImage = async function (base64) {
   const ctx = (await GetContextFromBase64(base64)) as any;
-  const imageData = ctx.getImageData(
-    0,
-    0,
-    ctx.canvas.width,
-    ctx.canvas.height,
-    {
-      willReadFrequently: true,
-    }
-  );
-  const colorMap = {};
-  for (let i = 0; i < imageData.data.length; i += 4) {
-    const r = imageData.data[i];
-    const g = imageData.data[i + 1];
-    const b = imageData.data[i + 2];
-    const a = imageData.data[i + 3]; // Alpha channel
-    if (a === 0) continue; // Skip transparent pixels
-    const rgb = `${r},${g},${b}`;
-    if (colorMap[rgb]) {
-      colorMap[rgb]++;
-    } else {
-      colorMap[rgb] = 1;
-    }
-  }
-
-  const dominantColor = Object.keys(colorMap).reduce((a, b) =>
-    colorMap[a] > colorMap[b] ? a : b
-  );
-  return dominantColor;
+  return await GetDominantColorFromImageContext(ctx);
 };
 export const GetDominantColorFromImageContext = async function (ctx) {
   const imageData = ctx.getImageData(

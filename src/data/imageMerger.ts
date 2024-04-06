@@ -3,6 +3,7 @@ import {
   ALEX_TEXTURE_MAP,
   STEVE_TEXTURE_MAP,
 } from "$src/helpers/render/modelHelper";
+import type { FileData, OutfitLayer } from "./common";
 import type { ModelMap, ModelPart } from "./model";
 
 // Defaults
@@ -16,10 +17,12 @@ const defaultOptions = {
 };
 
 // Return Promise
-export let mergeImages = function (
+let mergeImages = function (
   sources,
   options,
-  skinType
+  skinType,
+  flatten = true,
+  excludefromFlat = ["head"]
 ): Promise<string> {
   if (sources === void 0) sources = [];
   if (options === void 0) options = {};
@@ -76,20 +79,18 @@ export let mergeImages = function (
         };
         canvas.width = getSize("width");
         canvas.height = getSize("height");
-
+        let modelMap: ModelMap;
+        if (skinType == MODEL_TYPE.ALEX) {
+          modelMap = ALEX_TEXTURE_MAP;
+        } else {
+          modelMap = STEVE_TEXTURE_MAP;
+        }
         // Draw images to canvas
         images.forEach(function (image) {
           ctx.globalAlpha = image.opacity ? image.opacity : 1;
           //set temp canvas
           tempCtx.drawImage(image.img, image.x || 0, image.y || 0);
-          //update image
-          //head
-          let modelMap: ModelMap;
-          if (skinType == MODEL_TYPE.ALEX) {
-            modelMap = ALEX_TEXTURE_MAP;
-          } else {
-            modelMap = STEVE_TEXTURE_MAP;
-          }
+          //update imag
 
           const k = Object.keys(modelMap);
           for (let i = 0; i < k.length; i++) {
@@ -104,6 +105,18 @@ export let mergeImages = function (
 
           return drawed;
         });
+        if (flatten) {
+          const k = Object.keys(modelMap);
+          for (let i = 0; i < k.length; i++) {
+            let part: ModelPart = modelMap[k[i]];
+            if (
+              part.outerTextureArea != null &&
+              part.textureArea != null &&
+              !excludefromFlat.includes(part.name)
+            )
+              flatPart(ctx, part);
+          }
+        }
         // Resolve all other data URIs sync
         return canvas.toDataURL(options.format, options.quality);
       })
@@ -151,5 +164,92 @@ const replaceLowerPart = function (
     destData,
     part.outerTextureArea.x,
     part.outerTextureArea.y
+  );
+};
+const flatPart = function (imgContext, part: ModelPart) {
+  const imageData = imgContext.getImageData(
+    part.textureArea.x,
+    part.textureArea.y,
+    part.textureArea.width,
+    part.textureArea.height,
+    {
+      willReadFrequently: true,
+    }
+  );
+  const outerImageData = imgContext.getImageData(
+    part.outerTextureArea.x,
+    part.outerTextureArea.y,
+    part.outerTextureArea.width,
+    part.outerTextureArea.height,
+    {
+      willReadFrequently: true,
+    }
+  );
+  const sourcePixels = outerImageData.data;
+  const destPixels = imageData.data;
+  for (let i = 0; i < sourcePixels.length; i += 4) {
+    const r = sourcePixels[i];
+    const g = sourcePixels[i + 1];
+    const b = sourcePixels[i + 2];
+    //detect if is not empty
+    if (r != 0 || g != 0 || b != 0) {
+      destPixels[i] = r;
+      destPixels[i + 1] = g;
+      destPixels[i + 2] = b;
+      destPixels[i + 3] = 255;
+      //clear outer
+      sourcePixels[i] = 0;
+      sourcePixels[i + 1] = 0;
+      sourcePixels[i + 2] = 0;
+      sourcePixels[i + 3] = 0;
+    }
+  }
+  imgContext.putImageData(
+    outerImageData,
+    part.outerTextureArea.x,
+    part.outerTextureArea.y
+  );
+  imgContext.putImageData(imageData, part.textureArea.x, part.textureArea.y);
+};
+export const MergeLayersToImage = async function (
+  layers: OutfitLayer[],
+  modelType: string,
+  flat = false,
+  excludeFromFlat = ["head"]
+) {
+  return await mergeImages(
+    layers.map((x) => x[modelType].content).reverse(),
+    undefined,
+    modelType,
+    flat,
+    excludeFromFlat
+  );
+};
+export const MergeFileDataToImage = async function (
+  layers: FileData[],
+  modelType: string,
+  flat = false,
+  excludeFromFlat = ["head"]
+) {
+  return await mergeImages(
+    layers.map((x) => x.content).reverse(),
+    undefined,
+    modelType,
+    flat,
+    excludeFromFlat
+  );
+};
+export const MergeStringToImage = async function (
+  layers: string[],
+  modelType: string,
+  flat = false,
+  excludeFromFlat = ["head"]
+) {
+  return await mergeImages(
+    layers.reverse(),
+    undefined,
+    modelType,
+    flat,
+    excludeFromFlat
   );
 };

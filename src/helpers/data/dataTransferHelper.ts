@@ -1,7 +1,10 @@
 import { FileData, OutfitPackage, OutfitLayer } from "$src/data/common";
 import { GetDominantColorFromImageContext } from "../image/colorHelper";
 import { GetContextFromBase64, GetOutfitType } from "../image/imageDataHelpers";
-import { mergeImages } from "../../data/imageMerger";
+import {
+  MergeFileDataToImage,
+  MergeLayersToImage,
+} from "../../data/imageMerger";
 
 export const ExportImage = async function (
   layers: OutfitLayer[],
@@ -9,11 +12,7 @@ export const ExportImage = async function (
   fileName: string
 ) {
   const link = document.createElement("a");
-  link.href = await mergeImages(
-    [...layers.map((x) => x[modelType].content)].reverse(),
-    undefined,
-    modelType
-  );
+  link.href = await MergeLayersToImage(layers, modelType);
   link.download = fileName.toLowerCase() + ".png";
   document.body.appendChild(link);
   link.click();
@@ -22,14 +21,11 @@ export const ExportImage = async function (
 export const ExportImageLayers = async function (
   layers: FileData[],
   modelType: string,
-  fileName: string
+  fileName: string,
+  flat: boolean = false
 ) {
   const link = document.createElement("a");
-  link.href = await mergeImages(
-    [...layers.map((x) => x.content)].reverse(),
-    undefined,
-    modelType
-  );
+  link.href = await MergeFileDataToImage(layers, modelType, flat);
   link.download = fileName.toLowerCase() + ".png";
   document.body.appendChild(link);
   link.click();

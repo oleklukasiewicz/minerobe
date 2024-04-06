@@ -40,10 +40,6 @@
     PACKAGE_TYPE,
   } from "$data/consts";
 
-  import DownloadIcon from "$icons/download.svg?raw";
-  import HearthIcon from "$icons/heart.svg?raw";
-  import ListIcon from "$icons/list.svg?raw";
-
   import DefaultAnimation from "$animation/default";
   import HandsUpAnimation from "$animation/handsup";
 
@@ -57,8 +53,6 @@
 
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { AddDownload } from "$src/api/social";
-  import SetSkinButton from "$component/other/SetSkinButton/SetSkinButton.svelte";
-  import Button from "$lib/components/base/Button/Button.svelte";
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
   import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper.js";
   import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
@@ -75,6 +69,7 @@
     RemoveItemFromWardrobe,
   } from "$src/api/wardrobe.js";
   import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
+  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DefaultPackage);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -100,6 +95,7 @@
   let isDragging = false;
   let rendererLayers: FileData[] = [];
   let defaultRenderProvider;
+  let flatRender = false;
 
   let isCollectionDialogOpen = false;
 
@@ -147,7 +143,7 @@
 
   //export
   const downloadImage = async () => {
-    await ExportImageLayers(rendererLayers, $itemModelType, $itemName);
+    await ExportImageLayers(rendererLayers, $itemModelType, $itemName,flatRender);
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
     await AddDownload($localPackage.id, $localPackage.type);
@@ -172,7 +168,8 @@
     modelTexture = await getLayersForRender(
       rendererLayers,
       $isItemSet,
-      $itemModelType
+      $itemModelType,
+      flatRender
     );
   };
   const sortLayersByColor = async function () {
@@ -364,11 +361,18 @@
       <SectionTitle label={$_("model")} placeholder={!loaded} />
       {#if loaded}
         <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
-        <br />
-        <br />
       {:else}
         <Placeholder style="height:48px;margin-bottom:8px;" />
       {/if}
+      <div>
+        <br />
+        {#if loaded}
+          <Checkbox label="Old format model" bind:value={flatRender} on:change={updateTexture} />
+        {:else}
+          <Placeholder style="height:24px;width:200px;" />
+        {/if}
+      </div>
+      <br />
       {#if loaded}
         <OutfitActions
           readonly={true}

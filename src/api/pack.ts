@@ -85,6 +85,7 @@ export const FetchPackage = async function (
     p: OutfitPackage
   ): OutfitPackage | Promise<OutfitPackage> => p
 ) {
+  if(id == null) return null;
   let pack = (await GetDocument(
     path + "/" + id + "/" + DATA_PATH,
     DATA_PATH
