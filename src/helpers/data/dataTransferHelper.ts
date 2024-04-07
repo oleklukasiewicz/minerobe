@@ -5,7 +5,7 @@ import {
   MergeFileDataToImage,
   MergeLayersToImage,
 } from "../../data/imageMerger";
-import type { ModelExportConfig } from "$src/data/model";
+import type { ModelExportConfig, OutfitPackageRenderConfig } from "$src/data/model";
 
 export const ExportImage = async function (
   layers: OutfitLayer[],
@@ -21,7 +21,7 @@ export const ExportImage = async function (
 };
 export const ExportImageLayers = async function (
   layers: FileData[],
-  config: ModelExportConfig,
+  config: OutfitPackageRenderConfig,
   fileName: string
 ) {
   const link = document.createElement("a");

@@ -3,13 +3,11 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import type { RenderAnimation } from "./animation";
 import {
-  alexModel,
   defaultRenderer,
-  snapshotTemporaryNode,
-  steveModel,
+  snapshotTemporaryNode
 } from "./cache";
 import { get } from "svelte/store";
-import { MODEL_TYPE } from "./consts";
+import { MODEL_TYPE,STEVE_MODEL,ALEX_MODEL } from "./consts";
 import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
 export class CameraConfig {
   rotation: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
@@ -409,13 +407,13 @@ export const CreateDefaultRenderProvider = async function (renderer) {
   let alexListProvider = new RenderProvider();
   steveListProvider.renderer = renderer;
   steveListProvider.textureLoader = new THREE.TextureLoader();
-  let steveScene = await PrepareSceneForRender(get(steveModel));
+  let steveScene = await PrepareSceneForRender(STEVE_MODEL.model);
   steveListProvider.scene = steveScene.scene;
   steveListProvider.camera = steveScene.camera;
 
   alexListProvider.renderer = renderer;
   alexListProvider.textureLoader = new THREE.TextureLoader();
-  let alexScene = await PrepareSceneForRender(get(alexModel));
+  let alexScene = await PrepareSceneForRender(ALEX_MODEL.model);
   alexListProvider.scene = alexScene.scene;
   alexListProvider.camera = alexScene.camera;
   return { steve: steveListProvider, alex: alexListProvider };

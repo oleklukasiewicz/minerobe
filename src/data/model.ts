@@ -1,4 +1,6 @@
+import { FileData, OutfitLayer, type OutfitPackage } from "./common";
 import { MODEL_TYPE } from "./consts";
+import { MergeStringToImage } from "./imageMerger";
 
 export class ModelTextureArea {
   public constructor(
@@ -18,6 +20,7 @@ export class ModelPart {
 export class ModelMap {
   public constructor(
     public name: string,
+    public model: string,
     public head: ModelPart,
     public body: ModelPart,
     public leftLeg: ModelPart,
@@ -33,10 +36,50 @@ export class ModelExportConfig {
     public excludedFromFlat: string[] = ["head"]
   ) {}
 }
-export class ModelRenderConfig {
+export class OutfitPackageRenderConfig {
   public constructor(
-    public modelMap: ModelMap = null,
+    public item: OutfitPackage = null,
+    public model: ModelMap = null,
+    public baseTexture: OutfitLayer = null,
+    public singleLayer: boolean = false,
+    public selectedLayer: OutfitLayer = null,
     public isFlatten: boolean = false,
-    public excludedPartsFromFlat: string[] = []
+    public excludedPartsFromFlat: string[] = ["head"]
   ) {}
+  getLayersForModel(ignoreBaseTexture: boolean = false) {
+    let result;
+    if (this.singleLayer) {
+      result =
+        this.item?.layers.length > 0 && this.selectedLayer != null
+          ? [this.selectedLayer[this.model?.name]]
+          : [];
+    } else {
+      result = this.item?.layers.map((layer) => {
+        return layer[this.model?.name];
+      });
+    }
+    if (!ignoreBaseTexture && this.baseTexture) {
+      result.push(this.baseTexture[this.model?.name]);
+    }
+    return result;
+  }
+  async getLayersForRender(ignoreBaseTexture: boolean = false) {
+    const layers = this.getLayersForModel(ignoreBaseTexture);
+    return await MergeStringToImage(
+      layers.map((x) => x.content),
+      this
+    );
+  }
+  async setBaseTextureFromString(baseTexture: string) {
+    const ll = new OutfitLayer(
+      "base",
+      new FileData("base_s", baseTexture, null, null),
+      new FileData("base_a", baseTexture, null, null),
+      null,
+      null,
+      null,
+      false
+    );
+    this.baseTexture = ll;
+  }
 }

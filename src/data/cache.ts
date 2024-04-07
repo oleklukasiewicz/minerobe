@@ -9,8 +9,6 @@ import {
 } from "svelte/store";
 import { APP_STATE } from "$data/consts";
 import { MinerobeUserSettings, type MinerobeUser } from "./common";
-import alexModelData from "$src/model/alex.gltf?raw";
-import steveModelData from "$src/model/steve.gltf?raw";
 import planksTextureRaw from "$src/texture/base_skin.png?url";
 import type { WardrobePackage } from "./common";
 import { FetchWardrobe, UploadWardrobe } from "$src/api/wardrobe";
@@ -20,13 +18,6 @@ import { configureSocket } from "./socket";
 
 const isMobileViewWritable: Writable<boolean> = writable(false);
 export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
-
-export const alexModel: Readable<string> = readable(
-  "data:model/gltf+json;base64," + btoa(alexModelData)
-);
-export const steveModel: Readable<string> = readable(
-  "data:model/gltf+json;base64," + btoa(steveModelData)
-);
 
 export const planksTexture: Readable<string> = readable(planksTextureRaw);
 export const defaultRenderer: Writable<string> = writable(null);

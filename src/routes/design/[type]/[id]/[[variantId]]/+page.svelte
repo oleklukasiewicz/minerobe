@@ -20,33 +20,29 @@
   import SectionTitle from "$component/base/SectionTitle/SectionTitle.svelte";
   import ModelSelection from "$component/outfit/ModelSelection/ModelSelection.svelte";
 
-  import { FileData, OutfitLayer, OutfitPackage } from "$data/common";
+  import { OutfitLayer, OutfitPackage } from "$data/common";
   import {
-    alexModel,
-    steveModel,
-    currentUser,
     wardrobe,
     defaultRenderer,
     isReadyForData,
     userSettings,
     isMobileView,
-    isUserGuest,
+    baseTexture,
   } from "$data/cache";
   import {
     CHANGE_TYPE,
-    DefaultPackage,
+    DEFAULT_PACKAGE,
     LAYER_TYPE,
     MODEL_TYPE,
     PACKAGE_TYPE,
+    STEVE_MODEL,
+    ALEX_MODEL,
   } from "$data/consts";
 
   import DefaultAnimation from "$animation/default";
   import HandsUpAnimation from "$animation/handsup";
 
-  import {
-    ExportImageLayers,
-    ExportImageString,
-  } from "$src/helpers/data/dataTransferHelper.js";
+  import { ExportImageString } from "$src/helpers/data/dataTransferHelper.js";
   import { sortOutfitLayersByColor } from "$src/helpers/image/imageDataHelpers.js";
   import {
     AddToCollection,
@@ -60,22 +56,18 @@
   import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper.js";
   import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
   import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
-  import {
-    getLayersForRender,
-    getPackageInstanceForType,
-    prepareLayersForRender,
-  } from "$src/helpers/view/designHelper.js";
+  import { getPackageInstanceForType } from "$src/helpers/view/designHelper.js";
   import { replaceState } from "$app/navigation";
   import {
     AddItemToWardrobe,
-    IsItemInWardrobe,
     RemoveItemFromWardrobe,
   } from "$src/api/wardrobe.js";
   import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
-  import { ModelExportConfig } from "$src/data/model.js";
+  import { OutfitPackageRenderConfig } from "$src/data/model.js";
+
   export let data;
-  const localPackage: Writable<OutfitPackage> = writable(DefaultPackage);
+  const localPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     localPackage,
     "layers"
@@ -87,12 +79,11 @@
   const itemModel: Readable<string> = derived(
     itemModelType,
     ($itemModelType) =>
-      $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel
+      $itemModelType == MODEL_TYPE.ALEX ? ALEX_MODEL.model : STEVE_MODEL.model
   );
 
-  const selectedVariant: Writable<OutfitLayer> = writable(null);
-  const modelExportConfig: Writable<ModelExportConfig> = writable(
-    new ModelExportConfig()
+  const itemRenderConfig: Writable<OutfitPackageRenderConfig> = writable(
+    new OutfitPackageRenderConfig()
   );
 
   let currentInstance: OutfitPackageInstance = null;
@@ -100,9 +91,7 @@
   let modelTexture: string = null;
   let loaded = false;
   let isDragging = false;
-  let rendererLayers: FileData[] = [];
   let defaultRenderProvider;
-  let flatRender = false;
 
   let isCollectionDialogOpen = false;
 
@@ -131,17 +120,22 @@
       const varaint = outfitPackage.layers.find(
         (x) => x.variantId == variantId
       );
-      if (varaint) selectedVariant.set(varaint);
 
-      if (!$isUserGuest) {
-        //patching
-        isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
-        if (
-          !isPackageInWardrobe &&
-          outfitPackage.publisher.id == $currentUser?.id
-        )
-          addToWardrobe();
-      }
+      $itemRenderConfig = new OutfitPackageRenderConfig(
+        $localPackage,
+        $localPackage.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL,
+        undefined,
+        !$isItemSet
+      );
+      if ($isItemSet && $userSettings.baseTexture != null)
+        $itemRenderConfig.setBaseTextureFromString($userSettings.baseTexture);
+      else $itemRenderConfig.setBaseTextureFromString($baseTexture);
+
+      if (varaint) $itemRenderConfig.selectedLayer = varaint;
+      else
+        $itemRenderConfig.selectedLayer =
+          outfitPackage.layers.length > 0 ? outfitPackage.layers[0] : null;
+
       loaded = true;
       updateTexture();
       if (!$isItemSet) sortLayersByColor();
@@ -150,7 +144,10 @@
 
   //export
   const downloadImage = async () => {
-    await ExportImageString(modelTexture, $localPackage.name);
+    await ExportImageString(
+      await $itemRenderConfig.getLayersForRender(true),
+      $localPackage.name
+    );
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
     await AddDownload($localPackage.id, $localPackage.type);
@@ -163,18 +160,7 @@
   const updateTexture = async () => {
     if (!loaded) return;
 
-    if ($selectedVariant == null && $itemLayers.length > 0)
-      $selectedVariant = $itemLayers[0];
-
-    $modelExportConfig.modelType = $itemModelType;
-    $modelExportConfig.flat = flatRender;
-    rendererLayers = prepareLayersForRender(
-      $itemLayers,
-      $selectedVariant,
-      $itemModelType,
-      $isItemSet
-    );
-    modelTexture = await getLayersForRender(rendererLayers, $isItemSet, $modelExportConfig);
+    modelTexture = await $itemRenderConfig.getLayersForRender(false);
   };
   const sortLayersByColor = async function () {
     sortedItemLayers = await sortOutfitLayersByColor(
@@ -218,12 +204,8 @@
     RemoveFromCollection(collection, $localPackage);
     isCollectionDialogOpen = false;
   };
-  //subs
-  itemModelType.subscribe((model) => {
-    if (!loaded) return;
-    updateTexture();
-  });
-  selectedVariant.subscribe((variant) => {
+
+  itemRenderConfig.subscribe((config) => {
     if (!loaded) return;
     updateTexture();
     if (!$isItemSet)
@@ -233,7 +215,7 @@
           "/" +
           $localPackage.id +
           "/" +
-          $selectedVariant.variantId,
+          $itemRenderConfig.selectedLayer.variantId,
         null
       );
   });
@@ -334,8 +316,8 @@
                   : defaultRenderProvider.alex}
                 modelName={$itemModelType}
                 label={layer.name}
-                on:click={() => ($selectedVariant = layer)}
-                selected={$selectedVariant == layer}
+                on:click={() => ($itemRenderConfig.selectedLayer = layer)}
+                selected={$itemRenderConfig.selectedLayer == layer}
               />
             {/each}
           </div>
@@ -373,7 +355,7 @@
         <div style="margin-left:12px;">
           <Checkbox
             label="Old format model"
-            bind:value={flatRender}
+            bind:value={$itemRenderConfig.isFlatten}
             on:change={updateTexture}
           />
         </div>

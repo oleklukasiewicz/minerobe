@@ -1,10 +1,6 @@
-import { MODEL_TYPE } from "$data/consts";
-import {
-  ALEX_TEXTURE_MAP,
-  STEVE_TEXTURE_MAP,
-} from "$src/helpers/render/modelHelper";
+import { MODEL_TYPE,ALEX_MODEL,STEVE_MODEL } from "$data/consts";
 import type { FileData, OutfitLayer } from "./common";
-import type { ModelExportConfig, ModelMap, ModelPart } from "./model";
+import type { OutfitPackageRenderConfig } from "./model";
 
 // Defaults
 const defaultOptions = {
@@ -79,11 +75,11 @@ let mergeImages = function (
         };
         canvas.width = getSize("width");
         canvas.height = getSize("height");
-        let modelMap: ModelMap;
+        let modelMap;
         if (skinType == MODEL_TYPE.ALEX) {
-          modelMap = ALEX_TEXTURE_MAP;
+          modelMap = ALEX_MODEL;
         } else {
-          modelMap = STEVE_TEXTURE_MAP;
+          modelMap = STEVE_MODEL;
         }
         // Draw images to canvas
         images.forEach(function (image) {
@@ -94,7 +90,7 @@ let mergeImages = function (
 
           const k = Object.keys(modelMap);
           for (let i = 0; i < k.length; i++) {
-            let part: ModelPart = modelMap[k[i]];
+            let part = modelMap[k[i]];
             if (part.outerTextureArea != null && part.textureArea != null)
               replaceLowerPart(tempCtx, ctx, part);
           }
@@ -108,7 +104,7 @@ let mergeImages = function (
         if (flatten) {
           const k = Object.keys(modelMap);
           for (let i = 0; i < k.length; i++) {
-            let part: ModelPart = modelMap[k[i]];
+            let part = modelMap[k[i]];
             if (
               part.outerTextureArea != null &&
               part.textureArea != null &&
@@ -126,7 +122,7 @@ let mergeImages = function (
 const replaceLowerPart = function (
   imgContext,
   lowerLayerContext,
-  part: ModelPart
+  part
 ) {
   const imageData = imgContext.getImageData(
     part.textureArea.x,
@@ -166,7 +162,7 @@ const replaceLowerPart = function (
     part.outerTextureArea.y
   );
 };
-const flatPart = function (imgContext, part: ModelPart) {
+const flatPart = function (imgContext, part) {
   const imageData = imgContext.getImageData(
     part.textureArea.x,
     part.textureArea.y,
@@ -213,7 +209,7 @@ const flatPart = function (imgContext, part: ModelPart) {
 };
 export const MergeLayersToImage = async function (
   layers: OutfitLayer[],
-  config: ModelExportConfig
+  config
 ) {
   return await mergeImages(
     layers.map((x) => x[config.modelType].content).reverse(),
@@ -225,25 +221,25 @@ export const MergeLayersToImage = async function (
 };
 export const MergeFileDataToImage = async function (
   layers: FileData[],
-  config: ModelExportConfig
+  config:OutfitPackageRenderConfig
 ) {
   return await mergeImages(
     layers.map((x) => x.content).reverse(),
     undefined,
-    config.modelType,
-    config.flat,
-    config.excludedFromFlat
+    config.model.name,
+    config.isFlatten,
+    config.excludedPartsFromFlat
   );
 };
 export const MergeStringToImage = async function (
   layers: string[],
- config: ModelExportConfig
+ config:OutfitPackageRenderConfig
 ) {
   return await mergeImages(
     layers.reverse(),
     undefined,
-    config.modelType,
-    config.flat,
-    config.excludedFromFlat
+    config.model.name,
+    config.isFlatten,
+    config.excludedPartsFromFlat
   );
 };

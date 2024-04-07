@@ -21,15 +21,15 @@
 
   import {
     CHANGE_TYPE,
-    DefaultPackage,
+    DEFAULT_PACKAGE,
     LAYER_TYPE,
     MODEL_TYPE,
     PACKAGE_TYPE,
+    STEVE_MODEL,
+    ALEX_MODEL,
   } from "$data/consts";
   import { FileData, OutfitLayer, OutfitPackage } from "$data/common";
   import {
-    alexModel,
-    steveModel,
     currentUser,
     defaultRenderer,
     wardrobe,
@@ -37,6 +37,7 @@
     isReadyForData,
     userSettings,
     showToast,
+    baseTexture,
   } from "$data/cache";
 
   import ImportPackageIcon from "$icons/upload.svg?raw";
@@ -70,11 +71,7 @@
   import SocialInfoDialog from "$lib/components/dialog/SocialInfoDialog.svelte";
   import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper";
   import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
-  import {
-    getLayersForRender,
-    getPackageInstanceForType,
-    prepareLayersForRender,
-  } from "$src/helpers/view/designHelper";
+  import { getPackageInstanceForType } from "$src/helpers/view/designHelper";
   import {
     AddItemToWardrobe,
     IsItemInWardrobe,
@@ -83,20 +80,17 @@
   import { outfitsInstance } from "$src/api/outfits";
   import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
-  import { ModelExportConfig } from "$src/data/model";
+  import { OutfitPackageRenderConfig } from "$src/data/model";
 
-  const itemPackage: Writable<OutfitPackage> = writable(DefaultPackage);
+  const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
     "layers"
   );
   const itemModelType: Writable<string> = propertyStore(itemPackage, "model");
-  const itemPublisher = propertyStore(itemPackage, "publisher");
-  const modelExportConfig: Writable<ModelExportConfig> = writable(
-    new ModelExportConfig()
+  const itemRenderConfig: Writable<OutfitPackageRenderConfig> = writable(
+    new OutfitPackageRenderConfig()
   );
-
-  const selectedLayer: Writable<OutfitLayer> = writable(null);
 
   const isItemSet = derived(
     itemPackage,
@@ -105,7 +99,7 @@
   const itemModel: Readable<string> = derived(
     itemModelType,
     ($itemModelType) =>
-      $itemModelType == MODEL_TYPE.ALEX ? $alexModel : $steveModel
+      $itemModelType == MODEL_TYPE.ALEX ? ALEX_MODEL.model : STEVE_MODEL.model
   );
   let currentInstance: OutfitPackageInstance = null;
 
@@ -113,11 +107,9 @@
   let loaded = false;
   let isDragging = false;
 
-  let rendererLayers: FileData[] = [];
   let pickerOutfits = [];
   let pickerCategories = ["ALL"];
   let isPickerLoading = true;
-  let flatRender = false;
 
   let isOutfitPickerOpen = false;
   let isDeleteDialogOpen = false;
@@ -149,11 +141,18 @@
         pickerCategories = Object.keys(categoryCounts).filter(
           (x) => categoryCounts[x] > 0
         );
-        let isPackageInWardrobe = IsItemInWardrobe($itemPackage, $wardrobe);
+        $itemRenderConfig = new OutfitPackageRenderConfig(
+          $itemPackage,
+          $itemPackage.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL,undefined,!$isItemSet
+        );
+        if ($isItemSet && $userSettings.baseTexture != null)
+          $itemRenderConfig.setBaseTextureFromString($userSettings.baseTexture);
+        else $itemRenderConfig.setBaseTextureFromString($baseTexture);
+
+        if ($itemRenderConfig.selectedLayer == null && $itemLayers.length > 0)
+          $itemRenderConfig.selectedLayer = $itemLayers[0];
+
         loaded = true;
-        //patching
-        if (!isPackageInWardrobe && $itemPublisher.id == $currentUser?.id)
-          await AddItemToWardrobe($itemPackage);
         updateTexture();
       }
     });
@@ -194,7 +193,10 @@
     }
     let refresh = false;
     itemLayers.update((layers) => {
-      if (!$isItemSet && $selectedLayer.name == layers[index].name) {
+      if (
+        !$isItemSet &&
+        $itemRenderConfig.selectedLayer.name == layers[index].name
+      ) {
         refresh = true;
       }
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_REMOVE, index);
@@ -202,8 +204,9 @@
       return layers;
     });
     if (refresh) {
-      if ($itemLayers.length > 0) $selectedLayer = $itemLayers[0];
-      else $selectedLayer = null;
+      if ($itemLayers.length > 0)
+        $itemRenderConfig.selectedLayer = $itemLayers[0];
+      else $itemRenderConfig.selectedLayer = null;
     }
   };
   const addImageVariant = async function (data) {
@@ -222,35 +225,18 @@
         } else {
           layers[index].steve = newLayer;
         }
-        $selectedLayer = layers[index];
-        newVariantLayer = $selectedLayer;
+        $itemRenderConfig.selectedLayer = layers[index];
+        newVariantLayer = $itemRenderConfig.selectedLayer;
         applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
         showToast($_("toast.variantAdded"));
         return layers;
       });
     });
-    currentInstance.uploadLayer($itemPackage, $selectedLayer);
+    currentInstance.uploadLayer($itemPackage, $itemRenderConfig.selectedLayer);
   };
   const updateTexture = async () => {
     if (!loaded) return;
-    if ($selectedLayer == null && $itemLayers.length > 0)
-      $selectedLayer = $itemLayers[0];
-
-    $modelExportConfig.modelType = $itemModelType;
-    $modelExportConfig.flat = flatRender;
-    
-    rendererLayers = prepareLayersForRender(
-      $itemLayers,
-      $selectedLayer,
-      $itemModelType,
-      $isItemSet
-    );
-
-    modelTexture = await getLayersForRender(
-      rendererLayers,
-      $isItemSet,
-      $modelExportConfig
-    );
+    modelTexture = await $itemRenderConfig.getLayersForRender(false);
   };
   const editLayer = async function (e) {
     const layer = e.detail.texture;
@@ -275,7 +261,7 @@
       layer.type = LAYER_TYPE.REMOTE;
       const newRemote = layer;
       layers.unshift(newRemote);
-      $selectedLayer = newRemote;
+      $itemRenderConfig.selectedLayer = newRemote;
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
       return layers;
     });
@@ -304,21 +290,18 @@
         newOutfit.isShared = $itemPackage.isShared;
         layers.unshift(newOutfit);
       });
-      $selectedLayer = newOutfit;
+      $itemRenderConfig.selectedLayer = newOutfit;
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
       return layers;
     });
-    currentInstance.uploadLayer($itemPackage, $selectedLayer);
+    currentInstance.uploadLayer($itemPackage, $itemRenderConfig.selectedLayer);
   };
   const downloadImage = async () => {
-    let layersToExport = rendererLayers;
-    if ($userSettings?.baseTexture != null && $isItemSet)
-      layersToExport.push(
-        new FileData("base", $userSettings?.baseTexture, "image/png")
-      );
     await ExportImageLayers(
-      layersToExport,
-      $modelExportConfig,
+      $itemRenderConfig.getLayersForModel(
+        !($isItemSet && $userSettings.baseTexture != null)
+      ),
+      $itemRenderConfig,
       $itemPackage.name
     );
     applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
@@ -387,8 +370,11 @@
           newOutfit.variantId = currentInstance.generateLayerId();
           newOutfit.isShared = $itemPackage.isShared;
           newLayers.push(newOutfit);
-          $selectedLayer = newOutfit;
-          currentInstance.uploadLayer($itemPackage, $selectedLayer);
+          $itemRenderConfig.selectedLayer = newOutfit;
+          currentInstance.uploadLayer(
+            $itemPackage,
+            $itemRenderConfig.selectedLayer
+          );
         }
       }
 
@@ -412,7 +398,7 @@
   const goToItemPage = function () {
     navigateToOutfitPackage(
       $itemPackage,
-      $isItemSet ? null : $selectedLayer.variantId
+      $isItemSet ? null : $itemRenderConfig.selectedLayer.variantId
     );
   };
   const addNewDropVariant = async function (e) {
@@ -426,11 +412,11 @@
       } else {
         layers[index].steve = newLayer;
       }
-      $selectedLayer = layers[index];
+      $itemRenderConfig.selectedLayer = layers[index];
       return layers;
     });
     applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
-    currentInstance.uploadLayer($itemPackage, $selectedLayer);
+    currentInstance.uploadLayer($itemPackage, $itemRenderConfig.selectedLayer);
   };
   //collections
   const addToCollection = async function (e) {
@@ -447,11 +433,11 @@
   //subscribtions
   itemPackage.subscribe((pack) => {
     if (!loaded) return;
-    updateTexture();
+    $itemRenderConfig.item = pack;
   });
-  selectedLayer.subscribe((layer) => {
+  itemRenderConfig.subscribe((layer) => {
     if (!loaded) return;
-    if (!$isItemSet) updateTexture();
+    updateTexture();
   });
   itemPackage.subscribe(async (data: OutfitPackage) => {
     if (!loaded) return;
@@ -462,6 +448,8 @@
   });
   itemModelType.subscribe(async (model) => {
     if (!loaded || !$isItemSet) return;
+    $itemRenderConfig.model =
+      model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
     applyAnimations($itemPackage, CHANGE_TYPE.MODEL_TYPE_CHANGE, 0);
   });
 </script>
@@ -498,7 +486,7 @@
           <div style="display:flex; flex-direction:row">
             <input
               id="item-title"
-              class:disabled={$itemPublisher.id != $currentUser?.id}
+              class:disabled={$itemPackage?.publisher.id != $currentUser?.id}
               class="title-input"
               bind:value={$itemPackage.name}
             />
@@ -538,7 +526,7 @@
       />
       <div class="item-layers">
         {#if loaded}
-          {#if $itemPublisher.id == $currentUser?.id && $isMobileView}
+          {#if $itemPackage?.publisher.id == $currentUser?.id && $isMobileView}
             <div style="display: flex;">
               {#if $isItemSet}
                 <Button
@@ -569,7 +557,7 @@
                   : defaultProvider.alex}
                 selectable={!$isItemSet}
                 controls={$isItemSet}
-                readonly={$itemPublisher.id != $currentUser?.id}
+                readonly={$itemPackage?.publisher.id != $currentUser?.id}
                 modelName={$itemPackage.model}
                 {item}
                 bind:label={item.name}
@@ -581,8 +569,9 @@
                 on:edit={editLayer}
                 canUp={index != 0}
                 canDown={index != $itemLayers.length - 1}
-                selected={item?.variantId == $selectedLayer?.variantId}
-                on:click={() => ($selectedLayer = item)}
+                selected={item?.variantId ==
+                  $itemRenderConfig.selectedLayer?.variantId}
+                on:click={() => ($itemRenderConfig.selectedLayer = item)}
               />
             </div>
           {/each}
@@ -590,7 +579,7 @@
           <Placeholder style="height:66px;margin-bottom:4px;" />
           <Placeholder style="height:66px;margin-bottom:4px;" />
         {/if}
-        {#if $itemPublisher.id == $currentUser?.id && !$isMobileView}
+        {#if $itemPackage?.publisher.id == $currentUser?.id && !$isMobileView}
           <div style="display: flex;flex-wrap:wrap;margin-top:8px;gap:8px;">
             {#if $isItemSet}
               <Button
@@ -625,8 +614,7 @@
         <div style="margin-left:12px;">
           <Checkbox
             label="Old format model"
-            bind:value={flatRender}
-            on:change={updateTexture}
+            bind:value={$itemRenderConfig.isFlatten}
           />
         </div>
       {:else}
@@ -640,7 +628,7 @@
       {:else}
         <textarea
           id="item-description"
-          class:disabled={$itemPublisher.id != $currentUser?.id}
+          class:disabled={$itemPackage?.publisher.id != $currentUser?.id}
           class="description-input"
           bind:value={$itemPackage.description}
           placeholder={$_("description")}

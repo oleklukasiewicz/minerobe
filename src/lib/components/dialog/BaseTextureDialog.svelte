@@ -3,8 +3,6 @@
   import {
     planksTexture,
     userSettings,
-    alexModel,
-    steveModel,
     showToast,
   } from "$src/data/cache";
   import { MergeStringToImage } from "$src/data/imageMerger";
@@ -19,6 +17,7 @@
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import Button from "../base/Button/Button.svelte";
   import { ModelExportConfig } from "$src/data/model";
+  import { ALEX_MODEL, STEVE_MODEL } from "$src/data/consts";
 
   const dispatch = createEventDispatcher();
 
@@ -62,7 +61,7 @@
     <DynamicRender
       defaultAnimation={DefaultAnimation}
       {texture}
-      model={$userSettings.model == MODEL_TYPE.ALEX ? $alexModel : $steveModel}
+      model={$userSettings.model == MODEL_TYPE.ALEX ? ALEX_MODEL.model : STEVE_MODEL.model}
       modelName={$userSettings.model}
     />
   </div>
