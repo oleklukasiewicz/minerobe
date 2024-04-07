@@ -29,13 +29,6 @@ export class ModelMap {
     public rightArm: ModelPart
   ) {}
 }
-export class ModelExportConfig {
-  public constructor(
-    public modelType: string = MODEL_TYPE.STEVE,
-    public flat: boolean = false,
-    public excludedFromFlat: string[] = ["head"]
-  ) {}
-}
 export class OutfitPackageRenderConfig {
   public constructor(
     public item: OutfitPackage = null,

@@ -209,14 +209,14 @@ const flatPart = function (imgContext, part) {
 };
 export const MergeLayersToImage = async function (
   layers: OutfitLayer[],
-  config
+  config: OutfitPackageRenderConfig
 ) {
   return await mergeImages(
-    layers.map((x) => x[config.modelType].content).reverse(),
+    layers.map((x) => x[config.model.name].content).reverse(),
     undefined,
-    config.modelType,
-    config.flat,
-    config.excludedFromFlat
+    config.model.name,
+    config.isFlatten,
+    config.excludedPartsFromFlat
   );
 };
 export const MergeFileDataToImage = async function (

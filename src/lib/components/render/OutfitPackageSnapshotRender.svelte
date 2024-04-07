@@ -1,7 +1,12 @@
 <script lang="ts">
   import * as THREE from "three";
   import type { OutfitPackage } from "$src/data/common";
-  import { OUTFIT_TYPE } from "$src/data/consts";
+  import {
+    ALEX_MODEL,
+    MODEL_TYPE,
+    OUTFIT_TYPE,
+    STEVE_MODEL,
+  } from "$src/data/consts";
   import {
     CameraConfig,
     RenderFromSnapshot,
@@ -11,7 +16,9 @@
   import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
   import { onMount } from "svelte";
   import { MergeLayersToImage } from "$src/data/imageMerger";
-  import { ModelExportConfig } from "$src/data/model";
+  import {
+    OutfitPackageRenderConfig,
+  } from "$src/data/model";
 
   export let item: OutfitPackage = null;
   export let renderProvider: RenderProvider = null;
@@ -31,8 +38,8 @@
     snapshot.texture = item.layers[0][item.model].content;
     if (item.type == OUTFIT_TYPE.OUTFIT_SET) {
       //merge layers
-      const config = new ModelExportConfig();
-      config.modelType = item.model;
+      const config = new OutfitPackageRenderConfig();
+      config.model = item.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
       let mergedLayers = await MergeLayersToImage(
         item.layers.filter((x) => x != null),
         config

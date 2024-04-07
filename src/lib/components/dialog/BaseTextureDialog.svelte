@@ -16,7 +16,7 @@
   import CloseIcon from "$icons/close.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import Button from "../base/Button/Button.svelte";
-  import { ModelExportConfig } from "$src/data/model";
+  import { OutfitPackageRenderConfig } from "$src/data/model";
   import { ALEX_MODEL, STEVE_MODEL } from "$src/data/consts";
 
   const dispatch = createEventDispatcher();
@@ -41,8 +41,8 @@
   onMount(async () => {
     userSettings.subscribe(async (v) => {
       if (v.baseTexture) {
-        const config = new ModelExportConfig();
-        config.modelType = v.model;
+        const config = new OutfitPackageRenderConfig();
+        config.model = v.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
         texture = await MergeStringToImage(
           [$planksTexture, v.baseTexture],
           config

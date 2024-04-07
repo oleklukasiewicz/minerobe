@@ -1,24 +1,11 @@
-import { FileData, OutfitPackage, OutfitLayer } from "$src/data/common";
+import { FileData, OutfitPackage } from "$src/data/common";
 import { GetDominantColorFromImageContext } from "../image/colorHelper";
 import { GetContextFromBase64, GetOutfitType } from "../image/imageDataHelpers";
 import {
   MergeFileDataToImage,
-  MergeLayersToImage,
 } from "../../data/imageMerger";
-import type { ModelExportConfig, OutfitPackageRenderConfig } from "$src/data/model";
+import type { OutfitPackageRenderConfig } from "$src/data/model";
 
-export const ExportImage = async function (
-  layers: OutfitLayer[],
-  config: ModelExportConfig,
-  fileName: string
-) {
-  const link = document.createElement("a");
-  link.href = await MergeLayersToImage(layers, config);
-  link.download = fileName.toLowerCase() + ".png";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
 export const ExportImageLayers = async function (
   layers: FileData[],
   config: OutfitPackageRenderConfig,

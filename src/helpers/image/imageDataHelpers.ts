@@ -1,4 +1,10 @@
-import { COLOR_TYPE, MODEL_TYPE, OUTFIT_TYPE } from "$data/consts";
+import {
+  ALEX_MODEL,
+  COLOR_TYPE,
+  MODEL_TYPE,
+  OUTFIT_TYPE,
+  STEVE_MODEL,
+} from "$data/consts";
 import type { OutfitLayer, OutfitPackage } from "$src/data/common";
 import HatIcon from "$icons/clothes/hat.svg?raw";
 import TopIcon from "$icons/clothes/top.svg?raw";
@@ -8,7 +14,7 @@ import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
 import { ConvertColor, GetColorFromFileData } from "./colorHelper";
 import { normalizeStringCase } from "../data/dataHelper";
 import { MergeLayersToImage } from "$src/data/imageMerger";
-import { ModelExportConfig } from "$src/data/model";
+import { OutfitPackageRenderConfig } from "$src/data/model";
 
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =
@@ -194,8 +200,8 @@ export const MergePackageLayers = async function (
   layers: OutfitLayer[],
   model = MODEL_TYPE.STEVE
 ) {
-  let config = new ModelExportConfig();
-  config.modelType = model;
+  let config = new OutfitPackageRenderConfig();
+  config.model = model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
   let merged = await MergeLayersToImage(layers, config);
   return merged;
 };
