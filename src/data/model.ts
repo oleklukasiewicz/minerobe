@@ -18,7 +18,6 @@ export class ModelPart {
 export class ModelMap {
   public constructor(
     public name: string,
-    public model: string = null,
     public head: ModelPart,
     public body: ModelPart,
     public leftLeg: ModelPart,
