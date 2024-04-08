@@ -18,7 +18,7 @@
 		"svelte-check": "^3.6.8",
 		"sveltekit-sse": "^0.8.13",
 		"tslib": "^2.6.2",
-		"typescript": "^5.4.3",
+		"typescript": "^5.4.4",
 		"vite": "^5.2.7"
 	},
 	"type": "module",
