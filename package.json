@@ -35,7 +35,7 @@
 		"pusher-js": "^8.4.0-rc2",
 		"sass": "^1.72.0",
 		"svelte-i18n": "^4.0.0",
-		"svelte-writable-derived": "^3.1.0",
+		"svelte-writable-derived": "^3.1.1",
 		"three": "^0.162.0"
 	}
 }
