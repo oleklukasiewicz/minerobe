@@ -1,12 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import {
-    derived,
-    writable,
-    type Readable,
-    type Writable,
-    readable,
-  } from "svelte/store";
+  import { writable, type Writable } from "svelte/store";
   import { propertyStore } from "svelte-writable-derived";
   import { onMount } from "svelte";
 
@@ -19,6 +13,10 @@
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import SectionTitle from "$component/base/SectionTitle/SectionTitle.svelte";
   import ModelSelection from "$component/outfit/ModelSelection/ModelSelection.svelte";
+  import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
+  import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
+  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
+  import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
 
   import { OutfitLayer, OutfitPackage } from "$data/common";
   import {
@@ -29,6 +27,15 @@
     isMobileView,
     baseTexture,
   } from "$data/cache";
+  import { replaceState } from "$app/navigation";
+  import {
+    AddItemToWardrobe,
+    RemoveItemFromWardrobe,
+  } from "$src/api/wardrobe.js";
+  import { OutfitPackageRenderConfig } from "$src/data/model.js";
+  import { CreateDefaultRenderProvider } from "$src/data/render";
+  import { AddDownload } from "$src/api/social";
+
   import {
     CHANGE_TYPE,
     DEFAULT_PACKAGE,
@@ -49,22 +56,10 @@
     IsItemInCollection,
     RemoveFromCollection,
   } from "$src/helpers/other/apiHelper";
-
-  import { CreateDefaultRenderProvider } from "$src/data/render";
-  import { AddDownload } from "$src/api/social";
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
   import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper.js";
-  import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
-  import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
   import { getPackageInstanceForType } from "$src/helpers/view/designHelper.js";
-  import { replaceState } from "$app/navigation";
-  import {
-    AddItemToWardrobe,
-    RemoveItemFromWardrobe,
-  } from "$src/api/wardrobe.js";
-  import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
-  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
-  import { OutfitPackageRenderConfig } from "$src/data/model.js";
+  import { navigateToHome } from "$src/helpers/other/navigationHelper.js";
 
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
@@ -73,20 +68,13 @@
     "layers"
   );
   const itemModelType: Writable<string> = propertyStore(localPackage, "model");
-  const itemName: Writable<string> = propertyStore(localPackage, "name");
-
-  const isItemSet = readable(data.type == PACKAGE_TYPE.OUTFIT_SET);
-  const itemModel: Readable<string> = derived(
-    itemModelType,
-    ($itemModelType) =>
-      $itemModelType == MODEL_TYPE.ALEX ? ALEX_MODEL.model : STEVE_MODEL.model
-  );
 
   const itemRenderConfig: Writable<OutfitPackageRenderConfig> = writable(
     new OutfitPackageRenderConfig()
   );
 
   let currentInstance: OutfitPackageInstance = null;
+  let isItemSet = false;
   let sortedItemLayers = [];
   let modelTexture: string = null;
   let loaded = false;
@@ -111,11 +99,17 @@
       if (loaded || !readyness.fullReadyness) return;
 
       currentInstance = getPackageInstanceForType(type);
-      outfitPackage = await currentInstance.fetch(id);
-      if (outfitPackage) localPackage.set(outfitPackage);
-
       defaultRenderProvider =
         await CreateDefaultRenderProvider($defaultRenderer);
+
+      outfitPackage = await currentInstance.fetch(id);
+      if (!outfitPackage) {
+        navigateToHome();
+        return;
+      }
+
+      localPackage.set(outfitPackage);
+      isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
 
       const varaint = outfitPackage.layers.find(
         (x) => x.variantId == variantId
@@ -125,20 +119,20 @@
         $localPackage,
         $localPackage.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL,
         undefined,
-        !$isItemSet
+        !isItemSet,
+        varaint
+          ? varaint
+          : $itemRenderConfig.selectedLayer == null && $itemLayers.length > 0
+            ? $itemLayers[0]
+            : null
       );
-      if ($isItemSet && $userSettings.baseTexture != null)
+      if (isItemSet && $userSettings.baseTexture != null)
         $itemRenderConfig.setBaseTextureFromString($userSettings.baseTexture);
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
-      if (varaint) $itemRenderConfig.selectedLayer = varaint;
-      else
-        $itemRenderConfig.selectedLayer =
-          outfitPackage.layers.length > 0 ? outfitPackage.layers[0] : null;
-
       loaded = true;
       updateTexture();
-      if (!$isItemSet) sortLayersByColor();
+      if (!isItemSet) sortLayersByColor();
     });
   });
 
@@ -208,7 +202,7 @@
   itemRenderConfig.subscribe((config) => {
     if (!loaded) return;
     updateTexture();
-    if (!$isItemSet)
+    if (!isItemSet)
       replaceState(
         "/design/" +
           $localPackage.type +
@@ -220,7 +214,10 @@
       );
   });
   itemModelType.subscribe(async (model) => {
-    if (!loaded || !$isItemSet) return;
+    if (!loaded) return;
+    $itemRenderConfig.model =
+      model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
+    if (!loaded || !isItemSet) return;
     applyAnimations($localPackage, CHANGE_TYPE.MODEL_TYPE_CHANGE, 0);
   });
 </script>
@@ -232,8 +229,8 @@
       {#if loaded}
         <DynamicRender
           texture={modelTexture}
-          model={$itemModel}
-          modelName={$localPackage.model}
+          model={$itemRenderConfig.model.model}
+          modelName={$itemRenderConfig.model.name}
           defaultAnimation={DefaultAnimation}
           bind:addAnimation={updateAnimation}
         />
@@ -255,7 +252,7 @@
         />
         <div id="item-title" class="title">
           {#if loaded}
-            {$itemName}
+            {$localPackage.name}
           {:else}
             <Placeholder style="height:30px;" />
           {/if}
@@ -264,7 +261,7 @@
         {#if loaded}
           <div style="display: flex;gap:4px;height:24px">
             <Label variant="unique">{$localPackage.publisher.name}</Label>
-            {#if $isItemSet && $localPackage.id == $userSettings.currentSkin?.id}
+            {#if isItemSet && $localPackage.id == $userSettings.currentSkin?.id}
               <Label variant="ancient">Current skin</Label>
             {/if}
             &nbsp;
@@ -276,7 +273,7 @@
       </div>
       <br />
       <SectionTitle
-        label={$isItemSet ? $_("layers") : $_("variants")}
+        label={isItemSet ? $_("layers") : $_("variants")}
         placeholder={!loaded}
       />
       {#if loaded}
@@ -286,7 +283,7 @@
             description={"Certain outfits were not loaded successfully."}
           />
         {/if}
-        {#if $isItemSet}
+        {#if isItemSet}
           {#each $itemLayers as item (item.id + item.variantId)}
             <div class="item-layer">
               <ItemLayer
@@ -295,8 +292,8 @@
                   ? defaultRenderProvider.steve
                   : defaultRenderProvider.alex}
                 showLabels={false}
-                selectable={!$isItemSet}
-                controls={$isItemSet}
+                selectable={!isItemSet}
+                controls={isItemSet}
                 modelName={$localPackage.model}
                 link={item.type == LAYER_TYPE.REMOTE
                   ? "/design/outfit/" + item.id + "/" + item.variantId
@@ -323,7 +320,7 @@
           </div>
         {/if}
         <br />
-      {:else if $isItemSet}
+      {:else if isItemSet}
         <Placeholder style="height:66px;margin-bottom:12px;" />
       {:else}
         <div style="display:flex;flex-wrap:wrap;margin-bottom:22px;gap:8px;">
