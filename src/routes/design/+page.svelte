@@ -432,10 +432,11 @@
     updateTexture();
   });
   itemModelType.subscribe(async (model) => {
-    if (!loaded || !isItemSet) return;
+    if (!loaded) return;
     $itemRenderConfig.model =
       model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
-    applyAnimations($itemPackage, CHANGE_TYPE.MODEL_TYPE_CHANGE, 0);
+    if (!loaded || !isItemSet) return;
+    applyAnimations($localPackage, CHANGE_TYPE.MODEL_TYPE_CHANGE, 0);
   });
 </script>
 
