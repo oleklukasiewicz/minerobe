@@ -436,7 +436,7 @@
     $itemRenderConfig.model =
       model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
     if (!loaded || !isItemSet) return;
-    applyAnimations($localPackage, CHANGE_TYPE.MODEL_TYPE_CHANGE, 0);
+    applyAnimations($itemPackage, CHANGE_TYPE.MODEL_TYPE_CHANGE, 0);
   });
 </script>
 
