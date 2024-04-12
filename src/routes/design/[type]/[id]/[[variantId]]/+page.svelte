@@ -57,7 +57,6 @@
     RemoveFromCollection,
   } from "$src/helpers/other/apiHelper";
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
-  import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper.js";
   import { getPackageInstanceForType } from "$src/helpers/view/designHelper.js";
   import { navigateToHome } from "$src/helpers/other/navigationHelper.js";
 
@@ -73,12 +72,10 @@
     new OutfitPackageRenderConfig()
   );
 
-  let currentInstance: OutfitPackageInstance = null;
   let isItemSet = false;
   let sortedItemLayers = [];
   let modelTexture: string = null;
   let loaded = false;
-  let isDragging = false;
   let defaultRenderProvider;
 
   let isCollectionDialogOpen = false;
@@ -93,16 +90,16 @@
     let outfitPackage;
 
     isReadyForData.subscribe(async (readyness) => {
-      if (loaded || !readyness) {
+      if (loaded || !readyness || !readyness.fullReadyness) {
         loaded = false;
+        return;
       }
-      if (loaded || !readyness.fullReadyness) return;
 
-      currentInstance = getPackageInstanceForType(type);
       defaultRenderProvider =
         await CreateDefaultRenderProvider($defaultRenderer);
 
-      outfitPackage = await currentInstance.fetch(id);
+      const instance = getPackageInstanceForType(type);
+      outfitPackage = await instance.fetch(id);
       if (!outfitPackage) {
         navigateToHome();
         return;
@@ -126,9 +123,11 @@
             ? $itemLayers[0]
             : null
       );
-      if (isItemSet && $userSettings.baseTexture != null)
-        $itemRenderConfig.setBaseTextureFromString($userSettings.baseTexture);
-      else $itemRenderConfig.setBaseTextureFromString($baseTexture);
+      $itemRenderConfig.setBaseTextureFromString(
+        isItemSet && $userSettings.baseTexture != null
+          ? $userSettings.baseTexture
+          : $baseTexture
+      );
 
       loaded = true;
       updateTexture();
@@ -153,7 +152,6 @@
   //texture
   const updateTexture = async () => {
     if (!loaded) return;
-
     modelTexture = await $itemRenderConfig.getLayersForRender(false);
   };
   const sortLayersByColor = async function () {
@@ -217,7 +215,7 @@
     if (!loaded) return;
     $itemRenderConfig.model =
       model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
-    if (!loaded || !isItemSet) return;
+    if (!isItemSet) return;
     applyAnimations($localPackage, CHANGE_TYPE.MODEL_TYPE_CHANGE, 0);
   });
 </script>
@@ -225,7 +223,7 @@
 <div class="item-page">
   <div class="render-data">
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="render" class:drop-hover={isDragging}>
+    <div class="render">
       {#if loaded}
         <DynamicRender
           texture={modelTexture}
@@ -251,14 +249,11 @@
           placeholder={!loaded}
         />
         <div id="item-title" class="title">
-          {#if loaded}
+          <Placeholder style="height:30px;" {loaded}>
             {$localPackage.name}
-          {:else}
-            <Placeholder style="height:30px;" />
-          {/if}
+          </Placeholder>
         </div>
-
-        {#if loaded}
+        <Placeholder style="height:26px;max-width:100px;" {loaded}>
           <div style="display: flex;gap:4px;height:24px">
             <Label variant="unique">{$localPackage.publisher.name}</Label>
             {#if isItemSet && $localPackage.id == $userSettings.currentSkin?.id}
@@ -267,9 +262,7 @@
             &nbsp;
             <SocialInfo data={$localPackage.social} />
           </div>
-        {:else}
-          <Placeholder style="height:26px;max-width:100px;" />
-        {/if}
+        </Placeholder>
       </div>
       <br />
       <SectionTitle
@@ -332,33 +325,26 @@
       {#if $localPackage.description != null && $localPackage.description.trim().length > 0}
         <SectionTitle label={$_("description")} placeholder={!loaded} />
         <div id="item-description" class="description">
-          {#if loaded}
+          <Placeholder style="height:48px;margin-bottom:8px;" {loaded}>
             {$localPackage.description}
             <br />
-          {:else}
-            <Placeholder style="height:48px;margin-bottom:8px;" />
-          {/if}
+          </Placeholder>
           <br />
         </div>
       {/if}
       <SectionTitle label={$_("model")} placeholder={!loaded} />
-      {#if loaded}
-        <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
-      {:else}
-        <Placeholder style="height:48px;margin-bottom:8px;" />
-      {/if}
+      <Placeholder style="height:48px;margin-bottom:8px;" {loaded}>
+        <ModelSelection bind:group={$itemModelType} />
+      </Placeholder>
       <br />
-      {#if loaded}
-        <div style="margin-left:12px;">
-          <Checkbox
-            label="Old format model"
-            bind:value={$itemRenderConfig.isFlatten}
-            on:change={updateTexture}
-          />
-        </div>
-      {:else}
-        <Placeholder style="height:24px;width:200px;" />
-      {/if}
+      <Placeholder style="height:24px;width:200px;" {loaded}>
+        <Checkbox
+          label="Old format model"
+          style="margin-left:12px;"
+          bind:value={$itemRenderConfig.isFlatten}
+          on:change={updateTexture}
+        />
+      </Placeholder>
       <br />
       {#if loaded}
         <OutfitActions

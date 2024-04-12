@@ -1,7 +1,6 @@
 import { currentUser } from "$src/data/cache";
 import {
   OutfitPackage,
-  OutfitPackageLink,
   PackageSocialData,
   OutfitLayer,
   OutfitPackageSnapshotPackage,
@@ -12,14 +11,12 @@ import {
   OUTFIT_TYPE,
   PACKAGE_TYPE,
 } from "$src/data/consts";
-import { GenerateIdForCollection } from "$src/data/firebase";
 import { get } from "svelte/store";
 import { FetchPackagesByFilter } from "$src/helpers/package/packQueryHelper";
 import { RenderTextureInTemporyNode } from "$src/data/render";
 import { OutfitPackageInstance, OutfitPackageInstanceConfig } from "$src/helpers/package/packageInstanceHelper";
 
 const OUTFIT_PATH = DATA_PATH_CONFIG.OUTFIT;
-const OUTFIT_LAYER_PATH = "dummy";
 
 const parseToLocal = async function (data: OutfitPackage) {
   data.outfitType =

@@ -1,5 +1,4 @@
 import { FileData, OutfitLayer, type OutfitPackage } from "./common";
-import { MODEL_TYPE } from "./consts";
 import { MergeStringToImage } from "./imageMerger";
 
 export class ModelTextureArea {

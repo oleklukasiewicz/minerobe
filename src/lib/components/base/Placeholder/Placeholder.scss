@@ -1,13 +1,15 @@
-.placeholder{
-    background-color: var(--color-theme-D2)!important;
+.placeholder {
+  &.unloaded {
+    background-color: var(--color-theme-D2) !important;
     content: none;
     pointer-events: none;
-    color: transparent!important;
-    text-shadow: none!important;
+    color: transparent !important;
+    text-shadow: none !important;
     animation-name: Blink;
     animation-iteration-count: infinite;
     animation-duration: 1.2s;
-    box-shadow: none!important;
+    box-shadow: none !important;
     height: 100%;
     width: 100%;
+  }
 }

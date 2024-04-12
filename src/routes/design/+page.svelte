@@ -460,7 +460,7 @@
           bind:addAnimation={updateAnimation}
         />
       {:else}
-        <Placeholder />
+        <Placeholder></Placeholder>
       {/if}
     </div>
   </div>
@@ -468,7 +468,7 @@
     <div class="data">
       <div class="item-name">
         <SectionTitle label={$_("name")} placeholder={!loaded} />
-        {#if loaded}
+        <Placeholder style="height:46px;margin-bottom:16px;" {loaded}>
           <div style="display:flex; flex-direction:row">
             <input
               id="item-title"
@@ -485,10 +485,8 @@
               style="margin-top: 8px;"
             />
           </div>
-        {:else}
-          <Placeholder style="height:46px;margin-bottom:16px;" />
-        {/if}
-        {#if loaded}
+        </Placeholder>
+        <Placeholder style="height:24px;max-width:100px;" {loaded}>
           <Label variant="common"
             >{$itemPackage.type == PACKAGE_TYPE.OUTFIT
               ? $_("outfit")
@@ -501,9 +499,7 @@
             <Label variant="ancient">Current skin</Label>
           {/if}
           <br />
-        {:else}
-          <Placeholder style="height:24px;max-width:100px;" />
-        {/if}
+        </Placeholder>
         <br />
       </div>
       <SectionTitle
@@ -590,28 +586,20 @@
       </div>
       <br />
       <SectionTitle label={$_("model")} placeholder={!loaded} />
-      {#if loaded}
+      <Placeholder style="height:48px;margin-bottom:8px;" {loaded}>
         <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
-      {:else}
-        <Placeholder style="height:48px;margin-bottom:8px;" />
-      {/if}
+      </Placeholder>
       <br />
-      {#if loaded}
-        <div style="margin-left:12px;">
-          <Checkbox
-            label="Old format model"
-            bind:value={$itemRenderConfig.isFlatten}
-          />
-        </div>
-      {:else}
-        <Placeholder style="height:24px;width:200px;" />
-      {/if}
-
+      <Placeholder style="height:24px;width:200px;" {loaded}>
+        <Checkbox
+          style="margin-left:12px;"
+          label="Old format model"
+          bind:value={$itemRenderConfig.isFlatten}
+        />
+      </Placeholder>
       <br />
       <SectionTitle label={$_("description")} placeholder={!loaded} />
-      {#if !loaded}
-        <Placeholder style="height:64px;margin-bottom:8px;" />
-      {:else}
+      <Placeholder style="height:64px;margin-bottom:8px;" {loaded}>
         <textarea
           id="item-description"
           class:disabled={$itemPackage?.publisher.id != $currentUser?.id}
@@ -619,7 +607,7 @@
           bind:value={$itemPackage.description}
           placeholder={$_("description")}
         ></textarea>
-      {/if}
+      </Placeholder>
       <br />
       <br />
       {#if loaded}

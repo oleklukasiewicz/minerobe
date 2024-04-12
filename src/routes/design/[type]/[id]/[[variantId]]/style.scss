@@ -20,9 +20,6 @@
       aspect-ratio: 1/1;
       outline: 3px solid transparent;
       box-sizing: border-box;
-      &.drop-hover {
-        outline-color: var(--color-accent);
-      }
     }
   }
   .item-data {

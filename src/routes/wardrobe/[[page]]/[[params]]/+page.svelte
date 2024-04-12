@@ -19,7 +19,6 @@
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import { PACKAGE_TYPE } from "$src/data/consts";
-  import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import {
     GetCategoriesFromList,
     GetOutfitIconFromType,

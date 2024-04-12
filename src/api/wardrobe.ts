@@ -6,7 +6,7 @@ import {
   OutfitPackageLink,
   WardrobePackage,
 } from "$src/data/common";
-import { GetDocument, SetDocument, UpdateDocument, UpdateRawDocument } from "$src/data/firebase";
+import { GetDocument, UpdateDocument, UpdateRawDocument } from "$src/data/firebase";
 import { get } from "svelte/store";
 import { DATA_PATH_CONFIG, PACKAGE_TYPE } from "$src/data/consts";
 import { FetchOutfitCollection } from "./collection";

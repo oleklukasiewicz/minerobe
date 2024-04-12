@@ -17,10 +17,8 @@
   export let texture;
   export let renderOptions: DynamicRenderOptions = null;
   export let cameraOptions: CameraConfig = null;
-
-  export const addAnimation:any = async function (anim: RenderAnimation) {
-    await dynamicRender.addAnimation(anim);
-  };
+  export const addAnimation: any = async (anim: RenderAnimation) =>
+    await dynamicRender?.addAnimation(anim);
 
   let dynamicRender;
   let renderNode = null;
@@ -45,7 +43,7 @@
       renderOptions.floorTexture = floorTexture;
       renderOptions.orbitControls = true;
     }
-    if(cameraOptions == null) {
+    if (cameraOptions == null) {
       cameraOptions = new CameraConfig();
       cameraOptions.position = new THREE.Vector3(0, 0, -2);
     }
@@ -59,10 +57,10 @@
       await dynamicRender.setTexture(texture);
       await dynamicRender.setModel(model, modelName);
       await dynamicRender.setRenderNode(renderNode);
-      if(defaultAnimation != null) {
+      if (defaultAnimation != null) {
         await dynamicRender.addAnimation(defaultAnimation);
       }
-      dynamicRender.startRendering();
+      dynamicRender?.startRendering();
     } catch (e) {
       console.error(e);
     }
