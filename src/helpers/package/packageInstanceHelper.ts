@@ -6,6 +6,7 @@ import {
   UploadPackage,
   UploadPackageLayer,
 } from "$src/api/pack";
+import { AddItemToWardrobe } from "$src/api/wardrobe";
 import {
   OutfitPackage,
   type OutfitLayer,
@@ -83,7 +84,7 @@ export class OutfitPackageInstance {
     pack.local = {};
     pack.local.isNew = true;
     if (isShared) pack.isShared = true;
-    //if (addToWardrobe) await _addItemToWardrobe(pack);
+    if (addToWardrobe) await AddItemToWardrobe(pack);
     await this.upload(pack, true);
     return pack;
   }
