@@ -5,7 +5,11 @@
     FetchOutfitCollection,
     UploadOutfitCollection,
   } from "$src/api/collection";
-  import { defaultRenderer, isReadyForData, userSettings } from "$src/data/cache";
+  import {
+    defaultRenderer,
+    isReadyForData,
+    userSettings,
+  } from "$src/data/cache";
   import type { OutfitPackageCollection } from "$src/data/common";
   import { UpdateCollectionInWardrobe } from "$src/helpers/other/apiHelper";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
@@ -43,27 +47,22 @@
 
 <div>
   <div id="header">
-    <input  class="title-input" bind:value={$localCollection.name}/>
+    <Placeholder {loaded} style="width:75vw;height:48px">
+      <input class="title-input" bind:value={$localCollection.name} />
+    </Placeholder>
   </div>
   <div class="outfits">
-    {#if loaded}
-      <OutfitPackageSnapshotList
-        dense={false}
-        maxItemWidth="1fr"
-        fillMethod="auto-fill"
-        renderer={$defaultRenderer}
-        items={$localCollection.outfits}
-        withBaseTexture={$userSettings?.baseTexture != null}
-        baseTexture={$userSettings?.baseTexture}
-        on:innerselect={goToItemPage}
-      />
-    {:else}
-      <div class="placeholders">
-        {#each new Array(36) as item, index}
-          <Placeholder style="min-width:175px;height:268px;" />
-        {/each}
-      </div>
-    {/if}
+    <OutfitPackageSnapshotList
+      dense={false}
+      maxItemWidth="1fr"
+      fillMethod="auto-fill"
+      loading={!loaded}
+      renderer={$defaultRenderer}
+      items={$localCollection.outfits}
+      withBaseTexture={$userSettings?.baseTexture != null}
+      baseTexture={$userSettings?.baseTexture}
+      on:innerselect={goToItemPage}
+    />
   </div>
 </div>
 

@@ -585,6 +585,16 @@
         {/if}
       </div>
       <br />
+      <SectionTitle label={$_("description")} placeholder={!loaded} />
+      <Placeholder style="height:64px;margin-bottom:8px;" {loaded}>
+        <textarea
+          id="item-description"
+          class:disabled={$itemPackage?.publisher.id != $currentUser?.id}
+          class="description-input"
+          bind:value={$itemPackage.description}
+          placeholder={$_("description")}
+        ></textarea>
+      </Placeholder>
       <SectionTitle label={$_("model")} placeholder={!loaded} />
       <Placeholder style="height:48px;margin-bottom:8px;" {loaded}>
         <ModelSelection bind:group={$itemModelType} disabled={!loaded} />
@@ -597,18 +607,6 @@
           bind:value={$itemRenderConfig.isFlatten}
         />
       </Placeholder>
-      <br />
-      <SectionTitle label={$_("description")} placeholder={!loaded} />
-      <Placeholder style="height:64px;margin-bottom:8px;" {loaded}>
-        <textarea
-          id="item-description"
-          class:disabled={$itemPackage?.publisher.id != $currentUser?.id}
-          class="description-input"
-          bind:value={$itemPackage.description}
-          placeholder={$_("description")}
-        ></textarea>
-      </Placeholder>
-      <br />
       <br />
       {#if loaded}
         <OutfitActions

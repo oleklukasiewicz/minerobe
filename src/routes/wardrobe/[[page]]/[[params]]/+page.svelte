@@ -18,6 +18,7 @@
   import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
+  import CalendarIcon from "$icons/calendar-month.svg?raw";
   import { PACKAGE_TYPE } from "$src/data/consts";
   import {
     GetCategoriesFromList,
@@ -31,11 +32,10 @@
   import { outfitsInstance } from "$src/api/outfits";
   import OutfitPackageCollectionItem from "$lib/components/outfit/OutfitPackageCollectionItem/OutfitPackageCollectionItem.svelte";
   import { page } from "$app/stores";
-  import { writable, type Writable } from "svelte/store";
-  import type { WardrobePackage } from "$src/data/common";
   import { ParseWardrobeToLocal } from "$src/api/wardrobe";
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import { _ } from "svelte-i18n";
+  import { goto } from "$app/navigation";
 
   let currentView: any = {};
   let loaded = false;
@@ -44,6 +44,14 @@
   let filteredList = [];
   let outfitsCount = {};
   let menuItems: any[] = [
+    {
+      label: "Schedule",
+      value: "schedule",
+      icon: CalendarIcon,
+    },
+    {
+      type: "separator",
+    },
     {
       label: "Sets",
       icon: AnimationIcon,
@@ -61,7 +69,6 @@
     },
   ];
   const mobileMenuItems = Array.from(menuItems);
-  const localWardrobe: Writable<WardrobePackage> = writable(null);
 
   onMount(() => {
     currentView = {
@@ -71,7 +78,7 @@
     isReadyForData.subscribe(async (readyness) => {
       loaded = readyness?.wardrobe != null;
       if (loaded) {
-        localWardrobe.set(await ParseWardrobeToLocal($wardrobe));
+        await ParseWardrobeToLocal($wardrobe);
         outfitsCount = GetCategoriesFromList($wardrobe.outfits);
         const outfitsMenuItems = Object.keys(outfitsCount)
           .map((x) => {
@@ -146,6 +153,10 @@
   };
   const onMenuItemSelect = function (e) {
     const target = e.detail;
+    if (target.value == "schedule") {
+      goto("/schedule");
+      return;
+    }
     navigateToWardrobe(target.value, target.params);
   };
   const compare = (a, b) => {
