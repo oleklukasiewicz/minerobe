@@ -10,6 +10,8 @@ const getCacheNameForUser = (user) =>
   import.meta.env.VITE_USERS_SECRET_LOCAL_PATH;
 
 export const authenticateWithPrismarine = async function (user, token) {
+  try
+  {
   let authPromise: Promise<any> = new Promise(async (resolve, reject) => {
     const flow = new Authflow(
       import.meta.env.VITE_AZURE_APP_ID,
@@ -90,6 +92,9 @@ export const authenticateWithPrismarine = async function (user, token) {
     return InMemoryCache(user, token);
   }
   return authPromise;
+}catch(e){
+  console.log(e);
+}
 };
 
 export const refreshWithPrismarine = async function (id, token) {
