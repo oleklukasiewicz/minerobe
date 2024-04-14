@@ -50,9 +50,6 @@
       icon: CalendarIcon,
     },
     {
-      type: "separator",
-    },
-    {
       label: "Sets",
       icon: AnimationIcon,
       value: "sets",
