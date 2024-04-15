@@ -96,7 +96,6 @@ export const authenticateWithPrismarine = async function (user, token) {
   console.log(e);
 }
 };
-
 export const refreshWithPrismarine = async function (id, token) {
   const cache = await SetSecret(getCacheNameForUser(id), id, {}, token);
   await UpdateDocument(
