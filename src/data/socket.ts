@@ -5,7 +5,9 @@ import { userSettings } from "./cache";
 import ioClient from "socket.io-client";
 
 export const configureSocket = (userId) => {
-  const io = ioClient(get(page).url.hostname + ":4173");
+  const io = ioClient(
+    get(page).url.hostname + import.meta.env.DEV ? ":4173" : ""
+  );
   io.on("connect", () => {
     console.log("Connected to server");
     io.emit("join", userId);
