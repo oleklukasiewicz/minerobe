@@ -10,7 +10,4 @@ export default defineConfig({
   define: {
     "process.env": import.meta.env,
   },
-  server: {
-    port: 5173,
-  },
 });
