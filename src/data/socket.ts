@@ -3,12 +3,14 @@ import { get } from "svelte/store";
 import { page } from "$app/stores";
 import { userSettings } from "./cache";
 import ioClient from "socket.io-client";
+import { serverConfig, sharedConfig } from "./config";
 
 export const configureSocket = (userId) => {
-  const  dev=import.meta.env.DEV
   console.log("Connecting to socket server");
   const io = ioClient(
-    get(page).url.hostname + (dev==true ? ":4173" : "")
+    get(page).url.hostname + sharedConfig.dev
+      ? ":" + serverConfig.socketConfig.port
+      : ""
   );
   io.on("connect", () => {
     console.log("Connected to server");
