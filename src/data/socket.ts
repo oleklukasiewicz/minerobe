@@ -6,7 +6,7 @@ import ioClient from "socket.io-client";
 
 export const configureSocket = (userId) => {
   const  dev=import.meta.env.DEV
-  console.log("Connecting to server DEV:", dev);
+  console.log("Connecting to socket server");
   const io = ioClient(
     get(page).url.hostname + (dev==true ? ":4173" : "")
   );

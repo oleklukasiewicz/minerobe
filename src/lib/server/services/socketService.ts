@@ -8,5 +8,5 @@ export const socketServer = new Server(httpServer, {
 });
 httpServer.listen(4173,()=>
 {
-  console.log('Socket server running on port 4173: '+  import.meta.env.DEV);
+  console.log('Socket server running on port 4173: dev? '+  import.meta.env.DEV);
 });
