@@ -1,17 +1,18 @@
 import { FetchSettings } from "$src/api/settings";
 import { get } from "svelte/store";
-import { currentUser, userSettings } from "./cache";
-import Pusher from "pusher-js";
-
-//export let pusher;
+import { page } from "$app/stores";
+import { userSettings } from "./cache";
+import ioClient from "socket.io-client";
 
 export const configureSocket = (userId) => {
-  var pusher = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
-    cluster: import.meta.env.VITE_PUSHER_CLUSTER,
+  const io = ioClient("http://" + get(page).url.hostname + ":4173");
+  io.on("connect", () => {
+    console.log("Connected to server");
+    io.emit("join", userId);
   });
-  var channel = pusher.subscribe(`${userId}`);
-  channel.bind("authFinished", async function (data) {
-    const sets = await FetchSettings(get(currentUser).id);
+  io.on("authFinished", async () => {
+    console.log("Auth finished");
+    const sets = await FetchSettings(userId);
     userSettings.set(sets);
   });
 };

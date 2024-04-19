@@ -1,9 +1,12 @@
-import Pusher from "pusher";
-
-export const pusherServer = new Pusher({
-  appId: import.meta.env.VITE_PUSHER_APP_ID,
-  key: import.meta.env.VITE_PUSHER_KEY,
-  secret: import.meta.env.VITE_PUSHER_SECRET,
-  cluster: import.meta.env.VITE_PUSHER_CLUSTER,
-  useTLS: true,
+import {createServer} from 'http';
+import {Server} from 'socket.io';
+const httpServer = createServer();
+export const socketServer = new Server(httpServer, {
+  cors: {
+    origin: '*',
+  },
+});
+httpServer.listen(4173,()=>
+{
+  console.log('Socket server running on port 4173');
 });
