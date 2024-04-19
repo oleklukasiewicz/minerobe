@@ -24,6 +24,9 @@ const config = {
       $texture: "src/texture",
       $component: "src/lib/components",
     },
+    serviceWorker: {
+      register: false,
+    },
   },
 };
 

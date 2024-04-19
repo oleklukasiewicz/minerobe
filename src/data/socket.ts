@@ -8,9 +8,9 @@ import { serverConfig, sharedConfig } from "./config";
 export const configureSocket = (userId) => {
   console.log("Connecting to socket server");
   const io = ioClient(
-    get(page).url.hostname + sharedConfig.dev
-      ? ":" + serverConfig.socketConfig.port
-      : ""
+    get(page).url.hostname + (sharedConfig.dev
+      ? (":" + serverConfig.socketConfig.port)
+      : "")
   );
   io.on("connect", () => {
     console.log("Connected to server");
