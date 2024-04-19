@@ -5,10 +5,10 @@ import { userSettings } from "./cache";
 import ioClient from "socket.io-client";
 
 export const configureSocket = (userId) => {
+  console.log("Connecting to server", import.meta.env.VITE_IS_DEV);
   const io = ioClient(
     get(page).url.hostname + (import.meta.env.VITE_IS_DEV==true ? ":4173" : "")
   );
-  console.log("Connecting to server", import.meta.env.VITE_IS_DEV);
   io.on("connect", () => {
     console.log("Connected to server");
     io.emit("join", userId);
