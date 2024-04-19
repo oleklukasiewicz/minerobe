@@ -85,6 +85,7 @@ export const setup = function () {
   defaultRenderer.update((renderer: any) => {
     renderer = new THREE.WebGLRenderer({
       alpha: true,
+      shadowMap: true,
     });
     renderer.shadowMap.enabled = true;
     renderer.outputColorSpace = THREE.LinearSRGBColorSpace;

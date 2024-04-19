@@ -2,12 +2,9 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import type { RenderAnimation } from "./animation";
-import {
-  defaultRenderer,
-  snapshotTemporaryNode
-} from "./cache";
+import { defaultRenderer, snapshotTemporaryNode } from "./cache";
 import { get } from "svelte/store";
-import { MODEL_TYPE,STEVE_MODEL,ALEX_MODEL } from "./consts";
+import { MODEL_TYPE, STEVE_MODEL, ALEX_MODEL } from "./consts";
 import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
 export class CameraConfig {
   rotation: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
@@ -291,7 +288,15 @@ export const CreateDynamicRender = async function (
     brightness * 0.65,
     10
   );
+  pointLight.shadow.bias = 0; // Adjust as needed
+  pointLight.target.position.set(0, 2, 0);
   pointLight.position.set(0, 50, -50);
+  pointLight.shadowCameraVisible = true;
+  pointLight.castShadow = true;
+  const shadowSize = 1024;
+  pointLight.shadow.mapSize.width = shadowSize; // Adjust as needed
+  pointLight.shadow.mapSize.height = shadowSize;
+  _provider.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Use PCFSoftShadowMap
   _provider.scene.add(pointLight);
   if (renderOptions.orbitControls) {
     _orbitalControls = new OrbitControls(
@@ -306,15 +311,16 @@ export const CreateDynamicRender = async function (
     const floorTexture = await provider.textureLoader.loadAsync(
       renderOptions.floorTexture
     );
-
     const floorGeometry = new THREE.PlaneGeometry(3, 3, 3, 3);
-    const floorMaterial = new THREE.MeshBasicMaterial({
+    const floorMaterial = new THREE.MeshStandardMaterial({
       map: floorTexture,
       side: THREE.DoubleSide,
+      roughness: 1, // Lower values result in sharper, darker shadows
     });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = Math.PI / 2;
     floor.position.y = 0;
+    floor.receiveShadow = true;
     _provider.scene.add(floor);
   }
   _updateRenderSize();
@@ -350,13 +356,17 @@ export const CreateDynamicRender = async function (
       let texture: any = values;
       _loadedModelScene.traverse((child: any) => {
         if (child.isMesh && texture != null) {
+          child.castShadow = true;
+          //child.receiveShadow = true;
           // Set texture filtering and wrap mode to improve sharpness
           texture.magFilter = THREE.NearestFilter;
           texture.minFilter = THREE.LinearMipmapLinearFilter;
           texture.wrapS = THREE.RepeatWrapping;
           texture.wrapT = THREE.RepeatWrapping;
 
-          child.material.map = texture;
+          const mat = child.material as THREE.MeshStandardMaterial;
+          mat.map = texture;
+          //mat.roughness = 1;
         }
       });
     });
@@ -431,7 +441,7 @@ export const RenderTextureInTemporyNode = async function (
   snapshot.texture = texture;
   snapshot.cameraOptions = GetCameraConfigForType(outfitType);
   snapshot.provider.camera = new THREE.OrthographicCamera();
-  snapshot.tempNode=get(snapshotTemporaryNode);
+  snapshot.tempNode = get(snapshotTemporaryNode);
   snapshot.node = get(snapshotTemporaryNode);
-  return await RenderFromSnapshot(snapshot,300,300);
+  return await RenderFromSnapshot(snapshot, 300, 300);
 };
