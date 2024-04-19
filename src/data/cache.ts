@@ -102,7 +102,7 @@ export const setup = function () {
       let w = await FetchWardrobe();
       if (w != null) {
         wardrobe.set(w);
-        console.log("setting wardrobe");
+        console.log("setting wardrobe", import.meta.env.DEV);
         appState.set(APP_STATE.READY);
         if (wardrobeSubscription) wardrobeSubscription();
         if (settingsSubscription) settingsSubscription();
