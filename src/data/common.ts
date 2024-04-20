@@ -240,13 +240,13 @@ export class MinerobeUserLink {
 //settings
 export class MinerobeUserSettings {
   userId: string;
-  baseTexture: string;
+  baseTexture: OutfitLayer;
   currentSkin: SkinData;
   linkedMinecraftAccount: any;
   model: string;
   theme: string;
   constructor(
-    baseTexture: string,
+    baseTexture: OutfitLayer,
     theme: string,
     userId: string = get(currentUser)?.id
   ) {
@@ -254,6 +254,9 @@ export class MinerobeUserSettings {
     this.theme = theme;
     this.userId = userId;
     this.model = MODEL_TYPE.STEVE;
+  }
+  getCurrentBaseTexture() {
+    return this.baseTexture[this.model].content;
   }
 }
 export class SkinData {
@@ -269,7 +272,7 @@ export class SkinData {
 export class OutfitPackageCollection {
   id: string;
   name: string;
-  outfits: (OutfitPackage)[];
+  outfits: OutfitPackage[];
   displayMode: string;
   publisher: MinerobeUser;
   isShared: boolean;

@@ -5,7 +5,11 @@ import {
   OUTFIT_TYPE,
   STEVE_MODEL,
 } from "$data/consts";
-import type { OutfitLayer, OutfitPackage } from "$src/data/common";
+import type {
+  MinerobeUserSettings,
+  OutfitLayer,
+  OutfitPackage,
+} from "$src/data/common";
 import HatIcon from "$icons/clothes/hat.svg?raw";
 import TopIcon from "$icons/clothes/top.svg?raw";
 import BottomIcon from "$icons/clothes/bottom.svg?raw";
@@ -204,4 +208,7 @@ export const MergePackageLayers = async function (
   config.model = model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
   let merged = await MergeLayersToImage(layers, config);
   return merged;
+};
+export const GetCurrentBaseTexture = function (settings: MinerobeUserSettings) {
+  return settings?.baseTexture[settings.model]?.content;
 };

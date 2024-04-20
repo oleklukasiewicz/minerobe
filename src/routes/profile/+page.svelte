@@ -27,7 +27,7 @@
     LinkMinecraftAccount,
     UnlinkMinecraftAccount,
   } from "$src/api/settings";
-  import { GetFaceOfRemoteSkin } from "$src/helpers/image/imageDataHelpers";
+  import { GetCurrentBaseTexture, GetFaceOfRemoteSkin } from "$src/helpers/image/imageDataHelpers";
   import OutfitTextureRender from "$lib/components/render/OutfitTextureRender.svelte";
   import BaseTextureDialog from "$lib/components/dialog/BaseTextureDialog.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
@@ -122,7 +122,7 @@
             renderProvider={$userModel == MODEL_TYPE.ALEX
               ? providers.alex
               : providers.steve}
-            texture={$userSettings.baseTexture}
+            texture={GetCurrentBaseTexture($userSettings)}
           />
         </div>
         <div class="actions">

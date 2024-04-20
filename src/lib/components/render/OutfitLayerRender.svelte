@@ -2,12 +2,14 @@
   import * as THREE from "three";
   import type { OutfitLayer } from "$src/data/common";
   import {
+    CreateDefaultRenderProvider,
     RenderFromSnapshot,
     RenderProvider,
     RenderSnapshot,
   } from "$src/data/render";
   import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
   import { onMount } from "svelte";
+  import { defaultRenderer } from "$src/data/cache";
 
   export let item: OutfitLayer = null;
   export let modelName = "steve";
@@ -18,7 +20,10 @@
   let tempNode: HTMLDivElement;
 
   onMount(async () => {
-    if (renderProvider == null) return;
+    if (renderProvider == null) {
+      const tempProvider = await CreateDefaultRenderProvider($defaultRenderer);
+      renderProvider = tempNode[modelName];
+    }
     snapshot.provider = renderProvider;
 
     snapshot.node = renderNode;

@@ -50,7 +50,7 @@
   import HandsUpAnimation from "$animation/handsup";
 
   import { ExportImageString } from "$src/helpers/data/dataTransferHelper.js";
-  import { sortOutfitLayersByColor } from "$src/helpers/image/imageDataHelpers.js";
+  import { GetCurrentBaseTexture, sortOutfitLayersByColor } from "$src/helpers/image/imageDataHelpers.js";
   import {
     AddToCollection,
     IsItemInCollection,
@@ -124,8 +124,8 @@
             : null
       );
       $itemRenderConfig.setBaseTextureFromString(
-        isItemSet && $userSettings.baseTexture.length > 0
-          ? $userSettings.baseTexture
+        isItemSet && GetCurrentBaseTexture($userSettings) !=null
+          ? GetCurrentBaseTexture($userSettings)
           : $baseTexture
       );
 

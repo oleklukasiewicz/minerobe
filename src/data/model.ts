@@ -74,4 +74,7 @@ export class OutfitPackageRenderConfig {
     );
     this.baseTexture = ll;
   }
+  async setBaseTextureFromLayer(baseTexture: OutfitLayer) {
+    this.baseTexture = baseTexture;
+  }
 }

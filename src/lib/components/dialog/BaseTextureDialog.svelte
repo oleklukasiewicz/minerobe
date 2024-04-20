@@ -1,10 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import {
-    planksTexture,
-    userSettings,
-    showToast,
-  } from "$src/data/cache";
+  import { planksTexture, userSettings, showToast, baseTexture } from "$src/data/cache";
   import { MergeStringToImage } from "$src/data/imageMerger";
   import { ImportImage } from "$src/helpers/data/dataTransferHelper";
   import { createEventDispatcher, onMount } from "svelte";
@@ -18,6 +14,8 @@
   import Button from "../base/Button/Button.svelte";
   import { OutfitPackageRenderConfig } from "$src/data/model";
   import { ALEX_MODEL, STEVE_MODEL } from "$src/data/consts";
+  import { FileData, OutfitLayer } from "$src/data/common";
+  import { text } from "@sveltejs/kit";
 
   const dispatch = createEventDispatcher();
 
@@ -26,7 +24,8 @@
     const filedata = await ImportImage();
     if (filedata) {
       userSettings.update((v) => {
-        v.baseTexture = filedata[0].content;
+        const layer = v.baseTexture as OutfitLayer;
+        layer[v.model].content = filedata[0].content;
         showToast("Base texture changed");
         return v;
       });
@@ -34,7 +33,7 @@
   };
   const resetImage = () => {
     userSettings.update((v) => {
-      v.baseTexture = null;
+      v.baseTexture = new OutfitLayer("base",new FileData("s_base",null),new FileData("a_base",null));
       return v;
     });
   };
@@ -44,7 +43,7 @@
         const config = new OutfitPackageRenderConfig();
         config.model = v.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
         texture = await MergeStringToImage(
-          [$planksTexture, v.baseTexture],
+          [$planksTexture, v.baseTexture[v.model].content].filter((v) => v),
           config
         );
       } else texture = $planksTexture;
@@ -60,8 +59,10 @@
   <div class="render">
     <DynamicRender
       defaultAnimation={DefaultAnimation}
-      {texture}
-      model={$userSettings.model == MODEL_TYPE.ALEX ? ALEX_MODEL.model : STEVE_MODEL.model}
+      texture={$userSettings.baseTexture[$userSettings.model].content || texture}
+      model={$userSettings.model == MODEL_TYPE.ALEX
+        ? ALEX_MODEL.model
+        : STEVE_MODEL.model}
       modelName={$userSettings.model}
     />
   </div>

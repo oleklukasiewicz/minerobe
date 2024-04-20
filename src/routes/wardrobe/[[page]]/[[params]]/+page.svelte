@@ -22,6 +22,7 @@
   import { PACKAGE_TYPE } from "$src/data/consts";
   import {
     GetCategoriesFromList,
+    GetCurrentBaseTexture,
     GetOutfitIconFromType,
   } from "$src/helpers/image/imageDataHelpers";
   import Search from "$component/base/Search/Search.svelte";
@@ -222,8 +223,8 @@
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
             items={filteredList}
-            withBaseTexture={$userSettings?.baseTexture != null}
-            baseTexture={$userSettings?.baseTexture}
+            withBaseTexture={GetCurrentBaseTexture($userSettings) != null}
+            baseTexture={GetCurrentBaseTexture($userSettings)}
             on:innerselect={onItemSelect}
           />
         </div>

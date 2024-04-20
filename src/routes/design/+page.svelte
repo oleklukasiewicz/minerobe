@@ -138,7 +138,7 @@
       );
 
       if (isItemSet && $userSettings.baseTexture != null)
-        $itemRenderConfig.setBaseTextureFromString($userSettings.baseTexture);
+        $itemRenderConfig.setBaseTextureFromLayer($userSettings.baseTexture);
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
       loaded = true;
