@@ -16,7 +16,7 @@ export const GET = async (event) => {
       attempts++;
     }
 
-    if (!result) return new Response("Error", { status: 500 });
+    if (!result) return new Response("Error in minecraft services", { status: 500 });
     return new Response("OK");
   } catch (e) {
     console.log(e);

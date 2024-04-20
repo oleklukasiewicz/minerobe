@@ -1,4 +1,5 @@
 import { MODEL_TYPE } from "$data/consts";
+import { serverConfig } from "$src/data/config";
 import { authenticateWithPrismarine } from "./prismarineAuth";
 export const ChangeSkin = async function (
   id: string,
@@ -11,7 +12,7 @@ export const ChangeSkin = async function (
     if (token == null) throw new Error("Invalid token");
     let normalizedModel = model == MODEL_TYPE.ALEX ? "slim" : "classic";
     const url =
-      "https://minerobe.vercel.app/api/outfit_set_flat/" + userId + "/" + model;
+      serverConfig.minecraftServices.photoBaseUrl + userId + "/" + model;
     const request = {
       variant: normalizedModel,
       url: url,
@@ -27,7 +28,7 @@ export const ChangeSkin = async function (
         body: JSON.stringify(request),
       }
     );
-
+    console.log("Change skin result ",userId, await result.json(),JSON.stringify(request));
     return result.status == 200;
   } catch (e) {
     return false;
