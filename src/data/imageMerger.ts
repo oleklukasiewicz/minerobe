@@ -1,4 +1,4 @@
-import { MODEL_TYPE,ALEX_MODEL,STEVE_MODEL } from "$data/consts";
+import { MODEL_TYPE, ALEX_MODEL, STEVE_MODEL } from "$data/consts";
 import type { FileData, OutfitLayer } from "./common";
 import type { OutfitPackageRenderConfig } from "./model";
 
@@ -39,6 +39,7 @@ let mergeImages = function (
         if (source.constructor.name !== "Object") {
           source = { src: source };
         }
+        if (source.src.length == 0) return resolve(null);
 
         // Resolve source and img when loaded
         var img = new Image();
@@ -68,6 +69,7 @@ let mergeImages = function (
             Math.max.apply(
               Math,
               images.map(function (image) {
+                if (image?.img == null) return 0;
                 return image.img[dim];
               })
             )
@@ -119,11 +121,7 @@ let mergeImages = function (
     );
   });
 };
-const replaceLowerPart = function (
-  imgContext,
-  lowerLayerContext,
-  part
-) {
+const replaceLowerPart = function (imgContext, lowerLayerContext, part) {
   const imageData = imgContext.getImageData(
     part.textureArea.x,
     part.textureArea.y,
@@ -221,7 +219,7 @@ export const MergeLayersToImage = async function (
 };
 export const MergeFileDataToImage = async function (
   layers: FileData[],
-  config:OutfitPackageRenderConfig
+  config: OutfitPackageRenderConfig
 ) {
   return await mergeImages(
     layers.map((x) => x.content).reverse(),
@@ -233,7 +231,7 @@ export const MergeFileDataToImage = async function (
 };
 export const MergeStringToImage = async function (
   layers: string[],
- config:OutfitPackageRenderConfig
+  config: OutfitPackageRenderConfig
 ) {
   return await mergeImages(
     layers.reverse(),

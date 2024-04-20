@@ -49,10 +49,10 @@
     }
     try {
       dynamicRender = await CreateDynamicRender(
+        renderNode,
         provider,
         cameraOptions,
         renderOptions,
-        renderNode
       );
       await dynamicRender.setTexture(texture);
       await dynamicRender.setModel(model, modelName);

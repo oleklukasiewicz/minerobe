@@ -21,6 +21,19 @@ export class RenderSnapshot {
   node: any;
   tempNode: any;
 }
+export class RenderLightConfig {
+  color: THREE.Color = new THREE.Color(0xffffff);
+  intensity: number = 1;
+  distance: number = 0;
+  decay: number = 1;
+  shadow: boolean = true;
+  shadowBias: number = 0;
+  shadowRadius: number = 1;
+  shadowMapSize: number = 1024;
+  shadowCameraVisible: boolean = false;
+  shadowCameraNear: number = 0.5;
+  shadowCameraFar: number = 500;
+}
 export class RenderProvider {
   renderer: any;
   scene: any;
@@ -128,10 +141,11 @@ export const PrepareSceneForRender = async function (model: string) {
   return { scene, camera, renderScene: gltfScene, modelLoader: modelLoader };
 };
 export const CreateDynamicRender = async function (
+  node: HTMLElement,
   provider: RenderProvider,
   cameraOptions: CameraConfig = new CameraConfig(),
   renderOptions: DynamicRenderOptions = new DynamicRenderOptions(),
-  node: HTMLElement
+  lightConfig: RenderLightConfig = new RenderLightConfig()
 ) {
   let _provider = provider;
   let _renderer = _provider.renderer;
@@ -288,15 +302,22 @@ export const CreateDynamicRender = async function (
     brightness * 0.65,
     10
   );
-  pointLight.shadow.bias = 0; // Adjust as needed
+
   pointLight.target.position.set(0, 2, 0);
   pointLight.position.set(0, 50, -50);
   pointLight.shadowCameraVisible = true;
-  pointLight.castShadow = true;
-  const shadowSize = 1024;
-  pointLight.shadow.mapSize.width = shadowSize; // Adjust as needed
-  pointLight.shadow.mapSize.height = shadowSize;
-  _provider.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Use PCFSoftShadowMap
+
+  console.log(lightConfig);
+  if (lightConfig.shadow) {
+    pointLight.castShadow = true;
+    pointLight.shadow.bias = lightConfig.shadowBias;
+    pointLight.shadow.radius = lightConfig.shadowRadius;
+    pointLight.shadow.mapSize.width = lightConfig.shadowMapSize;
+    pointLight.shadow.mapSize.height = lightConfig.shadowMapSize;
+    pointLight.shadow.camera.near = lightConfig.shadowCameraNear;
+    pointLight.shadow.camera.far = lightConfig.shadowCameraFar;
+  }
+
   _provider.scene.add(pointLight);
   if (renderOptions.orbitControls) {
     _orbitalControls = new OrbitControls(
@@ -356,7 +377,7 @@ export const CreateDynamicRender = async function (
       let texture: any = values;
       _loadedModelScene.traverse((child: any) => {
         if (child.isMesh && texture != null) {
-          child.castShadow = true;
+          if (lightConfig.shadow) child.castShadow = true;
           //child.receiveShadow = true;
           // Set texture filtering and wrap mode to improve sharpness
           texture.magFilter = THREE.NearestFilter;
