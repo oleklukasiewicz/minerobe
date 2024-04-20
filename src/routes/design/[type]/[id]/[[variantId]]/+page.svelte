@@ -124,7 +124,7 @@
             : null
       );
       $itemRenderConfig.setBaseTextureFromString(
-        isItemSet && $userSettings.baseTexture != null
+        isItemSet && $userSettings.baseTexture.length > 0
           ? $userSettings.baseTexture
           : $baseTexture
       );
