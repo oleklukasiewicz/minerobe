@@ -1,4 +1,4 @@
-import { currentUser, wardrobe } from "$src/data/cache";
+import { currentUser, userSettings, wardrobe } from "$src/data/cache";
 import {
   OutfitPackage,
   OutfitPackageCollection,
@@ -6,9 +6,13 @@ import {
   OutfitPackageLink,
   WardrobePackage,
 } from "$src/data/common";
-import { GetDocument, UpdateDocument, UpdateRawDocument } from "$src/data/firebase";
+import {
+  GetDocument,
+  UpdateDocument,
+  UpdateRawDocument,
+} from "$src/data/firebase";
 import { get } from "svelte/store";
-import { DATA_PATH_CONFIG, PACKAGE_TYPE } from "$src/data/consts";
+import { DATA_PATH_CONFIG, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
 import { FetchOutfitCollection } from "./collection";
 import { setsIntance } from "./sets";
 import { outfitsInstance } from "./outfits";
@@ -39,9 +43,12 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
       ) {
         return item;
       } else {
-        return item.type == PACKAGE_TYPE.OUTFIT_LINK
-          ? await outfitsInstance.fetchFromLink(item)
-          : await setsIntance.fetchFromLink(item);
+        if (item.type == PACKAGE_TYPE.OUTFIT_LINK)
+          return await outfitsInstance.fetchFromLink(item);
+        if (item.type == PACKAGE_TYPE.OUTFIT_SET_LINK) {
+          item.model = get(userSettings)?.model || item.model;
+          return await setsIntance.fetchFromLink(item);
+        }
       }
     })
   );
@@ -69,7 +76,7 @@ export const UploadWardrobe = async function (data: WardrobePackage) {
   );
 };
 //operations
-export const AddItemToWardrobe =async function (
+export const AddItemToWardrobe = async function (
   item: OutfitPackage | OutfitPackageCollection
 ) {
   let wardrobeObj = get(wardrobe);
@@ -100,14 +107,13 @@ export const AddItemToWardrobe =async function (
   wardrobe.set(wardrobeObj);
   return true;
 };
-export const RemoveItemFromWardrobe =async function (id, type) {
+export const RemoveItemFromWardrobe = async function (id, type) {
   let wardrobeObj = get(wardrobe);
   if (type == PACKAGE_TYPE.OUTFIT || type == PACKAGE_TYPE.OUTFIT_SET) {
-    
     const target = wardrobeObj.outfits.find(
       (outfit) => outfit?.id == id && outfit?.type == type
     );
-    
+
     wardrobeObj.outfits = wardrobeObj.outfits.filter(
       (outfit) => outfit?.id != id || outfit?.type != type
     );
