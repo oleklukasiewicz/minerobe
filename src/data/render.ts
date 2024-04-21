@@ -35,7 +35,7 @@ export class RenderLightConfig {
     enabled: true,
     bias: -0.00001,
     radius: 1,
-    mapSize: 4096,
+    mapSize: 2048,
   };
   ambient: {
     isEnabled: boolean;
@@ -54,12 +54,14 @@ export class RenderLightConfig {
     intensity: number;
     position: THREE.Vector3;
     target: THREE.Vector3;
+    cameraSize: number;
   } = {
     isEnabled: true,
     color: new THREE.Color(0xffffff),
     intensity: 0.78,
     position: new THREE.Vector3(0, 10, -10),
     target: new THREE.Vector3(0, 2, 0),
+    cameraSize: 1,
   };
 }
 export class RenderProvider {
@@ -339,6 +341,10 @@ export const CreateDynamicRender = async function (
     );
     pointLight.castShadow = lightConfig.enableShadows;
     if (lightConfig.shadow.enabled) {
+      pointLight.shadow.camera.left = -lightConfig.directional.cameraSize;
+      pointLight.shadow.camera.right = lightConfig.directional.cameraSize;
+      pointLight.shadow.camera.top = lightConfig.directional.cameraSize;
+      pointLight.shadow.camera.bottom = -lightConfig.directional.cameraSize;
       pointLight.shadow.bias = lightConfig.shadow.bias;
       pointLight.shadow.radius = lightConfig.shadow.radius;
       pointLight.shadow.mapSize.width = lightConfig.shadow.mapSize;
