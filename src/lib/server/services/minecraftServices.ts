@@ -28,7 +28,12 @@ export const ChangeSkin = async function (
         body: JSON.stringify(request),
       }
     );
-    console.log("Change skin result ",userId, await result.json(),JSON.stringify(request));
+    console.log(
+      "Change skin result ",
+      userId,
+      result.status != 200 ? await result.json() : "result: ok",
+      JSON.stringify(request)
+    );
     return result.status == 200;
   } catch (e) {
     return false;

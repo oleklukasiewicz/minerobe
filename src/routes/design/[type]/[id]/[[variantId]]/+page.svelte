@@ -160,7 +160,12 @@
       $itemModelType
     );
   };
-
+  const skinSetted = function (e) {
+    const isSetted = e.detail.isSuccessful;
+    if (isSetted) {
+      applyAnimations($localPackage, CHANGE_TYPE.SKIN_SET, 0);
+    }
+  };
   //sharing
   const addToWardrobe = async function () {
     isPackageInWardrobe = await AddItemToWardrobe($localPackage);
@@ -355,6 +360,7 @@
           loading={!loaded}
           mobile={$isMobileView}
           on:download={downloadImage}
+          on:skinSet={skinSetted}
           on:collectionDialog={() => (isCollectionDialogOpen = true)}
           on:addToWardrobe={addToWardrobe}
           on:removeFromWardrobe={removeFromWardrobe}

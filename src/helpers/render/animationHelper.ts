@@ -121,6 +121,9 @@ export const GetAnimationForPackageChange = function (
   if (type == CHANGE_TYPE.DOWNLOAD) {
     return [HandsUpAnimation, DefaultAnimation];
   }
+  if (type == CHANGE_TYPE.SKIN_SET) {
+    return [ClapAnimation, DefaultAnimation];
+  }
   return [];
 };
 export const GetAnimationForType = function (type: string) {

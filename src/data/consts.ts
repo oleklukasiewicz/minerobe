@@ -122,6 +122,7 @@ export const CHANGE_TYPE = {
   PACKAGE_IMPORT: "package_import",
   PACKAGE_EXPORT: "package_export",
   DOWNLOAD: "download",
+  SKIN_SET: "skin_set",
   SHARE: "share",
 };
 export const COLOR_TYPE = {

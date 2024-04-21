@@ -1,8 +1,4 @@
-import {
-  currentUser,
-  showToast,
-  userSettings,
-} from "$src/data/cache";
+import { currentUser, showToast, userSettings } from "$src/data/cache";
 import { MinerobeUserSettings, SkinData } from "$src/data/common";
 import {
   FetchWithTokenAuth,
@@ -17,7 +13,7 @@ export const UploadSettings = async function (data: MinerobeUserSettings) {
 };
 export const FetchSettings = async function (userId: string) {
   const data = await GetDocument(SETTINS_PATH, userId);
-  if (data == null) return new MinerobeUserSettings("", "");
+  if (data == null) return new MinerobeUserSettings(null, "");
   return data;
 };
 export const SetCurrentSkin = async function (id, model, texture) {
@@ -36,6 +32,7 @@ export const SetCurrentSkin = async function (id, model, texture) {
     showToast("Skin changed");
   }
   userSettings.set(settins);
+  return resp.status == 200;
 };
 export const UnlinkMinecraftAccount = async function () {
   await FetchWithTokenAuth(

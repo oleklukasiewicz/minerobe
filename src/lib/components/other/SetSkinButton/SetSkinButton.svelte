@@ -5,6 +5,9 @@
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import Button from "$lib/components/base/Button/Button.svelte";
+  import { createEventDispatcher } from "svelte";
+
+  const dispatch = createEventDispatcher();
 
   export let item: OutfitPackage = null;
   export let texture = null;
@@ -13,8 +16,9 @@
   let skinIsSetting = false;
   const setSkin = async function () {
     skinIsSetting = true;
-    await SetCurrentSkin(item.id, item.model, texture);
+    const isSetted = await SetCurrentSkin(item.id, item.model, texture);
     skinIsSetting = false;
+    dispatch("setSkin", { isSuccessful: isSetted });
   };
 </script>
 

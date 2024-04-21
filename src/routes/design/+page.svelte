@@ -406,6 +406,12 @@
     applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
     currentInstance.uploadLayer($itemPackage, $itemRenderConfig.selectedLayer);
   };
+  const skinSetted = function (e) {
+    const isSetted = e.detail.isSuccessful;
+    if (isSetted) {
+      applyAnimations($itemPackage, CHANGE_TYPE.SKIN_SET, 0);
+    }
+  };
   //collections
   const addToCollection = async function (e) {
     const collection = e.detail.collection;
@@ -615,6 +621,7 @@
           loading={!loaded}
           mobile={$isMobileView}
           on:share={sharePackage}
+          on:skinSet={skinSetted}
           on:download={downloadImage}
           on:shareDialog={() => (isShareDialogOpen = true)}
           on:collectionDialog={() => (isCollectionDialogOpen = true)}
