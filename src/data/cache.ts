@@ -65,13 +65,16 @@ export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
 export const userSettings: Writable<MinerobeUserSettings> = writable({
   userId: null,
   model: "alex",
-  baseTexture: new OutfitLayer(),
+  baseTexture: null,
   theme: "",
   linkedMinecraftAccount: null,
   currentSkin: null,
   currentSkinModel: null,
 });
-export const isUserGuest: Readable<boolean> = derived(currentUser, ($user) => $user?.id == null);
+export const isUserGuest: Readable<boolean> = derived(
+  currentUser,
+  ($user) => $user?.id == null
+);
 
 let wardrobeSubscription, settingsSubscription, userSubscription;
 export const preSetup = function () {
