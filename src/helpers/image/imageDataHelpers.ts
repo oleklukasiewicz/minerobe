@@ -210,5 +210,6 @@ export const MergePackageLayers = async function (
   return merged;
 };
 export const GetCurrentBaseTexture = function (settings: MinerobeUserSettings) {
+  if (settings?.baseTexture == null) return null;
   return settings?.baseTexture[settings.model]?.content;
 };
