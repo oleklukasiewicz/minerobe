@@ -1,5 +1,6 @@
 import { currentUser, showToast, userSettings } from "$src/data/cache";
 import { MinerobeUserSettings, SkinData } from "$src/data/common";
+import HandsupIcon from "$src/icons/human-handsup.svg?raw";
 import {
   FetchWithTokenAuth,
   GetDocument,
@@ -27,9 +28,9 @@ export const SetCurrentSkin = async function (id, model, texture) {
   );
   if (resp.status != 200) {
     settins.currentSkin = old;
-    showToast("Failed to change skin", undefined, "error");
+    showToast("Failed to change skin", undefined, "error" );
   } else {
-    showToast("Skin changed");
+    showToast("Skin changed",HandsupIcon);
   }
   userSettings.set(settins);
   return resp.status == 200;

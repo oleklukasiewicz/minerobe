@@ -18,21 +18,29 @@
     background-color: var(--color-info);
   }
   z-index: 20;
-  &>*
-  {
+  & > * {
     display: inline-table;
-    color:var(--color-accent-font);
+    color: var(--color-accent-font);
   }
-  .message
-  {
+  .message {
     margin: 8px 8px 8px 12px;
     box-sizing: border-box;
     font-size: var(--size-font-caption);
   }
-  .content
-  {
+  .data {
+    display: flex;
+    flex-direction: row;
+  }
+  .icon {
+    padding-top: 6px;
+    padding-left: 8px;
+    height: 100%;
+    vertical-align: bottom;
+    box-sizing: border-box;
+  }
+  .content {
     display: grid;
-   grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto;
   }
   &.hidden {
     display: none;
