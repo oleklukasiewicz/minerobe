@@ -8,7 +8,7 @@ import {
   derived,
 } from "svelte/store";
 import { APP_STATE } from "$data/consts";
-import { MinerobeUserSettings, type MinerobeUser } from "./common";
+import { MinerobeUserSettings, OutfitLayer, type MinerobeUser } from "./common";
 import planksTextureRaw from "$src/texture/base_skin.png?url";
 import type { WardrobePackage } from "./common";
 import { FetchWardrobe, UploadWardrobe } from "$src/api/wardrobe";
@@ -65,7 +65,7 @@ export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
 export const userSettings: Writable<MinerobeUserSettings> = writable({
   userId: null,
   model: "alex",
-  baseTexture: "",
+  baseTexture: new OutfitLayer(),
   theme: "",
   linkedMinecraftAccount: null,
   currentSkin: null,
@@ -85,9 +85,7 @@ export const setup = function () {
   defaultRenderer.update((renderer: any) => {
     renderer = new THREE.WebGLRenderer({
       alpha: true,
-      shadowMap: true,
     });
-    renderer.shadowMap.enabled = true;
     renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     return renderer;
   });

@@ -22,17 +22,45 @@ export class RenderSnapshot {
   tempNode: any;
 }
 export class RenderLightConfig {
-  color: THREE.Color = new THREE.Color(0xffffff);
-  intensity: number = 1;
-  distance: number = 0;
-  decay: number = 1;
-  shadow: boolean = true;
-  shadowBias: number = 0;
-  shadowRadius: number = 1;
-  shadowMapSize: number = 1024;
-  shadowCameraVisible: boolean = false;
-  shadowCameraNear: number = 0.5;
-  shadowCameraFar: number = 500;
+  enableShadows: boolean = true;
+  enableModelShadows: boolean = true;
+  shadow: {
+    type: any;
+    enabled: boolean;
+    bias: number;
+    radius: number;
+    mapSize: number;
+  } = {
+    type: THREE.PCFShadowMap,
+    enabled: true,
+    bias: -0.00001,
+    radius: 1,
+    mapSize: 4096,
+  };
+  ambient: {
+    isEnabled: boolean;
+    color: THREE.Color;
+    intensity: number;
+    distance: number;
+  } = {
+    isEnabled: true,
+    color: new THREE.Color(0xffffff),
+    intensity: 2.16,
+    distance: 10,
+  };
+  directional: {
+    isEnabled: boolean;
+    color: THREE.Color;
+    intensity: number;
+    position: THREE.Vector3;
+    target: THREE.Vector3;
+  } = {
+    isEnabled: true,
+    color: new THREE.Color(0xffffff),
+    intensity: 0.78,
+    position: new THREE.Vector3(0, 10, -10),
+    target: new THREE.Vector3(0, 2, 0),
+  };
 }
 export class RenderProvider {
   renderer: any;
@@ -291,34 +319,45 @@ export const CreateDynamicRender = async function (
     renderOptions.backgroundColor,
     renderOptions.backgroundColorOpacity
   );
-
-  //light
-  const brightness = 1.2;
+  if (lightConfig.enableShadows) {
+    _renderer.shadowMap.enabled = true;
+    _renderer.shadowMap.type = lightConfig.shadow.type;
+  }
   // Add a directional light
-  const light = new THREE.AmbientLight(0xffffff, brightness * 1.8, 10);
-  _provider.scene.add(light);
-  const pointLight = new THREE.DirectionalLight(
-    0xffffff,
-    brightness * 0.65,
-    10
-  );
-
-  pointLight.target.position.set(0, 2, 0);
-  pointLight.position.set(0, 50, -50);
-  pointLight.shadowCameraVisible = true;
-
-  console.log(lightConfig);
-  if (lightConfig.shadow) {
-    pointLight.castShadow = true;
-    pointLight.shadow.bias = lightConfig.shadowBias;
-    pointLight.shadow.radius = lightConfig.shadowRadius;
-    pointLight.shadow.mapSize.width = lightConfig.shadowMapSize;
-    pointLight.shadow.mapSize.height = lightConfig.shadowMapSize;
-    pointLight.shadow.camera.near = lightConfig.shadowCameraNear;
-    pointLight.shadow.camera.far = lightConfig.shadowCameraFar;
+  if (lightConfig.ambient.isEnabled) {
+    const light = new THREE.AmbientLight(
+      lightConfig.ambient.color,
+      lightConfig.ambient.intensity,
+      lightConfig.ambient.distance
+    );
+    _provider.scene.add(light);
+  }
+  if (lightConfig.directional.isEnabled) {
+    const pointLight = new THREE.DirectionalLight(
+      lightConfig.directional.color,
+      lightConfig.directional.intensity
+    );
+    pointLight.castShadow = lightConfig.enableShadows;
+    if (lightConfig.shadow.enabled) {
+      pointLight.shadow.bias = lightConfig.shadow.bias;
+      pointLight.shadow.radius = lightConfig.shadow.radius;
+      pointLight.shadow.mapSize.width = lightConfig.shadow.mapSize;
+      pointLight.shadow.mapSize.height = lightConfig.shadow.mapSize;
+    }
+    pointLight.target.position.set(
+      lightConfig.directional.target.x,
+      lightConfig.directional.target.y,
+      lightConfig.directional.target.z
+    );
+    pointLight.position.set(
+      lightConfig.directional.position.x,
+      lightConfig.directional.position.y,
+      lightConfig.directional.position.z
+    );
+    pointLight.shadowCameraVisible = true;
+    _provider.scene.add(pointLight);
   }
 
-  _provider.scene.add(pointLight);
   if (renderOptions.orbitControls) {
     _orbitalControls = new OrbitControls(
       _provider.camera,
@@ -377,7 +416,8 @@ export const CreateDynamicRender = async function (
       let texture: any = values;
       _loadedModelScene.traverse((child: any) => {
         if (child.isMesh && texture != null) {
-          if (lightConfig.shadow) child.castShadow = true;
+          if (lightConfig.enableShadows) child.castShadow = true;
+          if (lightConfig.enableModelShadows) child.receiveShadow = true;
           //child.receiveShadow = true;
           // Set texture filtering and wrap mode to improve sharpness
           texture.magFilter = THREE.NearestFilter;
@@ -387,7 +427,7 @@ export const CreateDynamicRender = async function (
 
           const mat = child.material as THREE.MeshStandardMaterial;
           mat.map = texture;
-          //mat.roughness = 1;
+          mat.roughness = 1;
         }
       });
     });

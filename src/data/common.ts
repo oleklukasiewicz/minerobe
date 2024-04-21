@@ -255,9 +255,6 @@ export class MinerobeUserSettings {
     this.userId = userId;
     this.model = MODEL_TYPE.STEVE;
   }
-  getCurrentBaseTexture() {
-    return this.baseTexture[this.model].content;
-  }
 }
 export class SkinData {
   id: string;

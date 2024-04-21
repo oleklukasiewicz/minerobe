@@ -26,7 +26,6 @@
   onMount(async () => {
     if (renderer == null) {
       renderer = new THREE.WebGLRenderer({ alpha: true });
-      renderer.shadowMap.enabled = true;
       renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     }
 
