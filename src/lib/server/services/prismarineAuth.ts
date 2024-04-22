@@ -10,51 +10,73 @@ const getCacheNameForUser = (user) =>
   import.meta.env.VITE_USERS_SECRET_LOCAL_PATH;
 
 export const authenticateWithPrismarine = async function (user, token) {
-  try
-  {
-  let authPromise: Promise<any> = new Promise(async (resolve, reject) => {
-    const flow = new Authflow(
-      import.meta.env.VITE_AZURE_APP_ID,
-      cacheFactory,
-      { flow: "sisu", authTitle: Titles.MinecraftJava, deviceType: "Win32" },
-      async (params: any) => {
-        resolve({
-          requireUserInteraction: true,
-          params: {
-            userCode: params.user_code,
-            verificationUri: params.verification_uri,
-            expiresIn: params.expires_in,
-          },
-        });
-      }
-    );
-    await flow
-      .getMinecraftJavaToken({ fetchProfile: true })
-      .then(async (tokenAcc) => {
-        await UpdateDocument(
-          "settings",
-          user,
-          {
-            linkedMinecraftAccount: {
+  try {
+    let authPromise: Promise<any> = new Promise(async (resolve, reject) => {
+      const flow = new Authflow(
+        import.meta.env.VITE_AZURE_APP_ID,
+        cacheFactory,
+        { flow: "sisu", authTitle: Titles.MinecraftJava, deviceType: "Win32" }
+      )
+        .getMinecraftJavaToken({ fetchProfile: true })
+        .then(async (tokenAcc) => {
+          resolve({
+            requireUserInteraction: false,
+            profile: {
               id: tokenAcc.profile.id,
               name: tokenAcc.profile.name,
               skins: tokenAcc.profile.skins,
             },
-          },
-          token
-        );
-        await emitAuthFinished(user);
-        resolve({
-          requireUserInteraction: false,
-          profile: {
-            id: tokenAcc.profile.id,
-            name: tokenAcc.profile.name,
-            skins: tokenAcc.profile.skins,
-          },
-          token: tokenAcc.token,
+            token: tokenAcc.token,
+          });
         });
-      });
-  });
+    });
+    function InMemoryCache(user, userToken) {
+      const id = user;
+      const token = userToken;
+      return {
+        async getCached() {
+          const cache = await GetSecret(
+            getCacheNameForUser(id),
+            id,
+            token,
+            user
+          );
+          return cache || {};
+        },
+        async setCached(value) {
+          const cache = await SetSecret(
+            getCacheNameForUser(id),
+            id,
+            value,
+            token
+          );
+        },
+        async setCachedPartial(value) {
+          const cacheref = await GetSecret(
+            getCacheNameForUser(id),
+            id,
+            token,
+            user
+          );
+          const cache = await SetSecret(
+            getCacheNameForUser(id),
+            id,
+            { ...value, ...cacheref },
+            token
+          );
+          return null;
+        },
+      };
+    }
+    function cacheFactory() {
+      return InMemoryCache(user, token);
+    }
+    return authPromise;
+  } catch (e) {
+    console.log(e);
+  }
+};
+export const linkAccountWithPrismarine = async function (user, token) {
   function InMemoryCache(user, userToken) {
     const id = user;
     const token = userToken;
@@ -91,12 +113,45 @@ export const authenticateWithPrismarine = async function (user, token) {
   function cacheFactory() {
     return InMemoryCache(user, token);
   }
+
+  let authPromise: Promise<any> = new Promise(async (resolve, reject) => {
+    emitLinkStarted(user);
+    const flow = new Authflow(
+      import.meta.env.VITE_AZURE_APP_ID,
+      cacheFactory,
+      { flow: "sisu", authTitle: Titles.MinecraftJava, deviceType: "Win32" },
+      async (params: any) => {
+        resolve({
+          requireUserInteraction: true,
+          params: {
+            userCode: params.user_code,
+            verificationUri: params.verification_uri,
+            expiresIn: params.expires_in,
+          },
+        });
+      }
+    )
+      .getMinecraftJavaToken({ fetchProfile: true })
+      .then(async (tokenAcc) => {
+        await UpdateDocument(
+          "settings",
+          user,
+          {
+            linkedMinecraftAccount: {
+              id: tokenAcc.profile.id,
+              name: tokenAcc.profile.name,
+              skins: tokenAcc.profile.skins,
+            },
+          },
+          token
+        );
+        await emitLinkFinished(user);
+      });
+  });
   return authPromise;
-}catch(e){
-  console.log(e);
-}
 };
-export const refreshWithPrismarine = async function (id, token) {
+export const unLinkAccountWithPrismarine = async function (id, token) {
+  await emitUnLinkStarted(id);
   const cache = await SetSecret(getCacheNameForUser(id), id, {}, token);
   await UpdateDocument(
     "settings",
@@ -106,7 +161,19 @@ export const refreshWithPrismarine = async function (id, token) {
     },
     token
   );
+  await emitUnLinkFinished(id);
 };
-const emitAuthFinished = async function (userId) {
-  await socketServer.to(userId).emit("authFinished", {});
+
+// Socket Service
+const emitLinkStarted = async function (userId) {
+  await socketServer.to(userId).emit("linkStarted", {});
+};
+const emitLinkFinished = async function (userId) {
+  await socketServer.to(userId).emit("linkFinished", {});
+};
+const emitUnLinkStarted = async function (userId) {
+  await socketServer.to(userId).emit("unLinkStarted", {});
+};
+const emitUnLinkFinished = async function (userId) {
+  await socketServer.to(userId).emit("unLinkFinished", {});
 };

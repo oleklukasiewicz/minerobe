@@ -7,7 +7,6 @@
     isMobileView,
     isReadyForData,
     userSettings,
-    wardrobe,
   } from "$src/data/cache";
   import { MODEL_TYPE } from "$src/data/consts";
   import {
@@ -19,14 +18,13 @@
   import { logoutUser } from "$src/api/auth";
   import { navigateToHome } from "$src/helpers/other/navigationHelper";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
-  import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
   import Dialog from "$component/base/Dialog/Dialog.svelte";
   import AvatarIcon from "$src/icons/avatar.svg?raw";
   import LoginIcon from "$src/icons/login.svg?raw";
   import {
     LinkMinecraftAccount,
     UnlinkMinecraftAccount,
-  } from "$src/api/settings";
+  } from "$helpers/other/minecraftServicesHelper";
   import { GetCurrentBaseTexture, GetFaceOfRemoteSkin } from "$src/helpers/image/imageDataHelpers";
   import OutfitTextureRender from "$lib/components/render/OutfitTextureRender.svelte";
   import BaseTextureDialog from "$lib/components/dialog/BaseTextureDialog.svelte";

@@ -1,6 +1,10 @@
 import { MODEL_TYPE } from "$data/consts";
 import { serverConfig } from "$src/data/config";
-import { authenticateWithPrismarine } from "./prismarineAuth";
+import {
+  authenticateWithPrismarine,
+  linkAccountWithPrismarine,
+  unLinkAccountWithPrismarine,
+} from "./prismarineAuth";
 export const ChangeSkin = async function (
   id: string,
   model: string,
@@ -8,7 +12,8 @@ export const ChangeSkin = async function (
   userToken: string
 ) {
   try {
-    const token = await authenticate(userId, userToken);
+    const data = await authenticateWithPrismarine(userId, userToken);
+    const token = data?.token;
     if (token == null) throw new Error("Invalid token");
     let normalizedModel = model == MODEL_TYPE.ALEX ? "slim" : "classic";
     const url =
@@ -39,7 +44,19 @@ export const ChangeSkin = async function (
     return false;
   }
 };
-const authenticate = async function (user, token: string) {
-  const data = await authenticateWithPrismarine(user, token);
-  return data?.token;
+
+export const LinkAccount = async function (user: string, token: string) {
+  // steps:
+  
+  // Auth With Prismarine
+  // save in db
+  var authResp = await linkAccountWithPrismarine(user, token);
+
+  // compare skin with wardobe -> if match -> set as current
+
+  return authResp;
+};
+export const UnLinkAccount = async function (user: string, token: string) {
+  var unlinkRep = await unLinkAccountWithPrismarine(user, token);
+  return unlinkRep;
 };

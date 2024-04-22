@@ -5,6 +5,8 @@ import { userSettings } from "./cache";
 import ioClient from "socket.io-client";
 import { serverConfig, sharedConfig } from "./config";
 
+export let socket = null; 
+
 export const configureSocket = (userId) => {
   console.log("Connecting to socket server");
   const io = ioClient(
@@ -12,11 +14,12 @@ export const configureSocket = (userId) => {
       ? (":" + serverConfig.socketConfig.port)
       : "")
   );
+  socket = io;
   io.on("connect", () => {
     console.log("Connected to server");
     io.emit("join", userId);
   });
-  io.on("authFinished", async () => {
+  io.on("linkFinished", async () => {
     console.log("Auth finished");
     const sets = await FetchSettings(userId);
     userSettings.set(sets);

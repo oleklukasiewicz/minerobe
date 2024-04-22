@@ -35,7 +35,7 @@ export class RenderLightConfig {
     enabled: true,
     bias: -0.00001,
     radius: 1,
-    mapSize: 2048,
+    mapSize: 1024,
   };
   ambient: {
     isEnabled: boolean;
@@ -61,7 +61,7 @@ export class RenderLightConfig {
     intensity: 0.78,
     position: new THREE.Vector3(0, 10, -10),
     target: new THREE.Vector3(0, 2, 0),
-    cameraSize: 1,
+    cameraSize: 0.8,
   };
 }
 export class RenderProvider {
