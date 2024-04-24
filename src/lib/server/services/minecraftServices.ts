@@ -1,5 +1,6 @@
 import { MODEL_TYPE } from "$data/consts";
 import { serverConfig } from "$src/data/config";
+import { FetchOutfitSetSnapshot, GetWardrobeSets } from "./firebaseServer";
 import {
   authenticateWithPrismarine,
   linkAccountWithPrismarine,
@@ -53,6 +54,13 @@ export const LinkAccount = async function (user: string, token: string) {
   var authResp = await linkAccountWithPrismarine(user, token);
 
   // compare skin with wardobe -> if match -> set as current
+  const sets = await GetWardrobeSets(user, token);
+  sets.forEach(async (set) => {
+    const setC= await FetchOutfitSetSnapshot(user, token, set.id);
+    
+
+
+  });
 
   return authResp;
 };

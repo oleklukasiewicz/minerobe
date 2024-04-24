@@ -50,6 +50,7 @@ export class OutfitPackageRenderConfig {
         return layer[this.model?.name];
       });
     }
+    console.log(this.baseTexture[this.model?.name],this.model?.name)
     if (!ignoreBaseTexture && this.baseTexture) {
       result.push(this.baseTexture[this.model?.name]);
     }

@@ -1,6 +1,9 @@
 import { getAuth } from "firebase-admin/auth";
 import admin from "firebase-admin";
 import { initializeFirestore } from "firebase-admin/firestore";
+import type { OutfitLayer, WardrobePackage } from "$src/data/common";
+import { PACKAGE_TYPE } from "$src/data/consts";
+import * as pixelmatch from "pixelmatch";
 const firebaseConfig = {
   type: import.meta.env.VITE_SERVICE_TYPE,
   projectId: import.meta.env.VITE_PROJECT_ID,
@@ -75,3 +78,23 @@ export const UpdateDocument = async function (
   }
   return null;
 };
+export const GetWardrobeSets = async function (user: string, token: string) {
+  const token2 = await AuthorizeViaFirebaseToken(token);
+  if (token2 == null) return null;
+  const warrobeRef= db.collection("wardrobes").doc(user);
+  const wardrobeSnap = await warrobeRef.get();
+  const wardrobe = wardrobeSnap.data() as WardrobePackage;
+  
+  const sets = wardrobe.outfits.filter((x) => x.type == PACKAGE_TYPE.OUTFIT_SET_LINK);
+  return sets;
+}
+export const FetchOutfitSetSnapshot = async function (user: string, token: string,id:string) 
+{
+  const token2 = await AuthorizeViaFirebaseToken(token);
+  if (token2 == null) return null;
+ 
+  const setsRef= db.collection("sets-new").doc(id).collection("snapshot").doc(id);
+  const setsSnap = await setsRef.get();
+  const setSnapshot = setsSnap.data() as OutfitLayer;
+  return setSnapshot;
+}
