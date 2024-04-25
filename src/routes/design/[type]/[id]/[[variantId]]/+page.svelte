@@ -26,10 +26,12 @@
     userSettings,
     isMobileView,
     baseTexture,
+    currentUser,
   } from "$data/cache";
   import { replaceState } from "$app/navigation";
   import {
     AddItemToWardrobe,
+    IsItemInWardrobe,
     RemoveItemFromWardrobe,
   } from "$src/api/wardrobe.js";
   import { OutfitPackageRenderConfig } from "$src/data/model.js";
@@ -76,7 +78,7 @@
   );
 
   let isItemSet = false;
-  let sortedItemLayers = [];
+
   let modelTexture: string = null;
   let loaded = false;
   let defaultRenderProvider;
@@ -110,6 +112,15 @@
 
       localPackage.set(outfitPackage);
       isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
+      if (!isItemSet) {
+        $localPackage.layers = await sortOutfitLayersByColor(
+          $localPackage.layers,
+          $itemModelType
+        );
+      }
+      if ($currentUser?.id) {
+        isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
+      }
 
       const varaint = outfitPackage.layers.find(
         (x) => x.variantId == variantId
@@ -135,7 +146,6 @@
 
       loaded = true;
       updateTexture();
-      if (!isItemSet) sortLayersByColor();
     });
   });
 
@@ -157,17 +167,9 @@
   const updateTexture = async () => {
     if (!loaded) return;
     modelTexture = await $itemRenderConfig.getLayersForRender(false);
-    console.log(modelTexture);
-  };
-  const sortLayersByColor = async function () {
-    sortedItemLayers = await sortOutfitLayersByColor(
-      $itemLayers,
-      $itemModelType
-    );
   };
   const skinSetted = function (e) {
-    const isSetted = e.detail.isSuccessful;
-    if (isSetted) {
+    if (e.detail.isSuccessful) {
       applyAnimations($localPackage, CHANGE_TYPE.SKIN_SET, 0);
     }
   };
@@ -191,7 +193,7 @@
     layerIndex: number
   ) {
     const anims = GetAnimationForPackageChange(pack, changeType, layerIndex);
-    if (anims.filter((x) => x).length == 1) return;
+    if (anims.filter((x) => x).length >= 1) return;
     anims.forEach((anim) => updateAnimation(anim));
   };
   //collection
@@ -252,9 +254,7 @@
       <div class="item-name">
         <SectionTitle
           label={$localPackage.type == PACKAGE_TYPE.OUTFIT
-            ? $itemLayers.length > 0
-              ? $itemLayers[0][$itemModelType].type
-              : $_("outfit")
+            ? $_("outfit")
             : $_("outfit_set")}
           placeholder={!loaded}
         />
@@ -308,7 +308,7 @@
           {/each}
         {:else}
           <div class="item-variants">
-            {#each sortedItemLayers as layer (layer.id + layer.variantId)}
+            {#each $localPackage.layers as layer (layer.id + layer.variantId)}
               <ItemVariant
                 item={layer}
                 renderProvider={$itemModelType == MODEL_TYPE.STEVE

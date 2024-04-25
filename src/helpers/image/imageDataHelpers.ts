@@ -216,5 +216,5 @@ export const GetCurrentBaseTexture = function (
   if (settings?.baseTexture == null) return null;
   if (settings?.baseTexture[model]?.content == null)
     settings?.baseTexture[settings.model]?.content;
-  return settings.baseTexture[model].content;
+  return settings.baseTexture[model]?.content;
 };
