@@ -131,11 +131,7 @@
         $localPackage.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL,
         undefined,
         !isItemSet,
-        varaint
-          ? varaint
-          : $itemRenderConfig.selectedLayer == null && $itemLayers.length > 0
-            ? $itemLayers[0]
-            : null
+        varaint ? varaint : $itemLayers[0]
       );
       $itemRenderConfig.setBaseTextureFromString(
         isItemSet &&
