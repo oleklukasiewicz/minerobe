@@ -35,6 +35,7 @@ export const IndexLandingPage = async function () {
     DATA_PATH_CONFIG.QUERY,
     [
       new QueryWhere("isShared", "==", true),
+      new QueryWhere("isFeatured", "==", true),
       new QueryWhere("variantId", "==", "none"),
     ],
     [new QueryOrderBy("createdAt", "desc")],
