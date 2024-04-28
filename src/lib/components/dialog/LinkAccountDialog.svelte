@@ -1,8 +1,10 @@
 <script lang="ts">
   import Label from "$component/base/Label/Label.svelte";
+  import ArticleMultipleIcon from "$icons/article-multiple.svg?raw";
   import Button from "$lib/components/base/Button/Button.svelte";
+  import { showToast } from "$src/data/cache";
   import { GetFaceOfRemoteSkin } from "$src/helpers/image/imageDataHelpers";
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -25,6 +27,10 @@
   const unlink = function () {
     linkText = "Unlinking...";
     dispatch("unlink");
+  };
+  const copyText = async function (text) {
+    await navigator.clipboard.writeText(text);
+    showToast("Code copied to clipboard");
   };
   const link = function () {
     linkText = "Linking...";
@@ -52,14 +58,14 @@
       >Copy code and click <b>link account</b> button</span
     >
     <br />
-    <b class="code mc-font">{authCode}</b>
+      <b class="code mc-font">{authCode}</b><Button
+        type="tertiary"
+        label="Copy code"
+        on:click={() => copyText(authCode)}
+        icon={ArticleMultipleIcon}
+      />
     <br />
-    <Button
-      type="primary"
-      on:click={link}
-      label={linkText}
-      href={authUrl}
-    />
+    <Button type="primary" on:click={link} label={linkText} href={authUrl} />
   {/if}
 </div>
 
@@ -71,7 +77,8 @@
     min-width: 30vw;
     .code {
       background-color: var(--color-theme-D1);
-      padding: 12px 10px;
+      padding: 10px 10px;
+      margin-bottom: 4px;
       box-sizing: border-box;
     }
   }
