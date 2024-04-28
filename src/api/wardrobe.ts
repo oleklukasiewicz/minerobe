@@ -36,7 +36,7 @@ export const ParseWardrobeToDatabase = function (pack: WardrobePackage) {
 };
 export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
   const parsedOutfits = Promise.all(
-    data.outfits.map(async (item: any) => {
+    data.outfits?.map(async (item: any) => {
       if (
         item.type == PACKAGE_TYPE.OUTFIT ||
         item.type == PACKAGE_TYPE.OUTFIT_SET
