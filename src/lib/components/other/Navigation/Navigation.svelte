@@ -74,7 +74,8 @@
   {#if !$isMobileView}
     <NavigationItem
       on:click={profileAction}
-      minimal
+      minimal={$currentUser?.id != null}
+      label={$currentUser ? null : $_("navigation.login")}
       iconImage={$currentUser ? $currentUser?.avatar : null}
       icon={$currentUser == null ? AvatarIcon : null}
       viewId={"profile"}
