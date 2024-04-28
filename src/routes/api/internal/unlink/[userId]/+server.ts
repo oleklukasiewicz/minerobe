@@ -1,7 +1,7 @@
-import { refreshWithPrismarine } from "$lib/server/services/prismarineAuth";
+import { UnLinkAccount } from "$lib/server/services/minecraftServices.js";
 
 export const GET = async (params) => {
-  const rep = await refreshWithPrismarine(
+  const rep = await UnLinkAccount(
     params.params.userId,
     params.request.headers.get("authorization")
   );

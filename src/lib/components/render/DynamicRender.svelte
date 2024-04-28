@@ -28,7 +28,6 @@
       provider.renderer = new THREE.WebGLRenderer({
         alpha: true,
       });
-      provider.renderer.shadowMap.enabled = true;
       provider.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 
       provider.scene = new THREE.Scene();

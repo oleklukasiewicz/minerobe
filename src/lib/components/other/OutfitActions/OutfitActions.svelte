@@ -45,6 +45,9 @@
   export const removeFromWardrobe = function () {
     dispatch("removeFromWardrobe");
   };
+  export const skinSet = function (e) {
+    dispatch("skinSet", e.detail);
+  };
 </script>
 
 <div class="item-actions" class:mobile>
@@ -53,6 +56,7 @@
       item={outfitPackage}
       texture={modelTexture}
       style="flex:1;"
+      on:setSkin={skinSet}
     />
   {/if}
   <Button

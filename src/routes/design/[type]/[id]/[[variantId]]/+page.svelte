@@ -26,10 +26,12 @@
     userSettings,
     isMobileView,
     baseTexture,
+    currentUser,
   } from "$data/cache";
   import { replaceState } from "$app/navigation";
   import {
     AddItemToWardrobe,
+    IsItemInWardrobe,
     RemoveItemFromWardrobe,
   } from "$src/api/wardrobe.js";
   import { OutfitPackageRenderConfig } from "$src/data/model.js";
@@ -50,7 +52,10 @@
   import HandsUpAnimation from "$animation/handsup";
 
   import { ExportImageString } from "$src/helpers/data/dataTransferHelper.js";
-  import { GetCurrentBaseTexture, sortOutfitLayersByColor } from "$src/helpers/image/imageDataHelpers.js";
+  import {
+    GetCurrentBaseTexture,
+    sortOutfitLayersByColor,
+  } from "$src/helpers/image/imageDataHelpers.js";
   import {
     AddToCollection,
     IsItemInCollection,
@@ -73,7 +78,7 @@
   );
 
   let isItemSet = false;
-  let sortedItemLayers = [];
+
   let modelTexture: string = null;
   let loaded = false;
   let defaultRenderProvider;
@@ -107,6 +112,15 @@
 
       localPackage.set(outfitPackage);
       isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
+      if (!isItemSet) {
+        $localPackage.layers = await sortOutfitLayersByColor(
+          $localPackage.layers,
+          $itemModelType
+        );
+      }
+      if ($currentUser?.id) {
+        isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
+      }
 
       const varaint = outfitPackage.layers.find(
         (x) => x.variantId == variantId
@@ -117,21 +131,17 @@
         $localPackage.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL,
         undefined,
         !isItemSet,
-        varaint
-          ? varaint
-          : $itemRenderConfig.selectedLayer == null && $itemLayers.length > 0
-            ? $itemLayers[0]
-            : null
+        varaint ? varaint : $itemLayers[0]
       );
       $itemRenderConfig.setBaseTextureFromString(
-        isItemSet && GetCurrentBaseTexture($userSettings) !=null
-          ? GetCurrentBaseTexture($userSettings)
+        isItemSet &&
+          GetCurrentBaseTexture($userSettings, $localPackage.model) != null
+          ? GetCurrentBaseTexture($userSettings, $localPackage.model)
           : $baseTexture
       );
 
       loaded = true;
       updateTexture();
-      if (!isItemSet) sortLayersByColor();
     });
   });
 
@@ -154,13 +164,11 @@
     if (!loaded) return;
     modelTexture = await $itemRenderConfig.getLayersForRender(false);
   };
-  const sortLayersByColor = async function () {
-    sortedItemLayers = await sortOutfitLayersByColor(
-      $itemLayers,
-      $itemModelType
-    );
+  const skinSetted = function (e) {
+    if (e.detail.isSuccessful) {
+      applyAnimations($localPackage, CHANGE_TYPE.SKIN_SET, 0);
+    }
   };
-
   //sharing
   const addToWardrobe = async function () {
     isPackageInWardrobe = await AddItemToWardrobe($localPackage);
@@ -181,7 +189,7 @@
     layerIndex: number
   ) {
     const anims = GetAnimationForPackageChange(pack, changeType, layerIndex);
-    if (anims.filter((x) => x).length == 1) return;
+    if (anims.filter((x) => x).length >= 1) return;
     anims.forEach((anim) => updateAnimation(anim));
   };
   //collection
@@ -242,9 +250,7 @@
       <div class="item-name">
         <SectionTitle
           label={$localPackage.type == PACKAGE_TYPE.OUTFIT
-            ? $itemLayers.length > 0
-              ? $itemLayers[0][$itemModelType].type
-              : $_("outfit")
+            ? $_("outfit")
             : $_("outfit_set")}
           placeholder={!loaded}
         />
@@ -298,7 +304,7 @@
           {/each}
         {:else}
           <div class="item-variants">
-            {#each sortedItemLayers as layer (layer.id + layer.variantId)}
+            {#each $localPackage.layers as layer (layer.id + layer.variantId)}
               <ItemVariant
                 item={layer}
                 renderProvider={$itemModelType == MODEL_TYPE.STEVE
@@ -355,6 +361,7 @@
           loading={!loaded}
           mobile={$isMobileView}
           on:download={downloadImage}
+          on:skinSet={skinSetted}
           on:collectionDialog={() => (isCollectionDialogOpen = true)}
           on:addToWardrobe={addToWardrobe}
           on:removeFromWardrobe={removeFromWardrobe}

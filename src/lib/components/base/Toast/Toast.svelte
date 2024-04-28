@@ -39,16 +39,24 @@
   out:fadeInScale={{ duration: 300 }}
 >
   <div class="content">
-    {#if icon}
-      <span class="icon">
-        {icon}
+    <div class="data">
+      {#if icon}
+        <span class="icon icon-small">
+          {@html icon}
+        </span>
+      {/if}
+      <span class="message mc-font-simple">
+        {message}
       </span>
-    {/if}
-    <span class="message mc-font-simple">
-      {message}
-    </span>
+    </div>
     {#if closeable}
-      <Button type="quaternary" altStyle on:click={onClose} icon={CloseIcon} onlyIcon />
+      <Button
+        type="quaternary"
+        altStyle
+        on:click={onClose}
+        icon={CloseIcon}
+        onlyIcon
+      />
     {/if}
   </div>
 </div>
