@@ -16,7 +16,7 @@
   import { onMount } from "svelte";
   import { propertyStore } from "svelte-writable-derived";
   import { logoutUser } from "$src/api/auth";
-  import { navigateToHome } from "$src/helpers/other/navigationHelper";
+  import { navigate, navigateToHome, navigateToOutfitPackage, navigateToWardrobe } from "$src/helpers/other/navigationHelper";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import Dialog from "$component/base/Dialog/Dialog.svelte";
   import AvatarIcon from "$src/icons/avatar.svg?raw";
@@ -25,7 +25,10 @@
     LinkMinecraftAccount,
     UnlinkMinecraftAccount,
   } from "$helpers/other/minecraftServicesHelper";
-  import { GetCurrentBaseTexture, GetFaceOfRemoteSkin } from "$src/helpers/image/imageDataHelpers";
+  import {
+    GetCurrentBaseTexture,
+    GetFaceOfRemoteSkin,
+  } from "$src/helpers/image/imageDataHelpers";
   import OutfitTextureRender from "$lib/components/render/OutfitTextureRender.svelte";
   import BaseTextureDialog from "$lib/components/dialog/BaseTextureDialog.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
@@ -102,13 +105,21 @@
   </div>
   <div class="profile-cards">
     <div class="profile-card">
-      <SectionTitle label="Profile page" placeholder={loading} />
-      {#if !loading}
-        <div class="main-data">
-          <span class="mc-font">{$currentUser?.name}</span>
+      <SectionTitle label="Current skin" placeholder={loading} />
+      {#if $userSettings?.currentSkin!=null && !loading}
+        <div>
+          <OutfitTextureRender
+          renderProvider={$userSettings?.currentSkin?.model == MODEL_TYPE.ALEX
+            ? providers.alex
+            : providers.steve}
+          texture={$userSettings?.currentSkin?.texture}
+        />
         </div>
         <div class="actions">
-          <Button href="/profile/{$currentUser?.id}" label="Profile page" />
+          <Button
+            on:click={() =>navigate("/design/outfit_set/"+$userSettings?.currentSkin?.id)}
+            label="See in design"
+          />
         </div>
       {/if}
     </div>
