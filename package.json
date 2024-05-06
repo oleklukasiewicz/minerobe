@@ -27,7 +27,7 @@
 		"dotenv": "^16.4.5",
 		"firebase": "^10.11.1",
 		"firebase-admin": "^12.1.0",
-		"firebase-functions": "^4.9.0",
+		"firebase-functions": "^5.0.1",
 		"gltf-loader": "^1.0.0",
 		"path": "^0.12.7",
 		"pixelmatch": "^5.3.0",
