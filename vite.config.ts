@@ -10,4 +10,12 @@ export default defineConfig({
   define: {
     "process.env": import.meta.env,
   },
+  server:
+  {
+    proxy: {
+      "/api": {
+        target: "https://localhost:44373/",
+      },
+    },
+  }
 });
