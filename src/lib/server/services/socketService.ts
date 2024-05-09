@@ -7,14 +7,14 @@ export const socketServer = new Server(httpServer, {
     origin: "*",
   },
 });
-httpServer.listen(serverConfig.socketConfig.port, () => {
-  console.log(
-    "Socket server running on port " +
-      serverConfig.socketConfig.port +
-      ": dev? " +
-      sharedConfig.dev
-  );
-});
+// httpServer.listen(serverConfig.socketConfig.port, () => {
+//   console.log(
+//     "Socket server running on port " +
+//       serverConfig.socketConfig.port +
+//       ": dev? " +
+//       sharedConfig.dev
+//   );
+// });
 
 export const configureSocketServer = () => {
   socketServer.on("connection", (socket) => {

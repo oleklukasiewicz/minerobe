@@ -27,6 +27,7 @@
     PACKAGE_TYPE,
     STEVE_MODEL,
     ALEX_MODEL,
+    APP_STATE,
   } from "$data/consts";
   import { OutfitLayer, OutfitPackage } from "$data/common";
   import {
@@ -34,15 +35,14 @@
     defaultRenderer,
     wardrobe,
     isMobileView,
-    isReadyForData,
     userSettings,
     showToast,
     baseTexture,
+    appState,
   } from "$data/cache";
   import { UpdateItemInWardrobe } from "$src/api/wardrobe";
   import { outfitsInstance } from "$src/api/outfits";
   import { OutfitPackageRenderConfig } from "$src/data/model";
-  import { CreateDefaultRenderProvider } from "$src/data/render";
   import { ShareItem, UnshareItem } from "$src/api/social";
 
   import DefaultAnimation from "$animation/default";
@@ -59,7 +59,6 @@
   } from "$src/helpers/data/dataTransferHelper";
   import {
     AddToCollection,
-    FetchWardrobeOutfitsByCategory,
     IsItemInCollection,
     RemoveFromCollection,
     RemoveItem,
@@ -71,7 +70,8 @@
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper";
   import { GetCategoriesFromList } from "$src/helpers/image/imageDataHelpers";
   import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper";
-  import { getPackageInstanceForType } from "$src/helpers/view/designHelper";
+  import { GetRequest, PostRequest } from "$src/data/api";
+  import { CreateDefaultRenderProvider } from "$src/data/render";
 
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -106,26 +106,15 @@
   let updateAnimation = function (anim) {};
 
   onMount(async () => {
-    isReadyForData.subscribe(async (readyness) => {
-      if (loaded || !readyness) {
-        loaded = false;
-        return;
-      }
-      if ($wardrobe?.studio == null) {
-        navigateToWardrobe();
-        return;
-      }
+    appState.subscribe(async (state) => {
+      if (state != APP_STATE.USER_READY) return;
+      defaultProvider =
+        await CreateDefaultRenderProvider($defaultRenderer);
+        console.log(defaultProvider);
 
-      defaultProvider = await CreateDefaultRenderProvider($defaultRenderer);
-      currentInstance = getPackageInstanceForType($wardrobe.studio.type);
-
-      $itemPackage = await currentInstance.fetch($wardrobe.studio.id);
+      const pack = await GetRequest("api/Wardrobe/" + $currentUser.id + "/studio");
+      $itemPackage = pack;
       isItemSet = $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET;
-
-      const categoryCounts = GetCategoriesFromList($wardrobe.outfits);
-      pickerCategories = Object.keys(categoryCounts).filter(
-        (x) => categoryCounts[x] > 0
-      );
 
       $itemRenderConfig = new OutfitPackageRenderConfig(
         $itemPackage,
@@ -269,14 +258,15 @@
     const newLayers = await ImportImage();
     itemLayers.update((layers) => {
       let newOutfit;
-      newLayers.forEach((newLayer) => {
+      newLayers.forEach(async(newLayer) => {
         if ($itemModelType == MODEL_TYPE.ALEX)
           newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer, null);
         else
           newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null, null);
-        newOutfit.variantId = currentInstance.generateLayerId();
-        newOutfit.isShared = $itemPackage.isShared;
-        layers.unshift(newOutfit);
+        newOutfit.sourcePackageId= $itemPackage.id;
+        console.log(JSON.stringify(newOutfit));
+        const response= await PostRequest("api/Layers/", newOutfit);
+        layers.unshift(response);
       });
       $itemRenderConfig.selectedLayer = newOutfit;
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
@@ -298,12 +288,12 @@
   //sharing / wardrobe
   const sharePackage = async function () {
     await ShareItem($itemPackage);
-    $itemPackage.isShared = true;
+    $itemPackage.social.isShared = true;
     applyAnimations($itemPackage, CHANGE_TYPE.SHARE, 0);
   };
   const unSharePackage = async function () {
     await UnshareItem($itemPackage);
-    $itemPackage.isShared = false;
+    $itemPackage.social.isShared = false;
     isShareDialogOpen = false;
   };
   const deletePackage = function () {
@@ -315,12 +305,12 @@
   const openOutfitPicker = async function () {
     isOutfitPickerOpen = true;
     isPickerLoading = true;
-    pickerOutfits = await FetchWardrobeOutfitsByCategory("ALL", true);
+    //pickerOutfits = await FetchWardrobeOutfitsByCategory("ALL", true);
     isPickerLoading = false;
   };
   const fetchByCategory = async function (e) {
     isPickerLoading = true;
-    pickerOutfits = await FetchWardrobeOutfitsByCategory(e.detail, true);
+    //pickerOutfits = await FetchWardrobeOutfitsByCategory(e.detail, true);
     isPickerLoading = false;
   };
 
@@ -356,7 +346,7 @@
               null
             );
           newOutfit.variantId = currentInstance.generateLayerId();
-          newOutfit.isShared = $itemPackage.isShared;
+          newOutfit.isShared = $itemPackage.social.isShared;
           newLayers.push(newOutfit);
           $itemRenderConfig.selectedLayer = newOutfit;
           currentInstance.uploadLayer(
@@ -429,7 +419,7 @@
     if (!loaded) return;
     $itemRenderConfig.item = pack;
     if (pack != null && pack.id != null) {
-      await currentInstance.upload(pack);
+     // await currentInstance.upload(pack);
     }
     UpdateItemInWardrobe($itemPackage);
   });
@@ -498,7 +488,7 @@
               ? $_("outfit")
               : $_("outfit_set")}</Label
           >
-          {#if $itemPackage.isShared}
+          {#if $itemPackage.social.isShared}
             <Label variant="rare">{$_("shared")}</Label>
           {/if}
           {#if isItemSet && $itemPackage.id == $userSettings.currentSkin?.id}
@@ -537,7 +527,7 @@
             </div>
             <br />
           {/if}
-          {#each $itemLayers as item, index (item.id + item.variantId)}
+          {#each $itemLayers as item, index (item.id)}
             <div class="item-layer">
               <ItemLayer
                 renderProvider={$itemModelType == MODEL_TYPE.STEVE
@@ -557,8 +547,8 @@
                 on:edit={editLayer}
                 canUp={index != 0}
                 canDown={index != $itemLayers.length - 1}
-                selected={item?.variantId ==
-                  $itemRenderConfig.selectedLayer?.variantId}
+                selected={item?.id ==
+                  $itemRenderConfig.selectedLayer?.id}
                 on:click={() => ($itemRenderConfig.selectedLayer = item)}
               />
             </div>

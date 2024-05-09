@@ -1,6 +1,6 @@
 import { OutfitPackageLink, type LandingPageData } from "$src/data/common";
 import { PACKAGE_TYPE } from "$src/data/consts";
-import { GetDocument } from "$src/data/firebase";
+import { GetDocument } from "$src/data/api";
 import { outfitsInstance } from "./outfits";
 import { setsIntance } from "./sets";
 

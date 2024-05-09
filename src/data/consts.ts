@@ -100,7 +100,7 @@ export const MODEL_TYPE = {
 };
 export const PACKAGE_TYPE = {
   OUTFIT: "outfit",
-  OUTFIT_SET: "outfit_set",
+  OUTFIT_SET: "set",
   OUTFIT_SET_LINK: "outfit_set_link",
   OUTFIT_LINK: "outfit_link",
   OUTFIT_COLLECTION: "outfit_collection",

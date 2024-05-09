@@ -12,7 +12,6 @@ import {
   PACKAGE_TYPE,
 } from "$src/data/consts";
 import { get } from "svelte/store";
-import { FetchPackagesByFilter } from "$src/helpers/package/packQueryHelper";
 import { RenderTextureInTemporyNode } from "$src/data/render";
 import { OutfitPackageInstance, OutfitPackageInstanceConfig } from "$src/helpers/package/packageInstanceHelper";
 
@@ -81,7 +80,7 @@ export const FetchOutfitByFilter = async function (
   clauses: any[],
   isSnapshot = false
 ) {
-  let outfits = await FetchPackagesByFilter(ids, OUTFIT_PATH, clauses, isSnapshot);
+  let outfits =[];
   return outfits;
 };
 

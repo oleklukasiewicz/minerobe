@@ -6,7 +6,7 @@ import {
   QueryOrderBy,
   QueryWhere,
   SetDocumentAnonymous,
-} from "$src/data/firebase";
+} from "$src/data/api";
 
 export const IndexLandingPage = async function () {
   const q = await BuildCollectionQuery(

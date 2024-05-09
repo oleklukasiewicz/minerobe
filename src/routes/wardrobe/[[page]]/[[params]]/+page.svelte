@@ -6,6 +6,7 @@
     isMobileView,
     isReadyForData,
     userSettings,
+    appState,
   } from "$src/data/cache";
   import {
     navigateToCollection,
@@ -33,7 +34,7 @@
   import { outfitsInstance } from "$src/api/outfits";
   import OutfitPackageCollectionItem from "$lib/components/outfit/OutfitPackageCollectionItem/OutfitPackageCollectionItem.svelte";
   import { page } from "$app/stores";
-  import { ParseWardrobeToLocal } from "$src/api/wardrobe";
+  import { FetchUserWardrobe, ParseWardrobeToLocal } from "$src/api/wardrobe";
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
@@ -73,58 +74,63 @@
       value: $page.params.page || "sets",
       params: $page.params.params,
     };
-    isReadyForData.subscribe(async (readyness) => {
-      loaded = readyness?.wardrobe != null;
-      if (loaded) {
-        await ParseWardrobeToLocal($wardrobe);
-        outfitsCount = GetCategoriesFromList($wardrobe.outfits);
-        const outfitsMenuItems = Object.keys(outfitsCount)
-          .map((x) => {
-            return {
-              label: x,
-              value: "outfits",
-              icon: GetOutfitIconFromType(x),
-              params: x,
-              badge: outfitsCount[x],
-            };
-          })
-          .filter((x) => x.badge > 0);
-        menuItems.push({
-          type: "separator",
-        });
-        menuItems.push(...outfitsMenuItems);
-      }
-      page.subscribe((value) => {
-        currentView = {
-          value: value.params.page || "sets",
-          params: value.params.params,
-        };
-
-        itemsLoaded = false;
-        switch (currentView.value) {
-          case "sets":
-            currentList = $wardrobe.outfits.filter(
-              (x) => x.type == PACKAGE_TYPE.OUTFIT_SET
-            );
-            break;
-          case "outfits":
-            currentList = $wardrobe.outfits
-              .filter((x) => x.type == PACKAGE_TYPE.OUTFIT)
-              .filter((x) => {
-                return currentView.params == "" || currentView.params == null
-                  ? true
-                  : x.outfitType?.toLowerCase() ==
-                      currentView?.params?.toLowerCase();
-              });
-            break;
-          case "collection":
-            currentList = $wardrobe.collections;
-            break;
-        }
-        filteredList = currentList;
-        itemsLoaded = true;
-      });
+    currentUser.subscribe(async (value) => {
+      if(value == null) return;
+      const wardrobe= await FetchUserWardrobe();      
     });
+    // appState.subscribe(async (readyness) => {
+    //   console.log(readyness);
+    //   loaded = readyness?.user != null;
+    //   if (loaded) {
+    //     await ParseWardrobeToLocal($wardrobe);
+    //     outfitsCount = GetCategoriesFromList($wardrobe.outfits);
+    //     const outfitsMenuItems = Object.keys(outfitsCount)
+    //       .map((x) => {
+    //         return {
+    //           label: x,
+    //           value: "outfits",
+    //           icon: GetOutfitIconFromType(x),
+    //           params: x,
+    //           badge: outfitsCount[x],
+    //         };
+    //       })
+    //       .filter((x) => x.badge > 0);
+    //     menuItems.push({
+    //       type: "separator",
+    //     });
+    //     menuItems.push(...outfitsMenuItems);
+    //   }
+    //   page.subscribe((value) => {
+    //     currentView = {
+    //       value: value.params.page || "sets",
+    //       params: value.params.params,
+    //     };
+
+    //     itemsLoaded = false;
+    //     switch (currentView.value) {
+    //       case "sets":
+    //         currentList = $wardrobe.outfits.filter(
+    //           (x) => x.type == PACKAGE_TYPE.OUTFIT_SET
+    //         );
+    //         break;
+    //       case "outfits":
+    //         currentList = $wardrobe.outfits
+    //           .filter((x) => x.type == PACKAGE_TYPE.OUTFIT)
+    //           .filter((x) => {
+    //             return currentView.params == "" || currentView.params == null
+    //               ? true
+    //               : x.outfitType?.toLowerCase() ==
+    //                   currentView?.params?.toLowerCase();
+    //           });
+    //         break;
+    //       case "collection":
+    //         currentList = $wardrobe.collections;
+    //         break;
+    //     }
+    //     filteredList = currentList;
+    //     itemsLoaded = true;
+    //   });
+    // });
   });
   const addNewSet = async function () {
     const newSet = await setsIntance.create(true);

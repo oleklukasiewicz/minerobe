@@ -7,23 +7,10 @@ import {
   OutfitLayer,
   OutfitPackageSnapshotPackage,
 } from "$src/data/common";
-import {
-  DeleteCollection,
-  DeleteDocument,
-  GetDocument,
-  IsDocumentExist,
-  SetDocument,
-  UpdateDocument,
-  UpdateRawDocument,
-} from "$src/data/firebase";
 import { increment } from "firebase/firestore";
 import { get } from "svelte/store";
 import { DATA_PATH_CONFIG, LAYER_TYPE } from "$src/data/consts";
 import { GetMinerobeUser } from "./auth";
-import {
-  GenerateQueryEntriesForPackage,
-  SetQueryEntriesForPackage,
-} from "./query";
 import { _ } from "svelte-i18n";
 
 const DATA_PATH = DATA_PATH_CONFIG.PACK_DATA;

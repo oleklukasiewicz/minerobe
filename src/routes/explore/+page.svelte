@@ -1,7 +1,6 @@
 <script lang="ts">
   import Button from "$lib/components/base/Button/Button.svelte";
   import DownloadIcon from "$icons/download.svg?raw";
-  import { showToast } from "$src/data/cache";
   import { onMount } from "svelte";
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
@@ -17,7 +16,6 @@
   icon={DownloadIcon}
   label="tets"
   size="small"
-  on:click={() => showToast("skin changed")}
 />
 <Menu label="Wardrobe" open items={
   [

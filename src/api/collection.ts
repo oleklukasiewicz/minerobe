@@ -6,12 +6,6 @@ import {
   OutfitPackage,
 } from "$src/data/common";
 import { DATA_PATH_CONFIG, PACKAGE_TYPE } from "$src/data/consts";
-import {
-  DeleteCollection,
-  GenerateIdForCollection,
-  GetDocument,
-  SetDocument,
-} from "$src/data/firebase";
 import { get } from "svelte/store";
 import { currentUser } from "$src/data/cache";
 import { setsIntance } from "./sets";
@@ -21,7 +15,7 @@ import { AddItemToWardrobe } from "./wardrobe";
 const COLLECTION_PATH = DATA_PATH_CONFIG.OUTFIT_COLLECTION;
 
 export const GenerateIdForOutfitCollection = () =>
-  GenerateIdForCollection(COLLECTION_PATH);
+  null;
 const ParseOutfitCollectionToLocal = async function (
   pack: OutfitPackageCollection
 ) {
@@ -55,18 +49,18 @@ const ParseOutfitCollectionToDatabase = async function (
   return parsed;
 };
 export const FetchOutfitCollection = async function (id: string) {
-  const item = await GetDocument(COLLECTION_PATH + "/" + id + "/data", "data");
-  return ParseOutfitCollectionToLocal(item);
+  // const item ;
+  // return ParseOutfitCollectionToLocal(item);
 };
 export const UploadOutfitCollection = async function (
   pack: OutfitPackageCollection,
   isNew = true
 ) {
   const parsed = await ParseOutfitCollectionToDatabase(pack);
-  await SetDocument(COLLECTION_PATH + "/" + pack.id + "/data", "data", parsed);
+  // await SetDocument(COLLECTION_PATH + "/" + pack.id + "/data", "data", parsed);
 };
 export const DeleteOutfitCollection = async function (id: string) {
-  await DeleteCollection(COLLECTION_PATH + "/" + id);
+  // await DeleteCollection(COLLECTION_PATH + "/" + id);
 };
 export const CreateOutfitCollection = async function (
   addToWardrobe = true,

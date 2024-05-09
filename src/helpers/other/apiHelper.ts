@@ -8,7 +8,6 @@ import {
   OutfitPackageCollection
 } from "$src/data/common";
 import {PACKAGE_TYPE } from "$src/data/consts";
-import { QueryWhere, } from "$src/data/firebase";
 import { get } from "svelte/store";
 
 //helpers
@@ -34,15 +33,6 @@ export const UpdateCollectionInWardrobe = function (
     collection.id == item.id ? item : collection
   );
   wardrobe.set(wardrobeObj);
-};
-export const FetchWardrobeOutfitsByCategory = async function (category,isSnapshot=false) {
-  let outfitsIds = get(wardrobe).outfits.map((outfit) => outfit.id);
-  let clauses =
-    category == "ALL"
-      ? []
-      : [new QueryWhere("outfitType", "==", category.toLowerCase())];
-  let outfits = await FetchOutfitByFilter(outfitsIds, clauses,isSnapshot);
-  return outfits;
 };
 //other
 export const SplitOutfitPackage = function (pack: OutfitPackage) {

@@ -6,18 +6,12 @@ import {
   OutfitPackageLink,
   WardrobePackage,
 } from "$src/data/common";
-import {
-  GetDocument,
-  UpdateDocument,
-  UpdateRawDocument,
-} from "$src/data/firebase";
 import { get } from "svelte/store";
-import { DATA_PATH_CONFIG, MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
-import { FetchOutfitCollection } from "./collection";
+import {PACKAGE_TYPE } from "$src/data/consts";
 import { setsIntance } from "./sets";
 import { outfitsInstance } from "./outfits";
 import { AddLike, RemoveLike } from "./social";
-import { arrayRemove, arrayUnion } from "firebase/firestore";
+import { GetRequest } from "$src/data/api";
 
 const WARDROBE_PATH = "wardrobes";
 
@@ -35,7 +29,7 @@ export const ParseWardrobeToDatabase = function (pack: WardrobePackage) {
   return data;
 };
 export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
-  if(data.outfits == null) data.outfits = [];
+  if (data.outfits == null) data.outfits = [];
   const parsedOutfits = Promise.all(
     data.outfits.map(async (item: any) => {
       if (
@@ -58,23 +52,22 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
   return data;
 };
 export const FetchWardrobe = async function () {
-  let dt = await GetDocument(WARDROBE_PATH, get(currentUser)?.id);
-  if (dt == null) return new WardrobePackage("default_wardrobe", []);
-
-  const parsedCollections = Promise.all(
-    dt.collections.map(
-      async (item: any) => await FetchOutfitCollection(item.id)
-    )
-  );
-  dt.collections = (await parsedCollections).filter((item) => item != null);
-  return dt;
+  // let dt = await GetDocument(WARDROBE_PATH, get(currentUser)?.id);
+  // if (dt == null) return new WardrobePackage("default_wardrobe", []);
+  // const parsedCollections = Promise.all(
+  //   dt.collections.map(
+  //     async (item: any) => await FetchOutfitCollection(item.id)
+  //   )
+  // );
+  // dt.collections = (await parsedCollections).filter((item) => item != null);
+  // return dt;
 };
 export const UploadWardrobe = async function (data: WardrobePackage) {
-  await UpdateDocument(
-    WARDROBE_PATH,
-    get(currentUser)?.id,
-    await ParseWardrobeToDatabase(data)
-  );
+  // await UpdateDocument(
+  //   WARDROBE_PATH,
+  //   get(currentUser)?.id,
+  //   await ParseWardrobeToDatabase(data)
+  // );
 };
 //operations
 export const AddItemToWardrobe = async function (
@@ -98,9 +91,9 @@ export const AddItemToWardrobe = async function (
         ? PACKAGE_TYPE.OUTFIT_LINK
         : PACKAGE_TYPE.OUTFIT_SET_LINK
     );
-    await UpdateRawDocument(DATA_PATH_CONFIG.WARDROBE, get(currentUser).id, {
-      outfits: arrayUnion(Object.assign({}, link)),
-    });
+    // await UpdateRawDocument(DATA_PATH_CONFIG.WARDROBE, get(currentUser).id, {
+    //   outfits: arrayUnion(Object.assign({}, link)),
+    // });
   }
   if (item.type == PACKAGE_TYPE.OUTFIT_COLLECTION) {
     wardrobeObj.collections.push(item as OutfitPackageCollection);
@@ -127,9 +120,9 @@ export const RemoveItemFromWardrobe = async function (id, type) {
         : PACKAGE_TYPE.OUTFIT_SET_LINK
     );
 
-    await UpdateRawDocument(DATA_PATH_CONFIG.WARDROBE, get(currentUser).id, {
-      outfits: arrayRemove(Object.assign({}, link)),
-    });
+    // await UpdateRawDocument(DATA_PATH_CONFIG.WARDROBE, get(currentUser).id, {
+    //   outfits: arrayRemove(Object.assign({}, link)),
+    // });
   }
   if (type == PACKAGE_TYPE.OUTFIT_COLLECTION) {
     wardrobeObj.collections = wardrobeObj.collections.filter(
@@ -162,4 +155,9 @@ export const UpdateItemInWardrobe = function (item: OutfitPackage) {
     outfit.id == item.id && outfit.type == item.type ? item : outfit
   );
   wardrobe.set(wardrobeObj);
+};
+export const FetchUserWardrobe = async function () {
+  const req = await GetRequest("/api/Wardrobe/" + get(currentUser)?.id);
+  const wardrobe = req as WardrobePackage
+  return wardrobe;
 };

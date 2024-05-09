@@ -6,7 +6,6 @@ import {
   OUTFIT_TYPE,
   PACKAGE_TYPE,
 } from "./consts";
-import { GenerateIdForCollection } from "./firebase";
 import { currentUser } from "./cache";
 
 //base
@@ -18,7 +17,6 @@ export class OutfitPackage {
   publisher: MinerobeUser;
   description: string;
   id: string;
-  isShared: boolean;
   social: PackageSocialData;
   outfitType: string;
   local: any;
@@ -31,7 +29,7 @@ export class OutfitPackage {
     layers: OutfitLayer[],
     type: string = PACKAGE_TYPE.OUTFIT,
     publisher: MinerobeUser = get(currentUser),
-    id: string = GenerateIdForCollection("dummy"),
+    id: string = null,
     isShared: boolean = false,
     social: PackageSocialData = new PackageSocialData(),
     description: string = "",
@@ -44,7 +42,6 @@ export class OutfitPackage {
     this.type = type;
     this.publisher = publisher;
     this.id = id;
-    this.isShared = isShared;
     this.social = social;
     this.description = description;
     this.outfitType = outfitType;
@@ -94,22 +91,16 @@ export class OutfitLayer {
   steve: FileData;
   alex: FileData;
   id: string;
-  variantId: string;
+  sourcePackageId: string;
   type: string;
-  isShared: boolean;
   constructor(
     name: string = "",
     steve: FileData = null,
     alex: FileData = null,
     id: string = null,
-    type: string = LAYER_TYPE.LOCAL,
-    variantId: string = null,
-    isShared: boolean = false
   ) {
     this.name = name;
-    this.variantId = variantId;
     this.id = id;
-    this.type = type;
     if (!steve && alex) {
       this.steve = alex;
       this.alex = alex;
@@ -120,7 +111,6 @@ export class OutfitLayer {
       this.steve = steve;
       this.alex = alex;
     }
-    this.isShared = isShared;
   }
 }
 //links
@@ -160,7 +150,9 @@ export class OutfitPackageLink {
 
 //social
 export class PackageSocialData {
+  id: string;
   likes: number;
+  isShared: boolean;
   isFeatured: boolean;
   downloads: number;
   constructor(

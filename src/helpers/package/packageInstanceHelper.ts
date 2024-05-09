@@ -14,7 +14,6 @@ import {
   type OutfitPackageSnapshotPackage,
 } from "$src/data/common";
 import { LAYER_TYPE } from "$src/data/consts";
-import { GenerateIdForCollection } from "$src/data/firebase";
 
 export class OutfitPackageInstanceConfig {
   sourcePath: string;
@@ -46,8 +45,8 @@ export class OutfitPackageInstance {
     this._config = config;
     this.fetchHelper = new OutfitPackageInstanceFetchHelper(this._config);
   }
-  generateId = () => GenerateIdForCollection(this._config.sourcePath);
-  generateLayerId = () => GenerateIdForCollection("dummy");
+  generateId = () =>null
+  generateLayerId = () => null
   async upload(data: OutfitPackage, isNew = false) {
     return await UploadPackage(
       data,

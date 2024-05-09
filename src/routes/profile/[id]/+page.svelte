@@ -3,7 +3,7 @@
     BuildCollectionQuery,
     FetchDocsFromQuery,
     QueryWhere,
-  } from "$src/data/firebase";
+  } from "$src/data/api";
   import { onMount } from "svelte";
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
