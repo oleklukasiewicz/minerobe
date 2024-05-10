@@ -90,7 +90,6 @@ export const PostRequest = async function (path: string, data: any) {
   return res.json();
 };
 export const GetRequest = async function (path: string) {
-  console.log(path);
   const res = await axios.get(path, {
     headers: {
       "Content-Type": "application/json",

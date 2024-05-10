@@ -51,7 +51,7 @@ export class OutfitPackageRenderConfig {
       });
     }
     if (!ignoreBaseTexture && this.baseTexture) {
-      result.push(this.baseTexture[this.model?.name]);
+      result.unshift(this.baseTexture[this.model?.name]);
     }
     return result;
   }
@@ -68,9 +68,6 @@ export class OutfitPackageRenderConfig {
       new FileData("base_s", baseTexture, null, null),
       new FileData("base_a", baseTexture, null, null),
       null,
-      null,
-      null,
-      false
     );
     this.baseTexture = ll;
   }

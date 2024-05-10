@@ -22,21 +22,14 @@
   import {
     wardrobe,
     defaultRenderer,
-    isReadyForData,
     userSettings,
     isMobileView,
     baseTexture,
-    currentUser,
+    appState,
   } from "$data/cache";
   import { replaceState } from "$app/navigation";
-  import {
-    AddItemToWardrobe,
-    IsItemInWardrobe,
-    RemoveItemFromWardrobe,
-  } from "$src/api/wardrobe.js";
   import { OutfitPackageRenderConfig } from "$src/data/model.js";
   import { CreateDefaultRenderProvider } from "$src/data/render";
-  import { AddDownload } from "$src/api/social";
 
   import {
     CHANGE_TYPE,
@@ -46,6 +39,7 @@
     PACKAGE_TYPE,
     STEVE_MODEL,
     ALEX_MODEL,
+    APP_STATE,
   } from "$data/consts";
 
   import DefaultAnimation from "$animation/default";
@@ -62,8 +56,7 @@
     RemoveFromCollection,
   } from "$src/helpers/other/apiHelper";
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
-  import { getPackageInstanceForType } from "$src/helpers/view/designHelper.js";
-  import { navigateToHome } from "$src/helpers/other/navigationHelper.js";
+  import { GetPackage } from "$src/api/pack.js";
 
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
@@ -89,26 +82,17 @@
   let updateAnimation: (animation: any) => void = () => {};
 
   onMount(async () => {
-    let type = data.type;
     let id = data.id;
     let variantId = data.variantId;
-    let outfitPackage;
+    let outfitPackage: OutfitPackage;
 
-    isReadyForData.subscribe(async (readyness) => {
-      if (loaded || !readyness || !readyness.fullReadyness) {
-        loaded = false;
+    appState.subscribe(async (state) => {
+      if (state != APP_STATE.GUEST_READY && state != APP_STATE.USER_READY)
         return;
-      }
-
       defaultRenderProvider =
         await CreateDefaultRenderProvider($defaultRenderer);
-
-      const instance = getPackageInstanceForType(type);
-      outfitPackage = await instance.fetch(id);
-      if (!outfitPackage) {
-        navigateToHome();
-        return;
-      }
+      outfitPackage = await GetPackage(id);
+      if (!outfitPackage) return;
 
       localPackage.set(outfitPackage);
       isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
@@ -118,13 +102,7 @@
           $itemModelType
         );
       }
-      if ($currentUser?.id) {
-        isPackageInWardrobe = IsItemInWardrobe($localPackage, $wardrobe);
-      }
-
-      const varaint = outfitPackage.layers.find(
-        (x) => x.variantId == variantId
-      );
+      const varaint = outfitPackage.layers.find((x) => x.id == variantId);
 
       $itemRenderConfig = new OutfitPackageRenderConfig(
         $localPackage,
@@ -153,7 +131,6 @@
     );
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
-    await AddDownload($localPackage.id, $localPackage.type);
     if ($localPackage.social.downloads == null)
       $localPackage.social.downloads = 0;
     $localPackage.social.downloads += 1;
@@ -171,15 +148,10 @@
   };
   //sharing
   const addToWardrobe = async function () {
-    isPackageInWardrobe = await AddItemToWardrobe($localPackage);
-    $localPackage.social.likes += 1;
+    
   };
   const removeFromWardrobe = async function () {
-    isPackageInWardrobe = await RemoveItemFromWardrobe(
-      $localPackage.id,
-      $localPackage.type
-    );
-    $localPackage.social.likes -= 1;
+   
   };
 
   //animation
@@ -215,7 +187,7 @@
           "/" +
           $localPackage.id +
           "/" +
-          $itemRenderConfig.selectedLayer.variantId,
+          $itemRenderConfig.selectedLayer.id,
         null
       );
   });
@@ -283,7 +255,7 @@
           />
         {/if}
         {#if isItemSet}
-          {#each $itemLayers as item (item.id + item.variantId)}
+          {#each [...$itemLayers].reverse() as item (item.id + item.id)}
             <div class="item-layer">
               <ItemLayer
                 {item}
@@ -295,7 +267,7 @@
                 controls={isItemSet}
                 modelName={$localPackage.model}
                 link={item.type == LAYER_TYPE.REMOTE
-                  ? "/design/outfit/" + item.id + "/" + item.variantId
+                  ? "/design/outfit/" + item.id + "/" + item.id
                   : null}
                 bind:label={item.name}
                 readonly={true}
@@ -304,7 +276,7 @@
           {/each}
         {:else}
           <div class="item-variants">
-            {#each $localPackage.layers as layer (layer.id + layer.variantId)}
+            {#each $localPackage.layers as layer (layer.id + layer.id)}
               <ItemVariant
                 item={layer}
                 renderProvider={$itemModelType == MODEL_TYPE.STEVE

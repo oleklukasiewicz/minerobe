@@ -22,7 +22,6 @@
   import {
     CHANGE_TYPE,
     DEFAULT_PACKAGE,
-    LAYER_TYPE,
     MODEL_TYPE,
     PACKAGE_TYPE,
     STEVE_MODEL,
@@ -40,11 +39,8 @@
     baseTexture,
     appState,
   } from "$data/cache";
-  import { UpdateItemInWardrobe } from "$src/api/wardrobe";
-  import { outfitsInstance } from "$src/api/outfits";
+  import { GetStudioPackage, UpdateItemInWardrobe } from "$src/api/wardrobe";
   import { OutfitPackageRenderConfig } from "$src/data/model";
-  import { ShareItem, UnshareItem } from "$src/api/social";
-
   import DefaultAnimation from "$animation/default";
 
   import ImportPackageIcon from "$icons/upload.svg?raw";
@@ -58,20 +54,18 @@
     ImportLayerFromFile,
   } from "$src/helpers/data/dataTransferHelper";
   import {
-    AddToCollection,
-    IsItemInCollection,
-    RemoveFromCollection,
-    RemoveItem,
-  } from "$src/helpers/other/apiHelper";
-  import {
     navigateToOutfitPackage,
     navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper";
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper";
-  import { GetCategoriesFromList } from "$src/helpers/image/imageDataHelpers";
-  import type { OutfitPackageInstance } from "$src/helpers/package/packageInstanceHelper";
-  import { GetRequest, PostRequest } from "$src/data/api";
   import { CreateDefaultRenderProvider } from "$src/data/render";
+  import {
+    AddPackageLayer,
+    OrderPackageLayer,
+    RemovePackageLayer,
+    UpdatePackage,
+    UpdatePackageLayer,
+  } from "$src/api/pack";
 
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -82,8 +76,6 @@
   const itemRenderConfig: Writable<OutfitPackageRenderConfig> = writable(
     new OutfitPackageRenderConfig()
   );
-
-  let currentInstance: OutfitPackageInstance = null;
 
   let isItemSet = false;
   let modelTexture: string = null;
@@ -108,11 +100,9 @@
   onMount(async () => {
     appState.subscribe(async (state) => {
       if (state != APP_STATE.USER_READY) return;
-      defaultProvider =
-        await CreateDefaultRenderProvider($defaultRenderer);
-        console.log(defaultProvider);
+      defaultProvider = await CreateDefaultRenderProvider($defaultRenderer);
 
-      const pack = await GetRequest("api/Wardrobe/" + $currentUser.id + "/studio");
+      const pack = await GetStudioPackage();
       $itemPackage = pack;
       isItemSet = $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET;
 
@@ -136,7 +126,7 @@
   });
 
   //layers / texture
-  const upLayer = async function (e) {
+  const downLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
     if (index > 0) {
       itemLayers.update((layers) => {
@@ -146,9 +136,13 @@
         applyAnimations($itemPackage, CHANGE_TYPE.LAYER_UP, index - 1);
         return layers;
       });
+      await OrderPackageLayer(
+        $itemPackage.id,
+        $itemLayers.map((x) => x.id)
+      );
     }
   };
-  const downLayer = async function (e) {
+  const upLayer = async function (e) {
     let index = $itemLayers.indexOf(e.detail.texture);
     if (index < $itemLayers.length - 1) {
       itemLayers.update((layers) => {
@@ -158,21 +152,22 @@
         applyAnimations($itemPackage, CHANGE_TYPE.LAYER_DOWN, index + 1);
         return layers;
       });
+      await OrderPackageLayer(
+        $itemPackage.id,
+        $itemLayers.map((x) => x.id)
+      );
     }
   };
   const removeLayer = async function (e) {
-    let index = $itemLayers.indexOf(e.detail.texture);
-    if ($itemLayers[index].type == LAYER_TYPE.LOCAL) {
-      currentInstance.removeLayer(
-        $itemPackage.id,
-        $itemLayers[index].variantId
-      );
-    }
+    const layer = e.detail.texture;
+    const isRemoved = await RemovePackageLayer(layer.id);
+    if (!isRemoved) return;
+    let index = $itemLayers.indexOf(layer);
     let refresh = false;
     itemLayers.update((layers) => {
       if (
         !isItemSet &&
-        $itemRenderConfig.selectedLayer.name == layers[index].name
+        $itemRenderConfig.selectedLayer.id == layers[index].id
       ) {
         refresh = true;
       }
@@ -193,23 +188,23 @@
   };
   const uploadImageForVariant = async function (e) {
     const modelName = e.detail.modelName;
+    const layer = newVariantLayer;
+    const index = $itemLayers.indexOf(layer);
     await ImportImage().then(async (layers) => {
-      const newLayer = layers[0];
+      const newtexture = layers[0];
+      layer[modelName] = newtexture;
+      const reponse = await UpdatePackageLayer(layer);
+      if (reponse == null) return;
       itemLayers.update((layers) => {
-        const index = layers.indexOf(newVariantLayer);
-        if (modelName == MODEL_TYPE.ALEX) {
-          layers[index].alex = newLayer;
-        } else {
-          layers[index].steve = newLayer;
-        }
-        $itemRenderConfig.selectedLayer = layers[index];
-        newVariantLayer = $itemRenderConfig.selectedLayer;
-        applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
-        showToast($_("toast.variantAdded"));
+        layers[index] = reponse;
         return layers;
       });
+      $itemRenderConfig.selectedLayer = layer;
+      newVariantLayer = $itemRenderConfig.selectedLayer;
+      applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
+      showToast($_("toast.variantAdded"));
+      return layers;
     });
-    currentInstance.uploadLayer($itemPackage, $itemRenderConfig.selectedLayer);
   };
   const updateTexture = async () => {
     if (!loaded) return;
@@ -217,31 +212,32 @@
   };
   const editLayer = async function (e) {
     const layer = e.detail.texture;
-    currentInstance.uploadLayer($itemPackage, layer);
-  };
-  const addNewRemoteLayer = async function (outfit: OutfitPackage) {
-    isOutfitPickerOpen = false;
-    let layer = await outfitsInstance.fetchHelper.fetchLayer(
-      outfit.id,
-      outfit.layers[0].variantId
-    );
-    //check if layer already exists
-    if (
-      $itemLayers.find(
-        (x) => x.id == outfit.id && x.variantId == layer.variantId
-      )
-    )
-      return;
-
+    const index = $itemLayers.indexOf(layer);
+    const response = await UpdatePackageLayer(layer);
+    if (response == null) return;
     itemLayers.update((layers) => {
-      layer.id = outfit.id;
-      layer.type = LAYER_TYPE.REMOTE;
-      const newRemote = layer;
-      layers.unshift(newRemote);
-      $itemRenderConfig.selectedLayer = newRemote;
-      applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
+      layers[index] = response;
       return layers;
     });
+  };
+  const addNewRemoteLayer = async function (outfit: OutfitPackage) {
+    // isOutfitPickerOpen = false;
+    // l//et layer = await outfitsInstance.fetchHelper.fetchLayer(
+    //   outfit.id,
+    //   outfit.layers[0].id
+    // );
+    // //check if layer already exists
+    // if ($itemLayers.find((x) => x.id == outfit.id && x.id == layer.variantId))
+    //   return;
+    // itemLayers.update((layers) => {
+    //   layer.id = outfit.id;
+    //   layer.type = LAYER_TYPE.REMOTE;
+    //   const newRemote = layer;
+    //   layers.unshift(newRemote);
+    //   $itemRenderConfig.selectedLayer = newRemote;
+    //   applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
+    //   return layers;
+    // });
   };
   const applyAnimations = function (
     pack: OutfitPackage,
@@ -256,23 +252,27 @@
   //imports / export
   const importLayer = async function () {
     const newLayers = await ImportImage();
+
+    const responselayers = [];
+    await Promise.all(
+      newLayers.map(async (layer) => {
+        const newOutfitLayer = new OutfitLayer(
+          layer.fileName,
+          layer,
+          layer,
+          null
+        );
+        newOutfitLayer.sourcePackageId = $itemPackage.id;
+        const response = await AddPackageLayer(newOutfitLayer);
+        responselayers.push(response);
+      })
+    );
     itemLayers.update((layers) => {
-      let newOutfit;
-      newLayers.forEach(async(newLayer) => {
-        if ($itemModelType == MODEL_TYPE.ALEX)
-          newOutfit = new OutfitLayer(newLayer.fileName, null, newLayer, null);
-        else
-          newOutfit = new OutfitLayer(newLayer.fileName, newLayer, null, null);
-        newOutfit.sourcePackageId= $itemPackage.id;
-        console.log(JSON.stringify(newOutfit));
-        const response= await PostRequest("api/Layers/", newOutfit);
-        layers.unshift(response);
-      });
-      $itemRenderConfig.selectedLayer = newOutfit;
-      applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
+      //add new layers to the top
+      layers.push(...responselayers);
       return layers;
     });
-    currentInstance.uploadLayer($itemPackage, $itemRenderConfig.selectedLayer);
+    applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
   };
   const downloadImage = async () => {
     await ExportImageLayers(
@@ -287,18 +287,15 @@
 
   //sharing / wardrobe
   const sharePackage = async function () {
-    await ShareItem($itemPackage);
     $itemPackage.social.isShared = true;
     applyAnimations($itemPackage, CHANGE_TYPE.SHARE, 0);
   };
   const unSharePackage = async function () {
-    await UnshareItem($itemPackage);
     $itemPackage.social.isShared = false;
     isShareDialogOpen = false;
   };
   const deletePackage = function () {
     navigateToWardrobe();
-    RemoveItem($itemPackage);
   };
 
   //picker
@@ -325,42 +322,29 @@
         .filter((item) => item.kind === "file")
         .map((item) => item.getAsFile());
 
-      let newLayers = [];
+      const newLayers = [];
       for (var i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (file.type.startsWith("image/")) {
-          let newLayer = await ImportLayerFromFile(file);
-          let newOutfit;
-          if ($itemModelType == MODEL_TYPE.ALEX)
-            newOutfit = new OutfitLayer(
-              newLayer.fileName,
-              null,
-              newLayer,
-              null
-            );
-          else
-            newOutfit = new OutfitLayer(
-              newLayer.fileName,
-              newLayer,
-              null,
-              null
-            );
-          newOutfit.variantId = currentInstance.generateLayerId();
-          newOutfit.isShared = $itemPackage.social.isShared;
-          newLayers.push(newOutfit);
-          $itemRenderConfig.selectedLayer = newOutfit;
-          currentInstance.uploadLayer(
-            $itemPackage,
-            $itemRenderConfig.selectedLayer
-          );
-        }
+        const newLayer = await ImportLayerFromFile(files[i]);
+        const newOutfitLayer = new OutfitLayer(
+          newLayer.fileName,
+          newLayer,
+          newLayer,
+          null
+        );
+        newOutfitLayer.sourcePackageId = $itemPackage.id;
+        const response = await AddPackageLayer(newOutfitLayer);
+        newLayers.push(response);
       }
+      if (newLayers.length == 0) return;
+      $itemRenderConfig.selectedLayer = newLayers[0];
 
       itemLayers.update((layers) => {
-        layers = newLayers.concat(layers);
+        layers.push(...newLayers);
         return layers;
       });
+
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
+      updateTexture();
     }
     isDragging = false;
   };
@@ -376,26 +360,26 @@
   const goToItemPage = function () {
     navigateToOutfitPackage(
       $itemPackage,
-      isItemSet ? null : $itemRenderConfig.selectedLayer.variantId
+      isItemSet ? null : $itemRenderConfig.selectedLayer.id
     );
   };
   const addNewDropVariant = async function (e) {
     const layer = e.detail.texture;
+    const index = $itemLayers.indexOf(layer);
+
     const newLayer = await ImportLayerFromFile(e.detail.files[0]);
-    let index = 0;
+    layer[$itemModelType] = newLayer;
+
+    const response = await UpdatePackageLayer(layer);
+    if (response == null) return;
     itemLayers.update((layers) => {
-      index = layers.indexOf(layer);
-      if ($itemModelType == MODEL_TYPE.ALEX) {
-        layers[index].alex = newLayer;
-      } else {
-        layers[index].steve = newLayer;
-      }
-      $itemRenderConfig.selectedLayer = layers[index];
+      layers[index] = response;
       return layers;
     });
+    $itemRenderConfig.selectedLayer = layer;
     applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
-    currentInstance.uploadLayer($itemPackage, $itemRenderConfig.selectedLayer);
   };
+
   const skinSetted = function (e) {
     const isSetted = e.detail.isSuccessful;
     if (isSetted) {
@@ -405,23 +389,20 @@
   //collections
   const addToCollection = async function (e) {
     const collection = e.detail.collection;
-    if (!IsItemInCollection(collection, $itemPackage))
-      await AddToCollection(collection, $itemPackage);
+
     isCollectionDialogOpen = false;
   };
   const removeFromCollection = async function (e) {
     const collection = e.detail.collection;
-    RemoveFromCollection(collection, $itemPackage);
+
     isCollectionDialogOpen = false;
   };
   //subscribtions
   itemPackage.subscribe(async (pack) => {
     if (!loaded) return;
     $itemRenderConfig.item = pack;
-    if (pack != null && pack.id != null) {
-     // await currentInstance.upload(pack);
-    }
-    UpdateItemInWardrobe($itemPackage);
+    //update package
+    await UpdatePackage(pack);
   });
   itemRenderConfig.subscribe((layer) => {
     if (!loaded) return;
@@ -527,7 +508,7 @@
             </div>
             <br />
           {/if}
-          {#each $itemLayers as item, index (item.id)}
+          {#each [...$itemLayers].reverse() as item, index (item.id)}
             <div class="item-layer">
               <ItemLayer
                 renderProvider={$itemModelType == MODEL_TYPE.STEVE
@@ -547,8 +528,7 @@
                 on:edit={editLayer}
                 canUp={index != 0}
                 canDown={index != $itemLayers.length - 1}
-                selected={item?.id ==
-                  $itemRenderConfig.selectedLayer?.id}
+                selected={item?.id == $itemRenderConfig.selectedLayer?.id}
                 on:click={() => ($itemRenderConfig.selectedLayer = item)}
               />
             </div>

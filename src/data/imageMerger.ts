@@ -210,7 +210,7 @@ export const MergeLayersToImage = async function (
   config: OutfitPackageRenderConfig
 ) {
   return await mergeImages(
-    layers.map((x) => x[config.model.name].content).reverse(),
+    layers.map((x) => x[config.model.name].content),
     undefined,
     config.model.name,
     config.isFlatten,
@@ -222,7 +222,7 @@ export const MergeFileDataToImage = async function (
   config: OutfitPackageRenderConfig
 ) {
   return await mergeImages(
-    layers.map((x) => x.content).reverse(),
+    layers.map((x) => x.content),
     undefined,
     config.model.name,
     config.isFlatten,
@@ -234,7 +234,7 @@ export const MergeStringToImage = async function (
   config: OutfitPackageRenderConfig
 ) {
   return await mergeImages(
-    layers.reverse(),
+    layers,
     undefined,
     config.model.name,
     config.isFlatten,

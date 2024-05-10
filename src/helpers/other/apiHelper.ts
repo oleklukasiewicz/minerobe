@@ -1,6 +1,3 @@
-import { UploadOutfitCollection } from "$src/api/collection";
-import { FetchOutfitByFilter, outfitsInstance } from "$src/api/outfits";
-import { setsIntance } from "$src/api/sets";
 import { IsItemInWardrobe, RemoveItemFromWardrobe } from "$src/api/wardrobe";
 import {  wardrobe } from "$src/data/cache";
 import {
@@ -18,8 +15,7 @@ export const RemoveItem =async function (item: OutfitPackage) {
       return wardrobe;
     });
   }
-  if (item.type == PACKAGE_TYPE.OUTFIT_SET) setsIntance.delete(item.id);
-  if (item.type == PACKAGE_TYPE.OUTFIT) outfitsInstance.delete(item.id);
+  
   if (IsItemInWardrobe(item, get(wardrobe)))
     await RemoveItemFromWardrobe(item.id, item.type);
 };
@@ -62,9 +58,7 @@ export const AddToCollection = async function (
   ) {
     collection.outfits.push(item as any);
   }
-  const resp = await UploadOutfitCollection(collection);
-  return resp;
-};
+}
 export const RemoveFromCollection = async function (
   collection: OutfitPackageCollection,
   item: OutfitPackage
@@ -72,8 +66,7 @@ export const RemoveFromCollection = async function (
   collection.outfits = collection.outfits.filter(
     (outfit) => outfit.id != item.id || outfit.type != item.type
   );
-  const resp = await UploadOutfitCollection(collection);
-  return resp;
+ 
 };
 export const IsItemInCollection = function (
   collection: OutfitPackageCollection,

@@ -8,12 +8,8 @@ import {
 } from "$src/data/common";
 import { get } from "svelte/store";
 import {PACKAGE_TYPE } from "$src/data/consts";
-import { setsIntance } from "./sets";
-import { outfitsInstance } from "./outfits";
-import { AddLike, RemoveLike } from "./social";
 import { GetRequest } from "$src/data/api";
 
-const WARDROBE_PATH = "wardrobes";
 
 export const ParseWardrobeToDatabase = function (pack: WardrobePackage) {
   let data = Object.assign({}, pack);
@@ -38,12 +34,12 @@ export const ParseWardrobeToLocal = async function (data: WardrobePackage) {
       ) {
         return item;
       } else {
-        if (item.type == PACKAGE_TYPE.OUTFIT_LINK)
-          return await outfitsInstance.fetchFromLink(item);
-        if (item.type == PACKAGE_TYPE.OUTFIT_SET_LINK) {
-          item.model = get(userSettings)?.model || item.model;
-          return await setsIntance.fetchFromLink(item);
-        }
+        // if (item.type == PACKAGE_TYPE.OUTFIT_LINK)
+        //   return await outfitsInstance.fetchFromLink(item);
+        // if (item.type == PACKAGE_TYPE.OUTFIT_SET_LINK) {
+        //   item.model = get(userSettings)?.model || item.model;
+        //   return await setsIntance.fetchFromLink(item);
+        // }
       }
     })
   );
@@ -75,7 +71,6 @@ export const AddItemToWardrobe = async function (
 ) {
   let wardrobeObj = get(wardrobe);
   if (!IsItemInWardrobe(item, wardrobeObj)) {
-    AddLike(item.id, item.type);
   }
 
   if (
@@ -129,7 +124,6 @@ export const RemoveItemFromWardrobe = async function (id, type) {
       (collection) => collection?.id != id
     );
   }
-  RemoveLike(id, type);
   wardrobe.update((wardrobe) => {
     wardrobe.outfits = wardrobeObj.outfits;
     return wardrobe;
@@ -161,3 +155,8 @@ export const FetchUserWardrobe = async function () {
   const wardrobe = req as WardrobePackage
   return wardrobe;
 };
+export const GetStudioPackage = async function () {
+  const req = await GetRequest("api/Wardrobe/" + get(currentUser).id + "/studio");
+  const st = req as OutfitPackage
+  return st;
+}

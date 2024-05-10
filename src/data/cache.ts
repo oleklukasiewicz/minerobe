@@ -92,7 +92,7 @@ export const setup = function () {
   if (userSubscription) userSubscription();
   userSubscription = currentUser.subscribe(async (user) => {
     if (user) {
-      configureSocket(user.id);
+      //configureSocket(user.id);
       //settings up account
       if (get(appState) == APP_STATE.LOADING)
         appState.set(APP_STATE.USER_READY);
