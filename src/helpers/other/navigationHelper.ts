@@ -1,7 +1,7 @@
 import { OutfitPackageLink, type OutfitPackage } from "$src/data/common";
 import { goto } from "$app/navigation";
 import { wardrobe } from "$src/data/cache";
-import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+import { PACKAGE_TYPE } from "$src/data/consts";
 
 export const navigateToDesign = function (packag: OutfitPackage) {
   wardrobe.update((wardrobe) => {
@@ -23,13 +23,9 @@ export const navigateToOutfitPackage = function (
   packag: OutfitPackage,
   variantId?: string
 ) {
-  const varaint = variantId ? variantId : packag.layers[0].variantId;
+  const varaint = variantId ? variantId : packag.layers[0].id;
   goto(
-    `/design/${
-      packag.type == OUTFIT_TYPE.OUTFIT_SET
-        ? PACKAGE_TYPE.OUTFIT_SET
-        : PACKAGE_TYPE.OUTFIT
-    }/${packag.id}/${varaint || ""}`
+    `/design/${packag.id}/${varaint || ""}`
   );
 };
 export const navigate = function (path: string) {

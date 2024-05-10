@@ -102,7 +102,7 @@
     {/if}
   {/if}
   {#if outfitPackage.publisher.id == $currentUser?.id && !readonly}
-    {#if outfitPackage.isShared}
+    {#if outfitPackage.social.isShared}
       <Button
         on:click={shareDialog}
         type="tertiary"

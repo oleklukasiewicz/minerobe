@@ -66,6 +66,11 @@
     UpdatePackage,
     UpdatePackageLayer,
   } from "$src/api/pack";
+  import {
+    SetAsDownloadPackage,
+    SharePackage,
+    UnSharePackage,
+  } from "$src/api/social";
 
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -282,16 +287,31 @@
       $itemRenderConfig,
       $itemPackage.name
     );
+    if (
+      $currentUser?.id != $itemPackage.publisher.id ||
+      $itemPackage.social.isShared
+    ) {
+      const resp = await SetAsDownloadPackage($itemPackage.social.id);
+      if (resp == null) return;
+      $itemPackage.social = resp;
+    }
+
     applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
   };
 
   //sharing / wardrobe
   const sharePackage = async function () {
-    $itemPackage.social.isShared = true;
+    const respose = await SharePackage($itemPackage.social.id);
+    if (respose == null) return;
+
+    showToast("Shared");
+    $itemPackage.social = respose;
     applyAnimations($itemPackage, CHANGE_TYPE.SHARE, 0);
   };
   const unSharePackage = async function () {
-    $itemPackage.social.isShared = false;
+    const response = await UnSharePackage($itemPackage.social.id);
+    if (response == null) return;
+    $itemPackage.social = response;
     isShareDialogOpen = false;
   };
   const deletePackage = function () {

@@ -26,6 +26,7 @@
     isMobileView,
     baseTexture,
     appState,
+    showToast,
   } from "$data/cache";
   import { replaceState } from "$app/navigation";
   import { OutfitPackageRenderConfig } from "$src/data/model.js";
@@ -57,6 +58,11 @@
   } from "$src/helpers/other/apiHelper";
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
   import { GetPackage } from "$src/api/pack.js";
+  import { SetAsDownloadPackage } from "$src/api/social.js";
+  import {
+    AddPackageToWardrobe,
+    RemovePackageFromWardrobe,
+  } from "$src/api/wardrobe.js";
 
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
@@ -131,9 +137,9 @@
     );
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
-    if ($localPackage.social.downloads == null)
-      $localPackage.social.downloads = 0;
-    $localPackage.social.downloads += 1;
+    const resp = await SetAsDownloadPackage($localPackage.social.id);
+    if (resp == null) return;
+    $localPackage.social = resp;
   };
 
   //texture
@@ -148,10 +154,17 @@
   };
   //sharing
   const addToWardrobe = async function () {
-    
+    const resp = await AddPackageToWardrobe($localPackage.id);
+    if (resp == null) return;
+    $localPackage.social = resp;
+    $localPackage.isInWardrobe = true;
+    showToast("Outfit added to wardrobe");
   };
   const removeFromWardrobe = async function () {
-   
+    const resp = await RemovePackageFromWardrobe($localPackage.id);
+    if (resp == null) return;
+    $localPackage.social = resp;
+    $localPackage.isInWardrobe = false;
   };
 
   //animation
@@ -327,7 +340,7 @@
       {#if loaded}
         <OutfitActions
           readonly={true}
-          {isPackageInWardrobe}
+          isPackageInWardrobe={$localPackage.isInWardrobe}
           outfitPackage={$localPackage}
           {modelTexture}
           loading={!loaded}

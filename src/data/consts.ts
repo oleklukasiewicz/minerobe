@@ -176,6 +176,7 @@ export const DEFAULT_PACKAGE = {
   local: {
     isNew: true,
   },
+  isInWardrobe: false,
 }
 export const STEVE_MODEL = {
   name: MODEL_TYPE.STEVE,

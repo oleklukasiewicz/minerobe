@@ -23,6 +23,7 @@ export class OutfitPackage {
   createdAt: Date;
   modifiedAt: Date;
   snapshotConfig: OutfitPackageSnapshotConfig;
+  isInWardrobe: boolean;
   constructor(
     name: string,
     model: string,

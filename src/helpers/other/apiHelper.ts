@@ -1,10 +1,8 @@
-import { IsItemInWardrobe, RemoveItemFromWardrobe } from "$src/api/wardrobe";
 import {  wardrobe } from "$src/data/cache";
 import {
   OutfitPackage,
   OutfitPackageCollection
 } from "$src/data/common";
-import {PACKAGE_TYPE } from "$src/data/consts";
 import { get } from "svelte/store";
 
 //helpers
@@ -15,9 +13,6 @@ export const RemoveItem =async function (item: OutfitPackage) {
       return wardrobe;
     });
   }
-  
-  if (IsItemInWardrobe(item, get(wardrobe)))
-    await RemoveItemFromWardrobe(item.id, item.type);
 };
 
 //wardrobe

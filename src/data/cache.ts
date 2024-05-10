@@ -8,13 +8,11 @@ import {
   derived,
 } from "svelte/store";
 import { APP_STATE } from "$data/consts";
-import { MinerobeUserSettings, OutfitLayer, type MinerobeUser } from "./common";
+import { MinerobeUserSettings, type MinerobeUser } from "./common";
 import planksTextureRaw from "$src/texture/base_skin.png?url";
 import type { WardrobePackage } from "./common";
-import { FetchWardrobe, UploadWardrobe } from "$src/api/wardrobe";
 import * as THREE from "three";
 import { FetchSettings, UploadSettings } from "$src/api/settings";
-import { configureSocket } from "./socket";
 
 const isMobileViewWritable: Writable<boolean> = writable(false);
 export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
@@ -97,11 +95,7 @@ export const setup = function () {
       if (get(appState) == APP_STATE.LOADING)
         appState.set(APP_STATE.USER_READY);
       let settings = await FetchSettings(user.id);
-      if (settings != null) userSettings.set(settings);
-      let w = await FetchWardrobe();
-      if (w != null) {
-        wardrobe.set(w);
-        console.log("setting wardrobe");
+      if (true) {
         appState.set(APP_STATE.READY);
         if (wardrobeSubscription) wardrobeSubscription();
         if (settingsSubscription) settingsSubscription();
@@ -117,9 +111,6 @@ export const setup = function () {
   });
 };
 const setupSubscriptions = function () {
-  wardrobeSubscription = wardrobe.subscribe(async (data) => {
-    if (get(appState) == APP_STATE.READY && data) await UploadWardrobe(data);
-  });
   settingsSubscription = userSettings.subscribe(async (data) => {
     if (get(appState) == APP_STATE.READY && data) await UploadSettings(data);
   });
