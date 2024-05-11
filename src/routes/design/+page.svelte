@@ -104,7 +104,7 @@
 
   onMount(async () => {
     appState.subscribe(async (state) => {
-      if (!(state == APP_STATE.USER_READY || state == APP_STATE.READY)) return;
+      if (state != APP_STATE.READY) return;
       defaultProvider = await CreateDefaultRenderProvider($defaultRenderer);
 
       const pack = await GetStudioPackage();

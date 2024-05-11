@@ -159,8 +159,7 @@ export const DEFAULT_PACKAGE = {
   model: MODEL_TYPE.STEVE,
   type: PACKAGE_TYPE.OUTFIT,
   layers: [],
-  publisher: 
-  {
+  publisher: {
     id: "dummy",
     name: "dummy",
     avatar: "dummy",
@@ -168,7 +167,7 @@ export const DEFAULT_PACKAGE = {
   description: "Default outfit",
   outfitType: OUTFIT_TYPE.DEFAULT,
   isShared: false,
-  social:null,
+  social: null,
   id: null,
   snapshotConfig: null,
   createdAt: new Date(),
@@ -177,40 +176,48 @@ export const DEFAULT_PACKAGE = {
     isNew: true,
   },
   isInWardrobe: false,
-}
+};
+export const DEFAULT_WARDROBE = {
+  id: null,
+  outfits: [],
+  collections: [],
+  sets: [],
+  studio: null,
+  local: null,
+};
 export const STEVE_MODEL = {
   name: MODEL_TYPE.STEVE,
   model: "data:model/gltf+json;base64," + btoa(steveModelData),
   head: {
     name: "head",
     textureArea: { x: 0, y: 0, width: 32, height: 16 },
-    outerTextureArea: { x: 32, y: 0, width: 32, height: 16 }
+    outerTextureArea: { x: 32, y: 0, width: 32, height: 16 },
   },
   body: {
     name: "body",
     textureArea: { x: 16, y: 16, width: 24, height: 16 },
-    outerTextureArea: { x: 16, y: 32, width: 24, height: 16 }
+    outerTextureArea: { x: 16, y: 32, width: 24, height: 16 },
   },
   leftLeg: {
     name: "leftLeg",
     textureArea: { x: 16, y: 48, width: 16, height: 16 },
-    outerTextureArea: { x: 0, y: 48, width: 16, height: 16 }
+    outerTextureArea: { x: 0, y: 48, width: 16, height: 16 },
   },
   rightLeg: {
     name: "rightLeg",
     textureArea: { x: 0, y: 16, width: 16, height: 16 },
-    outerTextureArea: { x: 0, y: 32, width: 16, height: 16 }
+    outerTextureArea: { x: 0, y: 32, width: 16, height: 16 },
   },
   leftArm: {
     name: "leftArm",
     textureArea: { x: 32, y: 48, width: 16, height: 16 },
-    outerTextureArea: { x: 48, y: 48, width: 16, height: 16 }
+    outerTextureArea: { x: 48, y: 48, width: 16, height: 16 },
   },
   rightArm: {
     name: "rightArm",
     textureArea: { x: 40, y: 16, width: 16, height: 16 },
-    outerTextureArea: { x: 40, y: 32, width: 16, height: 16 }
-  }
+    outerTextureArea: { x: 40, y: 32, width: 16, height: 16 },
+  },
 };
 export const ALEX_MODEL = {
   name: MODEL_TYPE.ALEX,
@@ -222,11 +229,11 @@ export const ALEX_MODEL = {
   leftArm: {
     name: "leftArm",
     textureArea: { x: 32, y: 48, width: 14, height: 16 },
-    outerTextureArea: { x: 48, y: 48, width: 14, height: 16 }
+    outerTextureArea: { x: 48, y: 48, width: 14, height: 16 },
   },
   rightArm: {
     name: "rightArm",
     textureArea: { x: 40, y: 16, width: 14, height: 16 },
-    outerTextureArea: { x: 40, y: 32, width: 14, height: 16 }
-  }
+    outerTextureArea: { x: 40, y: 32, width: 14, height: 16 },
+  },
 };

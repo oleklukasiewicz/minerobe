@@ -1,12 +1,10 @@
 <script lang="ts">
   import {
+    appState,
     currentUser,
-    wardrobe,
     defaultRenderer,
     isMobileView,
-    isReadyForData,
     userSettings,
-    appState,
   } from "$src/data/cache";
   import {
     navigateToCollection,
@@ -20,31 +18,27 @@
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import CalendarIcon from "$icons/calendar-month.svg?raw";
-  import { PACKAGE_TYPE } from "$src/data/consts";
-  import {
-    GetCategoriesFromList,
-    GetCurrentBaseTexture,
-    GetOutfitIconFromType,
-  } from "$src/helpers/image/imageDataHelpers";
+  import { GetCurrentBaseTexture } from "$src/helpers/image/imageDataHelpers";
   import Search from "$component/base/Search/Search.svelte";
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import { CreateOutfitCollection } from "$src/api/collection";
-  import { setsIntance } from "$src/api/sets";
-  import { outfitsInstance } from "$src/api/outfits";
   import OutfitPackageCollectionItem from "$lib/components/outfit/OutfitPackageCollectionItem/OutfitPackageCollectionItem.svelte";
   import { page } from "$app/stores";
-  import { FetchUserWardrobe, ParseWardrobeToLocal } from "$src/api/wardrobe";
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
+  import { APP_STATE, DEFAULT_WARDROBE } from "$src/data/consts";
+  import { writable, type Writable } from "svelte/store";
+  import type { WardrobePackage } from "$src/data/common";
+  import { GetUserWardrobe } from "$src/api/wardrobe";
+
+  const localWardrobe: Writable<WardrobePackage> = writable(DEFAULT_WARDROBE);
 
   let currentView: any = {};
   let loaded = false;
   let itemsLoaded = false;
   let currentList = [];
   let filteredList = [];
-  let outfitsCount = {};
   let menuItems: any[] = [
     {
       label: "Schedule",
@@ -74,9 +68,13 @@
       value: $page.params.page || "sets",
       params: $page.params.params,
     };
-    currentUser.subscribe(async (value) => {
-      if(value == null) return;
-      const wardrobe= await FetchUserWardrobe();      
+    appState.subscribe(async (state) => {
+      if (!(state == APP_STATE.READY)) return;
+      if(loaded) return;
+      const ward= await GetUserWardrobe();
+      localWardrobe.set(ward);
+      console.log(ward);
+      loaded = true;
     });
     // appState.subscribe(async (readyness) => {
     //   console.log(readyness);
@@ -133,16 +131,16 @@
     // });
   });
   const addNewSet = async function () {
-    const newSet = await setsIntance.create(true);
-    navigateToDesign(newSet);
+    //const newSet = await setsIntance.create(true);
+    //navigateToDesign(newSet);
   };
   const addNewOutfit = async function () {
-    const newSet = await outfitsInstance.create(true);
-    navigateToDesign(newSet);
+    //const newSet = await outfitsInstance.create(true);
+    //navigateToDesign(newSet);
   };
   const addNewCollection = async function () {
-    const newCollection = await CreateOutfitCollection(true);
-    navigateToCollection(newCollection.id);
+    //const newCollection = await CreateOutfitCollection(true);
+    //navigateToCollection(newCollection.id);
   };
   const filterOutfits = function (e) {
     const value = e.detail;

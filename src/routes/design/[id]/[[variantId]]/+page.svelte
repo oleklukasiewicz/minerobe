@@ -92,7 +92,7 @@
     let outfitPackage: OutfitPackage;
 
     appState.subscribe(async (state) => {
-      if (state != APP_STATE.GUEST_READY && state != APP_STATE.USER_READY && state != APP_STATE.READY)
+      if (state != APP_STATE.READY)
         return;
       defaultRenderProvider =
         await CreateDefaultRenderProvider($defaultRenderer);
