@@ -28,6 +28,10 @@ export const AddPackageLayer = async function (layer: OutfitLayer) {
   const res = await PostRequest("/api/Layers/", layer);
   return res;
 };
+export const SetGlobalLayer = async function (layer: OutfitLayer) {
+  const res = await PostRequest("/api/Layers/Global", layer);
+  return res;
+}
 export const RemovePackageLayer = async function (layerId: string) {
   const res = await DeleteRequest("/api/Layers/" + layerId);
   return res;

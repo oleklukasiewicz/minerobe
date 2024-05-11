@@ -91,7 +91,7 @@ export const OUTFIT_TYPE = {
   ACCESSORY: "accessory",
   SUIT: "suit",
   DEFAULT: "default",
-  OUTFIT_SET: "outfit_set",
+  OUTFIT_SET: "outfitset",
 };
 
 export const MODEL_TYPE = {

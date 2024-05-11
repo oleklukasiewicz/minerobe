@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { OutfitLayer, OutfitPackage } from "$src/data/common";
-  import { OUTFIT_TYPE } from "$src/data/consts";
+  import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
   import {
     RenderFromSnapshot,
     RenderProvider,
@@ -67,7 +67,7 @@
   {/if}
   <div class="render-area">
     <!-- svelte-ignore a11y-missing-attribute -->
-    {#if item.local?.isSnapshot == false}
+    {#if item.type == PACKAGE_TYPE.OUTFIT_SET}
       <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />
     {:else}
       <img
@@ -78,8 +78,8 @@
   </div>
   <div class="data-area">
     <div class="title-row">
-      <b class="name">{item.name}</b>
-      {#if item.isShared && item.publisher.id == $currentUser?.id}
+      <b class="name">{item.name} </b>
+      {#if item.social.isShared && item.publisher.id == $currentUser?.id}
         <div class="share-icon icon-small">{@html CloudIcon}</div>
       {/if}
     </div>
@@ -89,7 +89,7 @@
           <Label variant="unique" {dense}>{item.publisher.name}</Label>
         {/if} -->
         <div class="item-social-info">
-          {#if item.isShared}
+          {#if item.social.isShared}
             <SocialInfo data={item.social} dense />
           {/if}
         </div>
@@ -97,7 +97,7 @@
       {#if multiple > 0}
         {#each item.layers
           .slice(0, !isSet ? multiple : 1)
-          .filter((x) => x != null && x[item.model].color != null) as layer (layer.variantId)}
+          .filter((x) => x != null && x[item.model].color != null) as layer (layer.id)}
           <span
             class="color-view"
             title={FindColorTitle(layer[item.model].color)}

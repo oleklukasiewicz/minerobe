@@ -63,6 +63,7 @@
     AddPackageLayer,
     OrderPackageLayer,
     RemovePackageLayer,
+    SetGlobalLayer,
     UpdatePackageData,
     UpdatePackageLayer,
   } from "$src/api/pack";
@@ -71,6 +72,7 @@
     SharePackage,
     UnSharePackage,
   } from "$src/api/social";
+  import { GetGlobalLayer } from "$src/helpers/package/packageHelper";
 
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -423,6 +425,11 @@
     $itemRenderConfig.item = pack;
     //update package
     await UpdatePackageData(pack);
+    if (isItemSet) {
+      //generate flatten layers
+      const globalLayer = await GetGlobalLayer(pack);
+      await SetGlobalLayer(globalLayer);
+    }
   });
   itemRenderConfig.subscribe((layer) => {
     if (!loaded) return;

@@ -27,7 +27,7 @@
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
-  import { APP_STATE, DEFAULT_WARDROBE } from "$src/data/consts";
+  import { APP_STATE, DEFAULT_WARDROBE, PACKAGE_TYPE } from "$src/data/consts";
   import { writable, type Writable } from "svelte/store";
   import type { WardrobePackage } from "$src/data/common";
   import { GetUserWardrobe } from "$src/api/wardrobe";
@@ -73,7 +73,11 @@
       if(loaded) return;
       const ward= await GetUserWardrobe();
       localWardrobe.set(ward);
-      console.log(ward);
+      currentList = ward.outfits.filter(
+        (x) => x.type == PACKAGE_TYPE.OUTFIT_SET
+      );
+      filteredList = currentList;
+      itemsLoaded = true;
       loaded = true;
     });
     // appState.subscribe(async (readyness) => {

@@ -49,7 +49,7 @@
     snapshot.cameraOptions =
       cameraOptions ||
       GetCameraConfigForType(
-        item.type != OUTFIT_TYPE.OUTFIT_SET ? item.outfitType : item.type
+        item.outfitType != OUTFIT_TYPE.OUTFIT_SET ? item.outfitType : item.type
       );
     snapshot.provider.camera = new THREE.OrthographicCamera();
     await RenderFromSnapshot(snapshot);
