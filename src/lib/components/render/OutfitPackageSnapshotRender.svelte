@@ -16,9 +16,7 @@
   import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
   import { onMount } from "svelte";
   import { MergeLayersToImage } from "$src/data/imageMerger";
-  import {
-    OutfitPackageRenderConfig,
-  } from "$src/data/model";
+  import { OutfitPackageRenderConfig } from "$src/data/model";
 
   export let item: OutfitPackage = null;
   export let renderProvider: RenderProvider = null;
@@ -36,7 +34,7 @@
     snapshot.node = renderNode;
     snapshot.tempNode = tempNode;
     snapshot.texture = item.layers[0][item.model].content;
-    if (item.type == OUTFIT_TYPE.OUTFIT_SET) {
+    if (item.presentationConfig.isMerged) {
       //merge layers
       const config = new OutfitPackageRenderConfig();
       config.model = item.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
@@ -47,10 +45,7 @@
       snapshot.texture = mergedLayers;
     }
     snapshot.cameraOptions =
-      cameraOptions ||
-      GetCameraConfigForType(
-        item.outfitType != OUTFIT_TYPE.OUTFIT_SET ? item.outfitType : item.type
-      );
+      cameraOptions || GetCameraConfigForType(item.outfitType);
     snapshot.provider.camera = new THREE.OrthographicCamera();
     await RenderFromSnapshot(snapshot);
   });

@@ -62,6 +62,7 @@
   import {
     AddPackageLayer,
     OrderPackageLayer,
+    RemovePackage,
     RemovePackageLayer,
     SetGlobalLayer,
     UpdatePackageData,
@@ -72,7 +73,10 @@
     SharePackage,
     UnSharePackage,
   } from "$src/api/social";
-  import { GetGlobalLayer } from "$src/helpers/package/packageHelper";
+  import {
+    AddLayerSnapshot,
+    GetGlobalLayer,
+  } from "$src/helpers/package/packageHelper";
 
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -200,7 +204,7 @@
     await ImportImage().then(async (layers) => {
       const newtexture = layers[0];
       layer[modelName] = newtexture;
-      const reponse = await UpdatePackageLayer(layer);
+      const reponse = await UpdatePackageLayer(await AddLayerSnapshot(layer));
       if (reponse == null) return;
       itemLayers.update((layers) => {
         layers[index] = reponse;
@@ -219,13 +223,7 @@
   };
   const editLayer = async function (e) {
     const layer = e.detail.texture;
-    const index = $itemLayers.indexOf(layer);
-    const response = await UpdatePackageLayer(layer);
-    if (response == null) return;
-    itemLayers.update((layers) => {
-      layers[index] = response;
-      return layers;
-    });
+    await UpdatePackageLayer(await AddLayerSnapshot(layer));
   };
   const addNewRemoteLayer = async function (outfit: OutfitPackage) {
     // isOutfitPickerOpen = false;
@@ -270,7 +268,9 @@
           null
         );
         newOutfitLayer.sourcePackageId = $itemPackage.id;
-        const response = await AddPackageLayer(newOutfitLayer);
+        const response = await AddPackageLayer(
+          await AddLayerSnapshot(newOutfitLayer)
+        );
         responselayers.push(response);
       })
     );
@@ -316,7 +316,9 @@
     $itemPackage.social = response;
     isShareDialogOpen = false;
   };
-  const deletePackage = function () {
+  const deletePackage = async function () {
+    const resp= await RemovePackage($itemPackage.id);
+    if (resp == null) return;
     navigateToWardrobe();
   };
 
@@ -354,7 +356,9 @@
           null
         );
         newOutfitLayer.sourcePackageId = $itemPackage.id;
-        const response = await AddPackageLayer(newOutfitLayer);
+        const response = await AddPackageLayer(
+          await AddLayerSnapshot(newOutfitLayer)
+        );
         newLayers.push(response);
       }
       if (newLayers.length == 0) return;
@@ -392,7 +396,7 @@
     const newLayer = await ImportLayerFromFile(e.detail.files[0]);
     layer[$itemModelType] = newLayer;
 
-    const response = await UpdatePackageLayer(layer);
+    const response = await UpdatePackageLayer(await AddLayerSnapshot(layer));
     if (response == null) return;
     itemLayers.update((layers) => {
       layers[index] = response;

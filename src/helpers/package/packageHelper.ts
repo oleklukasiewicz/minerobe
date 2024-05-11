@@ -1,14 +1,12 @@
-import { FileData, OutfitLayer, type OutfitPackage } from "$src/data/common";
+import { AddPackage } from "$src/api/pack";
+import { FileData, OutfitLayer, OutfitPackage } from "$src/data/common";
 import { MODEL_TYPE, OUTFIT_TYPE } from "$src/data/consts";
-import {
-  MergeFileDataToImage,
-  MergeLayersToImage,
-} from "$src/data/imageMerger";
 import { RenderTextureInTemporyNode } from "$src/data/render";
 import { GetDominantColorFromImage } from "../image/colorHelper";
 import { MergePackageLayers } from "../image/imageDataHelpers";
 
-export const GetLayerSnapshot = async function (layer: OutfitLayer) {
+export const AddLayerSnapshot = async function (oldLayer: OutfitLayer) {
+  const layer = Object.assign({}, oldLayer);
   const steve = layer.steve;
   const steveSnap = await RenderTextureInTemporyNode(
     steve.content,
@@ -22,8 +20,8 @@ export const GetLayerSnapshot = async function (layer: OutfitLayer) {
     alex.type
   );
   const snapLayer = Object.assign({}, layer);
-  snapLayer.steve.content = steveSnap;
-  snapLayer.alex.content = alexSnap;
+  snapLayer.steve.contentSnapshot = steveSnap;
+  snapLayer.alex.contentSnapshot = alexSnap;
   return snapLayer;
 };
 export const GetGlobalLayer = async function (pack: OutfitPackage) {
@@ -44,4 +42,12 @@ export const GetGlobalLayer = async function (pack: OutfitPackage) {
   const glob = new OutfitLayer(pack.name, steveFileData, alexFileData);
   glob.sourcePackageId = pack.id;
   return glob;
+};
+export const CreateNewOutfitPackage = async function (
+  name: string,
+  type: string
+) {
+  const pack = new OutfitPackage(name, MODEL_TYPE.STEVE, [], type);
+  pack.description = "";
+  return pack;
 };

@@ -169,13 +169,17 @@ export const DEFAULT_PACKAGE = {
   isShared: false,
   social: null,
   id: null,
-  snapshotConfig: null,
   createdAt: new Date(),
   modifiedAt: new Date(),
   local: {
     isNew: true,
   },
   isInWardrobe: false,
+  presentationConfig: {
+    isMerged: false,
+    isSnapshot: false,
+  
+  },
 };
 export const DEFAULT_WARDROBE = {
   id: null,

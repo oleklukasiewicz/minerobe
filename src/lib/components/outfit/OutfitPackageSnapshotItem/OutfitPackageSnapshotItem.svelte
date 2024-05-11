@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { OutfitLayer, OutfitPackage } from "$src/data/common";
-  import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+  import { OUTFIT_TYPE } from "$src/data/consts";
   import {
     RenderFromSnapshot,
     RenderProvider,
@@ -67,7 +67,7 @@
   {/if}
   <div class="render-area">
     <!-- svelte-ignore a11y-missing-attribute -->
-    {#if item.type == PACKAGE_TYPE.OUTFIT_SET}
+    {#if item.presentationConfig.isSnapshot == false}
       <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />
     {:else}
       <img

@@ -27,10 +27,21 @@
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
-  import { APP_STATE, DEFAULT_WARDROBE, PACKAGE_TYPE } from "$src/data/consts";
+  import {
+    APP_STATE,
+    DEFAULT_WARDROBE,
+    OUTFIT_TYPE,
+    PACKAGE_TYPE,
+  } from "$src/data/consts";
   import { writable, type Writable } from "svelte/store";
   import type { WardrobePackage } from "$src/data/common";
-  import { GetUserWardrobe } from "$src/api/wardrobe";
+  import {
+    AddPackageToWardrobe,
+    GetUserWardrobe,
+    SetStudioPackage,
+  } from "$src/api/wardrobe";
+  import { CreateNewOutfitPackage } from "$src/helpers/package/packageHelper";
+  import { AddPackage } from "$src/api/pack";
 
   const localWardrobe: Writable<WardrobePackage> = writable(DEFAULT_WARDROBE);
 
@@ -70,8 +81,8 @@
     };
     appState.subscribe(async (state) => {
       if (!(state == APP_STATE.READY)) return;
-      if(loaded) return;
-      const ward= await GetUserWardrobe();
+      if (loaded) return;
+      const ward = await GetUserWardrobe();
       localWardrobe.set(ward);
       currentList = ward.outfits.filter(
         (x) => x.type == PACKAGE_TYPE.OUTFIT_SET
@@ -135,6 +146,18 @@
     // });
   });
   const addNewSet = async function () {
+    const newOutfit = await CreateNewOutfitPackage(
+      "New Set",
+      PACKAGE_TYPE.OUTFIT_SET
+    );
+    newOutfit.outfitType = OUTFIT_TYPE.OUTFIT_SET;
+    const response = await AddPackage(newOutfit);
+    if (response == null) return;
+    const addedTowardrobe = await AddPackageToWardrobe(response.id);
+    if (addedTowardrobe == null) return;
+    const setStudio = await SetStudioPackage(response.id);
+    if (setStudio == null) return;
+    navigateToDesign(response);
     //const newSet = await setsIntance.create(true);
     //navigateToDesign(newSet);
   };
@@ -152,8 +175,10 @@
       return x.name.toLowerCase().includes(value.toLowerCase());
     });
   };
-  const onItemSelect = function (e) {
+  const onItemSelect = async function (e) {
     const item = e.detail.item;
+    const resp = await SetStudioPackage(item.id);
+    if (resp == null) return;
     if (item.publisher.id != $currentUser?.id) navigateToOutfitPackage(item);
     else navigateToDesign(item);
   };

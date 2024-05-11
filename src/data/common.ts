@@ -22,33 +22,24 @@ export class OutfitPackage {
   local: any;
   createdAt: Date;
   modifiedAt: Date;
-  snapshotConfig: OutfitPackageSnapshotConfig;
   isInWardrobe: boolean;
+  presentationConfig: OutfitPackagePresentationConfigModel;
   constructor(
     name: string,
     model: string,
     layers: OutfitLayer[],
     type: string = PACKAGE_TYPE.OUTFIT,
-    publisher: MinerobeUser = get(currentUser),
-    id: string = null,
-    isShared: boolean = false,
-    social: PackageSocialData = new PackageSocialData(),
-    description: string = "",
-    outfitType: string = OUTFIT_TYPE.DEFAULT,
-    snapshotConfig: OutfitPackageSnapshotConfig = new OutfitPackageSnapshotConfig()
   ) {
     this.name = name;
     this.model = model;
     this.layers = layers;
     this.type = type;
-    this.publisher = publisher;
-    this.id = id;
-    this.social = social;
-    this.description = description;
-    this.outfitType = outfitType;
     this.createdAt = new Date();
-    this.snapshotConfig = snapshotConfig;
   }
+}
+export class OutfitPackagePresentationConfigModel {
+  public isMerged;
+  public isSnapshot;
 }
 export class WardrobePackage {
   id: string;
@@ -73,6 +64,7 @@ export class WardrobePackage {
 export class FileData {
   fileName: string;
   content: string;
+  contentSnapshot: string;
   type: string;
   color: string;
   constructor(
@@ -98,7 +90,7 @@ export class OutfitLayer {
     name: string = "",
     steve: FileData = null,
     alex: FileData = null,
-    id: string = null,
+    id: string = null
   ) {
     this.name = name;
     this.id = id;
