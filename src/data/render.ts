@@ -510,5 +510,5 @@ export const RenderTextureInTemporyNode = async function (
   snapshot.provider.camera = new THREE.OrthographicCamera();
   snapshot.tempNode = get(snapshotTemporaryNode);
   snapshot.node = get(snapshotTemporaryNode);
-  return await RenderFromSnapshot(snapshot, 300, 300);
+  return await RenderFromSnapshot(snapshot, 150, 150);
 };

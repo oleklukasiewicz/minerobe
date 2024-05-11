@@ -16,6 +16,7 @@
   import PlusIcon from "$icons/plus.svg?raw";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
+  import SubscriptionIcon from "$src/icons/subscriptions.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import CalendarIcon from "$icons/calendar-month.svg?raw";
   import { GetCurrentBaseTexture } from "$src/helpers/image/imageDataHelpers";
@@ -57,6 +58,19 @@
       icon: CalendarIcon,
     },
     {
+      label: "All",
+      icon: SubscriptionIcon,
+      value: "all",
+    },
+    {
+      label: "Collections",
+      icon: ListIcon,
+      value: "collection",
+    },
+    {
+      type: "separator",
+    },
+    {
       label: "Sets",
       icon: AnimationIcon,
       value: "sets",
@@ -66,17 +80,12 @@
       icon: ShoppingBagIcon,
       value: "outfits",
     },
-    {
-      label: "Collections",
-      icon: ListIcon,
-      value: "collection",
-    },
   ];
   const mobileMenuItems = Array.from(menuItems);
 
   onMount(() => {
     currentView = {
-      value: $page.params.page || "sets",
+      value: $page.params.page || "all",
       params: $page.params.params,
     };
     appState.subscribe(async (state) => {
@@ -84,12 +93,16 @@
       if (loaded) return;
       const ward = await GetUserWardrobe();
       localWardrobe.set(ward);
-      currentList = ward.outfits.filter(
-        (x) => x.type == PACKAGE_TYPE.OUTFIT_SET
-      );
+      currentList = ward.outfits;
       filteredList = currentList;
       itemsLoaded = true;
       loaded = true;
+      page.subscribe((value) => {
+        currentView = {
+          value: value.params.page || "all",
+          params: value.params.params,
+        };
+      });
     });
     // appState.subscribe(async (readyness) => {
     //   console.log(readyness);
@@ -158,12 +171,20 @@
     const setStudio = await SetStudioPackage(response.id);
     if (setStudio == null) return;
     navigateToDesign(response);
-    //const newSet = await setsIntance.create(true);
-    //navigateToDesign(newSet);
   };
   const addNewOutfit = async function () {
-    //const newSet = await outfitsInstance.create(true);
-    //navigateToDesign(newSet);
+    const newOutfit = await CreateNewOutfitPackage(
+      "New Outfit",
+      PACKAGE_TYPE.OUTFIT
+    );
+    newOutfit.outfitType = OUTFIT_TYPE.DEFAULT;
+    const response = await AddPackage(newOutfit);
+    if (response == null) return;
+    const addedTowardrobe = await AddPackageToWardrobe(response.id);
+    if (addedTowardrobe == null) return;
+    const setStudio = await SetStudioPackage(response.id);
+    if (setStudio == null) return;
+    navigateToDesign(response);
   };
   const addNewCollection = async function () {
     //const newCollection = await CreateOutfitCollection(true);
@@ -238,6 +259,30 @@
       </div>
     </div>
     <div class="outfits">
+      {#if currentView.value == "all"}
+        <Button
+          on:click={addNewSet}
+          fab="dynamic"
+          size="large"
+          icon={PlusIcon}
+          label="Create set"
+          style="position:fixed"
+        />
+        <div class="list">
+          <OutfitPackageSnapshotList
+            dense={false}
+            loading={!loaded || !itemsLoaded}
+            maxItemWidth="1fr"
+            minItemWidth="155px"
+            fillMethod="auto-fill"
+            renderer={$defaultRenderer}
+            items={filteredList}
+            withBaseTexture={GetCurrentBaseTexture($userSettings) != null}
+            baseTexture={GetCurrentBaseTexture($userSettings)}
+            on:innerselect={onItemSelect}
+          />
+        </div>
+      {/if}
       {#if currentView.value == "sets"}
         <Button
           on:click={addNewSet}

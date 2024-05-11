@@ -123,7 +123,7 @@
         undefined,
         !isItemSet,
         $itemRenderConfig.selectedLayer == null && $itemLayers.length > 0
-          ? $itemLayers[0]
+          ? $itemLayers[$itemLayers.length - 1]
           : null
       );
 
