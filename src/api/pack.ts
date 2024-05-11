@@ -1,12 +1,26 @@
-import { DeleteRequest, GetRequest, PostRequest, PutRequest } from "$src/data/api";
+import {
+  DeleteRequest,
+  GetRequest,
+  PostRequest,
+  PutRequest,
+} from "$src/data/api";
 import type { OutfitLayer, OutfitPackage } from "$src/data/common";
 //packages
-export const GetPackage = async function (id :string) {
+export const GetPackage = async function (id: string) {
   const res = await GetRequest("/api/Package/" + id);
   return res;
-}
+};
 export const UpdatePackage = async function (packageData: OutfitPackage) {
   const res = await PutRequest("/api/Package/" + packageData.id, packageData);
+  return res;
+};
+export const UpdatePackageData = async function (packageData: OutfitPackage) {
+  const data = Object.assign({}, packageData);
+  delete data.layers;
+  const res = await PutRequest(
+    "/api/Package/" + packageData.id + "/data",
+    data
+  );
   return res;
 };
 //layers

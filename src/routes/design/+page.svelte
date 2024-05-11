@@ -63,7 +63,7 @@
     AddPackageLayer,
     OrderPackageLayer,
     RemovePackageLayer,
-    UpdatePackage,
+    UpdatePackageData,
     UpdatePackageLayer,
   } from "$src/api/pack";
   import {
@@ -104,7 +104,7 @@
 
   onMount(async () => {
     appState.subscribe(async (state) => {
-      if (state != APP_STATE.USER_READY) return;
+      if (!(state == APP_STATE.USER_READY || state == APP_STATE.READY)) return;
       defaultProvider = await CreateDefaultRenderProvider($defaultRenderer);
 
       const pack = await GetStudioPackage();
@@ -422,7 +422,7 @@
     if (!loaded) return;
     $itemRenderConfig.item = pack;
     //update package
-    await UpdatePackage(pack);
+    await UpdatePackageData(pack);
   });
   itemRenderConfig.subscribe((layer) => {
     if (!loaded) return;

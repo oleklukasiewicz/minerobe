@@ -84,7 +84,6 @@
 
   let isCollectionDialogOpen = false;
 
-  let isPackageInWardrobe = false;
   let updateAnimation: (animation: any) => void = () => {};
 
   onMount(async () => {
@@ -93,7 +92,7 @@
     let outfitPackage: OutfitPackage;
 
     appState.subscribe(async (state) => {
-      if (state != APP_STATE.GUEST_READY && state != APP_STATE.USER_READY)
+      if (state != APP_STATE.GUEST_READY && state != APP_STATE.USER_READY && state != APP_STATE.READY)
         return;
       defaultRenderProvider =
         await CreateDefaultRenderProvider($defaultRenderer);
