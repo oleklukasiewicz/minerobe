@@ -39,7 +39,7 @@
     baseTexture,
     appState,
   } from "$data/cache";
-  import { GetStudioPackage, UpdateItemInWardrobe } from "$src/api/wardrobe";
+  import { GetStudioPackage } from "$src/api/wardrobe";
   import { OutfitPackageRenderConfig } from "$src/data/model";
   import DefaultAnimation from "$animation/default";
 
