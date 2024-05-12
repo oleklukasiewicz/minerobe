@@ -45,7 +45,6 @@
   import { AddPackage } from "$src/api/pack";
 
   const localWardrobe: Writable<WardrobePackage> = writable(DEFAULT_WARDROBE);
-
   let currentView: any = {};
   let loaded = false;
   let itemsLoaded = false;
