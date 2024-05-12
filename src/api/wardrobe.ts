@@ -1,6 +1,10 @@
 import { DeleteRequest, GetRequest, PostRequest } from "$src/data/api";
 import { currentUser } from "$src/data/cache";
-import type { OutfitPackage, WardrobePackage } from "$src/data/common";
+import type {
+  OutfitPackage,
+  WardrobePackage,
+  WardrobePagedResponse,
+} from "$src/data/common";
 import { get } from "svelte/store";
 
 export const AddPackageToWardrobe = async function (packageId: string) {
@@ -34,4 +38,25 @@ export const SetStudioPackage = async function (packageId: string) {
     {}
   );
   return resp;
+};
+export const GetWardrobePackages = async function (
+  type: string = null,
+  outfitType: string = null,
+  phrase: string = "",
+  page: number = 1,
+  pageSize: number = -1
+) {
+  const req = (await PostRequest(
+    "/api/Wardrobe/" + get(currentUser)?.id + "/items",
+    {
+      page,
+      pageSize,
+      filter: {
+        type,
+        outfitType,
+        phrase,
+      },
+    }
+  )) as WardrobePagedResponse;
+  return req;
 };

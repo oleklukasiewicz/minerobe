@@ -304,3 +304,16 @@ export class OutfitPackageSnapshotPackage {
 export class OutfitPackageSnapshotConfig {
   isMerged: boolean;
 }
+
+export class WardrobePagedResponse {
+  page: number;
+  pageSize: number;
+  total: number;
+  items: WardrobePackage[];
+  constructor(page: number, pageSize: number, total: number, items: WardrobePackage[]) {
+    this.page = page;
+    this.pageSize = pageSize;
+    this.total = total;
+    this.items = items;
+  }
+}

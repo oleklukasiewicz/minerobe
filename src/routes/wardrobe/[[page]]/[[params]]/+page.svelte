@@ -35,16 +35,25 @@
     PACKAGE_TYPE,
   } from "$src/data/consts";
   import { writable, type Writable } from "svelte/store";
-  import type { WardrobePackage } from "$src/data/common";
+  import type {
+    WardrobePackage,
+    WardrobePagedResponse,
+  } from "$src/data/common";
   import {
     AddPackageToWardrobe,
-    GetUserWardrobe,
+    GetWardrobePackages,
     SetStudioPackage,
   } from "$src/api/wardrobe";
   import { CreateNewOutfitPackage } from "$src/helpers/package/packageHelper";
   import { AddPackage } from "$src/api/pack";
 
   const localWardrobe: Writable<WardrobePackage> = writable(DEFAULT_WARDROBE);
+  const localWardobeItems: Writable<WardrobePagedResponse> = writable({
+    items: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+  });
   let currentView: any = {};
   let loaded = false;
   let itemsLoaded = false;
@@ -72,16 +81,16 @@
     {
       label: "Sets",
       icon: AnimationIcon,
-      value: "sets",
+      value: PACKAGE_TYPE.OUTFIT_SET,
     },
     {
       label: "Outfits",
       icon: ShoppingBagIcon,
-      value: "outfits",
+      value: PACKAGE_TYPE.OUTFIT,
     },
   ];
   const mobileMenuItems = Array.from(menuItems);
-
+  let pageSub;
   onMount(() => {
     currentView = {
       value: $page.params.page || "all",
@@ -90,72 +99,25 @@
     appState.subscribe(async (state) => {
       if (!(state == APP_STATE.READY)) return;
       if (loaded) return;
-      const ward = await GetUserWardrobe();
-      localWardrobe.set(ward);
-      currentList = ward.outfits;
-      filteredList = currentList;
-      itemsLoaded = true;
+      //const ward = await GetUserWardrobe();
       loaded = true;
-      page.subscribe((value) => {
+      if (pageSub != null) pageSub();
+      pageSub = page.subscribe(async (value) => {
+        if (!loaded) return;
         currentView = {
           value: value.params.page || "all",
           params: value.params.params,
         };
+        itemsLoaded = false;
+        const type = value.params.page;
+        const targetType =
+          type == PACKAGE_TYPE.OUTFIT_SET || type == PACKAGE_TYPE.OUTFIT
+            ? type
+            : null;
+        const items = await GetWardrobePackages(targetType);
+        localWardobeItems.set(items);
       });
     });
-    // appState.subscribe(async (readyness) => {
-    //   console.log(readyness);
-    //   loaded = readyness?.user != null;
-    //   if (loaded) {
-    //     await ParseWardrobeToLocal($wardrobe);
-    //     outfitsCount = GetCategoriesFromList($wardrobe.outfits);
-    //     const outfitsMenuItems = Object.keys(outfitsCount)
-    //       .map((x) => {
-    //         return {
-    //           label: x,
-    //           value: "outfits",
-    //           icon: GetOutfitIconFromType(x),
-    //           params: x,
-    //           badge: outfitsCount[x],
-    //         };
-    //       })
-    //       .filter((x) => x.badge > 0);
-    //     menuItems.push({
-    //       type: "separator",
-    //     });
-    //     menuItems.push(...outfitsMenuItems);
-    //   }
-    //   page.subscribe((value) => {
-    //     currentView = {
-    //       value: value.params.page || "sets",
-    //       params: value.params.params,
-    //     };
-
-    //     itemsLoaded = false;
-    //     switch (currentView.value) {
-    //       case "sets":
-    //         currentList = $wardrobe.outfits.filter(
-    //           (x) => x.type == PACKAGE_TYPE.OUTFIT_SET
-    //         );
-    //         break;
-    //       case "outfits":
-    //         currentList = $wardrobe.outfits
-    //           .filter((x) => x.type == PACKAGE_TYPE.OUTFIT)
-    //           .filter((x) => {
-    //             return currentView.params == "" || currentView.params == null
-    //               ? true
-    //               : x.outfitType?.toLowerCase() ==
-    //                   currentView?.params?.toLowerCase();
-    //           });
-    //         break;
-    //       case "collection":
-    //         currentList = $wardrobe.collections;
-    //         break;
-    //     }
-    //     filteredList = currentList;
-    //     itemsLoaded = true;
-    //   });
-    // });
   });
   const addNewSet = async function () {
     const newOutfit = await CreateNewOutfitPackage(
@@ -189,12 +151,7 @@
     //const newCollection = await CreateOutfitCollection(true);
     //navigateToCollection(newCollection.id);
   };
-  const filterOutfits = function (e) {
-    const value = e.detail;
-    filteredList = currentList.filter((x) => {
-      return x.name.toLowerCase().includes(value.toLowerCase());
-    });
-  };
+  const filterOutfits = function (e) {};
   const onItemSelect = async function (e) {
     const item = e.detail.item;
     const resp = await SetStudioPackage(item.id);
@@ -213,6 +170,12 @@
   const compare = (a, b) => {
     return a?.value == b?.value && a?.params == b?.params;
   };
+
+  localWardobeItems.subscribe((value) => {
+    currentList = value.items;
+    filteredList = currentList;
+    itemsLoaded = true;
+  });
 </script>
 
 <div class="wardrobe-view" class:mobile={$isMobileView}>
@@ -282,7 +245,7 @@
           />
         </div>
       {/if}
-      {#if currentView.value == "sets"}
+      {#if currentView.value == PACKAGE_TYPE.OUTFIT_SET}
         <Button
           on:click={addNewSet}
           fab="dynamic"
@@ -306,7 +269,7 @@
           />
         </div>
       {/if}
-      {#if currentView.value == "outfits"}
+      {#if currentView.value == PACKAGE_TYPE.OUTFIT}
         <Button
           on:click={addNewOutfit}
           fab="dynamic"
