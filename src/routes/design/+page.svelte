@@ -279,6 +279,7 @@
       layers.push(...responselayers);
       return layers;
     });
+    $itemRenderConfig.selectedLayer = responselayers[0];
     applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
   };
   const downloadImage = async () => {

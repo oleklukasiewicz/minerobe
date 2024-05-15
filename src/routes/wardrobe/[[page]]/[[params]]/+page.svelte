@@ -19,7 +19,10 @@
   import SubscriptionIcon from "$src/icons/subscriptions.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import CalendarIcon from "$icons/calendar-month.svg?raw";
-  import { GetCurrentBaseTexture } from "$src/helpers/image/imageDataHelpers";
+  import {
+    GetCurrentBaseTexture,
+    GetOutfitIconFromType,
+  } from "$src/helpers/image/imageDataHelpers";
   import Search from "$component/base/Search/Search.svelte";
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
@@ -41,6 +44,7 @@
   } from "$src/data/common";
   import {
     AddPackageToWardrobe,
+    GetWadrobeSummary,
     GetWardrobePackages,
     SetStudioPackage,
   } from "$src/api/wardrobe";
@@ -54,6 +58,7 @@
     page: 1,
     pageSize: 10,
   });
+  const localWardobeSummary: Writable<any> = writable({});
   let currentView: any = {};
   let loaded = false;
   let itemsLoaded = false;
@@ -100,6 +105,22 @@
       if (!(state == APP_STATE.READY)) return;
       if (loaded) return;
       //const ward = await GetUserWardrobe();
+      const summary = await GetWadrobeSummary();
+      const outfitsMenuItems = summary.outfitTypes
+        .map((x) => {
+          return {
+            label: x.outfitType,
+            value: PACKAGE_TYPE.OUTFIT,
+            icon: GetOutfitIconFromType(x.outfitType),
+            params: x.outfitType,
+            badge: x.count,
+          };
+        })
+        .filter((x) => x.badge > 0 && x.label?.toLowerCase() != OUTFIT_TYPE.OUTFIT_SET);
+      menuItems.push({
+        type: "separator",
+      });
+      menuItems.push(...outfitsMenuItems);
       loaded = true;
       if (pageSub != null) pageSub();
       pageSub = page.subscribe(async (value) => {
@@ -114,7 +135,7 @@
           type == PACKAGE_TYPE.OUTFIT_SET || type == PACKAGE_TYPE.OUTFIT
             ? type
             : null;
-        const items = await GetWardrobePackages(targetType);
+        const items = await GetWardrobePackages(targetType, value.params.params);
         localWardobeItems.set(items);
       });
     });

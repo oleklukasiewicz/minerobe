@@ -60,3 +60,7 @@ export const GetWardrobePackages = async function (
   )) as WardrobePagedResponse;
   return req;
 };
+export const GetWadrobeSummary = async function () {
+  const req = await GetRequest("/api/Wardrobe/" + get(currentUser).id + "/summary");
+  return req;
+};
