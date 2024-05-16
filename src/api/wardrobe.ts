@@ -61,6 +61,29 @@ export const GetWardrobePackages = async function (
   return req;
 };
 export const GetWadrobeSummary = async function () {
-  const req = await GetRequest("/api/Wardrobe/" + get(currentUser).id + "/summary");
+  const req = await GetRequest(
+    "/api/Wardrobe/" + get(currentUser).id + "/summary"
+  );
+  return req;
+};
+export const GetWadrobePackagesSingleLayer = async function (
+  type: string = null,
+  outfitType: string = null,
+  phrase: string = "",
+  page: number = 1,
+  pageSize: number = -1
+) {
+  const req = (await PostRequest(
+    "/api/Wardrobe/" + get(currentUser)?.id + "/items/singleLayer",
+    {
+      page,
+      pageSize,
+      filter: {
+        type,
+        outfitType,
+        phrase,
+      },
+    }
+  )) as WardrobePagedResponse;
   return req;
 };

@@ -27,8 +27,13 @@
     STEVE_MODEL,
     ALEX_MODEL,
     APP_STATE,
+    OUTFIT_TYPE,
   } from "$data/consts";
-  import { OutfitLayer, OutfitPackage } from "$data/common";
+  import {
+    OutfitLayer,
+    OutfitPackage,
+    WardrobePagedResponse,
+  } from "$data/common";
   import {
     currentUser,
     defaultRenderer,
@@ -39,7 +44,11 @@
     baseTexture,
     appState,
   } from "$data/cache";
-  import { GetStudioPackage } from "$src/api/wardrobe";
+  import {
+    GetStudioPackage,
+    GetWadrobePackagesSingleLayer,
+    GetWadrobeSummary,
+  } from "$src/api/wardrobe";
   import { OutfitPackageRenderConfig } from "$src/data/model";
   import DefaultAnimation from "$animation/default";
 
@@ -96,8 +105,8 @@
   let loaded = false;
   let isDragging = false;
 
-  let pickerOutfits = [];
-  let pickerCategories = ["ALL"];
+  let pickerOutfits: WardrobePagedResponse | any = {};
+  let pickerCategories = [];
   let isPickerLoading = true;
 
   let isOutfitPickerOpen = false;
@@ -318,7 +327,7 @@
     isShareDialogOpen = false;
   };
   const deletePackage = async function () {
-    const resp= await RemovePackage($itemPackage.id);
+    const resp = await RemovePackage($itemPackage.id);
     if (resp == null) return;
     navigateToWardrobe();
   };
@@ -326,13 +335,33 @@
   //picker
   const openOutfitPicker = async function () {
     isOutfitPickerOpen = true;
-    isPickerLoading = true;
-    //pickerOutfits = await FetchWardrobeOutfitsByCategory("ALL", true);
-    isPickerLoading = false;
+    const options = {
+      itemsPerPage: 24,
+      page: 0,
+      filters: {
+        category: "",
+        search: "",
+      },
+    };
+    const summary = await GetWadrobeSummary();
+    pickerCategories = summary.outfitTypes.filter(
+      (x:any) => x.outfitType.toLowerCase() != OUTFIT_TYPE.OUTFIT_SET
+    ).map((x:any) => x.outfitType);
+    await fetchWadrobeItems(options);
   };
-  const fetchByCategory = async function (e) {
+  const fetchWadrobeItemsFromEvent = async function (e) {
+    await fetchWadrobeItems(e.detail);
+  };
+  const fetchWadrobeItems = async function (options) {
     isPickerLoading = true;
-    //pickerOutfits = await FetchWardrobeOutfitsByCategory(e.detail, true);
+    const items = await GetWadrobePackagesSingleLayer(
+      PACKAGE_TYPE.OUTFIT,
+      options.filters.category,
+      options.filters.search,
+      options.page,
+      options.itemsPerPage
+    );
+    pickerOutfits = items;
     isPickerLoading = false;
   };
 
@@ -641,9 +670,11 @@
       <OutfitPicker
         bind:loading={isPickerLoading}
         renderer={$defaultRenderer}
-        outfits={pickerOutfits}
+        outfits={pickerOutfits.items}
+        itemsPerPage={24}
+        totalItemsCount={pickerOutfits.total}
         categories={pickerCategories}
-        on:category={fetchByCategory}
+        on:optionsChanged={fetchWadrobeItemsFromEvent}
         on:select={(e) => addNewRemoteLayer(e.detail)}
       />
     </div>

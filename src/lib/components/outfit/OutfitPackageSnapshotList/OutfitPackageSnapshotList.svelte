@@ -48,8 +48,6 @@
             "base",
             new FileData("base", baseTexture, ""),
             new FileData("base", baseTexture, ""),
-            null,
-            null,
             null
           )
         );
@@ -75,7 +73,7 @@
   style="grid-template-columns: repeat({fillMethod}, minmax({minItemWidth}, {maxItemWidth}));"
 >
   {#if !loading && steveListProvider && alexListProvider}
-    {#each normalizedItems as item (item.id + item.layers[0]?.variantId)}
+    {#each normalizedItems as item (item.id + item.layers[0].id)}
       <OutfitPackageSnapshotItem
         on:select={selectRenderedOutfit}
         multiple={item.type == PACKAGE_TYPE.OUTFIT_SET ? 1 : 2}

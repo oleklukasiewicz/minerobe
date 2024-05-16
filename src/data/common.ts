@@ -309,8 +309,8 @@ export class WardrobePagedResponse {
   page: number;
   pageSize: number;
   total: number;
-  items: WardrobePackage[];
-  constructor(page: number, pageSize: number, total: number, items: WardrobePackage[]) {
+  items: OutfitPackage[];
+  constructor(page: number, pageSize: number, total: number, items: OutfitPackage[]) {
     this.page = page;
     this.pageSize = pageSize;
     this.total = total;
