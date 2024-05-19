@@ -67,13 +67,15 @@
   {/if}
   <div class="render-area">
     <!-- svelte-ignore a11y-missing-attribute -->
-    {#if item.presentationConfig.isSnapshot == false}
-      <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />
-    {:else}
-      <img
-        src={currentLayer != null ? currentLayer[item.model].content : null}
-        style="width: 100%;height:100%"
-      />
+    {#if item.layers.length > 0}
+      {#if item.presentationConfig.isSnapshot == false}
+        <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />
+      {:else}
+        <img
+          src={currentLayer != null ? currentLayer[item.model].content : null}
+          style="width: 100%;height:100%"
+        />
+      {/if}
     {/if}
   </div>
   <div class="data-area">

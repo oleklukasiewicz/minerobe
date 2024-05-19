@@ -43,7 +43,7 @@ export const GetWardrobePackages = async function (
   type: string = null,
   outfitType: string = null,
   phrase: string = "",
-  page: number = 1,
+  page: number = 0,
   pageSize: number = -1
 ) {
   const req = (await PostRequest(

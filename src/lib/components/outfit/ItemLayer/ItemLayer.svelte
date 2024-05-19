@@ -121,9 +121,9 @@
           {#if item.type == LAYER_TYPE.REMOTE}
             <Label variant="rare">{$_("layerType.remote")}</Label>
           {/if}
-          {#if item.type == LAYER_TYPE.REMOTE && !item.isShared}
+          <!-- {#if item.type == LAYER_TYPE.REMOTE && !item.}
             <Label variant="ancient">Unshared</Label>
-          {/if}
+          {/if} -->
         {/if}
       </div>
     </span>

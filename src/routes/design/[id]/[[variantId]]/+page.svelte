@@ -279,7 +279,7 @@
                 controls={isItemSet}
                 modelName={$localPackage.model}
                 link={item.type == LAYER_TYPE.REMOTE
-                  ? "/design/outfit/" + item.id + "/" + item.id
+                  ? "/design/" + item.sourcePackageId + "/" + item.id
                   : null}
                 bind:label={item.name}
                 readonly={true}

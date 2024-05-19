@@ -58,4 +58,27 @@ export const AddPackage = async function (packageData: OutfitPackage) {
 export const RemovePackage = async function (packageId: string) {
   const res = await DeleteRequest("/api/Package/" + packageId);
   return res;
+};
+export const AddRemoteLayerToPackage = async function (
+  layerId: string,
+  packageId: string
+) {
+  const res = await PostRequest(
+    "/api/Layers/add/" + layerId + "/" + packageId,
+    {}
+  );
+  return res;
+};
+export const GetLayer = async function (id: string) {
+  const res = await GetRequest("/api/Layers/" + id);
+  return res;
+};
+export const RemoveRemoteLayerFromPackage = async function (
+  layerId: string,
+  packageId: string
+) {
+  const res = await DeleteRequest(
+    "/api/Layers/remove/" + layerId + "/" + packageId
+  );
+  return res;
 }

@@ -70,9 +70,12 @@
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import {
     AddPackageLayer,
+    AddRemoteLayerToPackage,
+    GetLayer,
     OrderPackageLayer,
     RemovePackage,
     RemovePackageLayer,
+    RemoveRemoteLayerFromPackage,
     SetGlobalLayer,
     UpdatePackageData,
     UpdatePackageLayer,
@@ -180,7 +183,12 @@
   };
   const removeLayer = async function (e) {
     const layer = e.detail.texture;
-    const isRemoved = await RemovePackageLayer(layer.id);
+    let isRemoved = false;
+    if (layer.sourcePackageId != $itemPackage.id) {
+      isRemoved = await RemoveRemoteLayerFromPackage(layer.id, $itemPackage.id);
+    } else {
+      isRemoved = await RemovePackageLayer(layer.id);
+    }
     if (!isRemoved) return;
     let index = $itemLayers.indexOf(layer);
     let refresh = false;
@@ -235,23 +243,14 @@
     await UpdatePackageLayer(await AddLayerSnapshot(layer));
   };
   const addNewRemoteLayer = async function (outfit: OutfitPackage) {
-    // isOutfitPickerOpen = false;
-    // l//et layer = await outfitsInstance.fetchHelper.fetchLayer(
-    //   outfit.id,
-    //   outfit.layers[0].id
-    // );
-    // //check if layer already exists
-    // if ($itemLayers.find((x) => x.id == outfit.id && x.id == layer.variantId))
-    //   return;
-    // itemLayers.update((layers) => {
-    //   layer.id = outfit.id;
-    //   layer.type = LAYER_TYPE.REMOTE;
-    //   const newRemote = layer;
-    //   layers.unshift(newRemote);
-    //   $itemRenderConfig.selectedLayer = newRemote;
-    //   applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
-    //   return layers;
-    // });
+    const layerId = outfit.layers[0].id;
+    var resp = await AddRemoteLayerToPackage(layerId, $itemPackage.id);
+    if (resp ==null) return;
+    itemLayers.update((layers) => {
+      layers.push(resp);
+      return layers;
+    });
+    isOutfitPickerOpen = false;
   };
   const applyAnimations = function (
     pack: OutfitPackage,
@@ -344,9 +343,9 @@
       },
     };
     const summary = await GetWadrobeSummary();
-    pickerCategories = summary.outfitTypes.filter(
-      (x:any) => x.outfitType.toLowerCase() != OUTFIT_TYPE.OUTFIT_SET
-    ).map((x:any) => x.outfitType);
+    pickerCategories = summary.outfitTypes
+      .filter((x: any) => x.outfitType.toLowerCase() != OUTFIT_TYPE.OUTFIT_SET)
+      .map((x: any) => x.outfitType);
     await fetchWadrobeItems(options);
   };
   const fetchWadrobeItemsFromEvent = async function (e) {
