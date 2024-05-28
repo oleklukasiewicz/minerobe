@@ -28,7 +28,7 @@ export class OutfitPackage {
     name: string,
     model: string,
     layers: OutfitLayer[],
-    type: string = PACKAGE_TYPE.OUTFIT,
+    type: string = PACKAGE_TYPE.OUTFIT
   ) {
     this.name = name;
     this.model = model;
@@ -310,10 +310,20 @@ export class WardrobePagedResponse {
   pageSize: number;
   total: number;
   items: OutfitPackage[];
-  constructor(page: number, pageSize: number, total: number, items: OutfitPackage[]) {
+  constructor(
+    page: number,
+    pageSize: number,
+    total: number,
+    items: OutfitPackage[]
+  ) {
     this.page = page;
     this.pageSize = pageSize;
     this.total = total;
     this.items = items;
   }
+}
+export class MinerobeUserProfile {
+  user: MinerobeUser;
+  settings: MinerobeUserSettings;
+  social: PackageSocialData;
 }
