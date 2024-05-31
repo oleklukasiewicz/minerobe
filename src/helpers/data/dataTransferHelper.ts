@@ -95,6 +95,21 @@ export const ImportImage = async function () {
     };
   });
 };
+export const ImportSingleImage = async function () {
+  //create node for fle download
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.multiple = false;
+  input.click();
+
+  return new Promise<FileData>((resolve) => {
+    input.onchange = (event: any) => {
+      const file =event.target.files[0];     
+      resolve(ImportLayerFromFile(file));
+    };
+  });
+};
 export const ImportImageFromUrl = async function (url: string) {
   return fetch(url)
     .then((response) => response.blob())

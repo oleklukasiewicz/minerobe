@@ -8,10 +8,8 @@
   import {
     defaultRenderer,
     isReadyForData,
-    userSettings,
   } from "$src/data/cache";
   import type { OutfitPackageCollection } from "$src/data/common";
-  import { GetCurrentBaseTexture } from "$src/helpers/image/imageDataHelpers";
   import { UpdateCollectionInWardrobe } from "$src/helpers/other/apiHelper";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
@@ -60,8 +58,6 @@
       loading={!loaded}
       renderer={$defaultRenderer}
       items={$localCollection.outfits}
-      withBaseTexture={GetCurrentBaseTexture($userSettings) != null}
-      baseTexture={GetCurrentBaseTexture($userSettings) }
       on:innerselect={goToItemPage}
     />
   </div>

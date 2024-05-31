@@ -8,7 +8,7 @@
   } from "$src/data/render";
   import CloudIcon from "$icons/cloud.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
-  import { currentUser, userSettings } from "$src/data/cache";
+  import { currentUser } from "$src/data/cache";
   import { FindColorTitle, FindColor } from "$src/helpers/image/colorHelper";
   import OutfitPackageSnapshotRender from "$component/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
@@ -60,11 +60,11 @@
   class:outfit={item.type != OUTFIT_TYPE.OUTFIT_SET}
   class:dense
 >
-  {#if item.id == $userSettings.currentSkin?.id}
+  <!-- {#if item.id == $userSettings.currentSkin?.id}
     <div class="current-flag" title="Current skin">
       <div class="icon-small">{@html LoaderIcon}</div>
     </div>
-  {/if}
+  {/if} -->
   <div class="render-area">
     <!-- svelte-ignore a11y-missing-attribute -->
     {#if item.layers.length > 0}

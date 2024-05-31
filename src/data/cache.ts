@@ -60,15 +60,6 @@ export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
   }
   return result;
 });
-export const userSettings: Writable<MinerobeUserSettings> = writable({
-  userId: null,
-  model: "alex",
-  baseTexture: null,
-  theme: "",
-  linkedMinecraftAccount: null,
-  currentSkin: null,
-  currentSkinModel: null,
-});
 export const isUserGuest: Readable<boolean> = derived(currentUser, ($user) => $user?.id == null);
 
 let wardrobeSubscription, settingsSubscription, userSubscription;
@@ -111,9 +102,6 @@ export const setup = function () {
   });
 };
 const setupSubscriptions = function () {
-  settingsSubscription = userSettings.subscribe(async (data) => {
-    if (get(appState) == APP_STATE.READY && data) await UploadSettings(data);
-  });
 };
 export const currentToasts: Writable<any[]> = writable([]);
 export const showToast = function (

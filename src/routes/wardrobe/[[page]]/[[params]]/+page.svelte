@@ -4,7 +4,6 @@
     currentUser,
     defaultRenderer,
     isMobileView,
-    userSettings,
   } from "$src/data/cache";
   import {
     navigateToCollection,
@@ -20,7 +19,6 @@
   import ListIcon from "$icons/list.svg?raw";
   import CalendarIcon from "$icons/calendar-month.svg?raw";
   import {
-    GetCurrentBaseTexture,
     GetOutfitIconFromType,
   } from "$src/helpers/image/imageDataHelpers";
   import Search from "$component/base/Search/Search.svelte";
@@ -260,8 +258,6 @@
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
             items={filteredList}
-            withBaseTexture={GetCurrentBaseTexture($userSettings) != null}
-            baseTexture={GetCurrentBaseTexture($userSettings)}
             on:innerselect={onItemSelect}
           />
         </div>
@@ -284,8 +280,6 @@
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
             items={filteredList}
-            withBaseTexture={GetCurrentBaseTexture($userSettings) != null}
-            baseTexture={GetCurrentBaseTexture($userSettings)}
             on:innerselect={onItemSelect}
           />
         </div>

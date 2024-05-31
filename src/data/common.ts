@@ -224,22 +224,12 @@ export class MinerobeUserLink {
 }
 //settings
 export class MinerobeUserSettings {
-  userId: string;
-  baseTexture: OutfitLayer;
-  currentSkin: SkinData;
-  linkedMinecraftAccount: any;
-  model: string;
+  id: string;
+  ownerId: string;
+  currentTexture: OutfitPackage;
+  baseTexture: OutfitPackage;
+  linkedAccount:any;
   theme: string;
-  constructor(
-    baseTexture: OutfitLayer,
-    theme: string,
-    userId: string = get(currentUser)?.id
-  ) {
-    this.baseTexture = baseTexture;
-    this.theme = theme;
-    this.userId = userId;
-    this.model = MODEL_TYPE.STEVE;
-  }
 }
 export class SkinData {
   id: string;

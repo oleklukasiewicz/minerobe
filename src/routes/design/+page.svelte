@@ -39,7 +39,6 @@
     defaultRenderer,
     wardrobe,
     isMobileView,
-    userSettings,
     showToast,
     baseTexture,
     appState,
@@ -139,8 +138,8 @@
           : null
       );
 
-      if (isItemSet && $userSettings.baseTexture != null)
-        $itemRenderConfig.setBaseTextureFromLayer($userSettings.baseTexture);
+      if (isItemSet)
+        $itemRenderConfig.setBaseTextureFromLayer(null);
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
       loaded = true;
@@ -293,7 +292,7 @@
   const downloadImage = async () => {
     await ExportImageLayers(
       $itemRenderConfig.getLayersForModel(
-        !(isItemSet && $userSettings.baseTexture != null)
+        !(isItemSet)
       ),
       $itemRenderConfig,
       $itemPackage.name
@@ -532,7 +531,7 @@
           {#if $itemPackage.social.isShared}
             <Label variant="rare">{$_("shared")}</Label>
           {/if}
-          {#if isItemSet && $itemPackage.id == $userSettings.currentSkin?.id}
+          {#if isItemSet}
             <Label variant="ancient">Current skin</Label>
           {/if}
           <br />

@@ -1,9 +1,10 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
-  import { planksTexture, userSettings, showToast, baseTexture } from "$src/data/cache";
-  import { MergeStringToImage } from "$src/data/imageMerger";
-  import { ImportImage } from "$src/helpers/data/dataTransferHelper";
-  import { createEventDispatcher, onMount } from "svelte";
+  import { planksTexture } from "$src/data/cache";
+  import {
+    ImportSingleImage,
+  } from "$src/helpers/data/dataTransferHelper";
+  import { createEventDispatcher } from "svelte";
   import DynamicRender from "../render/DynamicRender.svelte";
   import { MODEL_TYPE } from "$src/data/consts";
   import DefaultAnimation from "$src/animation/default";
@@ -12,46 +13,33 @@
   import CloseIcon from "$icons/close.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import Button from "../base/Button/Button.svelte";
-  import { OutfitPackageRenderConfig } from "$src/data/model";
   import { ALEX_MODEL, STEVE_MODEL } from "$src/data/consts";
-  import { FileData, OutfitLayer } from "$src/data/common";
-  import { text } from "@sveltejs/kit";
+  import { FileData, OutfitLayer, OutfitPackage } from "$src/data/common";
 
   const dispatch = createEventDispatcher();
 
+  export let baseTexture: OutfitPackage = null;
+
   let texture = $planksTexture;
   const importBaseImage = async () => {
-    const filedata = await ImportImage();
+    const filedata = await ImportSingleImage();
     if (filedata) {
-      userSettings.update((v) => {
-        const layer = v.baseTexture as OutfitLayer;
-        layer[v.model].content = filedata[0].content;
-        showToast("Base texture changed");
-        return v;
-      });
+      baseTexture.layers.push(
+        new OutfitLayer(
+          "base",
+          new FileData("s_base", filedata.content),
+          new FileData("a_base", filedata.content)
+        )
+      );
+      baseTexture = { ...baseTexture };
     }
   };
   const resetImage = () => {
-    userSettings.update((v) => {
-      v.baseTexture = new OutfitLayer("base",new FileData("s_base",null),new FileData("a_base",null));
-      return v;
-    });
+    baseTexture.layers = [];
+    baseTexture = { ...baseTexture };
   };
-  onMount(async () => {
-    userSettings.subscribe(async (v) => {
-      if (v.baseTexture) {
-        const config = new OutfitPackageRenderConfig();
-        config.model = v.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
-        texture = await MergeStringToImage(
-          [$planksTexture, v.baseTexture[v.model].content].filter((v) => v),
-          config
-        );
-      } else texture = $planksTexture;
-    });
-  });
-
   const onSetTexture = function () {
-    dispatch("setTexture", texture);
+    dispatch("setTexture", baseTexture);
   };
 </script>
 
@@ -59,16 +47,20 @@
   <div class="render">
     <DynamicRender
       defaultAnimation={DefaultAnimation}
-      texture={$userSettings.baseTexture[$userSettings.model].content || texture}
-      model={$userSettings.model == MODEL_TYPE.ALEX
+      texture={baseTexture?.layers?.length > 0
+        ? baseTexture?.layers[0][baseTexture.model].content
+        : texture}
+      model={baseTexture?.model == MODEL_TYPE.ALEX
         ? ALEX_MODEL.model
         : STEVE_MODEL.model}
-      modelName={$userSettings.model}
+      modelName={baseTexture?.model == MODEL_TYPE.ALEX
+        ? ALEX_MODEL.model
+        : STEVE_MODEL.model}
     />
   </div>
   <div class="data">
     <SectionTitle label="model" />
-    <ModelSelection bind:group={$userSettings.model} />
+    <ModelSelection bind:group={baseTexture.model} />
     <SectionTitle label="actions" />
     <div class="actions">
       <Button

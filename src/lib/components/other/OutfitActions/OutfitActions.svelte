@@ -5,7 +5,6 @@
     currentUser,
     isMobileView,
     isUserGuest,
-    userSettings,
   } from "$src/data/cache";
   import SetSkinButton from "../SetSkinButton/SetSkinButton.svelte";
   import type { OutfitPackage } from "$src/data/common";
@@ -51,7 +50,7 @@
 </script>
 
 <div class="item-actions" class:mobile>
-  {#if $userSettings?.linkedMinecraftAccount?.name != null && outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET}
+  {#if outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET}
     <SetSkinButton
       item={outfitPackage}
       texture={modelTexture}
@@ -63,8 +62,7 @@
     on:click={downloadImage}
     label={$_("download")}
     onlyIcon={!$isMobileView &&
-      outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET &&
-      $userSettings?.linkedMinecraftAccount?.name != null}
+      outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET }
     icon={DownloadIcon}
     disabled={outfitPackage.layers.length == 0 || loading}
     size="large"

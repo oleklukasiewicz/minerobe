@@ -1,5 +1,5 @@
 import { UploadSettings } from "$src/api/settings";
-import { currentUser, userSettings } from "$src/data/cache";
+import { currentUser } from "$src/data/cache";
 import { SkinData } from "$src/data/common";
 import { get } from "svelte/store";
 

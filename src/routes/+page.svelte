@@ -1,8 +1,6 @@
 <script lang="ts">
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
-  import { FetchLandingPage } from "$src/api/landing";
-  import { defaultRenderer, isMobileView, userSettings } from "$src/data/cache";
-  import { GetCurrentBaseTexture } from "$src/helpers/image/imageDataHelpers";
+  import { defaultRenderer, isMobileView } from "$src/data/cache";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
 
@@ -37,8 +35,6 @@
       items={mostRecent}
       loading={!landingLoaded}
       renderer={$defaultRenderer}
-      withBaseTexture={GetCurrentBaseTexture($userSettings) != null}
-      baseTexture={GetCurrentBaseTexture($userSettings) }
       dense={false}
       on:innerselect={goToItemPage}
     />
@@ -47,8 +43,6 @@
       items={mostLiked}
       loading={!landingLoaded}
       renderer={$defaultRenderer}
-      withBaseTexture={GetCurrentBaseTexture($userSettings) != null}
-      baseTexture={GetCurrentBaseTexture($userSettings) }
       dense={false}
       on:innerselect={goToItemPage}
     />
@@ -57,8 +51,6 @@
       items={mostDownloaded}
       loading={!landingLoaded}
       renderer={$defaultRenderer}
-      withBaseTexture={GetCurrentBaseTexture($userSettings) != null}
-      baseTexture={GetCurrentBaseTexture($userSettings) }
       dense={false}
       on:innerselect={goToItemPage}
     />

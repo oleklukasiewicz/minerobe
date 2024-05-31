@@ -22,7 +22,6 @@
   import {
     wardrobe,
     defaultRenderer,
-    userSettings,
     isMobileView,
     baseTexture,
     appState,
@@ -48,7 +47,6 @@
 
   import { ExportImageString } from "$src/helpers/data/dataTransferHelper.js";
   import {
-    GetCurrentBaseTexture,
     sortOutfitLayersByColor,
   } from "$src/helpers/image/imageDataHelpers.js";
   import {
@@ -116,11 +114,7 @@
         !isItemSet,
         varaint ? varaint : $itemLayers[0]
       );
-      $itemRenderConfig.setBaseTextureFromString(
-        isItemSet &&
-          GetCurrentBaseTexture($userSettings, $localPackage.model) != null
-          ? GetCurrentBaseTexture($userSettings, $localPackage.model)
-          : $baseTexture
+      $itemRenderConfig.setBaseTextureFromString(null
       );
 
       loaded = true;
@@ -246,7 +240,7 @@
         <Placeholder style="height:26px;max-width:100px;" {loaded}>
           <div style="display: flex;gap:4px;height:24px">
             <Label variant="unique">{$localPackage.publisher.name}</Label>
-            {#if isItemSet && $localPackage.id == $userSettings.currentSkin?.id}
+            {#if isItemSet}
               <Label variant="ancient">Current skin</Label>
             {/if}
             &nbsp;

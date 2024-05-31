@@ -1,7 +1,6 @@
 import { FetchSettings } from "$src/api/settings";
 import { get } from "svelte/store";
 import { page } from "$app/stores";
-import { userSettings } from "./cache";
 import ioClient from "socket.io-client";
 import { serverConfig, sharedConfig } from "./config";
 
@@ -22,6 +21,5 @@ export const configureSocket = (userId) => {
   io.on("linkFinished", async () => {
     console.log("Auth finished");
     const sets = await FetchSettings(userId);
-    userSettings.set(sets);
   });
 };

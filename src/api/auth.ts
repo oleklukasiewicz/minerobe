@@ -1,5 +1,5 @@
 import { get } from "svelte/store";
-import { currentUser, userSettings } from "../data/cache";
+import { currentUser } from "../data/cache";
 import {
   GetRequest,
   PutRequest,
@@ -35,7 +35,6 @@ export const loginUser = async function () {
 export const logoutUser = async function () {
   await logout();
   currentUser.set(null);
-  userSettings.set(new MinerobeUserSettings(null, null, null));
 };
 
 export const SetMinerobeUser = async function (user: MinerobeUser) {

@@ -4,63 +4,70 @@
   import {
     appState,
     currentUser,
-    defaultRenderer,
     isMobileView,
-    isReadyForData,
-    userSettings,
+    defaultRenderer,
   } from "$src/data/cache";
   import { APP_STATE, MODEL_TYPE } from "$src/data/consts";
-  import {
-    CreateDefaultRenderProvider,
-    RenderProvider,
-  } from "$src/data/render";
   import { onMount } from "svelte";
-  import { propertyStore } from "svelte-writable-derived";
   import { logoutUser } from "$src/api/auth";
-  import {
-    navigate,
-    navigateToHome,
-  } from "$src/helpers/other/navigationHelper";
+  import { navigateToHome } from "$src/helpers/other/navigationHelper";
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import Dialog from "$component/base/Dialog/Dialog.svelte";
   import AvatarIcon from "$src/icons/avatar.svg?raw";
   import LoginIcon from "$src/icons/login.svg?raw";
-  import { GetCurrentBaseTexture } from "$src/helpers/image/imageDataHelpers";
-  import OutfitTextureRender from "$lib/components/render/OutfitTextureRender.svelte";
   import BaseTextureDialog from "$lib/components/dialog/BaseTextureDialog.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import LinkAccountDialog from "$lib/components/dialog/LinkAccountDialog.svelte";
   import { GetUserProfile } from "$src/api/user";
-  import { writable, type Writable } from "svelte/store";
-  import { MinerobeUserProfile } from "$src/data/common";
+  import {
+    derived,
+    writable,
+    type Readable,
+    type Writable,
+  } from "svelte/store";
+  import { MinerobeUserProfile, OutfitPackage } from "$src/data/common";
+  import { UpdateBaseTexture } from "$src/api/settings";
+  import OutfitTextureRender from "$component/render/OutfitTextureRender.svelte";
+  import {
+    CreateDefaultRenderProvider,
+    type RenderProvider,
+  } from "$src/data/render";
 
   const userProfile: Writable<MinerobeUserProfile> = writable(
     new MinerobeUserProfile()
+  );
+  const baseTexture: Readable<OutfitPackage> = derived(
+    userProfile,
+    ($userProfile) => $userProfile?.settings?.baseTexture
   );
 
   let providers: { steve: RenderProvider; alex: RenderProvider };
 
   let isAuthDialogOpen = false;
   let isBaseTextureDialogOpen = false;
-  let authCode = "";
-  let profile: any;
   let profilePhoto = "";
-  let requireUserInteraction = true;
-  let authUrl = "";
   let loading = true;
   onMount(async () => {
     appState.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
+      providers = await CreateDefaultRenderProvider($defaultRenderer);
       var profile = await GetUserProfile($currentUser?.id);
       userProfile.set(profile);
-      console.log(profile);
       loading = false;
     });
   });
   const logout = async () => {
     navigateToHome();
     await logoutUser();
+  };
+  const updateBaseTexture = async (event) => {
+    userProfile.update((p) => {
+      p.settings.baseTexture = event.detail;
+      return p;
+    });
+    const texture = event.detail;
+    await UpdateBaseTexture(texture);
+    isBaseTextureDialogOpen = false;
   };
 </script>
 
@@ -79,7 +86,10 @@
         style="height:46px;margin-bottom:16px;min-width:200px"
         ><h1>{$userProfile?.user?.name}</h1></Placeholder
       >
-      <Placeholder loaded={!loading}  style="height:28px;margin-bottom:16px;min-width:100px">
+      <Placeholder
+        loaded={!loading}
+        style="height:28px;margin-bottom:16px;min-width:100px"
+      >
         <SocialInfo data={$userProfile.social} /></Placeholder
       >
     </div>
@@ -87,13 +97,13 @@
   <div class="profile-cards">
     <div class="profile-card">
       <SectionTitle label="Current skin" placeholder={loading} />
-      {#if $userSettings?.currentSkin != null && !loading}
+      <!-- {#if $userProfile?.settings.baseTexture != null && !loading}
         <div>
           <OutfitTextureRender
-            renderProvider={$userSettings?.currentSkin?.model == MODEL_TYPE.ALEX
+            renderProvider={$userProfile?.settings.baseTexture.model == MODEL_TYPE.ALEX
               ? providers.alex
               : providers.steve}
-            texture={$userSettings?.currentSkin?.texture}
+            texture={$userProfile?.settings.baseTexture.layers[0][$userProfile?.settings.baseTexture.model].content}
           />
         </div>
         <div class="actions">
@@ -103,56 +113,54 @@
             label="See in design"
           />
         </div>
-      {/if}
+      {/if} -->
     </div>
     <div class="profile-card">
       <SectionTitle label="Base texture" placeholder={loading} />
-      {#if !loading}
-        <div>
-          <!-- <OutfitTextureRender
-            renderProvider={$userModel == MODEL_TYPE.ALEX
+      <div>
+        {#if !loading && $baseTexture != null && $baseTexture.layers.length > 0}
+          <OutfitTextureRender
+            renderProvider={$baseTexture?.model == MODEL_TYPE.ALEX
               ? providers.alex
               : providers.steve}
-            texture={GetCurrentBaseTexture($userSettings)}
-          /> -->
-        </div>
-        <div class="actions">
-          <Button
-            on:click={() => (isBaseTextureDialogOpen = true)}
-            label="Edit"
+            texture={$baseTexture?.layers[0][$baseTexture?.model].content}
           />
-        </div>
-      {/if}
+        {/if}
+      </div>
+      <div class="actions">
+        <Button
+          on:click={() => (isBaseTextureDialogOpen = true)}
+          label="Edit"
+        />
+      </div>
     </div>
     <div class="profile-card">
       <SectionTitle label="Minecraft account" placeholder={loading} />
       {#if !loading}
         <div class="main-data">
           <!-- svelte-ignore a11y-missing-attribute -->
-          {#if $userSettings?.linkedMinecraftAccount?.name != null}
+          <!-- {#if $userSettings?.linkedAccount?.name != null}
             <img src={profilePhoto} style="min-width: calc(100% - 80px);" />
-            <span class="mc-font"
-              >{$userSettings.linkedMinecraftAccount.name}</span
-            >
+            <span class="mc-font">{$userSettings.linkedAccount.name}</span>
           {:else}
             <span class="icon-big">{@html AvatarIcon}</span>
             <span class="mc-font">Not linked</span>
-          {/if}
+          {/if} -->
         </div>
         <div class="actions">
-          {#if $userSettings?.linkedMinecraftAccount?.name == null}
-            <!-- <Button
+          <!-- {#if $userSettings?.linkedAccount?.name == null}
+             <Button
               type="primary"
               on:click={linkAccount}
               label="Link account"
-            /> -->
+            /> 
           {:else}
             <Button
               on:click={() => (isAuthDialogOpen = true)}
               label="Unlink account"
               type="tertiary"
             />
-          {/if}
+          {/if} -->
         </div>
       {/if}
     </div>
@@ -179,7 +187,10 @@
   </div>
 </Dialog>
 <Dialog bind:open={isBaseTextureDialogOpen} label="Base texture">
-  <BaseTextureDialog on:setTexture={() => (isBaseTextureDialogOpen = false)} />
+  <BaseTextureDialog
+    on:setTexture={updateBaseTexture}
+    baseTexture={$userProfile.settings.baseTexture}
+  />
 </Dialog>
 
 <style lang="scss">
