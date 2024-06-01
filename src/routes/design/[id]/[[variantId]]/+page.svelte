@@ -20,10 +20,9 @@
 
   import { OutfitLayer, OutfitPackage } from "$data/common";
   import {
-    wardrobe,
     defaultRenderer,
     isMobileView,
-    baseTexture,
+
     appState,
     showToast,
   } from "$data/cache";
@@ -49,11 +48,7 @@
   import {
     sortOutfitLayersByColor,
   } from "$src/helpers/image/imageDataHelpers.js";
-  import {
-    AddToCollection,
-    IsItemInCollection,
-    RemoveFromCollection,
-  } from "$src/helpers/other/apiHelper";
+
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
   import { GetPackage } from "$src/api/pack.js";
   import { SetAsDownloadPackage } from "$src/api/social.js";
@@ -173,13 +168,13 @@
   //collection
   const addToCollection = async function (e) {
     const collection = e.detail.collection;
-    if (!IsItemInCollection(collection, $localPackage))
-      await AddToCollection(collection, $localPackage);
+    // if (!IsItemInCollection(collection, $localPackage))
+    //   await AddToCollection(collection, $localPackage);
     isCollectionDialogOpen = false;
   };
   const removeFromCollection = async function (e) {
     const collection = e.detail.collection;
-    RemoveFromCollection(collection, $localPackage);
+    // RemoveFromCollection(collection, $localPackage);
     isCollectionDialogOpen = false;
   };
 
@@ -355,7 +350,7 @@
   <Dialog bind:open={isCollectionDialogOpen} label="Collections"
     ><CollectionPicker
       pack={$localPackage}
-      items={$wardrobe.collections || []}
+      items={[]}
       on:add={addToCollection}
       on:remove={removeFromCollection}
     />

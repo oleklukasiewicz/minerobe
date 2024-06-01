@@ -4,6 +4,7 @@
     currentUser,
     defaultRenderer,
     isMobileView,
+    userBaseTexture,
   } from "$src/data/cache";
   import {
     navigateToCollection,
@@ -18,9 +19,7 @@
   import SubscriptionIcon from "$src/icons/subscriptions.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import CalendarIcon from "$icons/calendar-month.svg?raw";
-  import {
-    GetOutfitIconFromType,
-  } from "$src/helpers/image/imageDataHelpers";
+  import { GetOutfitIconFromType } from "$src/helpers/image/imageDataHelpers";
   import Search from "$component/base/Search/Search.svelte";
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
@@ -114,7 +113,9 @@
             badge: x.count,
           };
         })
-        .filter((x) => x.badge > 0 && x.label?.toLowerCase() != OUTFIT_TYPE.OUTFIT_SET);
+        .filter(
+          (x) => x.badge > 0 && x.label?.toLowerCase() != OUTFIT_TYPE.OUTFIT_SET
+        );
       menuItems.push({
         type: "separator",
       });
@@ -133,7 +134,10 @@
           type == PACKAGE_TYPE.OUTFIT_SET || type == PACKAGE_TYPE.OUTFIT
             ? type
             : null;
-        const items = await GetWardrobePackages(targetType, value.params.params);
+        const items = await GetWardrobePackages(
+          targetType,
+          value.params.params
+        );
         localWardobeItems.set(items);
       });
     });
@@ -257,6 +261,8 @@
             minItemWidth="155px"
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
+            baseTexture={$userBaseTexture}
+            withBaseTexture={$userBaseTexture != null}
             items={filteredList}
             on:innerselect={onItemSelect}
           />
@@ -279,6 +285,8 @@
             minItemWidth="155px"
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
+            baseTexture={$userBaseTexture}
+            withBaseTexture={$userBaseTexture != null}
             items={filteredList}
             on:innerselect={onItemSelect}
           />

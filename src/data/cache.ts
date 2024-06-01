@@ -8,11 +8,10 @@ import {
   derived,
 } from "svelte/store";
 import { APP_STATE } from "$data/consts";
-import { MinerobeUserSettings, type MinerobeUser } from "./common";
+import { MinerobeUserSettings, OutfitLayer, type MinerobeUser } from "./common";
 import planksTextureRaw from "$src/texture/base_skin.png?url";
-import type { WardrobePackage } from "./common";
 import * as THREE from "three";
-import { FetchSettings, UploadSettings } from "$src/api/settings";
+import { FetchSettings } from "$src/api/settings";
 
 const isMobileViewWritable: Writable<boolean> = writable(false);
 export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
@@ -20,23 +19,23 @@ export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
 export const planksTexture: Readable<string> = readable(planksTextureRaw);
 export const defaultRenderer: Writable<string> = writable(null);
 
+export const userSettings: Writable<MinerobeUserSettings> = writable(null);
+export const userBaseTexture: Readable<OutfitLayer> = derived(
+  userSettings,
+  ($settings) => {
+    if ($settings) return $settings?.baseTexture.layers[0];
+    return null;
+  }
+);
+
 export const appState: Writable<string> = writable(APP_STATE.LOADING);
 export const currentUser: Writable<MinerobeUser> = writable(null);
-export const wardrobe: Writable<WardrobePackage> = writable({
-  id: null,
-  outfits: [],
-  collections: [],
-  sets: [],
-  studio: null,
-  local: null,
-});
 export const snapshotTemporaryNode = writable(null);
 export const baseTexture: Readable<string> = readable(get(planksTexture));
 export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
   let result: any = false;
   if ($appState == APP_STATE.READY)
     result = {
-      wardrobe: get(wardrobe),
       user: get(currentUser),
       state: $appState,
       userReadyness:
@@ -60,7 +59,10 @@ export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
   }
   return result;
 });
-export const isUserGuest: Readable<boolean> = derived(currentUser, ($user) => $user?.id == null);
+export const isUserGuest: Readable<boolean> = derived(
+  currentUser,
+  ($user) => $user?.id == null
+);
 
 let wardrobeSubscription, settingsSubscription, userSubscription;
 export const preSetup = function () {
@@ -85,7 +87,8 @@ export const setup = function () {
       //settings up account
       if (get(appState) == APP_STATE.LOADING)
         appState.set(APP_STATE.USER_READY);
-      let settings = await FetchSettings(user.id);
+      let settings = await FetchSettings();
+      userSettings.set(settings);
       if (true) {
         appState.set(APP_STATE.READY);
         if (wardrobeSubscription) wardrobeSubscription();
@@ -101,8 +104,7 @@ export const setup = function () {
     }
   });
 };
-const setupSubscriptions = function () {
-};
+const setupSubscriptions = function () {};
 export const currentToasts: Writable<any[]> = writable([]);
 export const showToast = function (
   message: string,

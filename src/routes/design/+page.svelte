@@ -37,10 +37,10 @@
   import {
     currentUser,
     defaultRenderer,
-    wardrobe,
     isMobileView,
     showToast,
     baseTexture,
+    userBaseTexture,
     appState,
   } from "$data/cache";
   import {
@@ -138,8 +138,8 @@
           : null
       );
 
-      if (isItemSet)
-        $itemRenderConfig.setBaseTextureFromLayer(null);
+      if (isItemSet && $userBaseTexture != null)
+        $itemRenderConfig.setBaseTextureFromLayer($userBaseTexture);
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
       loaded = true;
@@ -721,7 +721,7 @@
   <Dialog bind:open={isCollectionDialogOpen} label="Collections"
     ><CollectionPicker
       pack={$itemPackage}
-      items={$wardrobe.collections}
+      items={[]}
       on:add={addToCollection}
       on:remove={removeFromCollection}
     />

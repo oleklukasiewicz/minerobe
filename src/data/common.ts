@@ -1,12 +1,9 @@
-import { get } from "svelte/store";
 import {
   DATA_PATH_CONFIG,
   LAYER_TYPE,
-  MODEL_TYPE,
   OUTFIT_TYPE,
   PACKAGE_TYPE,
 } from "./consts";
-import { currentUser } from "./cache";
 
 //base
 export class OutfitPackage {
@@ -181,26 +178,6 @@ export class LandingPageData {
     this.mostDownloaded = mostDownloaded;
     this.mostRecent = mostRecent;
   }
-}
-//query
-export class OutfitPackageQueryData {
-  id: string;
-  variantId: string;
-  color: string;
-  normalizedColor: string;
-  description: string;
-  type: string;
-  outfitType: string;
-  variantCount: number;
-  likes: number;
-  isFeatured: boolean;
-  name: string;
-  isShared: boolean;
-  model: string;
-  publisherId: string;
-  downloads: number;
-  createdAt: Date;
-  modifiedAt: Date;
 }
 
 //user

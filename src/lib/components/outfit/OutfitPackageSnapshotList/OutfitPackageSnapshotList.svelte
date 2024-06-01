@@ -15,7 +15,7 @@
   export let fillMethod = "auto-fit";
   export let maxItemWidth = "1fr";
   export let withBaseTexture = false;
-  export let baseTexture = null;
+  export let baseTexture: OutfitLayer = null;
 
   const dispatch = createEventDispatcher();
 
@@ -40,17 +40,9 @@
       if (
         item.type == PACKAGE_TYPE.OUTFIT_SET &&
         withBaseTexture &&
-        baseTexture &&
-        baseTexture.length > 0
+        baseTexture
       ) {
-        item.layers.push(
-          new OutfitLayer(
-            "base",
-            new FileData("base", baseTexture, ""),
-            new FileData("base", baseTexture, ""),
-            null
-          )
-        );
+       item.layers.unshift(baseTexture);
       }
     }
     normalizedItems = itemsToNormalize;

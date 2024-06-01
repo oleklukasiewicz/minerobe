@@ -5,7 +5,6 @@
     OutfitPackage,
     OutfitPackageCollection,
   } from "$src/data/common";
-  import { IsItemInCollection } from "$src/helpers/other/apiHelper";
   import { createEventDispatcher } from "svelte";
 
   export let item: OutfitPackageCollection;
@@ -40,14 +39,14 @@
     </div>
   </div>
   <div class="data">
-    <Button
+    <!-- <Button
       label={!IsItemInCollection(item, pack) ? "Add outfit" : "Remove outfit"}
       size="small"
       type={!IsItemInCollection(item, pack) ? "primary" : "tertiary"}
       on:click={() => {
         !IsItemInCollection(item, pack) ? onAdd() : onRemove();
       }}
-    />
+    /> -->
   </div>
 </div>
 
