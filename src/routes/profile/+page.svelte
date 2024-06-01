@@ -6,6 +6,7 @@
     currentUser,
     isMobileView,
     defaultRenderer,
+    userSettings,
   } from "$src/data/cache";
   import { APP_STATE, MODEL_TYPE } from "$src/data/consts";
   import { onMount } from "svelte";
@@ -45,7 +46,6 @@
 
   let isAuthDialogOpen = false;
   let isBaseTextureDialogOpen = false;
-  let profilePhoto = "";
   let loading = true;
   onMount(async () => {
     appState.subscribe(async (state) => {
@@ -54,6 +54,9 @@
       var profile = await GetUserProfile($currentUser?.id);
       userProfile.set(profile);
       loading = false;
+      userProfile.subscribe((p) => {
+        userSettings.set(p.settings);
+      });
     });
   });
   const logout = async () => {

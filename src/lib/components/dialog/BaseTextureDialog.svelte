@@ -24,14 +24,13 @@
   const importBaseImage = async () => {
     const filedata = await ImportSingleImage();
     if (filedata) {
-      baseTexture.layers.push(
+      baseTexture.layers=[(
         new OutfitLayer(
           "base",
           new FileData("s_base", filedata.content),
           new FileData("a_base", filedata.content)
         )
-      );
-      baseTexture = { ...baseTexture };
+      )];
     }
   };
   const resetImage = () => {
