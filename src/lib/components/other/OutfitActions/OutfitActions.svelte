@@ -25,6 +25,7 @@
   export let isPackageInWardrobe: boolean = false;
   export let mobile: boolean = false;
   export let readonly: boolean = false;
+  export let accountIsLinked: boolean = false;
 
   export const downloadImage = function () {
     dispatch("download");
@@ -50,7 +51,7 @@
 </script>
 
 <div class="item-actions" class:mobile>
-  {#if outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET}
+  {#if outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET && accountIsLinked}
     <SetSkinButton
       item={outfitPackage}
       texture={modelTexture}
@@ -62,7 +63,7 @@
     on:click={downloadImage}
     label={$_("download")}
     onlyIcon={!$isMobileView &&
-      outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET }
+      outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET  && accountIsLinked}
     icon={DownloadIcon}
     disabled={outfitPackage.layers.length == 0 || loading}
     size="large"
