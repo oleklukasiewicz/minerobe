@@ -98,7 +98,7 @@
       </div>
       {#if multiple > 0}
         {#each item.layers
-          .slice(0, !isSet ? multiple : 1)
+          .slice(0, !isSet ? multiple : 2)
           .filter((x) => x != null && x[item.model].color != null) as layer (layer.id)}
           <span
             class="color-view"
