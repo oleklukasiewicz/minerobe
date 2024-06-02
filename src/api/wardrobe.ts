@@ -60,6 +60,24 @@ export const GetWardrobePackages = async function (
   )) as WardrobePagedResponse;
   return req;
 };
+export const GetWadrobeCollections = async function (
+  phrase: string = "",
+  page: number = 0,
+  pageSize: number = -1
+) {
+  const req = (await PostRequest(
+    "/api/Wardrobe/" + get(currentUser)?.id + "/collections",
+    {
+      page,
+      pageSize,
+      filter: {
+        phrase,
+      },
+    }
+  )) as WardrobePagedResponse;
+  return req;
+};
+
 export const GetWadrobeSummary = async function () {
   const req = await GetRequest(
     "/api/Wardrobe/" + get(currentUser).id + "/summary"
