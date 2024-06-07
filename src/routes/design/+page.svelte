@@ -42,6 +42,7 @@
   import {
     GetStudioPackage,
     GetWadrobeCollections,
+    GetWadrobeCollectionsWithPackageContext,
     GetWadrobePackagesSingleLayer,
     GetWadrobeSummary,
   } from "$src/api/wardrobe";
@@ -85,6 +86,7 @@
     AddLayerSnapshot,
     GetGlobalLayer,
   } from "$src/helpers/package/packageHelper";
+  import { AddPackageToCollection, RemovePackageFromCollection } from "$src/api/collection";
 
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -442,18 +444,18 @@
   const openCollectionPicker = async function () {
     isCollectionDialogOpen = true;
     isCollectionPickerLoading = true;
-    const fetched = await GetWadrobeCollections();
+    const fetched = await GetWadrobeCollectionsWithPackageContext($itemPackage.id);
     pickerCollections = fetched.items;
     isCollectionPickerLoading = false;
   };
   const addToCollection = async function (e) {
     const collection = e.detail.collection;
-
+    var result = await AddPackageToCollection(collection.id, $itemPackage.id);
     isCollectionDialogOpen = false;
   };
   const removeFromCollection = async function (e) {
     const collection = e.detail.collection;
-
+    var result = await RemovePackageFromCollection(collection.id, $itemPackage.id);
     isCollectionDialogOpen = false;
   };
   //subscribtions

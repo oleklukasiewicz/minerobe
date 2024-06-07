@@ -3,12 +3,11 @@
   import Label from "$lib/components/base/Label/Label.svelte";
   import type {
     OutfitPackage,
-    OutfitPackageCollection,
+    OutfitPackageCollectionWithPackageContext,
   } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
 
-  export let item: OutfitPackageCollection;
-  export let pack: OutfitPackage;
+  export let item: OutfitPackageCollectionWithPackageContext;
 
   const dispatch = createEventDispatcher();
 
@@ -39,14 +38,14 @@
     </div>
   </div>
   <div class="data">
-    <!-- <Button
-      label={!IsItemInCollection(item, pack) ? "Add outfit" : "Remove outfit"}
+    <Button
+      label={!item.isInCollection ? "Add outfit" : "Remove outfit"}
       size="small"
-      type={!IsItemInCollection(item, pack) ? "primary" : "tertiary"}
+      type={!item.isInCollection ? "primary" : "tertiary"}
       on:click={() => {
-        !IsItemInCollection(item, pack) ? onAdd() : onRemove();
+        !item.isInCollection ? onAdd() : onRemove();
       }}
-    /> -->
+    />
   </div>
 </div>
 

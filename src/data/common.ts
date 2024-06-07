@@ -233,6 +233,20 @@ export class OutfitPackageCollection {
   modifiedAt: Date;
   type: string;
 }
+export class OutfitPackageCollectionWithPackageContext {
+  id: string;
+  name: string;
+  itemsCount: number;
+  publisherId: string;
+  publisher: MinerobeUser;
+  isShared: boolean;
+  social: PackageSocialData;
+  description: string;
+  createdAt: Date;
+  modifiedAt: Date;
+  type: string;
+  isInCollection: boolean;
+}
 export class OutfitPackageCollectionLink {
   id: string;
   type: string;

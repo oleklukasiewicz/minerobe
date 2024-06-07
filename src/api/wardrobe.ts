@@ -77,6 +77,24 @@ export const GetWadrobeCollections = async function (
   )) as PagedResponse;
   return req;
 };
+export const GetWadrobeCollectionsWithPackageContext = async function (
+  packageId: string,
+  phrase: string = "",
+  page: number = 0,
+  pageSize: number = -1
+) {
+  const req = (await PostRequest(
+    "/api/Wardrobe/" + get(currentUser)?.id + "/collections/" + packageId,
+    {
+      page,
+      pageSize,
+      filter: {
+        phrase,
+      },
+    }
+  )) as PagedResponse;
+  return req;
+};
 
 export const GetWadrobeSummary = async function () {
   const req = await GetRequest(
@@ -107,14 +125,24 @@ export const GetWadrobePackagesSingleLayer = async function (
 };
 export const AddCollectionToWardrobe = async function (collectionId: string) {
   const resp = await PostRequest(
-    "/api/Wardrobe/" + get(currentUser)?.id + "/" + collectionId + "/collection/byUser",
+    "/api/Wardrobe/" +
+      get(currentUser)?.id +
+      "/" +
+      collectionId +
+      "/collection/byUser",
     {}
   );
   return resp;
-}
-export const RemoveCollectionFromWardrobe = async function (collectionId: string) {
+};
+export const RemoveCollectionFromWardrobe = async function (
+  collectionId: string
+) {
   const resp = await DeleteRequest(
-    "/api/Wardrobe/" + get(currentUser)?.id + "/" + collectionId + "/collection/byUser"
+    "/api/Wardrobe/" +
+      get(currentUser)?.id +
+      "/" +
+      collectionId +
+      "/collection/byUser"
   );
   return resp;
-}
+};

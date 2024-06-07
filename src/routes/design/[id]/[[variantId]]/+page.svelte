@@ -22,9 +22,10 @@
   import {
     defaultRenderer,
     isMobileView,
-
+    baseTexture,
     appState,
     showToast,
+    userBaseTexture,
   } from "$data/cache";
   import { replaceState } from "$app/navigation";
   import { OutfitPackageRenderConfig } from "$src/data/model.js";
@@ -54,8 +55,10 @@
   import { SetAsDownloadPackage } from "$src/api/social.js";
   import {
     AddPackageToWardrobe,
+    GetWadrobeCollectionsWithPackageContext,
     RemovePackageFromWardrobe,
   } from "$src/api/wardrobe.js";
+  import { AddPackageToCollection, RemovePackageFromCollection } from "$src/api/collection.js";
 
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
@@ -75,6 +78,8 @@
   let loaded = false;
   let defaultRenderProvider;
 
+  let isCollectionPickerLoading=true;
+  let pickerCollections=[];
   let isCollectionDialogOpen = false;
 
   let updateAnimation: (animation: any) => void = () => {};
@@ -109,8 +114,9 @@
         !isItemSet,
         varaint ? varaint : $itemLayers[0]
       );
-      $itemRenderConfig.setBaseTextureFromString(null
-      );
+      if (isItemSet && $userBaseTexture != null)
+        $itemRenderConfig.setBaseTextureFromLayer($userBaseTexture);
+      else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
       loaded = true;
       updateTexture();
@@ -166,15 +172,21 @@
     anims.forEach((anim) => updateAnimation(anim));
   };
   //collection
+  const openCollectionPicker = async function () {
+    isCollectionDialogOpen = true;
+    isCollectionPickerLoading = true;
+    const fetched = await GetWadrobeCollectionsWithPackageContext($localPackage.id);
+    pickerCollections = fetched.items;
+    isCollectionPickerLoading = false;
+  };
   const addToCollection = async function (e) {
     const collection = e.detail.collection;
-    // if (!IsItemInCollection(collection, $localPackage))
-    //   await AddToCollection(collection, $localPackage);
+    var result = await AddPackageToCollection(collection.id, $localPackage.id);
     isCollectionDialogOpen = false;
   };
   const removeFromCollection = async function (e) {
     const collection = e.detail.collection;
-    // RemoveFromCollection(collection, $localPackage);
+    var result = await RemovePackageFromCollection(collection.id, $localPackage.id);
     isCollectionDialogOpen = false;
   };
 
@@ -335,7 +347,7 @@
           mobile={$isMobileView}
           on:download={downloadImage}
           on:skinSet={skinSetted}
-          on:collectionDialog={() => (isCollectionDialogOpen = true)}
+          on:collectionDialog={openCollectionPicker}
           on:addToWardrobe={addToWardrobe}
           on:removeFromWardrobe={removeFromWardrobe}
         />
@@ -350,7 +362,8 @@
   <Dialog bind:open={isCollectionDialogOpen} label="Collections"
     ><CollectionPicker
       pack={$localPackage}
-      items={[]}
+      items={pickerCollections}
+      loading={isCollectionPickerLoading}
       on:add={addToCollection}
       on:remove={removeFromCollection}
     />
