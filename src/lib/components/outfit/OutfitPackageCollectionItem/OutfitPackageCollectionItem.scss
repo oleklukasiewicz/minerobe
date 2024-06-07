@@ -1,14 +1,21 @@
 .outfit-collection-item {
   padding: 8px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  aspect-ratio: 8/5;
   transition: var(--time);
   background-color: var(--color-theme-D1);
   &:hover {
     background-color: var(--color-accent);
-    color:var(--color-accent-font);
+    color: var(--color-accent-font);
     cursor: pointer;
   }
   &:active {
     background-color: var(--color-active);
+  }
+  .item-title {
+    flex: 1;
   }
   .data {
     display: flex;
@@ -19,7 +26,7 @@
     min-height: 26px;
     flex-direction: row;
     .labels {
-        flex:1;
+      flex: 1;
     }
   }
 }

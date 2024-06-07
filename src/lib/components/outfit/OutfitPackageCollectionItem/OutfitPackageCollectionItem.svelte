@@ -8,7 +8,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="outfit-collection-item" on:click>
-  <b class="mc-font">
+  <b class="mc-font item-title">
     {item.name}
   </b>
   <div class="data">

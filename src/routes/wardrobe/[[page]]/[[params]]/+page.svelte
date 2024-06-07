@@ -45,6 +45,8 @@
   import { CreateNewOutfitPackage } from "$src/helpers/package/packageHelper";
   import { AddPackage } from "$src/api/pack";
   import { AddCollection } from "$src/api/collection";
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import OutfitPackageCollectionList from "$lib/components/outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
 
   const defaultList = {
     items: [],
@@ -57,11 +59,11 @@
   let loaded = false;
   let itemsLoaded = false;
   let menuItems: any[] = [
-    {
-      label: "Schedule",
-      value: "schedule",
-      icon: CalendarIcon,
-    },
+    // {
+    //   label: "Schedule",
+    //   value: "schedule",
+    //   icon: CalendarIcon,
+    // },
     {
       label: "All",
       icon: SubscriptionIcon,
@@ -86,8 +88,10 @@
       value: PACKAGE_TYPE.OUTFIT,
     },
   ];
+  let filter = {
+    phrase: "",
+  };
   const mobileMenuItems = Array.from(menuItems);
-  let pageSub;
   onMount(() => {
     currentView = {
       value: $page.params.page || "all",
@@ -116,36 +120,37 @@
       });
       menuItems.push(...outfitsMenuItems);
       loaded = true;
-      if (pageSub != null) pageSub();
-      pageSub = page.subscribe(async (value) => {
-        localWardobeItems.set(defaultList);
-        if (!loaded) return;
-        currentView = {
-          value: value.params.page || "all",
-          params: value.params.params,
-        };
-        itemsLoaded = false;
-        const type = value.params.page;
-        if (
-          type == PACKAGE_TYPE.OUTFIT_SET ||
-          type == PACKAGE_TYPE.OUTFIT ||
-          type == "all" ||
-          type == null
-        ) {
-          const items = await GetWardrobePackages(
-            type == "all" ? null : type,
-            value.params.params
-          );
-          localWardobeItems.set(items);
-        }
-        if (type?.toLowerCase() == "collection") {
-          const items = await GetWadrobeCollections();
-          localWardobeItems.set(items);
-        }
-        itemsLoaded = true;
-      });
+      if (!loaded) return;
+      currentView = {
+        value: $page.params?.page || "all",
+        params: $page.params?.params,
+      };
+      await resfreshItems();
     });
   });
+  const resfreshItems = async function () {
+    localWardobeItems.set(defaultList);
+    itemsLoaded = false;
+    const type = currentView.value;
+    if (
+      type == PACKAGE_TYPE.OUTFIT_SET ||
+      type == PACKAGE_TYPE.OUTFIT ||
+      type == "all" ||
+      type == null
+    ) {
+      const items = await GetWardrobePackages(
+        type == "all" ? null : type,
+        currentView.params,
+        filter.phrase
+      );
+      localWardobeItems.set(items);
+    }
+    if (type?.toLowerCase() == "collection") {
+      const items = await GetWadrobeCollections(filter.phrase);
+      localWardobeItems.set(items);
+    }
+    itemsLoaded = true;
+  };
   const addNewSet = async function () {
     const newOutfit = await CreateNewOutfitPackage(
       "New Set",
@@ -184,7 +189,10 @@
     if (addedTowardrobe == null) return;
     navigateToCollection(response.id);
   };
-  const filterOutfits = function (e) {};
+  const filterOutfits = async function (e) {
+    filter.phrase = e.detail;
+    await resfreshItems();
+  };
   const onItemSelect = async function (e) {
     const item = e.detail.item;
     const resp = await SetStudioPackage(item.id);
@@ -192,13 +200,22 @@
     if (item.publisher.id != $currentUser?.id) navigateToOutfitPackage(item);
     else navigateToDesign(item);
   };
-  const onMenuItemSelect = function (e) {
+  const onCollectionSelect = async function (e) {
+    const item = e.detail;
+    navigateToCollection(item.id);
+  };
+  const onMenuItemSelect = async function (e) {
     const target = e.detail;
     if (target.value == "schedule") {
       goto("/schedule");
       return;
     }
+    currentView = {
+      value: target.value || "all",
+      params: target.params,
+    };
     navigateToWardrobe(target.value, target.params);
+    await resfreshItems();
   };
   const compare = (a, b) => {
     return a?.value == b?.value && a?.params == b?.params;
@@ -320,14 +337,14 @@
         </div>
       {/if}
       {#if currentView.value == "collection"}
-        <div class="list collection-list">
-          {#each $localWardobeItems.items as item (item.id)}
-            <OutfitPackageCollectionItem
-              {item}
-              on:click={() => navigateToCollection(item.id)}
-            />
-          {/each}
-        </div>
+        <OutfitPackageCollectionList
+          minItemWidth="255px"
+          maxItemWidth="1fr"
+          fillMethod="auto-fill"
+          items={$localWardobeItems.items}
+          loading={!loaded || !itemsLoaded}
+          on:select={onCollectionSelect}
+        />
         <Button
           on:click={addNewCollection}
           fab="dynamic"

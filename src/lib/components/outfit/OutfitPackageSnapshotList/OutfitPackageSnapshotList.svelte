@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as THREE from "three";
   import OutfitPackageSnapshotItem from "$component/outfit/OutfitPackageSnapshotItem/OutfitPackageSnapshotItem.svelte";
-  import { FileData, OutfitLayer, type OutfitPackage } from "$src/data/common";
+  import { OutfitLayer, type OutfitPackage } from "$src/data/common";
   import { createEventDispatcher, onMount } from "svelte";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
@@ -16,6 +16,7 @@
   export let maxItemWidth = "1fr";
   export let withBaseTexture = false;
   export let baseTexture: OutfitLayer = null;
+  export let placeholderCount = 48;
 
   const dispatch = createEventDispatcher();
 
@@ -77,7 +78,7 @@
       />
     {/each}
   {:else}
-    {#each Array(10) as _}
+    {#each Array(placeholderCount) as _}
       <Placeholder style="aspect-ratio:5/8;height:100%" />
     {/each}
   {/if}
