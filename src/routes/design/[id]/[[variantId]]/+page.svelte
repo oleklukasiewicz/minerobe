@@ -361,7 +361,6 @@
   </div>
   <Dialog bind:open={isCollectionDialogOpen} label="Collections"
     ><CollectionPicker
-      pack={$localPackage}
       items={pickerCollections}
       loading={isCollectionPickerLoading}
       on:add={addToCollection}

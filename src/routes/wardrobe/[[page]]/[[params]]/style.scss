@@ -14,12 +14,6 @@
     display: flex;
     padding: 12px 12px 4px;
   }
-  .collection-list
-  {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(175px, 300px));
-    gap: 4px;
-  }
   &.mobile {
     display: flex;
     flex-direction: column;
@@ -28,12 +22,6 @@
       height: auto !important;
       max-width: 100vw;
     }
-    .collection-list
-  {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
-    gap: 4px;
-  }
     .header
     {
       padding: 4px 4px 0px;

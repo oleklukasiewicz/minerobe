@@ -1,29 +1,30 @@
 <script lang="ts">
-  import type { OutfitPackageCollection } from "$src/data/common";
+  import type { OutfitPackageCollectionWithPackageContext } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
   import OutfitPackageCollectionSelectionItem from "../OutfitPackageCollectionSelectionItem/OutfitPackageCollectionSelectionItem.svelte";
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
 
   const dispatch = createEventDispatcher();
 
-  export let items: OutfitPackageCollection[] = [];
-  export let loading: boolean = false;
-  export let pack: any;
+  export let items: OutfitPackageCollectionWithPackageContext[] = [];
+  export let loading: boolean = true;
 
-  const onAdd = function (collection: OutfitPackageCollection) {
+  const onAdd = function (collection: OutfitPackageCollectionWithPackageContext) {
     dispatch("add", { collection });
   };
-  const onRemove = function (collection: OutfitPackageCollection) {
+  const onRemove = function (collection: OutfitPackageCollectionWithPackageContext) {
     dispatch("remove", { collection });
   };
 </script>
 
 <div class="collection-picker">
   {#if loading}
-    <p>Loading...</p>
+   {#each Array(10) as _}
+      <Placeholder style="min-width:100%;aspect-ratio:8/2;min-height:80px" />
+    {/each}
   {:else}
     {#each items as item}
       <OutfitPackageCollectionSelectionItem
-        {pack}
         {item}
         on:add={() => onAdd(item)}
         on:remove={() => onRemove(item)}
@@ -37,8 +38,8 @@
     display: flex;
     min-width: 300px;
     flex-direction: column;
-    flex-wrap: wrap;
     gap: 10px;
+    max-height: 50vh;
     padding: 8px;
   }
 </style>

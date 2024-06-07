@@ -727,7 +727,6 @@
   </Dialog>
   <Dialog bind:open={isCollectionDialogOpen} label="Collections"
     ><CollectionPicker
-      pack={$itemPackage}
       items={pickerCollections}
       loading={isCollectionPickerLoading}
       on:add={addToCollection}
