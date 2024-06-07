@@ -3,7 +3,7 @@ import { currentUser } from "$src/data/cache";
 import type {
   OutfitPackage,
   WardrobePackage,
-  WardrobePagedResponse,
+  PagedResponse,
 } from "$src/data/common";
 import { get } from "svelte/store";
 
@@ -57,7 +57,7 @@ export const GetWardrobePackages = async function (
         phrase,
       },
     }
-  )) as WardrobePagedResponse;
+  )) as PagedResponse;
   return req;
 };
 export const GetWadrobeCollections = async function (
@@ -74,7 +74,7 @@ export const GetWadrobeCollections = async function (
         phrase,
       },
     }
-  )) as WardrobePagedResponse;
+  )) as PagedResponse;
   return req;
 };
 
@@ -102,6 +102,19 @@ export const GetWadrobePackagesSingleLayer = async function (
         phrase,
       },
     }
-  )) as WardrobePagedResponse;
+  )) as PagedResponse;
   return req;
 };
+export const AddCollectionToWardrobe = async function (collectionId: string) {
+  const resp = await PostRequest(
+    "/api/Wardrobe/" + get(currentUser)?.id + "/" + collectionId + "/collection/byUser",
+    {}
+  );
+  return resp;
+}
+export const RemoveCollectionFromWardrobe = async function (collectionId: string) {
+  const resp = await DeleteRequest(
+    "/api/Wardrobe/" + get(currentUser)?.id + "/" + collectionId + "/collection/byUser"
+  );
+  return resp;
+}

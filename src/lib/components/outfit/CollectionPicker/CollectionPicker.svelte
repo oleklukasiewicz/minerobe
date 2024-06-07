@@ -6,6 +6,7 @@
   const dispatch = createEventDispatcher();
 
   export let items: OutfitPackageCollection[] = [];
+  export let loading: boolean = false;
   export let pack: any;
 
   const onAdd = function (collection: OutfitPackageCollection) {
@@ -17,14 +18,18 @@
 </script>
 
 <div class="collection-picker">
-  {#each items as item}
-    <OutfitPackageCollectionSelectionItem
-      {pack}
-      {item}
-      on:add={() => onAdd(item)}
-      on:remove={() => onRemove(item)}
-    />
-  {/each}
+  {#if loading}
+    <p>Loading...</p>
+  {:else}
+    {#each items as item}
+      <OutfitPackageCollectionSelectionItem
+        {pack}
+        {item}
+        on:add={() => onAdd(item)}
+        on:remove={() => onRemove(item)}
+      />
+    {/each}
+  {/if}
 </div>
 
 <style lang="scss">

@@ -28,39 +28,34 @@
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
-  import {
-    APP_STATE,
-    DEFAULT_WARDROBE,
-    OUTFIT_TYPE,
-    PACKAGE_TYPE,
-  } from "$src/data/consts";
+  import { APP_STATE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
   import { writable, type Writable } from "svelte/store";
-  import type {
-    WardrobePackage,
-    WardrobePagedResponse,
+  import {
+    OutfitPackageCollection,
+    type PagedResponse,
   } from "$src/data/common";
   import {
+    AddCollectionToWardrobe,
     AddPackageToWardrobe,
+    GetWadrobeCollections,
     GetWadrobeSummary,
     GetWardrobePackages,
     SetStudioPackage,
   } from "$src/api/wardrobe";
   import { CreateNewOutfitPackage } from "$src/helpers/package/packageHelper";
   import { AddPackage } from "$src/api/pack";
+  import { AddCollection } from "$src/api/collection";
 
-  const localWardrobe: Writable<WardrobePackage> = writable(DEFAULT_WARDROBE);
-  const localWardobeItems: Writable<WardrobePagedResponse> = writable({
+  const defaultList = {
     items: [],
     total: 0,
     page: 1,
     pageSize: 10,
-  });
-  const localWardobeSummary: Writable<any> = writable({});
+  };
+  const localWardobeItems: Writable<PagedResponse> = writable(defaultList);
   let currentView: any = {};
   let loaded = false;
   let itemsLoaded = false;
-  let currentList = [];
-  let filteredList = [];
   let menuItems: any[] = [
     {
       label: "Schedule",
@@ -123,6 +118,7 @@
       loaded = true;
       if (pageSub != null) pageSub();
       pageSub = page.subscribe(async (value) => {
+        localWardobeItems.set(defaultList);
         if (!loaded) return;
         currentView = {
           value: value.params.page || "all",
@@ -130,15 +126,23 @@
         };
         itemsLoaded = false;
         const type = value.params.page;
-        const targetType =
-          type == PACKAGE_TYPE.OUTFIT_SET || type == PACKAGE_TYPE.OUTFIT
-            ? type
-            : null;
-        const items = await GetWardrobePackages(
-          targetType,
-          value.params.params
-        );
-        localWardobeItems.set(items);
+        if (
+          type == PACKAGE_TYPE.OUTFIT_SET ||
+          type == PACKAGE_TYPE.OUTFIT ||
+          type == "all" ||
+          type == null
+        ) {
+          const items = await GetWardrobePackages(
+            type == "all" ? null : type,
+            value.params.params
+          );
+          localWardobeItems.set(items);
+        }
+        if (type?.toLowerCase() == "collection") {
+          const items = await GetWadrobeCollections();
+          localWardobeItems.set(items);
+        }
+        itemsLoaded = true;
       });
     });
   });
@@ -171,8 +175,14 @@
     navigateToDesign(response);
   };
   const addNewCollection = async function () {
-    //const newCollection = await CreateOutfitCollection(true);
-    //navigateToCollection(newCollection.id);
+    const newCollection = new OutfitPackageCollection();
+    newCollection.name = "New Collection";
+    newCollection.publisherId = $currentUser?.id;
+    const response = await AddCollection(newCollection);
+    if (response == null) return;
+    const addedTowardrobe = await AddCollectionToWardrobe(response.id);
+    if (addedTowardrobe == null) return;
+    navigateToCollection(response.id);
   };
   const filterOutfits = function (e) {};
   const onItemSelect = async function (e) {
@@ -193,12 +203,6 @@
   const compare = (a, b) => {
     return a?.value == b?.value && a?.params == b?.params;
   };
-
-  localWardobeItems.subscribe((value) => {
-    currentList = value.items;
-    filteredList = currentList;
-    itemsLoaded = true;
-  });
 </script>
 
 <div class="wardrobe-view" class:mobile={$isMobileView}>
@@ -263,7 +267,7 @@
             renderer={$defaultRenderer}
             baseTexture={$userBaseTexture}
             withBaseTexture={$userBaseTexture != null}
-            items={filteredList}
+            items={$localWardobeItems.items}
             on:innerselect={onItemSelect}
           />
         </div>
@@ -287,7 +291,7 @@
             renderer={$defaultRenderer}
             baseTexture={$userBaseTexture}
             withBaseTexture={$userBaseTexture != null}
-            items={filteredList}
+            items={$localWardobeItems.items}
             on:innerselect={onItemSelect}
           />
         </div>
@@ -310,14 +314,14 @@
             minItemWidth="155px"
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
-            items={filteredList}
+            items={$localWardobeItems.items}
             on:innerselect={onItemSelect}
           />
         </div>
       {/if}
       {#if currentView.value == "collection"}
         <div class="list collection-list">
-          {#each filteredList as item (item.id)}
+          {#each $localWardobeItems.items as item (item.id)}
             <OutfitPackageCollectionItem
               {item}
               on:click={() => navigateToCollection(item.id)}

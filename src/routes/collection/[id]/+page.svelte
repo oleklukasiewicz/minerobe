@@ -1,17 +1,18 @@
 <script lang="ts">
+  import Button from "$lib/components/base/Button/Button.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import OutfitPackageSnapshotList from "$lib/components/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import {
-    FetchOutfitCollection,
-    UploadOutfitCollection,
+    DeleteCollection,
+    GetCollection,
+    UpdateCollection,
   } from "$src/api/collection";
-  import {
-    defaultRenderer,
-    isReadyForData,
-  } from "$src/data/cache";
+  import { defaultRenderer, isReadyForData } from "$src/data/cache";
   import type { OutfitPackageCollection } from "$src/data/common";
-  import { UpdateCollectionInWardrobe } from "$src/helpers/other/apiHelper";
-  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
+  import {
+    navigateToOutfitPackage,
+    navigateToWardrobe,
+  } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
 
@@ -25,7 +26,7 @@
     const id = data.id;
     isReadyForData.subscribe(async (readyness) => {
       if (readyness) {
-        const fetched = await FetchOutfitCollection(id);
+        const fetched = await GetCollection(id);
         localCollection.set(fetched);
         loaded = true;
       }
@@ -36,11 +37,12 @@
     const variant = e.detail.layer;
     navigateToOutfitPackage(item, variant.variantId);
   };
+  const deleteCollection = async () => {
+    await DeleteCollection(data.id);
+    navigateToWardrobe();
+  };
   localCollection.subscribe(async (value) => {
-    if (loaded) {
-      await UploadOutfitCollection(value);
-      await UpdateCollectionInWardrobe(value);
-    }
+    if (loaded) await UpdateCollection(value);
   });
 </script>
 
@@ -48,6 +50,10 @@
   <div id="header">
     <Placeholder {loaded} style="width:75vw;height:48px">
       <input class="title-input" bind:value={$localCollection.name} />
+      <Button
+        on:click={deleteCollection}
+        label="Delete"
+      />
     </Placeholder>
   </div>
   <div class="outfits">
@@ -57,7 +63,7 @@
       fillMethod="auto-fill"
       loading={!loaded}
       renderer={$defaultRenderer}
-      items={$localCollection.outfits}
+      items={$localCollection.items}
       on:innerselect={goToItemPage}
     />
   </div>

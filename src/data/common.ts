@@ -221,8 +221,10 @@ export class SkinData {
 export class OutfitPackageCollection {
   id: string;
   name: string;
-  outfits: OutfitPackage[];
-  displayMode: string;
+  itemsCount: number;
+  items: OutfitPackage[];
+  displayData: string;
+  publisherId: string;
   publisher: MinerobeUser;
   isShared: boolean;
   social: PackageSocialData;
@@ -230,30 +232,6 @@ export class OutfitPackageCollection {
   createdAt: Date;
   modifiedAt: Date;
   type: string;
-  constructor(
-    id: string,
-    name: string,
-    outfits: OutfitPackage[],
-    displayMode: string,
-    publisher: MinerobeUser,
-    isShared: boolean,
-    social: PackageSocialData,
-    description: string,
-    createdAt: Date,
-    modifiedAt: Date
-  ) {
-    this.id = id;
-    this.name = name;
-    this.outfits = outfits;
-    this.displayMode = displayMode;
-    this.publisher = publisher;
-    this.isShared = isShared;
-    this.social = social;
-    this.description = description;
-    this.createdAt = createdAt;
-    this.modifiedAt = modifiedAt;
-    this.type = PACKAGE_TYPE.OUTFIT_COLLECTION;
-  }
 }
 export class OutfitPackageCollectionLink {
   id: string;
@@ -272,16 +250,16 @@ export class OutfitPackageSnapshotConfig {
   isMerged: boolean;
 }
 
-export class WardrobePagedResponse {
+export class PagedResponse {
   page: number;
   pageSize: number;
   total: number;
-  items: OutfitPackage[];
+  items: any[];
   constructor(
     page: number,
     pageSize: number,
     total: number,
-    items: OutfitPackage[]
+    items: any[]
   ) {
     this.page = page;
     this.pageSize = pageSize;

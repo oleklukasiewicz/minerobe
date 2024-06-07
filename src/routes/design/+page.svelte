@@ -29,11 +29,7 @@
     APP_STATE,
     OUTFIT_TYPE,
   } from "$data/consts";
-  import {
-    OutfitLayer,
-    OutfitPackage,
-    WardrobePagedResponse,
-  } from "$data/common";
+  import { OutfitLayer, OutfitPackage, PagedResponse } from "$data/common";
   import {
     currentUser,
     defaultRenderer,
@@ -45,6 +41,7 @@
   } from "$data/cache";
   import {
     GetStudioPackage,
+    GetWadrobeCollections,
     GetWadrobePackagesSingleLayer,
     GetWadrobeSummary,
   } from "$src/api/wardrobe";
@@ -107,7 +104,7 @@
   let loaded = false;
   let isDragging = false;
 
-  let pickerOutfits: WardrobePagedResponse | any = {};
+  let pickerOutfits: PagedResponse | any = {};
   let pickerCategories = [];
   let isPickerLoading = true;
 
@@ -115,6 +112,9 @@
   let isDeleteDialogOpen = false;
   let isShareDialogOpen = false;
   let isAddVariantDialogOpen = false;
+
+  let pickerCollections = [];
+  let isCollectionPickerLoading = false;
   let isCollectionDialogOpen = false;
 
   let updateAnimation = function (anim) {};
@@ -244,7 +244,7 @@
   const addNewRemoteLayer = async function (outfit: OutfitPackage) {
     const layerId = outfit.layers[0].id;
     var resp = await AddRemoteLayerToPackage(layerId, $itemPackage.id);
-    if (resp ==null) return;
+    if (resp == null) return;
     itemLayers.update((layers) => {
       layers.push(resp);
       return layers;
@@ -291,9 +291,7 @@
   };
   const downloadImage = async () => {
     await ExportImageLayers(
-      $itemRenderConfig.getLayersForModel(
-        !(isItemSet)
-      ),
+      $itemRenderConfig.getLayersForModel(!isItemSet),
       $itemRenderConfig,
       $itemPackage.name
     );
@@ -441,6 +439,13 @@
     }
   };
   //collections
+  const openCollectionPicker = async function () {
+    isCollectionDialogOpen = true;
+    isCollectionPickerLoading = true;
+    const fetched = await GetWadrobeCollections();
+    pickerCollections = fetched.items;
+    isCollectionPickerLoading = false;
+  };
   const addToCollection = async function (e) {
     const collection = e.detail.collection;
 
@@ -653,7 +658,7 @@
           on:skinSet={skinSetted}
           on:download={downloadImage}
           on:shareDialog={() => (isShareDialogOpen = true)}
-          on:collectionDialog={() => (isCollectionDialogOpen = true)}
+          on:collectionDialog={openCollectionPicker}
         />
       {:else}
         <div style="display: flex; gap:8px;">
@@ -721,7 +726,8 @@
   <Dialog bind:open={isCollectionDialogOpen} label="Collections"
     ><CollectionPicker
       pack={$itemPackage}
-      items={[]}
+      items={pickerCollections}
+      loading={isCollectionPickerLoading}
       on:add={addToCollection}
       on:remove={removeFromCollection}
     />

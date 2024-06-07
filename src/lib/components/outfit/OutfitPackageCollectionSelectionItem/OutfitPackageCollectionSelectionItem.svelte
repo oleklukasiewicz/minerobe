@@ -34,7 +34,7 @@
         {/if}
       </div>
       <div class="mc-font">
-        {item.outfits.length}
+        {item.itemsCount}
       </div>
     </div>
   </div>
