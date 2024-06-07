@@ -7,6 +7,7 @@
     GetCollection,
     UpdateCollection,
   } from "$src/api/collection";
+  import { userBaseTexture } from "$data/cache";
   import { defaultRenderer, isReadyForData } from "$src/data/cache";
   import type { OutfitPackageCollection } from "$src/data/common";
   import {
@@ -62,6 +63,8 @@
       maxItemWidth="1fr"
       fillMethod="auto-fill"
       loading={!loaded}
+      baseTexture={$userBaseTexture}
+      withBaseTexture={$userBaseTexture != null}
       renderer={$defaultRenderer}
       items={$localCollection.items}
       on:innerselect={goToItemPage}
