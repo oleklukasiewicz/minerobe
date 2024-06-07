@@ -247,9 +247,9 @@
         <Placeholder style="height:26px;max-width:100px;" {loaded}>
           <div style="display: flex;gap:4px;height:24px">
             <Label variant="unique">{$localPackage.publisher.name}</Label>
-            {#if isItemSet}
+            <!-- {#if isItemSet}
               <Label variant="ancient">Current skin</Label>
-            {/if}
+            {/if} -->
             &nbsp;
             <SocialInfo data={$localPackage.social} />
           </div>

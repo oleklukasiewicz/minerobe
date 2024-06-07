@@ -538,9 +538,9 @@
           {#if $itemPackage.social.isShared}
             <Label variant="rare">{$_("shared")}</Label>
           {/if}
-          {#if isItemSet}
+          <!-- {#if isItemSet}
             <Label variant="ancient">Current skin</Label>
-          {/if}
+          {/if} -->
           <br />
         </Placeholder>
         <br />
