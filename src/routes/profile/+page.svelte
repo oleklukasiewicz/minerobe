@@ -6,16 +6,18 @@
     currentUser,
     isMobileView,
     defaultRenderer,
-    userSettings,
   } from "$src/data/cache";
   import { APP_STATE, MODEL_TYPE } from "$src/data/consts";
   import { onMount } from "svelte";
   import { logoutUser } from "$src/api/auth";
-  import { navigateToHome } from "$src/helpers/other/navigationHelper";
+  import {
+    navigate,
+    navigateToHome,
+  } from "$src/helpers/other/navigationHelper";
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import Dialog from "$component/base/Dialog/Dialog.svelte";
-  import AvatarIcon from "$src/icons/avatar.svg?raw";
+  import OutfitPackageSnapshotRender from "$component/render/OutfitPackageSnapshotRender.svelte";
   import LoginIcon from "$src/icons/login.svg?raw";
   import BaseTextureDialog from "$lib/components/dialog/BaseTextureDialog.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
@@ -41,6 +43,16 @@
     userProfile,
     ($userProfile) => $userProfile?.settings?.baseTexture
   );
+  const currentTexture: Readable<OutfitPackage> = derived(
+    userProfile,
+    ($userProfile) => {
+      var ct = $userProfile?.settings?.currentTexture;
+      if ($userProfile?.settings?.baseTexture.layers.length > 0) {
+        ct.layers.unshift($userProfile?.settings?.baseTexture.layers[0]);
+      }
+      return ct;
+    }
+  );
 
   let providers: { steve: RenderProvider; alex: RenderProvider };
 
@@ -54,9 +66,6 @@
       var profile = await GetUserProfile($currentUser?.id);
       userProfile.set(profile);
       loading = false;
-      userProfile.subscribe((p) => {
-        userSettings.set(p.settings);
-      });
     });
   });
   const logout = async () => {
@@ -100,23 +109,27 @@
   <div class="profile-cards">
     <div class="profile-card">
       <SectionTitle label="Current skin" placeholder={loading} />
-      <!-- {#if $userProfile?.settings.baseTexture != null && !loading}
-        <div>
-          <OutfitTextureRender
-            renderProvider={$userProfile?.settings.baseTexture.model == MODEL_TYPE.ALEX
-              ? providers.alex
-              : providers.steve}
-            texture={$userProfile?.settings.baseTexture.layers[0][$userProfile?.settings.baseTexture.model].content}
-          />
+      {#if $userProfile?.settings?.currentTexturePackageId != null && !loading}
+        <div style="flex:1;">
+          <div style="aspect-ratio: 1/1;">
+            <OutfitPackageSnapshotRender
+              renderProvider={$currentTexture.model == MODEL_TYPE.ALEX
+                ? providers.alex
+                : providers.steve}
+              item={$currentTexture}
+            />
+          </div>
         </div>
         <div class="actions">
           <Button
             on:click={() =>
-              navigate("/design/outfit_set/" + $userSettings?.currentSkin?.id)}
+              navigate(
+                "/design/" + $userProfile.settings.currentTexturePackageId
+              )}
             label="See in design"
           />
         </div>
-      {/if} -->
+      {/if}
     </div>
     <div class="profile-card">
       <SectionTitle label="Base texture" placeholder={loading} />
@@ -130,12 +143,14 @@
           />
         {/if}
       </div>
-      <div class="actions">
-        <Button
-          on:click={() => (isBaseTextureDialogOpen = true)}
-          label="Edit"
-        />
-      </div>
+      {#if !loading}
+        <div class="actions">
+          <Button
+            on:click={() => (isBaseTextureDialogOpen = true)}
+            label="Edit"
+          />
+        </div>
+      {/if}
     </div>
     <div class="profile-card">
       <SectionTitle label="Minecraft account" placeholder={loading} />

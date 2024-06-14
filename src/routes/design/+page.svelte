@@ -29,19 +29,22 @@
     APP_STATE,
     OUTFIT_TYPE,
   } from "$data/consts";
-  import { OutfitLayer, OutfitPackage, PagedResponse } from "$data/common";
+  import {
+    MinerobeUserSettingsSimple,
+    OutfitLayer,
+    OutfitPackage,
+    PagedResponse,
+  } from "$data/common";
   import {
     currentUser,
     defaultRenderer,
     isMobileView,
     showToast,
     baseTexture,
-    userBaseTexture,
     appState,
   } from "$data/cache";
   import {
     GetStudioPackage,
-    GetWadrobeCollections,
     GetWadrobeCollectionsWithPackageContext,
     GetWadrobePackagesSingleLayer,
     GetWadrobeSummary,
@@ -53,6 +56,7 @@
   import AddIcon from "$icons/plus.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import TrashIcon from "$icons/trash.svg?raw";
+  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
 
   import {
     ExportImageLayers,
@@ -68,7 +72,6 @@
   import {
     AddPackageLayer,
     AddRemoteLayerToPackage,
-    GetLayer,
     OrderPackageLayer,
     RemovePackage,
     RemovePackageLayer,
@@ -86,8 +89,13 @@
     AddLayerSnapshot,
     GetGlobalLayer,
   } from "$src/helpers/package/packageHelper";
-  import { AddPackageToCollection, RemovePackageFromCollection } from "$src/api/collection";
+  import {
+    AddPackageToCollection,
+    RemovePackageFromCollection,
+  } from "$src/api/collection";
+  import { FetchSettings, SetCurrentTexture } from "$src/api/settings";
 
+  const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
@@ -99,6 +107,7 @@
   );
 
   let isItemSet = false;
+  let isSkinSetting = false;
   let modelTexture: string = null;
   let newVariantLayer = null;
   let defaultProvider = null;
@@ -128,6 +137,10 @@
 
       const pack = await GetStudioPackage();
       $itemPackage = pack;
+
+      const settings = await FetchSettings();
+      userSettings.set(settings);
+
       isItemSet = $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET;
 
       $itemRenderConfig = new OutfitPackageRenderConfig(
@@ -140,8 +153,10 @@
           : null
       );
 
-      if (isItemSet && $userBaseTexture != null)
-        $itemRenderConfig.setBaseTextureFromLayer($userBaseTexture);
+      if (isItemSet && $userSettings.baseTexture.layers.length > 0)
+        $itemRenderConfig.setBaseTextureFromLayer(
+          $userSettings.baseTexture.layers[0]
+        );
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
       loaded = true;
@@ -434,17 +449,22 @@
     applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
   };
 
-  const skinSetted = function (e) {
-    const isSetted = e.detail.isSuccessful;
-    if (isSetted) {
-      applyAnimations($itemPackage, CHANGE_TYPE.SKIN_SET, 0);
+  const skinSetted = async function () {
+    isSkinSetting = true;
+    var result = await SetCurrentTexture($itemPackage.id);
+    if (result) {
+      showToast("Skin changed", HumanHandsUpIcon);
+      userSettings.set(result);
     }
+    isSkinSetting = false;
   };
   //collections
   const openCollectionPicker = async function () {
     isCollectionDialogOpen = true;
     isCollectionPickerLoading = true;
-    const fetched = await GetWadrobeCollectionsWithPackageContext($itemPackage.id);
+    const fetched = await GetWadrobeCollectionsWithPackageContext(
+      $itemPackage.id
+    );
     pickerCollections = fetched.items;
     isCollectionPickerLoading = false;
   };
@@ -455,7 +475,10 @@
   };
   const removeFromCollection = async function (e) {
     const collection = e.detail.collection;
-    var result = await RemovePackageFromCollection(collection.id, $itemPackage.id);
+    var result = await RemovePackageFromCollection(
+      collection.id,
+      $itemPackage.id
+    );
     isCollectionDialogOpen = false;
   };
   //subscribtions
@@ -538,9 +561,9 @@
           {#if $itemPackage.social.isShared}
             <Label variant="rare">{$_("shared")}</Label>
           {/if}
-          <!-- {#if isItemSet}
+          {#if $userSettings.currentTexturePackageId == $itemPackage.id}
             <Label variant="ancient">Current skin</Label>
-          {/if} -->
+          {/if}
           <br />
         </Placeholder>
         <br />
@@ -653,11 +676,11 @@
       {#if loaded}
         <OutfitActions
           outfitPackage={$itemPackage}
-          {modelTexture}
+          {isSkinSetting}
           loading={!loaded}
           mobile={$isMobileView}
-          on:share={sharePackage}
           on:skinSet={skinSetted}
+          on:share={sharePackage}
           on:download={downloadImage}
           on:shareDialog={() => (isShareDialogOpen = true)}
           on:collectionDialog={openCollectionPicker}

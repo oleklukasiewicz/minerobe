@@ -17,12 +17,12 @@
   export let withBaseTexture = false;
   export let baseTexture: OutfitLayer = null;
   export let placeholderCount = 48;
+  export let currentSkinId = null;
 
   const dispatch = createEventDispatcher();
 
   let steveListProvider = null;
   let alexListProvider = null;
-  let normalizedItems = [];
 
   onMount(async () => {
     if (renderer == null) {
@@ -35,29 +35,32 @@
     alexListProvider = providers.alex;
   });
 
-  const normalizeItems = async function (itemsToNormalize) {
-    for (let i = 0; i < itemsToNormalize.length; i++) {
-      let item = itemsToNormalize[i];
-      if (
-        item.type == PACKAGE_TYPE.OUTFIT_SET &&
-        withBaseTexture &&
-        baseTexture
-      ) {
-       item.layers.unshift(baseTexture);
-      }
+  const normalizeItem = function (item) {
+    let temp = structuredClone(item);
+    if (
+      temp.type == PACKAGE_TYPE.OUTFIT_SET &&
+      withBaseTexture &&
+      baseTexture
+    ) {
+      temp.layers.unshift(baseTexture);
     }
-    normalizedItems = itemsToNormalize;
+    return temp as OutfitPackage;
   };
 
   const selectOutfit = function (item) {
     dispatch("select", item);
   };
   const selectRenderedOutfit = function (e) {
+    if (
+      e.detail.item.type == PACKAGE_TYPE.OUTFIT_SET &&
+      withBaseTexture &&
+      baseTexture
+    ) {
+      e.detail.item.layers.shift();
+    }
     dispatch("innerselect", e.detail);
     selectOutfit(e.detail.item);
   };
-
-  $: normalizeItems(items);
 </script>
 
 <div
@@ -66,11 +69,12 @@
   style="grid-template-columns: repeat({fillMethod}, minmax({minItemWidth}, {maxItemWidth}));"
 >
   {#if !loading && steveListProvider && alexListProvider}
-    {#each normalizedItems as item (item.id + item.layers[0]?.id)}
+    {#each items as item}
       <OutfitPackageSnapshotItem
         on:select={selectRenderedOutfit}
+        isCurrentSkin={currentSkinId == item.id}
         multiple={item.type == PACKAGE_TYPE.OUTFIT_SET ? 1 : 2}
-        {item}
+        item={normalizeItem(item)}
         {dense}
         renderProvider={item.model == MODEL_TYPE.STEVE
           ? steveListProvider

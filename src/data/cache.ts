@@ -8,7 +8,7 @@ import {
   derived,
 } from "svelte/store";
 import { APP_STATE } from "$data/consts";
-import { MinerobeUserSettings, OutfitLayer, type MinerobeUser } from "./common";
+import { type MinerobeUser } from "./common";
 import planksTextureRaw from "$src/texture/base_skin.png?url";
 import * as THREE from "three";
 import { FetchSettings } from "$src/api/settings";
@@ -18,15 +18,6 @@ export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
 
 export const planksTexture: Readable<string> = readable(planksTextureRaw);
 export const defaultRenderer: Writable<string> = writable(null);
-
-export const userSettings: Writable<MinerobeUserSettings> = writable(null);
-export const userBaseTexture: Readable<OutfitLayer> = derived(
-  userSettings,
-  ($settings) => {
-    if ($settings) return $settings?.baseTexture.layers[0];
-    return null;
-  }
-);
 
 export const appState: Writable<string> = writable(APP_STATE.LOADING);
 export const currentUser: Writable<MinerobeUser> = writable(null);
@@ -87,8 +78,6 @@ export const setup = function () {
       //settings up account
       if (get(appState) == APP_STATE.LOADING)
         appState.set(APP_STATE.USER_READY);
-      let settings = await FetchSettings();
-      userSettings.set(settings);
       if (true) {
         appState.set(APP_STATE.READY);
         if (wardrobeSubscription) wardrobeSubscription();

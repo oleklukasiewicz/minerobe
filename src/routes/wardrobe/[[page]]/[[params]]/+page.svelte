@@ -4,7 +4,6 @@
     currentUser,
     defaultRenderer,
     isMobileView,
-    userBaseTexture,
   } from "$src/data/cache";
   import {
     navigateToCollection,
@@ -18,12 +17,10 @@
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import SubscriptionIcon from "$src/icons/subscriptions.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
-  import CalendarIcon from "$icons/calendar-month.svg?raw";
   import { GetOutfitIconFromType } from "$src/helpers/image/imageDataHelpers";
   import Search from "$component/base/Search/Search.svelte";
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import OutfitPackageCollectionItem from "$lib/components/outfit/OutfitPackageCollectionItem/OutfitPackageCollectionItem.svelte";
   import { page } from "$app/stores";
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import { _ } from "svelte-i18n";
@@ -31,6 +28,7 @@
   import { APP_STATE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
   import { writable, type Writable } from "svelte/store";
   import {
+    MinerobeUserSettingsSimple,
     OutfitPackageCollection,
     type PagedResponse,
   } from "$src/data/common";
@@ -45,8 +43,8 @@
   import { CreateNewOutfitPackage } from "$src/helpers/package/packageHelper";
   import { AddPackage } from "$src/api/pack";
   import { AddCollection } from "$src/api/collection";
-  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import OutfitPackageCollectionList from "$lib/components/outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
+  import { FetchSettings } from "$src/api/settings";
 
   const defaultList = {
     items: [],
@@ -54,6 +52,8 @@
     page: 1,
     pageSize: 10,
   };
+  const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
+
   const localWardobeItems: Writable<PagedResponse> = writable(defaultList);
   let currentView: any = {};
   let loaded = false;
@@ -102,6 +102,10 @@
       if (loaded) return;
       //const ward = await GetUserWardrobe();
       const summary = await GetWadrobeSummary();
+
+      const settings = await FetchSettings();
+      userSettings.set(settings);
+
       const outfitsMenuItems = summary.outfitTypes
         .map((x) => {
           return {
@@ -277,13 +281,14 @@
         <div class="list">
           <OutfitPackageSnapshotList
             dense={false}
+            currentSkinId={$userSettings?.currentTexturePackageId}
             loading={!loaded || !itemsLoaded}
             maxItemWidth="1fr"
             minItemWidth="155px"
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
-            baseTexture={$userBaseTexture}
-            withBaseTexture={$userBaseTexture != null}
+            baseTexture={$userSettings?.baseTexture.layers[0]}
+            withBaseTexture={$userSettings?.baseTexture != null}
             items={$localWardobeItems.items}
             on:innerselect={onItemSelect}
           />
@@ -302,12 +307,13 @@
           <OutfitPackageSnapshotList
             dense={false}
             loading={!loaded || !itemsLoaded}
+            currentSkinId={$userSettings?.currentTexturePackageId}
             maxItemWidth="1fr"
             minItemWidth="155px"
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
-            baseTexture={$userBaseTexture}
-            withBaseTexture={$userBaseTexture != null}
+            baseTexture={$userSettings?.baseTexture.layers[0]}
+            withBaseTexture={$userSettings?.baseTexture != null}
             items={$localWardobeItems.items}
             on:innerselect={onItemSelect}
           />

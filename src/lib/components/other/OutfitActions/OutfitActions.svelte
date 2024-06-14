@@ -1,16 +1,13 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import {
-    currentUser,
-    isMobileView,
-    isUserGuest,
-  } from "$src/data/cache";
-  import SetSkinButton from "../SetSkinButton/SetSkinButton.svelte";
+  import { currentUser, isMobileView, isUserGuest } from "$src/data/cache";
   import type { OutfitPackage } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
 
   import DownloadIcon from "$icons/download.svg?raw";
+  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
+  import LoaderIcon from "$icons/loader.svg?raw";
   import CloudIcon from "$icons/cloud.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
@@ -21,12 +18,16 @@
 
   export let outfitPackage: OutfitPackage;
   export let loading: boolean = false;
-  export let modelTexture: string;
   export let isPackageInWardrobe: boolean = false;
   export let mobile: boolean = false;
   export let readonly: boolean = false;
-  export let accountIsLinked: boolean = false;
-
+  export let isSkinSetting: boolean = false;
+  let setMySkinAvailable = false;
+  const setMySkinAvailableCheck = (paack, user) => {
+    setMySkinAvailable =
+      outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET && $currentUser?.id != null;
+  };
+  $: setMySkinAvailableCheck(outfitPackage, $currentUser);
   export const downloadImage = function () {
     dispatch("download");
   };
@@ -51,19 +52,19 @@
 </script>
 
 <div class="item-actions" class:mobile>
-  {#if outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET && accountIsLinked}
-    <SetSkinButton
-      item={outfitPackage}
-      texture={modelTexture}
+  {#if setMySkinAvailable}
+    <Button
+      icon={isSkinSetting ? LoaderIcon : HumanHandsUpIcon}
+      size="large"
+      label={isSkinSetting ? "Setting skin..." : "Set my skin"}
       style="flex:1;"
-      on:setSkin={skinSet}
+      on:click={skinSet}
     />
   {/if}
   <Button
     on:click={downloadImage}
     label={$_("download")}
-    onlyIcon={!$isMobileView &&
-      outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET  && accountIsLinked}
+    onlyIcon={!$isMobileView && setMySkinAvailable}
     icon={DownloadIcon}
     disabled={outfitPackage.layers.length == 0 || loading}
     size="large"

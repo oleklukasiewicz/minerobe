@@ -204,9 +204,17 @@ export class MinerobeUserSettings {
   id: string;
   ownerId: string;
   currentTexture: OutfitPackage;
+  currentTexturePackageId: string;
   baseTexture: OutfitPackage;
-  linkedAccount:any;
+  linkedAccount: any;
   theme: string;
+}
+export class MinerobeUserSettingsSimple {
+  id: string;
+  ownerId: string;
+  currentTexturePackageId: string;
+  baseTexture: OutfitPackage;
+  linkedAccount: any;
 }
 export class SkinData {
   id: string;
@@ -269,12 +277,7 @@ export class PagedResponse {
   pageSize: number;
   total: number;
   items: any[];
-  constructor(
-    page: number,
-    pageSize: number,
-    total: number,
-    items: any[]
-  ) {
+  constructor(page: number, pageSize: number, total: number, items: any[]) {
     this.page = page;
     this.pageSize = pageSize;
     this.total = total;

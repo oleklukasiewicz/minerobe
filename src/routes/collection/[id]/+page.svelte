@@ -7,9 +7,13 @@
     GetCollection,
     UpdateCollection,
   } from "$src/api/collection";
-  import { userBaseTexture } from "$data/cache";
-  import { defaultRenderer, isReadyForData } from "$src/data/cache";
-  import type { OutfitPackageCollection } from "$src/data/common";
+  import { FetchSettings } from "$src/api/settings";
+  import { appState, defaultRenderer } from "$src/data/cache";
+  import type {
+    MinerobeUserSettingsSimple,
+    OutfitPackageCollection,
+  } from "$src/data/common";
+  import { APP_STATE } from "$src/data/consts";
   import {
     navigateToOutfitPackage,
     navigateToWardrobe,
@@ -19,24 +23,28 @@
 
   export let data: any;
   let loaded = false;
+  const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
   const localCollection: Writable<OutfitPackageCollection> = writable(
     {} as OutfitPackageCollection
   );
 
   onMount(() => {
     const id = data.id;
-    isReadyForData.subscribe(async (readyness) => {
-      if (readyness) {
-        const fetched = await GetCollection(id);
-        localCollection.set(fetched);
-        loaded = true;
-      }
+    appState.subscribe(async (state) => {
+      if (state != APP_STATE.READY) return;
+      const settings = await FetchSettings();
+      userSettings.set(settings);
+
+      const fetched = await GetCollection(id);
+      localCollection.set(fetched);
+
+      loaded = true;
     });
   });
   const goToItemPage = (e) => {
     const item = e.detail.item;
     const variant = e.detail.layer;
-    navigateToOutfitPackage(item, variant.variantId);
+    navigateToOutfitPackage(item, variant.id);
   };
   const deleteCollection = async () => {
     await DeleteCollection(data.id);
@@ -51,24 +59,22 @@
   <div id="header">
     <Placeholder {loaded} style="width:75vw;height:48px">
       <input class="title-input" bind:value={$localCollection.name} />
-      <Button
-        on:click={deleteCollection}
-        label="Delete"
-      />
+      <Button on:click={deleteCollection} label="Delete" />
     </Placeholder>
   </div>
   <div class="outfits">
-    <OutfitPackageSnapshotList
-      dense={false}
-      maxItemWidth="1fr"
-      fillMethod="auto-fill"
-      loading={!loaded}
-      baseTexture={$userBaseTexture}
-      withBaseTexture={$userBaseTexture != null}
-      renderer={$defaultRenderer}
-      items={$localCollection.items}
-      on:innerselect={goToItemPage}
-    />
+      <OutfitPackageSnapshotList
+        dense={false}
+        maxItemWidth="1fr"
+        fillMethod="auto-fill"
+        loading={!loaded}
+        currentSkinId={$userSettings?.currentTexturePackageId}
+        baseTexture={$userSettings?.baseTexture.layers[0]}
+        withBaseTexture={$userSettings?.baseTexture != null}
+        renderer={$defaultRenderer}
+        items={$localCollection.items}
+        on:innerselect={goToItemPage}
+      />
   </div>
 </div>
 

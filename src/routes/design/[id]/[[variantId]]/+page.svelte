@@ -18,14 +18,17 @@
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
   import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
 
-  import { OutfitLayer, OutfitPackage } from "$data/common";
+  import {
+    MinerobeUserSettingsSimple,
+    OutfitLayer,
+    OutfitPackage,
+  } from "$data/common";
   import {
     defaultRenderer,
     isMobileView,
     baseTexture,
     appState,
     showToast,
-    userBaseTexture,
   } from "$data/cache";
   import { replaceState } from "$app/navigation";
   import { OutfitPackageRenderConfig } from "$src/data/model.js";
@@ -45,10 +48,10 @@
   import DefaultAnimation from "$animation/default";
   import HandsUpAnimation from "$animation/handsup";
 
+  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
+
   import { ExportImageString } from "$src/helpers/data/dataTransferHelper.js";
-  import {
-    sortOutfitLayersByColor,
-  } from "$src/helpers/image/imageDataHelpers.js";
+  import { sortOutfitLayersByColor } from "$src/helpers/image/imageDataHelpers.js";
 
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
   import { GetPackage } from "$src/api/pack.js";
@@ -58,9 +61,14 @@
     GetWadrobeCollectionsWithPackageContext,
     RemovePackageFromWardrobe,
   } from "$src/api/wardrobe.js";
-  import { AddPackageToCollection, RemovePackageFromCollection } from "$src/api/collection.js";
+  import {
+    AddPackageToCollection,
+    RemovePackageFromCollection,
+  } from "$src/api/collection.js";
+  import { FetchSettings, SetCurrentTexture } from "$src/api/settings.js";
 
   export let data;
+  const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
   const localPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     localPackage,
@@ -75,11 +83,12 @@
   let isItemSet = false;
 
   let modelTexture: string = null;
+  let isSkinSetting = false;
   let loaded = false;
   let defaultRenderProvider;
 
-  let isCollectionPickerLoading=true;
-  let pickerCollections=[];
+  let isCollectionPickerLoading = true;
+  let pickerCollections = [];
   let isCollectionDialogOpen = false;
 
   let updateAnimation: (animation: any) => void = () => {};
@@ -90,12 +99,14 @@
     let outfitPackage: OutfitPackage;
 
     appState.subscribe(async (state) => {
-      if (state != APP_STATE.READY)
-        return;
+      if (state != APP_STATE.READY) return;
       defaultRenderProvider =
         await CreateDefaultRenderProvider($defaultRenderer);
       outfitPackage = await GetPackage(id);
       if (!outfitPackage) return;
+
+      const settings = await FetchSettings();
+      userSettings.set(settings);
 
       localPackage.set(outfitPackage);
       isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
@@ -114,8 +125,10 @@
         !isItemSet,
         varaint ? varaint : $itemLayers[0]
       );
-      if (isItemSet && $userBaseTexture != null)
-        $itemRenderConfig.setBaseTextureFromLayer($userBaseTexture);
+      if (isItemSet && $userSettings.baseTexture.layers.length>0)
+        $itemRenderConfig.setBaseTextureFromLayer(
+          $userSettings.baseTexture.layers[0]
+        );
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
       loaded = true;
@@ -141,10 +154,14 @@
     if (!loaded) return;
     modelTexture = await $itemRenderConfig.getLayersForRender(false);
   };
-  const skinSetted = function (e) {
-    if (e.detail.isSuccessful) {
-      applyAnimations($localPackage, CHANGE_TYPE.SKIN_SET, 0);
+  const skinSetted = async function () {
+    isSkinSetting = true;
+    var result = await SetCurrentTexture($localPackage.id);
+    if (result) {
+      showToast("Skin changed", HumanHandsUpIcon);
+      userSettings.set(result);
     }
+    isSkinSetting = false;
   };
   //sharing
   const addToWardrobe = async function () {
@@ -175,7 +192,9 @@
   const openCollectionPicker = async function () {
     isCollectionDialogOpen = true;
     isCollectionPickerLoading = true;
-    const fetched = await GetWadrobeCollectionsWithPackageContext($localPackage.id);
+    const fetched = await GetWadrobeCollectionsWithPackageContext(
+      $localPackage.id
+    );
     pickerCollections = fetched.items;
     isCollectionPickerLoading = false;
   };
@@ -186,7 +205,10 @@
   };
   const removeFromCollection = async function (e) {
     const collection = e.detail.collection;
-    var result = await RemovePackageFromCollection(collection.id, $localPackage.id);
+    var result = await RemovePackageFromCollection(
+      collection.id,
+      $localPackage.id
+    );
     isCollectionDialogOpen = false;
   };
 
@@ -247,9 +269,9 @@
         <Placeholder style="height:26px;max-width:100px;" {loaded}>
           <div style="display: flex;gap:4px;height:24px">
             <Label variant="unique">{$localPackage.publisher.name}</Label>
-            <!-- {#if isItemSet}
+            {#if $userSettings.currentTexturePackageId == $localPackage.id}
               <Label variant="ancient">Current skin</Label>
-            {/if} -->
+            {/if}
             &nbsp;
             <SocialInfo data={$localPackage.social} />
           </div>
@@ -342,7 +364,7 @@
           readonly={true}
           isPackageInWardrobe={$localPackage.isInWardrobe}
           outfitPackage={$localPackage}
-          {modelTexture}
+          {isSkinSetting}
           loading={!loaded}
           mobile={$isMobileView}
           on:download={downloadImage}

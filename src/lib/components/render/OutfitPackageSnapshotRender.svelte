@@ -1,12 +1,7 @@
 <script lang="ts">
   import * as THREE from "three";
   import type { OutfitPackage } from "$src/data/common";
-  import {
-    ALEX_MODEL,
-    MODEL_TYPE,
-    OUTFIT_TYPE,
-    STEVE_MODEL,
-  } from "$src/data/consts";
+  import { ALEX_MODEL, MODEL_TYPE, STEVE_MODEL } from "$src/data/consts";
   import {
     CameraConfig,
     RenderFromSnapshot,
@@ -34,7 +29,10 @@
     snapshot.node = renderNode;
     snapshot.tempNode = tempNode;
     snapshot.texture = item.layers[0][item.model].content;
-    if (item.presentationConfig.isMerged) {
+    if (
+      item.presentationConfig?.isMerged ||
+      (item.presentationConfig == null && item.layers.length > 1)
+    ) {
       //merge layers
       const config = new OutfitPackageRenderConfig();
       config.model = item.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;

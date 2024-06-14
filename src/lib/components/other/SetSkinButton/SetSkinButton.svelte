@@ -18,7 +18,7 @@
   let skinIsSetting = false;
   const setSkin = async function () {
     skinIsSetting = true;
-    const isSetted = await SetCurrentSkin(item.id, item.model, texture);
+    const isSetted = false;
     skinIsSetting = false;
     if (isSetted) showToast("Skin changed", HumanHandsUpIcon);
     else showToast("Failed to change skin", undefined, "error");

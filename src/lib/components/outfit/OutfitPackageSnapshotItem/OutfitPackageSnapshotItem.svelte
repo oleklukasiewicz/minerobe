@@ -8,7 +8,7 @@
   } from "$src/data/render";
   import CloudIcon from "$icons/cloud.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
-  import { currentUser, userSettings } from "$src/data/cache";
+  import { currentUser } from "$src/data/cache";
   import { FindColorTitle, FindColor } from "$src/helpers/image/colorHelper";
   import OutfitPackageSnapshotRender from "$component/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
@@ -19,6 +19,7 @@
   export let renderProvider: RenderProvider = null;
   export let multiple = 2;
   export let style = "";
+  export let isCurrentSkin = false;
 
   const dispatch = createEventDispatcher();
   let aboveLimit = 0;
@@ -35,7 +36,6 @@
       currentLayer = layer;
       if (snapshot) {
         snapshot.texture = layer[item.model].content;
-        await RenderFromSnapshot(snapshot);
       }
     }
   };
@@ -60,7 +60,7 @@
   class:outfit={item.type != OUTFIT_TYPE.OUTFIT_SET}
   class:dense
 >
-  {#if item.id == $userSettings?.currentTexture?.id}
+  {#if isCurrentSkin}
     <div class="current-flag" title="Current skin">
       <div class="icon-small">{@html LoaderIcon}</div>
     </div>
