@@ -110,12 +110,12 @@
         <div style="flex:1;">
           <div style="aspect-ratio: 1/1;">
             <OutfitTextureRender
-              renderProvider={$currentTexture.model.toLowerCase() ==
+              renderProvider={$currentTexture.model ==
               MODEL_TYPE.ALEX
                 ? providers.alex
                 : providers.steve}
               texture={$currentTexture.texture}
-              modelName={$currentTexture.model.toLowerCase()}
+              modelName={$currentTexture.model}
             />
           </div>
         </div>
