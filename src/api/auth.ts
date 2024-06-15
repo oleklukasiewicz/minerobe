@@ -12,10 +12,9 @@ import type { MinerobeUser } from "$src/model/user";
 
 export const getCurrentUser = async function () {
   await getCurrentUserFromLocal();
-  let firebaseUser = getAuthUser();
-  let minerobeUser: any;
+  const firebaseUser = getAuthUser();
   if (firebaseUser) {
-    minerobeUser = await GetRequest("/api/User/Login");
+    const minerobeUser = await GetRequest("/api/User/Login");
     currentUser.set(minerobeUser);
   } else {
     currentUser.update((user) => {
@@ -24,9 +23,8 @@ export const getCurrentUser = async function () {
   }
 };
 export const loginUser = async function () {
-  let user = await login();
-  let minerobeUser: MinerobeUser;
-  minerobeUser = await GetRequest("/api/User/Login");
+  const user = await login();
+  const minerobeUser = await GetRequest("/api/User/Login");
   currentUser.set(minerobeUser);
 };
 export const logoutUser = async function () {

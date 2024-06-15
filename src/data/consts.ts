@@ -137,23 +137,6 @@ export const COLLECTION_DISPLAY_MODE = {
   LIST: "list",
 };
 
-export const DATA_PATH_CONFIG = {
-  OUTFIT: "outfits-new",
-  OUTFIT_SET: "sets-new",
-  OUTFIT_COLLECTION: "collections",
-  QUERY: "query-new",
-  PACK_DATA: "itemdata",
-  SOCIAL_DATA: "itemdata",
-  SNAPSHOT_DATA: "snapshot",
-  LAYERS_DATA: "layers",
-  WARDROBE: "wardrobes",
-};
-export const QUERY_DATA_TYPE = {
-  OUTFIT: "otf",
-  OUTFIT_SET: "set",
-  OUTFIT_COLLECTION: "col",
-  DEFAULT: "def",
-};
 export const DEFAULT_PACKAGE = {
   name: "Default",
   model: MODEL_TYPE.STEVE,
@@ -179,14 +162,6 @@ export const DEFAULT_PACKAGE = {
     isMerged: false,
     isSnapshot: false,
   },
-};
-export const DEFAULT_WARDROBE = {
-  id: null,
-  outfits: [],
-  collections: [],
-  sets: [],
-  studio: null,
-  local: null,
 };
 export const STEVE_MODEL = {
   name: MODEL_TYPE.STEVE,

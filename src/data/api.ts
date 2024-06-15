@@ -30,6 +30,7 @@ auth.onAuthStateChanged(async (user) => {
     cUser = user;
   } else {
     cUser = null;
+    cToken = null;
   }
 });
 
@@ -56,14 +57,7 @@ export const login = async () => {
     // Handle error
   });
   let res: any = await signInWithPopup(auth, provider).catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error);
-    // ...
+    // Handle error
   });
   cUser = res?.user;
   if (cUser) cToken = await cUser.getIdToken();

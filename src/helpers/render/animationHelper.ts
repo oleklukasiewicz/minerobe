@@ -239,29 +239,6 @@ export const CreateModelAnimationData = function (
 
   return data;
 };
-export const RemoveModelAnimationData = function (data) {
-  let basePart = data.bodyPivot;
-  basePart.add(data.leftArmPivot.children[0]);
-  basePart.add(data.rightArmPivot.children[0]);
-  basePart.add(data.leftLegPivot.children[0]);
-  basePart.add(data.rightLegPivot.children[0]);
-  basePart.add(data.headPivot.children[0]);
-
-  // Usuń pivoty
-  basePart.remove(data.leftArmPivot);
-  basePart.remove(data.rightArmPivot);
-  basePart.remove(data.leftLegPivot);
-  basePart.remove(data.rightLegPivot);
-  basePart.remove(data.headPivot);
-  // reset positions
-  data.leftleg.position.x = -0.125;
-  data.leftleg.position.y = -0.75;
-  data.leftleg.position.z = 0;
-
-  data.rightleg.position.x = 0.125;
-  data.rightleg.position.y = -0.75;
-  data.rightleg.position.z = 0;
-};
 export const AnimationStep = function (
   data,
   props: AnimationPropertyStep[],

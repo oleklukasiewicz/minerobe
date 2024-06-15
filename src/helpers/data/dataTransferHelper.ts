@@ -29,53 +29,6 @@ export const ExportImageString = async function (
   link.click();
   document.body.removeChild(link);
 };
-export const ExportImagePackageJson = async function (
-  outfitPackage: OutfitPackage
-) {
-  const pack = outfitPackage;
-  const json = JSON.stringify(pack);
-
-  const blob = new Blob([json], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = outfitPackage.name.toLowerCase() + "_package.json";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
-export const ImportImagePackageJson = async function (context: OutfitPackage) {
-  //create node for fle download
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = ".json";
-  input.click();
-
-  return new Promise<OutfitPackage>((resolve) => {
-    input.onchange = (event: any) => {
-      let file = event.target.files[0];
-      resolve(ImportImagePackageJsonFromFile(file, context));
-    };
-  });
-};
-export const ImportImagePackageJsonFromFile = async function (
-  file: File,
-  context: OutfitPackage
-) {
-  return new Promise<OutfitPackage>((resolve) => {
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const base64Data: any = event.target.result;
-      const jsonData = JSON.parse(base64Data);
-      context.layers = jsonData.layers;
-      context.name = jsonData.name;
-      context.model = jsonData.model;
-      resolve(context);
-    };
-    reader.readAsText(file);
-  });
-};
 export const ImportImage = async function () {
   //create node for fle download
   const input = document.createElement("input");

@@ -105,22 +105,6 @@ export const GetContextFromBase64 = async function (base64) {
     img.src = base64;
   });
 };
-export const GetCategoriesFromList = function (list: OutfitPackage[]) {
-  let categories = Object.keys(OUTFIT_TYPE).filter(
-    (x) => OUTFIT_TYPE[x] != OUTFIT_TYPE.OUTFIT_SET
-  );
-  let categoryCount = {};
-  categories.forEach((categoryName) => {
-    const category = normalizeStringCase(categoryName);
-    categoryCount[category] = list.filter((outfit) => {
-      if (outfit.layers?.length == 0) return false;
-      if (outfit.type == OUTFIT_TYPE.OUTFIT_SET) return false;
-      if (outfit.layers == null || outfit.layers[0] == null) return false;
-      return outfit.outfitType == OUTFIT_TYPE[categoryName];
-    }).length;
-  });
-  return categoryCount;
-};
 export const GetOutfitIconFromType = function (type: string) {
   switch (type.toLowerCase()) {
     case OUTFIT_TYPE.HAT:

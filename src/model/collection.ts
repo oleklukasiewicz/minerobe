@@ -1,4 +1,3 @@
-import { PACKAGE_TYPE } from "$src/data/consts";
 import type { OutfitPackage, PackageSocialData } from "./package";
 import type { MinerobeUser } from "./user";
 
@@ -30,12 +29,4 @@ export class OutfitPackageCollectionWithPackageContext {
   modifiedAt: Date;
   type: string;
   isInCollection: boolean;
-}
-export class OutfitPackageCollectionLink {
-  id: string;
-  type: string;
-  constructor(id: string, type: string = PACKAGE_TYPE.OUTFIT_COLLECTION_LINK) {
-    this.id = id;
-    this.type = type;
-  }
 }

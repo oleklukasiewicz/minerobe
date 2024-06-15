@@ -1,4 +1,4 @@
-import { DATA_PATH_CONFIG, LAYER_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
 import type { MinerobeUser } from "./user";
 
 export class OutfitPackage {
@@ -80,53 +80,19 @@ export class OutfitLayer {
     }
   }
 }
-//links
-export class OutfitLayerLink {
-  id: string;
-  type: string;
-  variantId: string;
-  path: string;
-  constructor(
-    id: string,
-    variantId: string = null,
-    type: string = LAYER_TYPE.REMOTE
-  ) {
-    this.id = id;
-    this.variantId = variantId;
-    this.type = type;
-    this.path = DATA_PATH_CONFIG.OUTFIT;
-  }
-}
-export class OutfitPackageLink {
-  id: string;
-  model: string;
-  variantId: string;
-  type: string;
-  constructor(
-    linkId: string,
-    model: string,
-    type: string = PACKAGE_TYPE.OUTFIT_SET_LINK,
-    variantId: string = null
-  ) {
-    this.id = linkId;
-    this.model = model;
-    this.type = type;
-    this.variantId = variantId;
-  }
-}
 export class PackageSocialData {
-    id: string;
-    likes: number;
-    isShared: boolean;
-    isFeatured: boolean;
-    downloads: number;
-    constructor(
-      likes: number = 1,
-      isFeatured: boolean = false,
-      downloads: number = 0
-    ) {
-      this.likes = likes;
-      this.isFeatured = isFeatured;
-      this.downloads = downloads;
-    }
+  id: string;
+  likes: number;
+  isShared: boolean;
+  isFeatured: boolean;
+  downloads: number;
+  constructor(
+    likes: number = 1,
+    isFeatured: boolean = false,
+    downloads: number = 0
+  ) {
+    this.likes = likes;
+    this.isFeatured = isFeatured;
+    this.downloads = downloads;
   }
+}

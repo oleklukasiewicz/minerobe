@@ -45,11 +45,7 @@ export const setup = function () {
   });
   if (userSubscription) userSubscription();
   userSubscription = currentUser.subscribe(async (user) => {
-    if (user) {
-      appState.set(APP_STATE.READY);
-    } else {
-      appState.set(APP_STATE.GUEST_READY);
-    }
+    appState.set(user != null ? APP_STATE.READY : APP_STATE.GUEST_READY);
   });
 };
 export const currentToasts: Writable<any[]> = writable([]);
