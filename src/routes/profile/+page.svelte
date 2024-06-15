@@ -110,8 +110,7 @@
         <div style="flex:1;">
           <div style="aspect-ratio: 1/1;">
             <OutfitTextureRender
-              renderProvider={$currentTexture.model ==
-              MODEL_TYPE.ALEX
+              renderProvider={$currentTexture.model == MODEL_TYPE.ALEX
                 ? providers.alex
                 : providers.steve}
               texture={$currentTexture.texture}
@@ -123,7 +122,12 @@
           <Button
             on:click={() =>
               navigate(
-                "/design/" + $userProfile.settings.currentTexturePackageId
+                "/design/" +
+                  $userProfile.settings.currentTexturePackageId +
+                  "?model=" +
+                  $currentTexture.model +
+                  "&flat=" +
+                  $currentTexture.isFlat
               )}
             label="See in design"
           />

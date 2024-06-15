@@ -118,12 +118,19 @@
       }
       const varaint = outfitPackage.layers.find((x) => x.id == variantId);
 
+      const targetModel = data.model != null ? data.model : $localPackage.model;
+      const targetModelName =
+        targetModel == MODEL_TYPE.ALEX ? MODEL_TYPE.ALEX : MODEL_TYPE.STEVE;
+      if ($localPackage.model != targetModel)
+        itemModelType.set(targetModelName);
+      
       $itemRenderConfig = new OutfitPackageRenderConfig(
         $localPackage,
-        $localPackage.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL,
+        targetModel == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL,
         undefined,
         !isItemSet,
-        varaint ? varaint : $itemLayers[0]
+        varaint ? varaint : $itemLayers[0],
+        data.isFlat == true
       );
       if (isItemSet && $userSettings.baseTexture.layers.length > 0)
         $itemRenderConfig.setBaseTextureFromLayer(
