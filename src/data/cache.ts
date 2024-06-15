@@ -45,7 +45,6 @@ export const setup = function () {
   });
   if (userSubscription) userSubscription();
   userSubscription = currentUser.subscribe(async (user) => {
-    console.log("User changed", user);
     if (user) {
       appState.set(APP_STATE.READY);
     } else {
