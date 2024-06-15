@@ -1,6 +1,5 @@
-import { OutfitPackageLink, type OutfitPackage } from "$src/data/common";
 import { goto } from "$app/navigation";
-import { PACKAGE_TYPE } from "$src/data/consts";
+import type { OutfitPackage } from "$src/model/package";
 
 export const navigateToDesign = function (packag: OutfitPackage) {
   goto(`/design`);

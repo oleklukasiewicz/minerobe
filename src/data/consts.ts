@@ -1,5 +1,5 @@
-import alexModelData from "$src/model/alex.gltf?raw";
-import steveModelData from "$src/model/steve.gltf?raw";
+import alexModelData from "$src/playerModel/alex.gltf?raw";
+import steveModelData from "$src/playerModel/steve.gltf?raw";
 
 export const COLORS = {
   WHITE: { r: 255, g: 255, b: 255 },
@@ -178,7 +178,6 @@ export const DEFAULT_PACKAGE = {
   presentationConfig: {
     isMerged: false,
     isSnapshot: false,
-  
   },
 };
 export const DEFAULT_WARDROBE = {

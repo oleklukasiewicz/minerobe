@@ -1,4 +1,4 @@
-import { FileData, OutfitLayer, type OutfitPackage } from "./common";
+import { FileData, OutfitLayer, type OutfitPackage } from "$src/model/package";
 import { MergeStringToImage } from "./imageMerger";
 
 export class ModelTextureArea {
@@ -67,7 +67,7 @@ export class OutfitPackageRenderConfig {
       "base",
       new FileData("base_s", baseTexture, null, null),
       new FileData("base_a", baseTexture, null, null),
-      null,
+      null
     );
     this.baseTexture = ll;
   }

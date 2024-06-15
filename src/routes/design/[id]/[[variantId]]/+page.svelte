@@ -19,11 +19,6 @@
   import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
 
   import {
-    MinerobeUserSettingsSimple,
-    OutfitLayer,
-    OutfitPackage,
-  } from "$data/common";
-  import {
     defaultRenderer,
     isMobileView,
     baseTexture,
@@ -66,6 +61,8 @@
     RemovePackageFromCollection,
   } from "$src/api/collection.js";
   import { FetchSettings, SetCurrentTexture } from "$src/api/settings.js";
+  import type { MinerobeUserSettingsSimple } from "$src/model/user.js";
+  import type { OutfitLayer, OutfitPackage } from "$src/model/package.js";
 
   export let data;
   const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
@@ -125,7 +122,7 @@
         !isItemSet,
         varaint ? varaint : $itemLayers[0]
       );
-      if (isItemSet && $userSettings.baseTexture.layers.length>0)
+      if (isItemSet && $userSettings.baseTexture.layers.length > 0)
         $itemRenderConfig.setBaseTextureFromLayer(
           $userSettings.baseTexture.layers[0]
         );
@@ -202,6 +199,7 @@
     const collection = e.detail.collection;
     var result = await AddPackageToCollection(collection.id, $localPackage.id);
     isCollectionDialogOpen = false;
+    showToast("Outfit added to collection");
   };
   const removeFromCollection = async function (e) {
     const collection = e.detail.collection;
@@ -210,6 +208,7 @@
       $localPackage.id
     );
     isCollectionDialogOpen = false;
+    showToast("Outfit removed from collection");
   };
 
   itemRenderConfig.subscribe((config) => {

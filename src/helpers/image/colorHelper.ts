@@ -1,7 +1,7 @@
 import { closest } from "color-diff";
 import { GetContextFromBase64 } from "./imageDataHelpers";
 import { COLORS, COLORS_ARRAY, COLOR_TYPE } from "$src/data/consts";
-import type { FileData } from "$src/data/common";
+import type { FileData } from "$src/model/package";
 const ConvertRGBToHex = (rgb: any) => {
   const { r, g, b } = rgb;
   return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
@@ -80,13 +80,13 @@ export const GetDominantColorFromImageContext = async function (ctx) {
   );
   return dominantColor;
 };
-export const FindClosestColor = (color: any,from:string) => {
+export const FindClosestColor = (color: any, from: string) => {
   let rgbColor;
-  if(from != COLOR_TYPE.RGB){
-    rgbColor = ConvertColor(color,from,COLOR_TYPE.RGB);
+  if (from != COLOR_TYPE.RGB) {
+    rgbColor = ConvertColor(color, from, COLOR_TYPE.RGB);
   }
   return closest(rgbColor, COLORS_ARRAY);
-}
+};
 export const FindInColors = (rgb: any) => {
   return Object.keys(COLORS).find((key) => {
     const color = COLORS[key];
@@ -94,29 +94,32 @@ export const FindInColors = (rgb: any) => {
   });
 };
 export const FindColorTitle = function (rgbString: string) {
-  const cr = FindClosestColor(rgbString,COLOR_TYPE.STRING_COLOR);
+  const cr = FindClosestColor(rgbString, COLOR_TYPE.STRING_COLOR);
   return FindInColors(cr);
 };
-export const FindColor = function (rgbString: string,to:string=COLOR_TYPE.HEX) {
-  const cr = FindClosestColor(rgbString,COLOR_TYPE.STRING_COLOR);
-  return ConvertColor(cr,COLOR_TYPE.RGB,to);
+export const FindColor = function (
+  rgbString: string,
+  to: string = COLOR_TYPE.HEX
+) {
+  const cr = FindClosestColor(rgbString, COLOR_TYPE.STRING_COLOR);
+  return ConvertColor(cr, COLOR_TYPE.RGB, to);
 };
 export const GetColorFromFileData = async function (fileData: FileData) {
   let dominantColor: any;
   dominantColor =
     fileData.color || (await GetDominantColorFromImage(fileData.content));
-  let closestColor = FindClosestColor(dominantColor,COLOR_TYPE.STRING_COLOR);
+  let closestColor = FindClosestColor(dominantColor, COLOR_TYPE.STRING_COLOR);
   return closestColor;
 };
 export const ConvertColor = function (color: string, from: string, to: string) {
   if (from == COLOR_TYPE.RGB && to == COLOR_TYPE.HEX) {
-    if(typeof color == "string"){
+    if (typeof color == "string") {
       return ConvertRGBToHex(StringToRgb(color));
     }
     return ConvertRGBToHex(color);
   }
   if (from == COLOR_TYPE.RGB && to == COLOR_TYPE.HSL) {
-    if(typeof color == "string"){
+    if (typeof color == "string") {
       return ConvertRGBToHSL(StringToRgb(color));
     }
     return ConvertRGBToHSL(color);
@@ -124,13 +127,13 @@ export const ConvertColor = function (color: string, from: string, to: string) {
   if (from == COLOR_TYPE.HEX && to == COLOR_TYPE.RGB) {
     return ConvertHexToRgb(color);
   }
-  if(from==COLOR_TYPE.STRING_COLOR && to == COLOR_TYPE.HEX){
+  if (from == COLOR_TYPE.STRING_COLOR && to == COLOR_TYPE.HEX) {
     return ConvertRGBToHex(StringToRgb(color));
   }
-  if(from==COLOR_TYPE.STRING_COLOR && to == COLOR_TYPE.RGB){
+  if (from == COLOR_TYPE.STRING_COLOR && to == COLOR_TYPE.RGB) {
     return StringToRgb(color);
   }
-  if(from==COLOR_TYPE.STRING_COLOR && to == COLOR_TYPE.HSL){
+  if (from == COLOR_TYPE.STRING_COLOR && to == COLOR_TYPE.HSL) {
     return ConvertRGBToHSL(StringToRgb(color));
   }
   return color;

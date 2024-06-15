@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { OutfitPackageCollectionWithPackageContext } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
   import OutfitPackageCollectionSelectionItem from "../OutfitPackageCollectionSelectionItem/OutfitPackageCollectionSelectionItem.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import type { OutfitPackageCollectionWithPackageContext } from "$src/model/collection";
 
   const dispatch = createEventDispatcher();
 

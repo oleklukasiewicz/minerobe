@@ -1,10 +1,7 @@
 <script lang="ts">
   import Button from "$lib/components/base/Button/Button.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
-  import type {
-    OutfitPackage,
-    OutfitPackageCollectionWithPackageContext,
-  } from "$src/data/common";
+  import type { OutfitPackageCollectionWithPackageContext } from "$src/model/collection";
   import { createEventDispatcher } from "svelte";
 
   export let item: OutfitPackageCollectionWithPackageContext;

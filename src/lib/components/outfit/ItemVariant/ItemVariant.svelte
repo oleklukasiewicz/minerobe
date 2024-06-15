@@ -1,7 +1,7 @@
 <script lang="ts">
   import OutfitLayerRender from "$component/render/OutfitLayerRender.svelte";
-  import type {OutfitLayer } from "$src/data/common";
   import type { RenderProvider } from "$src/data/render";
+  import type { OutfitLayer } from "$src/model/package";
 
   export let item: OutfitLayer;;
   export let renderProvider: RenderProvider = null;

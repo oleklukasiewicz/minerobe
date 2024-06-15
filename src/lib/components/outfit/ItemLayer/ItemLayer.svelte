@@ -1,7 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { cubicOut } from "svelte/easing";
-  import type { OutfitLayer } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
 
   import UpIcon from "$src/icons/chevron-up.svg?raw";
@@ -14,6 +13,7 @@
   import { RenderProvider } from "$src/data/render";
   import Label from "$component/base/Label/Label.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
+  import type { OutfitLayer } from "$src/model/package";
 
   export let item: OutfitLayer;
   export let renderProvider: RenderProvider = new RenderProvider();

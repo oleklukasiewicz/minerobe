@@ -1,8 +1,6 @@
 <script lang="ts">
-  import type { OutfitLayer, OutfitPackage } from "$src/data/common";
   import { OUTFIT_TYPE } from "$src/data/consts";
   import {
-    RenderFromSnapshot,
     RenderProvider,
     RenderSnapshot,
   } from "$src/data/render";
@@ -13,6 +11,7 @@
   import OutfitPackageSnapshotRender from "$component/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
+  import type { OutfitLayer, OutfitPackage } from "$src/model/package";
 
   export let item: OutfitPackage = null;
   export let dense = false;

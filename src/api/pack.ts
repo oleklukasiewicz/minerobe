@@ -5,7 +5,7 @@ import {
   PutRequest,
 } from "$src/data/api";
 import { currentUser } from "$src/data/cache";
-import type { OutfitLayer, OutfitPackage } from "$src/data/common";
+import type { OutfitLayer, OutfitPackage } from "$src/model/package";
 import { get } from "svelte/store";
 //packages
 export const GetPackage = async function (id: string) {

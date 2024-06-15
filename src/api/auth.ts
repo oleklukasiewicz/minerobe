@@ -8,10 +8,7 @@ import {
   login,
   logout,
 } from "../data/api";
-import {
-  MinerobeUser,
-  MinerobeUserSettings,
-} from "$src/data/common";
+import type { MinerobeUser } from "$src/model/user";
 
 export const getCurrentUser = async function () {
   await getCurrentUserFromLocal();

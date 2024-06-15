@@ -9,15 +9,13 @@
   } from "$src/api/collection";
   import { FetchSettings } from "$src/api/settings";
   import { appState, defaultRenderer } from "$src/data/cache";
-  import type {
-    MinerobeUserSettingsSimple,
-    OutfitPackageCollection,
-  } from "$src/data/common";
   import { APP_STATE } from "$src/data/consts";
   import {
     navigateToOutfitPackage,
     navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper";
+  import type { OutfitPackageCollection } from "$src/model/collection";
+  import type { MinerobeUserSettingsSimple } from "$src/model/user";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
 
@@ -63,18 +61,18 @@
     </Placeholder>
   </div>
   <div class="outfits">
-      <OutfitPackageSnapshotList
-        dense={false}
-        maxItemWidth="1fr"
-        fillMethod="auto-fill"
-        loading={!loaded}
-        currentSkinId={$userSettings?.currentTexturePackageId}
-        baseTexture={$userSettings?.baseTexture.layers[0]}
-        withBaseTexture={$userSettings?.baseTexture != null}
-        renderer={$defaultRenderer}
-        items={$localCollection.items}
-        on:innerselect={goToItemPage}
-      />
+    <OutfitPackageSnapshotList
+      dense={false}
+      maxItemWidth="1fr"
+      fillMethod="auto-fill"
+      loading={!loaded}
+      currentSkinId={$userSettings?.currentTexturePackageId}
+      baseTexture={$userSettings?.baseTexture.layers[0]}
+      withBaseTexture={$userSettings?.baseTexture != null}
+      renderer={$defaultRenderer}
+      items={$localCollection.items}
+      on:innerselect={goToItemPage}
+    />
   </div>
 </div>
 

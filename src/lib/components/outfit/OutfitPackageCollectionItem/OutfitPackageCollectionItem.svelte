@@ -1,6 +1,6 @@
 <script lang="ts">
   import Label from "$lib/components/base/Label/Label.svelte";
-  import type { OutfitPackageCollection } from "$src/data/common";
+  import type { OutfitPackageCollection } from "$src/model/collection";
 
   export let item: OutfitPackageCollection;
 </script>

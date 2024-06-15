@@ -1,6 +1,5 @@
 <script lang="ts">
   import * as THREE from "three";
-  import type { OutfitLayer } from "$src/data/common";
   import {
     CreateDefaultRenderProvider,
     RenderFromSnapshot,
@@ -10,6 +9,7 @@
   import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
   import { onMount } from "svelte";
   import { defaultRenderer } from "$src/data/cache";
+  import type { OutfitLayer } from "$src/model/package";
 
   export let item: OutfitLayer = null;
   export let modelName = "steve";

@@ -1,5 +1,6 @@
 import { GetRequest, PostRequest } from "$src/data/api";
-import { MinerobeUserSettings, OutfitPackage } from "$src/data/common";
+import type { OutfitPackage } from "$src/model/package";
+import type { MinerobeUserSettings } from "$src/model/user";
 
 export const FetchSettings = async function () {
   const res = await GetRequest("/api/UserSettings/Simple");

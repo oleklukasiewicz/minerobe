@@ -30,12 +30,6 @@
     OUTFIT_TYPE,
   } from "$data/consts";
   import {
-    MinerobeUserSettingsSimple,
-    OutfitLayer,
-    OutfitPackage,
-    PagedResponse,
-  } from "$data/common";
-  import {
     currentUser,
     defaultRenderer,
     isMobileView,
@@ -94,6 +88,9 @@
     RemovePackageFromCollection,
   } from "$src/api/collection";
   import { FetchSettings, SetCurrentTexture } from "$src/api/settings";
+  import type { MinerobeUserSettingsSimple } from "$src/model/user";
+  import { OutfitLayer, type OutfitPackage } from "$src/model/package";
+  import type { PagedResponse } from "$src/model/base";
 
   const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
@@ -472,6 +469,7 @@
     const collection = e.detail.collection;
     var result = await AddPackageToCollection(collection.id, $itemPackage.id);
     isCollectionDialogOpen = false;
+    showToast("Added to collection");
   };
   const removeFromCollection = async function (e) {
     const collection = e.detail.collection;
@@ -480,6 +478,7 @@
       $itemPackage.id
     );
     isCollectionDialogOpen = false;
+    showToast("Removed from collection");
   };
   //subscribtions
   itemPackage.subscribe(async (pack) => {

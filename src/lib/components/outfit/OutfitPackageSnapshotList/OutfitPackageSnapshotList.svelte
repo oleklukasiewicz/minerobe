@@ -1,11 +1,11 @@
 <script lang="ts">
   import * as THREE from "three";
   import OutfitPackageSnapshotItem from "$component/outfit/OutfitPackageSnapshotItem/OutfitPackageSnapshotItem.svelte";
-  import { OutfitLayer, type OutfitPackage } from "$src/data/common";
   import { createEventDispatcher, onMount } from "svelte";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import type { OutfitLayer, OutfitPackage } from "$src/model/package";
 
   export let items: OutfitPackage[] = [];
   export let renderer = null;
@@ -57,6 +57,7 @@
       baseTexture
     ) {
       e.detail.item.layers.shift();
+      e.detail.layer = e.detail.item.layers[0];
     }
     dispatch("innerselect", e.detail);
     selectOutfit(e.detail.item);

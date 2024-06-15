@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { OutfitPackageCollection } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
   import OutfitPackageCollectionItem from "../OutfitPackageCollectionItem/OutfitPackageCollectionItem.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import { OutfitPackageCollection } from "$src/model/collection";
 
   export let items: OutfitPackageCollection[] = [];
   export let loading = false;

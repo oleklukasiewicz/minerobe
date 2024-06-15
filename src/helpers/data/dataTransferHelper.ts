@@ -1,10 +1,10 @@
-import { FileData, OutfitPackage } from "$src/data/common";
 import { GetDominantColorFromImageContext } from "../image/colorHelper";
 import { GetContextFromBase64, GetOutfitType } from "../image/imageDataHelpers";
 import {
   MergeFileDataToImage,
 } from "../../data/imageMerger";
 import type { OutfitPackageRenderConfig } from "$src/data/model";
+import { FileData, type OutfitPackage } from "$src/model/package";
 
 export const ExportImageLayers = async function (
   layers: FileData[],

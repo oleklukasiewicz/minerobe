@@ -1,5 +1,5 @@
 import { DeleteRequest, GetRequest, PostRequest, PutRequest } from "$src/data/api";
-import type { OutfitPackageCollection } from "$src/data/common";
+import type { OutfitPackageCollection } from "$src/model/collection";
 
 export const AddCollection = async function (collectionData: OutfitPackageCollection) {
     const res = await PostRequest("/api/Collections/", collectionData);

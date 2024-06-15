@@ -28,11 +28,6 @@
   import { APP_STATE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
   import { writable, type Writable } from "svelte/store";
   import {
-    MinerobeUserSettingsSimple,
-    OutfitPackageCollection,
-    type PagedResponse,
-  } from "$src/data/common";
-  import {
     AddCollectionToWardrobe,
     AddPackageToWardrobe,
     GetWadrobeCollections,
@@ -45,6 +40,9 @@
   import { AddCollection } from "$src/api/collection";
   import OutfitPackageCollectionList from "$lib/components/outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
   import { FetchSettings } from "$src/api/settings";
+  import type { MinerobeUserSettingsSimple } from "$src/model/user";
+  import type { PagedResponse } from "$src/model/base";
+  import { OutfitPackageCollection } from "$src/model/collection";
 
   const defaultList = {
     items: [],

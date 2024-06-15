@@ -1,6 +1,5 @@
 <script lang="ts">
   import * as THREE from "three";
-  import type { OutfitPackage } from "$src/data/common";
   import { ALEX_MODEL, MODEL_TYPE, STEVE_MODEL } from "$src/data/consts";
   import {
     CameraConfig,
@@ -12,6 +11,7 @@
   import { onMount } from "svelte";
   import { MergeLayersToImage } from "$src/data/imageMerger";
   import { OutfitPackageRenderConfig } from "$src/data/model";
+  import type { OutfitPackage } from "$src/model/package";
 
   export let item: OutfitPackage = null;
   export let renderProvider: RenderProvider = null;

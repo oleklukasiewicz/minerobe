@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { OutfitPackage } from "$src/data/common";
   import Label from "../base/Label/Label.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
   import SpotlightIcon from "$icons/spotlight.svg?raw";
@@ -8,6 +7,7 @@
   import { createEventDispatcher } from "svelte";
   import Button from "../base/Button/Button.svelte";
   import SocialInfo from "../social/SocialInfo/SocialInfo.svelte";
+  import type { OutfitPackage } from "$src/model/package";
 
   const dispatch = createEventDispatcher();
 

@@ -2,7 +2,6 @@
   import { _ } from "svelte-i18n";
   import Button from "$lib/components/base/Button/Button.svelte";
   import { currentUser, isMobileView, isUserGuest } from "$src/data/cache";
-  import type { OutfitPackage } from "$src/data/common";
   import { createEventDispatcher } from "svelte";
 
   import DownloadIcon from "$icons/download.svg?raw";
@@ -13,6 +12,7 @@
   import HearthIcon from "$icons/heart.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
   import { PACKAGE_TYPE } from "$src/data/consts";
+  import type { OutfitPackage } from "$src/model/package";
 
   const dispatch = createEventDispatcher();
 

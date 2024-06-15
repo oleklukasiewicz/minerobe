@@ -1,9 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n";
   import { planksTexture } from "$src/data/cache";
-  import {
-    ImportSingleImage,
-  } from "$src/helpers/data/dataTransferHelper";
+  import { ImportSingleImage } from "$src/helpers/data/dataTransferHelper";
   import { createEventDispatcher } from "svelte";
   import DynamicRender from "../render/DynamicRender.svelte";
   import { MODEL_TYPE } from "$src/data/consts";
@@ -14,7 +12,7 @@
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import Button from "../base/Button/Button.svelte";
   import { ALEX_MODEL, STEVE_MODEL } from "$src/data/consts";
-  import { FileData, OutfitLayer, OutfitPackage } from "$src/data/common";
+  import { FileData, OutfitLayer, OutfitPackage } from "$src/model/package";
 
   const dispatch = createEventDispatcher();
 
@@ -24,13 +22,13 @@
   const importBaseImage = async () => {
     const filedata = await ImportSingleImage();
     if (filedata) {
-      baseTexture.layers=[(
+      baseTexture.layers = [
         new OutfitLayer(
           "base",
           new FileData("s_base", filedata.content),
           new FileData("a_base", filedata.content)
-        )
-      )];
+        ),
+      ];
     }
   };
   const resetImage = () => {

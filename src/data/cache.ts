@@ -8,10 +8,9 @@ import {
   derived,
 } from "svelte/store";
 import { APP_STATE } from "$data/consts";
-import { type MinerobeUser } from "./common";
 import planksTextureRaw from "$src/texture/base_skin.png?url";
 import * as THREE from "three";
-import { FetchSettings } from "$src/api/settings";
+import type { MinerobeUser } from "$src/model/user";
 
 const isMobileViewWritable: Writable<boolean> = writable(false);
 export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);

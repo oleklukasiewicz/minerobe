@@ -5,11 +5,6 @@ import {
   OUTFIT_TYPE,
   STEVE_MODEL,
 } from "$data/consts";
-import type {
-  MinerobeUserSettings,
-  OutfitLayer,
-  OutfitPackage,
-} from "$src/data/common";
 import HatIcon from "$icons/clothes/hat.svg?raw";
 import TopIcon from "$icons/clothes/top.svg?raw";
 import BottomIcon from "$icons/clothes/bottom.svg?raw";
@@ -19,6 +14,7 @@ import { ConvertColor, GetColorFromFileData } from "./colorHelper";
 import { normalizeStringCase } from "../data/dataHelper";
 import { MergeLayersToImage } from "$src/data/imageMerger";
 import { OutfitPackageRenderConfig } from "$src/data/model";
+import type { OutfitLayer, OutfitPackage } from "$src/model/package";
 
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =

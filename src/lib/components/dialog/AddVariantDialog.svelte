@@ -5,11 +5,11 @@
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
   import { CreateDefaultRenderProvider } from "$src/data/render";
   import { MODEL_TYPE } from "$src/data/consts";
-  import type { OutfitLayer } from "$src/data/common";
   import { onMount } from "svelte";
   import Button from "../base/Button/Button.svelte";
 
   import { createEventDispatcher } from "svelte";
+  import type { OutfitLayer } from "$src/model/package";
 
   const dispatch = createEventDispatcher();
 

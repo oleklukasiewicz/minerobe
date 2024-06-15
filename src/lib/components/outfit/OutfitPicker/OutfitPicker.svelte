@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { OutfitPackage } from "$src/data/common";
   import * as THREE from "three";
   import { createEventDispatcher, onMount } from "svelte";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
@@ -8,6 +7,7 @@
   import ChevronRightIcon from "$icons/chevron-right.svg?raw";
   import Search from "$component/base/Search/Search.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
+  import type { OutfitPackage } from "$src/model/package";
 
   export let outfits: OutfitPackage[] = [];
   export let totalItemsCount = 0;

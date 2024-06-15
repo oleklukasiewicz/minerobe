@@ -1,7 +1,6 @@
-import { AddPackage } from "$src/api/pack";
-import { FileData, OutfitLayer, OutfitPackage } from "$src/data/common";
 import { MODEL_TYPE, OUTFIT_TYPE } from "$src/data/consts";
 import { RenderTextureInTemporyNode } from "$src/data/render";
+import { FileData, OutfitLayer, OutfitPackage } from "$src/model/package";
 import { GetDominantColorFromImage } from "../image/colorHelper";
 import { MergePackageLayers } from "../image/imageDataHelpers";
 

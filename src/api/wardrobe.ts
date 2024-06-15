@@ -1,10 +1,8 @@
 import { DeleteRequest, GetRequest, PostRequest } from "$src/data/api";
 import { currentUser } from "$src/data/cache";
-import type {
-  OutfitPackage,
-  WardrobePackage,
-  PagedResponse,
-} from "$src/data/common";
+import type { PagedResponse } from "$src/model/base";
+import type { OutfitPackage } from "$src/model/package";
+import type { WardrobePackage } from "$src/model/wadrobe";
 import { get } from "svelte/store";
 
 export const AddPackageToWardrobe = async function (packageId: string) {

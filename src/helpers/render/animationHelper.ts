@@ -11,8 +11,8 @@ import {
   lerpOutCubic,
   type RenderAnimation,
 } from "$src/data/animation";
-import type { OutfitPackage } from "$src/data/common";
 import { CHANGE_TYPE, MODEL_TYPE, OUTFIT_TYPE } from "$src/data/consts";
+import type { OutfitPackage } from "$src/model/package";
 import * as THREE from "three";
 const CreatePropertyStep = function (
   data,
@@ -301,7 +301,7 @@ export const AnimationStepManager = function (data, steps, startState) {
   return {
     currentStep: currentStep,
     run: (clock) => {
-      if (AnimationStep(data, currentStep.step, clock,currentStep.epsilon)) {
+      if (AnimationStep(data, currentStep.step, clock, currentStep.epsilon)) {
         currentStep = findStep(currentStep.onFinished());
       }
       if (currentStep == undefined) {

@@ -28,13 +28,14 @@
     type Readable,
     type Writable,
   } from "svelte/store";
-  import { MinerobeUserProfile, OutfitPackage } from "$src/data/common";
   import { UpdateBaseTexture } from "$src/api/settings";
   import OutfitTextureRender from "$component/render/OutfitTextureRender.svelte";
   import {
     CreateDefaultRenderProvider,
     type RenderProvider,
   } from "$src/data/render";
+  import { MinerobeUserProfile } from "$src/model/user";
+  import type { OutfitPackage } from "$src/model/package";
 
   const userProfile: Writable<MinerobeUserProfile> = writable(
     new MinerobeUserProfile()
@@ -45,13 +46,7 @@
   );
   const currentTexture: Readable<OutfitPackage> = derived(
     userProfile,
-    ($userProfile) => {
-      var ct = $userProfile?.settings?.currentTexture;
-      if ($userProfile?.settings?.baseTexture.layers.length > 0) {
-        ct.layers.unshift($userProfile?.settings?.baseTexture.layers[0]);
-      }
-      return ct;
-    }
+    ($userProfile) =>  $userProfile?.settings?.currentTexture
   );
 
   let providers: { steve: RenderProvider; alex: RenderProvider };
@@ -109,7 +104,7 @@
   <div class="profile-cards">
     <div class="profile-card">
       <SectionTitle label="Current skin" placeholder={loading} />
-      {#if $userProfile?.settings?.currentTexturePackageId != null && !loading}
+      {#if $userProfile?.settings?.currentTexture != null && !loading}
         <div style="flex:1;">
           <div style="aspect-ratio: 1/1;">
             <OutfitPackageSnapshotRender
