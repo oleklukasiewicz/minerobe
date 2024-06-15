@@ -22,39 +22,12 @@ export const appState: Writable<string> = writable(APP_STATE.LOADING);
 export const currentUser: Writable<MinerobeUser> = writable(null);
 export const snapshotTemporaryNode = writable(null);
 export const baseTexture: Readable<string> = readable(get(planksTexture));
-export const isReadyForData: Readable<any> = derived(appState, ($appState) => {
-  let result: any = false;
-  if ($appState == APP_STATE.READY)
-    result = {
-      user: get(currentUser),
-      state: $appState,
-      userReadyness:
-        $appState == APP_STATE.READY || $appState == APP_STATE.GUEST_READY,
-      fullReadyness: true,
-    };
-  if ($appState == APP_STATE.USER_READY)
-    result = {
-      user: get(currentUser),
-      state: $appState,
-      userReadyness:
-        $appState == APP_STATE.READY || $appState == APP_STATE.GUEST_READY,
-    };
-  if ($appState == APP_STATE.GUEST_READY) {
-    result = {
-      state: $appState,
-      user: null,
-      userReadyness: true,
-      fullReadyness: true,
-    };
-  }
-  return result;
-});
 export const isUserGuest: Readable<boolean> = derived(
   currentUser,
   ($user) => $user?.id == null
 );
 
-let wardrobeSubscription, settingsSubscription, userSubscription;
+let userSubscription;
 export const preSetup = function () {
   const matcher = window.matchMedia("(max-width: 768px)");
   isMobileViewWritable.set(matcher.matches);
@@ -72,27 +45,14 @@ export const setup = function () {
   });
   if (userSubscription) userSubscription();
   userSubscription = currentUser.subscribe(async (user) => {
+    console.log("User changed", user);
     if (user) {
-      //configureSocket(user.id);
-      //settings up account
-      if (get(appState) == APP_STATE.LOADING)
-        appState.set(APP_STATE.USER_READY);
-      if (true) {
-        appState.set(APP_STATE.READY);
-        if (wardrobeSubscription) wardrobeSubscription();
-        if (settingsSubscription) settingsSubscription();
-
-        setupSubscriptions();
-      }
+      appState.set(APP_STATE.READY);
     } else {
-      if (wardrobeSubscription) wardrobeSubscription();
-      if (settingsSubscription) settingsSubscription();
-
       appState.set(APP_STATE.GUEST_READY);
     }
   });
 };
-const setupSubscriptions = function () {};
 export const currentToasts: Writable<any[]> = writable([]);
 export const showToast = function (
   message: string,

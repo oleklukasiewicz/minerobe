@@ -99,15 +99,16 @@
     let outfitPackage: OutfitPackage;
 
     appState.subscribe(async (state) => {
-      if (state != APP_STATE.READY) return;
+      if (state != APP_STATE.READY && state != APP_STATE.GUEST_READY) return;
       defaultRenderProvider =
         await CreateDefaultRenderProvider($defaultRenderer);
       outfitPackage = await GetPackage(id);
       if (!outfitPackage) return;
 
-      const settings = await FetchSettings();
-      userSettings.set(settings);
-
+      if (state == APP_STATE.READY) {
+        const settings = await FetchSettings();
+        userSettings.set(settings);
+      }
       localPackage.set(outfitPackage);
       isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
       if (!isItemSet) {
@@ -123,7 +124,7 @@
         targetModel == MODEL_TYPE.ALEX ? MODEL_TYPE.ALEX : MODEL_TYPE.STEVE;
       if ($localPackage.model != targetModel)
         itemModelType.set(targetModelName);
-      
+
       $itemRenderConfig = new OutfitPackageRenderConfig(
         $localPackage,
         targetModel == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL,
@@ -132,9 +133,9 @@
         varaint ? varaint : $itemLayers[0],
         data.isFlat == true
       );
-      if (isItemSet && $userSettings.baseTexture.layers.length > 0)
+      if (isItemSet && $userSettings?.baseTexture.layers.length > 0)
         $itemRenderConfig.setBaseTextureFromLayer(
-          $userSettings.baseTexture.layers[0]
+          $userSettings?.baseTexture.layers[0]
         );
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
@@ -285,7 +286,7 @@
         <Placeholder style="height:26px;max-width:100px;" {loaded}>
           <div style="display: flex;gap:4px;height:24px">
             <Label variant="unique">{$localPackage.publisher.name}</Label>
-            {#if $userSettings.currentTexturePackageId == $localPackage.id}
+            {#if $userSettings?.currentTexturePackageId == $localPackage.id}
               <Label variant="ancient">Current skin</Label>
             {/if}
             &nbsp;
