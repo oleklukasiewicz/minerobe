@@ -61,7 +61,10 @@
     RemovePackageFromCollection,
   } from "$src/api/collection.js";
   import { FetchSettings, SetCurrentTexture } from "$src/api/settings.js";
-  import type { MinerobeUserSettingsSimple } from "$src/model/user.js";
+  import {
+    CurrentTextureConfig,
+    type MinerobeUserSettingsSimple,
+  } from "$src/model/user.js";
   import type { OutfitLayer, OutfitPackage } from "$src/model/package.js";
 
   export let data;
@@ -153,7 +156,14 @@
   };
   const skinSetted = async function () {
     isSkinSetting = true;
-    var result = await SetCurrentTexture($localPackage.id);
+    var result = await SetCurrentTexture(
+      $localPackage.id,
+      new CurrentTextureConfig(
+        modelTexture,
+        $localPackage.model,
+        $itemRenderConfig.isFlatten
+      )
+    );
     if (result) {
       showToast("Skin changed", HumanHandsUpIcon);
       userSettings.set(result);

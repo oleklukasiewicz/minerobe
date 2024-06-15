@@ -34,7 +34,7 @@
     CreateDefaultRenderProvider,
     type RenderProvider,
   } from "$src/data/render";
-  import { MinerobeUserProfile } from "$src/model/user";
+  import { CurrentTexture, MinerobeUserProfile } from "$src/model/user";
   import type { OutfitPackage } from "$src/model/package";
 
   const userProfile: Writable<MinerobeUserProfile> = writable(
@@ -44,9 +44,11 @@
     userProfile,
     ($userProfile) => $userProfile?.settings?.baseTexture
   );
-  const currentTexture: Readable<OutfitPackage> = derived(
+  const currentTexture: Readable<CurrentTexture> = derived(
     userProfile,
-    ($userProfile) =>  $userProfile?.settings?.currentTexture
+    ($userProfile) => {
+      return $userProfile?.settings?.currentTexture;
+    }
   );
 
   let providers: { steve: RenderProvider; alex: RenderProvider };
@@ -107,11 +109,13 @@
       {#if $userProfile?.settings?.currentTexture != null && !loading}
         <div style="flex:1;">
           <div style="aspect-ratio: 1/1;">
-            <OutfitPackageSnapshotRender
-              renderProvider={$currentTexture.model == MODEL_TYPE.ALEX
+            <OutfitTextureRender
+              renderProvider={$currentTexture.model.toLowerCase() ==
+              MODEL_TYPE.ALEX
                 ? providers.alex
                 : providers.steve}
-              item={$currentTexture}
+              texture={$currentTexture.texture}
+              modelName={$currentTexture.model.toLowerCase()}
             />
           </div>
         </div>

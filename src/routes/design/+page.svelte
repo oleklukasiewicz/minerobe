@@ -88,7 +88,10 @@
     RemovePackageFromCollection,
   } from "$src/api/collection";
   import { FetchSettings, SetCurrentTexture } from "$src/api/settings";
-  import type { MinerobeUserSettingsSimple } from "$src/model/user";
+  import {
+    CurrentTextureConfig,
+    type MinerobeUserSettingsSimple,
+  } from "$src/model/user";
   import { OutfitLayer, type OutfitPackage } from "$src/model/package";
   import type { PagedResponse } from "$src/model/base";
 
@@ -448,7 +451,14 @@
 
   const skinSetted = async function () {
     isSkinSetting = true;
-    var result = await SetCurrentTexture($itemPackage.id);
+    var result = await SetCurrentTexture(
+      $itemPackage.id,
+      new CurrentTextureConfig(
+        modelTexture,
+        $itemPackage.model,
+        $itemRenderConfig.isFlatten
+      )
+    );
     if (result) {
       showToast("Skin changed", HumanHandsUpIcon);
       userSettings.set(result);

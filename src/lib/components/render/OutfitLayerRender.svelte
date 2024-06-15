@@ -22,7 +22,7 @@
   onMount(async () => {
     if (renderProvider == null) {
       const tempProvider = await CreateDefaultRenderProvider($defaultRenderer);
-      renderProvider = tempNode[modelName];
+      renderProvider = tempProvider[modelName];
     }
     snapshot.provider = renderProvider;
 

@@ -22,7 +22,12 @@
     };
   }
 </script>
-<div style="aspect-ratio: 1/1;">
-<OutfitLayerRender {item} {modelName} {renderProvider} {snapshot} />
-</div>
 
+<div style="aspect-ratio: 1/1;">
+  <OutfitLayerRender
+    {item}
+    modelName={modelName}
+    {renderProvider}
+    {snapshot}
+  />
+</div>
