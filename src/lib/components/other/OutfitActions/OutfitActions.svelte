@@ -74,6 +74,7 @@
       on:click={collectionDialog}
       label={"Add to collection"}
       onlyIcon={!$isMobileView}
+      disabled={outfitPackage.layers.length == 0 || loading}
       icon={ListIcon}
       size="large"
       type="tertiary"
@@ -116,6 +117,7 @@
         on:click={sharePackage}
         type="tertiary"
         icon={CloudIcon}
+        disabled={outfitPackage.layers.length == 0 || loading}
         onlyIcon={!$isMobileView}
         label={$_("sharePackage")}
         size="large"

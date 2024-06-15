@@ -19,8 +19,13 @@
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
 
+  import TrashIcon from "$icons/trash.svg?raw";
+  import CloseIcon from "$icons/close.svg?raw";
+  import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
+
   export let data: any;
   let loaded = false;
+  let isDeleteDialogOpen = false;
   const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
   const localCollection: Writable<OutfitPackageCollection> = writable(
     {} as OutfitPackageCollection
@@ -56,8 +61,16 @@
 <div>
   <div id="header">
     <Placeholder {loaded} style="width:75vw;height:48px">
-      <input class="title-input" bind:value={$localCollection.name} />
-      <Button on:click={deleteCollection} label="Delete" />
+      <div style="display:flex; flex-direction:row;gap:8px">
+        <input class="title-input" bind:value={$localCollection.name} />
+        <Button
+          onlyIcon
+          type="tertiary"
+          icon={TrashIcon}
+          on:click={() => (isDeleteDialogOpen = true)}
+          label="Delete"
+        />
+      </div>
     </Placeholder>
   </div>
   <div class="outfits">
@@ -74,6 +87,34 @@
       on:innerselect={goToItemPage}
     />
   </div>
+  <Dialog
+    bind:open={isDeleteDialogOpen}
+    style="min-width:30vw"
+    showTitleBar={true}
+  >
+    <div style="text-align:center;margin:8px;">
+      <span class="mc-font-simple">{"Do you want to delete collection?"}</span>
+      <div style="display:flex;flex-direction:row; gap:8px;margin-top:24px;">
+        <Button
+          type="tertiary"
+          on:click={() => {
+            isDeleteDialogOpen = false;
+          }}
+          label={"Cancel"}
+          icon={CloseIcon}
+        />
+        <Button
+          type="primary"
+          on:click={() => {
+            isDeleteDialogOpen = false;
+            deleteCollection();
+          }}
+          label={"Delete"}
+          icon={TrashIcon}
+        />
+      </div>
+    </div></Dialog
+  >
 </div>
 
 <style lang="scss">
