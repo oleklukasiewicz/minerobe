@@ -27,7 +27,7 @@ namespace minerobe.api.ResponseModel.User
                 Theme = entity.Theme,
                 BaseTexture = entity.BaseTexture?.ToListItemResponseModel(),
                 CurrentTexturePackageId = entity.CurrentTexturePackageId,
-                CurrentTexture= entity.CurrentTexture.ToResponseModel()
+                CurrentTexture= entity.CurrentTexture?.ToResponseModel()
                 
             };
         }
