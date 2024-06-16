@@ -22,7 +22,7 @@ It will create copy of the repository on your local machine.
 
 ### 2. Setup database  
 Create database called `minerobe` on your local SQL Server instance.
-Run update-database or script-migration in Visual Studio for database structure migration.
+Run `update-database` or `script-migration` in Visual Studio for database structure migration.
 
 ### 3. Add environment variables
 Create `.env` file in root directory of the project and add environment variables. You can find them in firebase settings.
