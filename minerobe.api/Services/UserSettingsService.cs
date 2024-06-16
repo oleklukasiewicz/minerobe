@@ -18,19 +18,18 @@ namespace minerobe.api.Services
         public async Task<UserSettings> GetSettings(Guid userId)
         {
             var settings= await _context.UserSettings.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
+            var defaultPackage = new OutfitPackage()
+            {
+                Model = ModelType.Steve,
+                PublisherId = userId,
+                Id = Guid.NewGuid(),
+                Type = PackageType.Outfit,
+                OutfitType = OutfitType.Default,
+                Layers = new List<OutfitLayer>()
+            };
+
             if (settings == null)
             {
-                // create new
-                var defaultPackage = new OutfitPackage()
-                {
-                    Model = ModelType.Steve,
-                    PublisherId = userId,
-                    Id = Guid.NewGuid(),
-                    Type= PackageType.Outfit,
-                    OutfitType=OutfitType.Default,
-                    Layers=new List<OutfitLayer>()
-                };
-
                 settings = new UserSettings
                 {
                     OwnerId = userId,
@@ -39,6 +38,13 @@ namespace minerobe.api.Services
                     CurrentTexturePackageId = Guid.Empty
                 };
                 _context.UserSettings.Add(settings);
+                await _context.SaveChangesAsync();
+            }
+
+            if(settings.BaseTexture == null)
+            {
+                settings.BaseTexture = defaultPackage;
+                _context.UserSettings.Update(settings);
                 await _context.SaveChangesAsync();
             }
             return settings;
