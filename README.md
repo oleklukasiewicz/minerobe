@@ -15,11 +15,6 @@ With the sharing feature, players can share their created outfits with other com
 ### 3. Open Source Code: 
 The entire project is available on GitHub, enabling the community to report bugs, propose features, and collaboratively develop Minerobe.
 
-### 4. Linking to Minecraft Account
-You can easly link your Minerobe account to minecraft for easier skin changing.
-
-## Join us in contributing to the evolution of this project and creating even more personalized experiences in the world of Minecraft!
-
 ## Building project
 
 ### 1. Clone the repository
@@ -40,7 +35,6 @@ VITE_STORAGE_BUCKET=<value>
 VITE_MESSAGING_SENDER_ID=<value>
 VITE_APP_ID=<value>
 VITE_MEASUREMENT_ID=<value>
-
 ```
 
 ## Screeenshots
