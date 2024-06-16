@@ -41,7 +41,6 @@ VITE_MEASUREMENT_ID=<value>
 
 ![image](https://github.com/oleklukasiewicz/minerobe/assets/69370471/732eea4e-ada1-49b4-a5b1-182452f6d801)
 ![image](https://github.com/oleklukasiewicz/minerobe/assets/69370471/380e42e3-a743-45be-b4ff-f07bf3d7cc81)
-![image](https://github.com/oleklukasiewicz/minerobe/assets/69370471/b1690e77-1734-4bad-a90a-1013060f9dab)
 
 
 
