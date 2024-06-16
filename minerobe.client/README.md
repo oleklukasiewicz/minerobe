@@ -75,11 +75,6 @@ Random values for users secret path
 VITE_USERS_SECRET_PATH=<value>
 VITE_USERS_SECRET_LOCAL_PATH=<value>
 
-Pusher variables
-VITE_PUSHER_APP_ID=<value>
-VITE_PUSHER_KEY=<value>
-VITE_PUSHER_SECRET=<value>
-VITE_PUSHER_CLUSTER=<value>
 ```
 
 ## Screeenshots
