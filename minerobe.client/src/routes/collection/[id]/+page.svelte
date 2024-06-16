@@ -80,7 +80,7 @@
       fillMethod="auto-fill"
       loading={!loaded}
       currentSkinId={$userSettings?.currentTexturePackageId}
-      baseTexture={$userSettings?.baseTexture.layers[0]}
+      baseTexture={$userSettings?.baseTexture?.layers[0]}
       withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
       renderer={$defaultRenderer}
       items={$localCollection.items}

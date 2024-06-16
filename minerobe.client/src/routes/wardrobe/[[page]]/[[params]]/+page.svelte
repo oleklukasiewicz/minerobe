@@ -285,7 +285,7 @@
             minItemWidth="155px"
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
-            baseTexture={$userSettings?.baseTexture.layers[0]}
+            baseTexture={$userSettings?.baseTexture?.layers[0]}
             withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
             items={$localWardobeItems.items}
             on:innerselect={onItemSelect}
@@ -310,7 +310,7 @@
             minItemWidth="155px"
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
-            baseTexture={$userSettings?.baseTexture.layers[0]}
+            baseTexture={$userSettings?.baseTexture?.layers[0]}
             withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
             items={$localWardobeItems.items}
             on:innerselect={onItemSelect}
