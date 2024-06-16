@@ -286,7 +286,7 @@
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
             baseTexture={$userSettings?.baseTexture.layers[0]}
-            withBaseTexture={$userSettings?.baseTexture != null}
+            withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
             items={$localWardobeItems.items}
             on:innerselect={onItemSelect}
           />
@@ -311,7 +311,7 @@
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
             baseTexture={$userSettings?.baseTexture.layers[0]}
-            withBaseTexture={$userSettings?.baseTexture != null}
+            withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
             items={$localWardobeItems.items}
             on:innerselect={onItemSelect}
           />

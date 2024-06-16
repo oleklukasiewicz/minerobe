@@ -81,7 +81,7 @@
       loading={!loaded}
       currentSkinId={$userSettings?.currentTexturePackageId}
       baseTexture={$userSettings?.baseTexture.layers[0]}
-      withBaseTexture={$userSettings?.baseTexture != null}
+      withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
       renderer={$defaultRenderer}
       items={$localCollection.items}
       on:innerselect={goToItemPage}
