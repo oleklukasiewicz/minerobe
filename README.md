@@ -25,7 +25,7 @@ Create database called `minerobe` on your local SQL Server instance.
 Run `update-database` or `script-migration` in Visual Studio for database structure migration.
 
 ### 3. Add environment variables
-Create `.env` file in root directory of the project and add environment variables. You can find them in firebase settings.
+Create `.env` file in root directory of the project (minerobe.client) and add environment variables. You can find them in firebase settings.
 ```
 Firebase (client side)
 VITE_API_KEY=<value>
@@ -35,6 +35,13 @@ VITE_STORAGE_BUCKET=<value>
 VITE_MESSAGING_SENDER_ID=<value>
 VITE_APP_ID=<value>
 VITE_MEASUREMENT_ID=<value>
+```
+Add appsettings file in minerobe.api project and add connection to your firebase app.
+```
+"Jwt": {
+  "Authority": "https://securetoken.google.com/<your_app_id>",
+  "Audience": "<your_app_id>"
+}
 ```
 
 ## Screeenshots
