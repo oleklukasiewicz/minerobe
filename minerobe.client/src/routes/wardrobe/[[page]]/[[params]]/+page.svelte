@@ -56,6 +56,7 @@
   let currentView: any = {};
   let loaded = false;
   let itemsLoaded = false;
+  let isCreatingNew = false;
   let menuItems: any[] = [
     // {
     //   label: "Schedule",
@@ -133,6 +134,7 @@
   const resfreshItems = async function () {
     localWardobeItems.set(defaultList);
     itemsLoaded = false;
+    isCreatingNew = false;
     const type = currentView.value;
     if (
       type == PACKAGE_TYPE.OUTFIT_SET ||
@@ -154,41 +156,68 @@
     itemsLoaded = true;
   };
   const addNewSet = async function () {
+    isCreatingNew = true;
     const newOutfit = await CreateNewOutfitPackage(
       "New Set",
       PACKAGE_TYPE.OUTFIT_SET
     );
     newOutfit.outfitType = OUTFIT_TYPE.OUTFIT_SET;
     const response = await AddPackage(newOutfit);
-    if (response == null) return;
+    if (response == null) {
+      isCreatingNew = false;
+      return;
+    }
     const addedTowardrobe = await AddPackageToWardrobe(response.id);
-    if (addedTowardrobe == null) return;
+    if (addedTowardrobe == null) {
+      isCreatingNew = false;
+      return;
+    }
     const setStudio = await SetStudioPackage(response.id);
-    if (setStudio == null) return;
+    if (setStudio == null) {
+      isCreatingNew = false;
+      return;
+    }
     navigateToDesign(response);
   };
   const addNewOutfit = async function () {
+    isCreatingNew = true;
     const newOutfit = await CreateNewOutfitPackage(
       "New Outfit",
       PACKAGE_TYPE.OUTFIT
     );
     newOutfit.outfitType = OUTFIT_TYPE.DEFAULT;
     const response = await AddPackage(newOutfit);
-    if (response == null) return;
+    if (response == null) {
+      isCreatingNew = false;
+      return;
+    }
     const addedTowardrobe = await AddPackageToWardrobe(response.id);
-    if (addedTowardrobe == null) return;
+    if (addedTowardrobe == null) {
+      isCreatingNew = false;
+      return;
+    }
     const setStudio = await SetStudioPackage(response.id);
-    if (setStudio == null) return;
+    if (setStudio == null) {
+      isCreatingNew = false;
+      return;
+    }
     navigateToDesign(response);
   };
   const addNewCollection = async function () {
+    isCreatingNew = true;
     const newCollection = new OutfitPackageCollection();
     newCollection.name = "New Collection";
     newCollection.publisherId = $currentUser?.id;
     const response = await AddCollection(newCollection);
-    if (response == null) return;
+    if (response == null) {
+      isCreatingNew = false;
+      return;
+    }
     const addedTowardrobe = await AddCollectionToWardrobe(response.id);
-    if (addedTowardrobe == null) return;
+    if (addedTowardrobe == null) {
+      isCreatingNew = false;
+      return;
+    }
     navigateToCollection(response.id);
   };
   const filterOutfits = async function (e) {
@@ -273,8 +302,9 @@
           fab="dynamic"
           size="large"
           icon={PlusIcon}
-          label="Create set"
+          label={isCreatingNew ? "Creating..." : "Create set"}
           style="position:fixed"
+          disabled={isCreatingNew}
         />
         <div class="list">
           <OutfitPackageSnapshotList
@@ -298,7 +328,8 @@
           fab="dynamic"
           size="large"
           icon={PlusIcon}
-          label="Create set"
+          label={isCreatingNew ? "Creating..." : "Create set"}
+          disabled={isCreatingNew}
           style="position:fixed"
         />
         <div class="list">
@@ -323,8 +354,9 @@
           fab="dynamic"
           size="large"
           icon={PlusIcon}
-          label="Create Outfit"
+          label={isCreatingNew ? "Creating..." : "Create outfit"}
           style="position:fixed"
+          disabled={isCreatingNew}
         />
 
         <div class="list">
@@ -354,8 +386,9 @@
           fab="dynamic"
           size="large"
           icon={PlusIcon}
-          label="Create collection"
+          label={isCreatingNew ? "Creating..." : "Create collection"}
           style="position:fixed"
+          disabled={isCreatingNew}
         />
       {/if}
     </div>

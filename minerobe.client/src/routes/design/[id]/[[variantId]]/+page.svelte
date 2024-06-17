@@ -45,7 +45,7 @@
 
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
 
-  import { ExportImageString } from "$src/helpers/data/dataTransferHelper.js";
+  import { ExportImageLayers } from "$src/helpers/data/dataTransferHelper.js";
   import { sortOutfitLayersByColor } from "$src/helpers/image/imageDataHelpers.js";
 
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
@@ -146,8 +146,9 @@
 
   //export
   const downloadImage = async () => {
-    await ExportImageString(
-      await $itemRenderConfig.getLayersForRender(true),
+    await ExportImageLayers(
+      $itemRenderConfig.getLayersForModel(!isItemSet),
+      $itemRenderConfig,
       $localPackage.name
     );
     await updateAnimation(HandsUpAnimation);

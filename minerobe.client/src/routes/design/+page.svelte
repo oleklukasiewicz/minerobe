@@ -312,15 +312,6 @@
       $itemRenderConfig,
       $itemPackage.name
     );
-    if (
-      $currentUser?.id != $itemPackage.publisher.id ||
-      $itemPackage.social.isShared
-    ) {
-      const resp = await SetAsDownloadPackage($itemPackage.social.id);
-      if (resp == null) return;
-      $itemPackage.social = resp;
-    }
-
     applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
   };
 

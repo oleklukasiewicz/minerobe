@@ -40,7 +40,8 @@
     if (
       temp.type == PACKAGE_TYPE.OUTFIT_SET &&
       withBaseTexture &&
-      baseTexture
+      baseTexture &&
+      temp.layers.length > 0
     ) {
       temp.layers.unshift(baseTexture);
     }
