@@ -24,6 +24,7 @@
     baseTexture,
     appState,
     showToast,
+    currentUser,
   } from "$data/cache";
   import { replaceState } from "$app/navigation";
   import { OutfitPackageRenderConfig } from "$src/data/model.js";
@@ -153,6 +154,8 @@
     );
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
+    
+    if ($currentUser?.id == $localPackage.publisher.id) return;
     const resp = await SetAsDownloadPackage($localPackage.social.id);
     if (resp == null) return;
     $localPackage.social = resp;
