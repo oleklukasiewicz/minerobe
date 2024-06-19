@@ -75,7 +75,6 @@
     UpdatePackageLayer,
   } from "$src/api/pack";
   import {
-    SetAsDownloadPackage,
     SharePackage,
     UnSharePackage,
   } from "$src/api/social";
@@ -200,11 +199,12 @@
   const removeLayer = async function (e) {
     const layer = e.detail.texture;
     let isRemoved = false;
-    if (layer.sourcePackageId != $itemPackage.id) {
+    
+    if (layer.sourcePackageId != $itemPackage.id) 
       isRemoved = await RemoveRemoteLayerFromPackage(layer.id, $itemPackage.id);
-    } else {
+     else 
       isRemoved = await RemovePackageLayer(layer.id);
-    }
+    
     if (!isRemoved) return;
     let index = $itemLayers.indexOf(layer);
     let refresh = false;
