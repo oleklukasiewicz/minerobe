@@ -15,10 +15,13 @@ namespace minerobe.api.ResponseModel
     {
         public static FileDataResponseModel ToResponseModel(this FileData entity, bool toSnapshot = true)
         {
+
+            var content = toSnapshot ?
+                (entity?.ContentSnapshot != null ? Encoding.UTF8.GetString(entity?.ContentSnapshot) : "") : (entity?.Content != null ? Encoding.UTF8.GetString(entity?.Content) : "");
             return new FileDataResponseModel
             {
                 FileName = entity.FileName,
-                Content = toSnapshot ? Encoding.UTF8.GetString(entity.ContentSnapshot) : Encoding.UTF8.GetString(entity.Content),
+                Content = content,
                 Type = entity.Type.ToString().ToLower(),
                 Color = entity.Color
             };

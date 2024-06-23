@@ -1,5 +1,10 @@
 <script lang="ts">
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
+  import {
+    GetMostLiked,
+    GetMostRecent,
+    GetMostDownloaded,
+  } from "$src/api/view/landing";
   import { defaultRenderer, isMobileView } from "$src/data/cache";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
@@ -10,7 +15,14 @@
   let landingLoaded = false;
   onMount(async () => {
     // let landing ;
-    // mostLiked = landing.mostLiked.slice(0, 6);
+    const recent = await GetMostRecent(0, 10);
+    mostRecent = recent.items;
+
+    const liked = await GetMostLiked(0, 10);
+    mostLiked = liked.items;
+
+    const downloaded = await GetMostDownloaded(0, 10);
+    mostDownloaded = downloaded.items;
     // mostDownloaded = landing.mostDownloaded.slice(0, 6);
     // mostRecent = landing.mostRecent.slice(0, 6);
     landingLoaded = true;
@@ -30,30 +42,30 @@
       in your own Minecraft worlds or use them as a base for your own skins.
     </p>
   </div>
-    <h2 class="list-title">Most Recent</h2>
-    <OutfitPackageSnapshotList
-      items={mostRecent}
-      loading={!landingLoaded}
-      renderer={$defaultRenderer}
-      dense={false}
-      on:innerselect={goToItemPage}
-    />
-    <h2 class="list-title">Most Liked</h2>
-    <OutfitPackageSnapshotList
-      items={mostLiked}
-      loading={!landingLoaded}
-      renderer={$defaultRenderer}
-      dense={false}
-      on:innerselect={goToItemPage}
-    />
-    <h2 class="list-title">Most Downloaded</h2>
-    <OutfitPackageSnapshotList
-      items={mostDownloaded}
-      loading={!landingLoaded}
-      renderer={$defaultRenderer}
-      dense={false}
-      on:innerselect={goToItemPage}
-    />
+  <h2 class="list-title">Most Recent</h2>
+  <OutfitPackageSnapshotList
+    items={mostRecent}
+    loading={!landingLoaded}
+    renderer={$defaultRenderer}
+    dense={false}
+    on:innerselect={goToItemPage}
+  />
+  <h2 class="list-title">Most Liked</h2>
+  <OutfitPackageSnapshotList
+    items={mostLiked}
+    loading={!landingLoaded}
+    renderer={$defaultRenderer}
+    dense={false}
+    on:innerselect={goToItemPage}
+  />
+  <h2 class="list-title">Most Downloaded</h2>
+  <OutfitPackageSnapshotList
+    items={mostDownloaded}
+    loading={!landingLoaded}
+    renderer={$defaultRenderer}
+    dense={false}
+    on:innerselect={goToItemPage}
+  />
 </div>
 
 <style lang="scss">

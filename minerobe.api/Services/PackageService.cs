@@ -385,9 +385,10 @@ namespace minerobe.api.Services
             foreach (var matching in matchings)
             {
                 var layer = await _context.OutfitLayers.FindAsync(matching.LayerId);
-                layer.IsGlobal = matching.IsGlobalLayer;
-                if (layer == null) continue;
 
+                if (layer == null) continue;
+                layer.IsGlobal = matching.IsGlobalLayer;
+                
                 layers.Add(layer);
             }
             return layers;

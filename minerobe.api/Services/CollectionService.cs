@@ -29,6 +29,7 @@ namespace minerobe.api.Services
             await _context.OutfitPackageCollections.AddAsync(collection);
             await _context.SaveChangesAsync();
             return await GetById(collection.Id);
+            
         }
         public async Task<OutfitPackageCollection> GetById(Guid id)
         {

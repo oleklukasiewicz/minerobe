@@ -4,6 +4,7 @@ using minerobe.api.Database;
 using minerobe.api.Services;
 using minerobe.api.Services.Integration;
 using minerobe.api.Services.Interface;
+using minerobe.api.Services.View;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddTransient<IPackageService, PackageService>();
 builder.Services.AddTransient<ICollectionService, CollectionService>();
 builder.Services.AddTransient<IWardrobeService, WardrobeService>();
 builder.Services.AddTransient<IUserSettingsService, UserSettingsService>();
+builder.Services.AddTransient<ILandingViewService, LandingViewService>();
 
 
 builder.Services.AddHttpContextAccessor();

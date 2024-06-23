@@ -1,4 +1,5 @@
-﻿using minerobe.api.Entity;
+﻿using CmlLib.Core;
+using minerobe.api.Entity;
 using minerobe.api.Entity.Collection;
 using minerobe.api.Entity.Package;
 using minerobe.api.Entity.Settings;
@@ -14,15 +15,16 @@ using minerobe.api.ResponseModel.User;
 using minerobe.api.ResponseModel.Wardrobe;
 using System.Text;
 using System.Text.Unicode;
+using System.Threading.Tasks;
 
 namespace minerobe.api.Helpers
 {
     public static class ModelConverter
     {
 
-       public static PagedResponse<T> ToPagedResponse<T>(this List<T> entity, int page, int pageSize)
+        public static PagedResponse<T> ToPagedResponse<T>(this List<T> entity, int page, int pageSize)
         {
-            if(pageSize==-1)
+            if (pageSize == -1)
                 pageSize = entity.Count;
             var items = entity.Skip(pageSize * (page)).Take(pageSize).ToList();
             return new PagedResponse<T>
@@ -33,6 +35,50 @@ namespace minerobe.api.Helpers
                 Total = entity.Count
             };
         }
-       
+        public static PagedResponse<T> ToPagedResponse<T>(this IQueryable<T> entity, int page, int pageSize)
+        {
+            int count = entity.Count();
+            if (pageSize == -1)
+                pageSize = count;
+            var items = entity.Skip(pageSize * (page)).Take(pageSize).ToList();
+            return new PagedResponse<T>
+            {
+                Items = items,
+                Page = page,
+                PageSize = pageSize,
+                Total = count
+            };
+        }
+        //map paged response to another type 
+        public static async Task<PagedResponse<TDestination>> MapResponse<T, TDestination>(this PagedResponse<T> response, Func<T, Task<TDestination>> map)
+        {
+            var mapped = new List<TDestination>();
+            foreach (var item in response.Items)
+            {
+                var mappedItem = await map(item);
+                mapped.Add(mappedItem);
+            }
+
+            var pagedResponse = new PagedResponse<TDestination>
+            {
+                Items = mapped,
+                Page = response.Page,
+                PageSize = response.PageSize,
+                Total = response.Total
+            };
+            return pagedResponse;
+        }
+        public static PagedResponse<TDestination> MapResponseOptions<T, TDestination>(this PagedResponse<T> response)
+        {
+            var pagedResponse = new PagedResponse<TDestination>
+            {
+                Items = new List<TDestination>(),
+                Page = response.Page,
+                PageSize = response.PageSize,
+                Total = response.Total
+            };
+            return pagedResponse;
+        }
+
     }
 }
