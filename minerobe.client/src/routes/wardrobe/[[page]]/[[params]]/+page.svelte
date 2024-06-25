@@ -74,9 +74,6 @@
       value: "collection",
     },
     {
-      type: "separator",
-    },
-    {
       label: "Sets",
       icon: AnimationIcon,
       value: PACKAGE_TYPE.OUTFIT_SET,
@@ -290,7 +287,7 @@
           <Search
             dense={false}
             on:search={filterOutfits}
-            on:input={filterOutfits}
+            on:clear={filterOutfits}
           />
         </div>
       </div>

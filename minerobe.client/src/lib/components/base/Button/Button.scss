@@ -6,6 +6,10 @@
   box-sizing: border-box;
   user-select: none;
   cursor: pointer;
+  &.flat
+  {
+    border: 0px solid transparent !important;
+  }
   &.medium {
     height: 36px;
   }

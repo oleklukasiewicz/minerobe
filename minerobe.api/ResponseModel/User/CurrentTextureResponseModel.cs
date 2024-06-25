@@ -15,7 +15,7 @@ namespace minerobe.api.ResponseModel.User
         {
             return new CurrentTextureResponseModel
             {
-                Texture = Encoding.UTF8.GetString(entity.Texture),
+                Texture = entity.Texture != null? Encoding.UTF8.GetString(entity.Texture): "",
                 Model = entity.Model.ToString().ToLower(),
                 IsFlat = entity.IsFlat
             };

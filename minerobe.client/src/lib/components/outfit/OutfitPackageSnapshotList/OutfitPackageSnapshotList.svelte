@@ -67,22 +67,27 @@
 
 <div
   class="outfit-package-list"
+  class:no-grid={items.length == 0 && loading == false}
   class:dense
   style="grid-template-columns: repeat({fillMethod}, minmax({minItemWidth}, {maxItemWidth}));"
 >
   {#if !loading && steveListProvider && alexListProvider}
-    {#each items as item}
-      <OutfitPackageSnapshotItem
-        on:select={selectRenderedOutfit}
-        isCurrentSkin={currentSkinId == item.id}
-        multiple={item.type == PACKAGE_TYPE.OUTFIT_SET ? 1 : 2}
-        item={normalizeItem(item)}
-        {dense}
-        renderProvider={item.model == MODEL_TYPE.STEVE
-          ? steveListProvider
-          : alexListProvider}
-      />
-    {/each}
+    {#if items.length > 0}
+      {#each items as item}
+        <OutfitPackageSnapshotItem
+          on:select={selectRenderedOutfit}
+          isCurrentSkin={currentSkinId == item.id}
+          multiple={item.type == PACKAGE_TYPE.OUTFIT_SET ? 1 : 2}
+          item={normalizeItem(item)}
+          {dense}
+          renderProvider={item.model == MODEL_TYPE.STEVE
+            ? steveListProvider
+            : alexListProvider}
+        />
+      {/each}
+    {:else}
+      <h3 style="width:100%;text-align:center;"><div>No items</div></h3>
+    {/if}
   {:else}
     {#each Array(placeholderCount) as _}
       <Placeholder style="aspect-ratio:5/8;height:100%" />
@@ -97,6 +102,11 @@
     max-width: 100%;
     &.dense {
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    &.no-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
     }
   }
 </style>

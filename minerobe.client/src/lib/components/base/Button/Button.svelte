@@ -15,6 +15,7 @@
   export let altStyle: boolean = false;
   export let target: "_blank" | "_self" = "_blank";
   export let fab: "static" | "dynamic" | "expanded" | null = null;
+  export let flat = false;
 
   let component = null;
   let componentLabel = null;
@@ -46,6 +47,7 @@
   {style}
   {href}
   {target}
+  class:flat
   class:link={href != null}
   class:icon={onlyIcon && icon != null}
   class:with-label={label != null && !onlyIcon}

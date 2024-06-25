@@ -1,13 +1,19 @@
 <script lang="ts">
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
+  import { FetchSettings } from "$src/api/settings";
   import {
     GetMostLiked,
     GetMostRecent,
     GetMostDownloaded,
   } from "$src/api/view/landing";
-  import { defaultRenderer, isMobileView } from "$src/data/cache";
+  import { appState, defaultRenderer, isMobileView } from "$src/data/cache";
+  import { APP_STATE } from "$src/data/consts";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
+  import type { MinerobeUserSettingsSimple } from "$src/model/user";
   import { onMount } from "svelte";
+  import { writable, type Writable } from "svelte/store";
+
+  const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
 
   let mostLiked = [];
   let mostRecent = [];
@@ -15,6 +21,14 @@
   let landingLoaded = false;
   onMount(async () => {
     // let landing ;
+    appState.subscribe(async (state) => {
+      if (!(state == APP_STATE.READY)) return;
+      if (landingLoaded) return;
+
+      const settings = await FetchSettings();
+      userSettings.set(settings);
+    });
+    
     const recent = await GetMostRecent(0, 10);
     mostRecent = recent.items;
 
@@ -23,8 +37,7 @@
 
     const downloaded = await GetMostDownloaded(0, 10);
     mostDownloaded = downloaded.items;
-    // mostDownloaded = landing.mostDownloaded.slice(0, 6);
-    // mostRecent = landing.mostRecent.slice(0, 6);
+
     landingLoaded = true;
   });
   const goToItemPage = (e) => {
@@ -48,6 +61,9 @@
     loading={!landingLoaded}
     renderer={$defaultRenderer}
     dense={false}
+    baseTexture={$userSettings?.baseTexture?.layers[0]}
+    withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
+    currentSkinId={$userSettings?.currentTexturePackageId}
     on:innerselect={goToItemPage}
   />
   <h2 class="list-title">Most Liked</h2>
@@ -55,6 +71,9 @@
     items={mostLiked}
     loading={!landingLoaded}
     renderer={$defaultRenderer}
+    baseTexture={$userSettings?.baseTexture?.layers[0]}
+    withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
+    currentSkinId={$userSettings?.currentTexturePackageId}
     dense={false}
     on:innerselect={goToItemPage}
   />
@@ -64,6 +83,9 @@
     loading={!landingLoaded}
     renderer={$defaultRenderer}
     dense={false}
+    baseTexture={$userSettings?.baseTexture?.layers[0]}
+    withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
+    currentSkinId={$userSettings?.currentTexturePackageId}
     on:innerselect={goToItemPage}
   />
 </div>
