@@ -29,13 +29,13 @@
       userSettings.set(settings);
     });
     
-    const recent = await GetMostRecent(0, 10);
+    const recent = await GetMostRecent(0, 6);
     mostRecent = recent.items;
 
-    const liked = await GetMostLiked(0, 10);
+    const liked = await GetMostLiked(0, 6);
     mostLiked = liked.items;
 
-    const downloaded = await GetMostDownloaded(0, 10);
+    const downloaded = await GetMostDownloaded(0, 6);
     mostDownloaded = downloaded.items;
 
     landingLoaded = true;

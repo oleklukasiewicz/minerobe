@@ -16,17 +16,17 @@ namespace minerobe.api.Services.View
         }
         public async Task<IQueryable<OutfitPackageView>> GetMostRecent()
         {
-            var packages = _context.OutfitPackageViews.OrderByDescending(x => x.ModifiedAt == null ? x.CreatedAt : x.ModifiedAt).Take(6).AsQueryable();
+            var packages = _context.OutfitPackageViews.OrderByDescending(x => x.ModifiedAt == null ? x.CreatedAt : x.ModifiedAt).AsQueryable();
             return packages;
         }
         public async Task<IQueryable<OutfitPackageView>> GetMostLiked()
         {
-            var packages = _context.OutfitPackageViews.OrderByDescending(x => x.Likes).Take(6).AsQueryable();
+            var packages = _context.OutfitPackageViews.OrderByDescending(x => x.Likes).AsQueryable();
             return packages;
         }
         public async Task<IQueryable<OutfitPackageView>> GetMostDownloaded()
         {
-            var packages = _context.OutfitPackageViews.OrderByDescending(x => x.Downloads).Take(6).AsQueryable();
+            var packages = _context.OutfitPackageViews.OrderByDescending(x => x.Downloads).AsQueryable();
             return packages;
         }
     }
