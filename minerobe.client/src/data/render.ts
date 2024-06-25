@@ -69,6 +69,7 @@ export class RenderProvider {
   scene: any;
   camera: any;
   textureLoader: any;
+  name: string = "";
 }
 export class DynamicRenderOptions {
   backgroundColor: THREE.Color = new THREE.Color(0x000000);
@@ -487,12 +488,14 @@ export const CreateDefaultRenderProvider = async function (renderer) {
   let steveScene = await PrepareSceneForRender(STEVE_MODEL.model);
   steveListProvider.scene = steveScene.scene;
   steveListProvider.camera = steveScene.camera;
+  steveListProvider.name = "steve";
 
   alexListProvider.renderer = renderer;
   alexListProvider.textureLoader = new THREE.TextureLoader();
   let alexScene = await PrepareSceneForRender(ALEX_MODEL.model);
   alexListProvider.scene = alexScene.scene;
   alexListProvider.camera = alexScene.camera;
+  alexListProvider.name = "alex";
   return { steve: steveListProvider, alex: alexListProvider };
 };
 export const RenderTextureInTemporyNode = async function (

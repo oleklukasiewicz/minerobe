@@ -74,10 +74,7 @@
     UpdatePackageData,
     UpdatePackageLayer,
   } from "$src/api/pack";
-  import {
-    SharePackage,
-    UnSharePackage,
-  } from "$src/api/social";
+  import { SharePackage, UnSharePackage } from "$src/api/social";
   import {
     AddLayerSnapshot,
     GetGlobalLayer,
@@ -199,12 +196,11 @@
   const removeLayer = async function (e) {
     const layer = e.detail.texture;
     let isRemoved = false;
-    
-    if (layer.sourcePackageId != $itemPackage.id) 
+
+    if (layer.sourcePackageId != $itemPackage.id)
       isRemoved = await RemoveRemoteLayerFromPackage(layer.id, $itemPackage.id);
-     else 
-      isRemoved = await RemovePackageLayer(layer.id);
-    
+    else isRemoved = await RemovePackageLayer(layer.id);
+
     if (!isRemoved) return;
     let index = $itemLayers.indexOf(layer);
     let refresh = false;
@@ -287,8 +283,8 @@
       newLayers.map(async (layer) => {
         const newOutfitLayer = new OutfitLayer(
           layer.fileName,
-          layer,
-          layer,
+          structuredClone(layer),
+          structuredClone(layer),
           null
         );
         newOutfitLayer.sourcePackageId = $itemPackage.id;
@@ -385,8 +381,8 @@
         const newLayer = await ImportLayerFromFile(files[i]);
         const newOutfitLayer = new OutfitLayer(
           newLayer.fileName,
-          newLayer,
-          newLayer,
+          structuredClone(newLayer),
+          structuredClone(newLayer),
           null
         );
         newOutfitLayer.sourcePackageId = $itemPackage.id;
