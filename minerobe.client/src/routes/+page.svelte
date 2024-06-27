@@ -9,6 +9,7 @@
   import { appState, defaultRenderer, isMobileView } from "$src/data/cache";
   import { APP_STATE } from "$src/data/consts";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
+  import type { OutfitLayer } from "$src/model/package";
   import type { MinerobeUserSettingsSimple } from "$src/model/user";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
@@ -23,12 +24,10 @@
     // let landing ;
     appState.subscribe(async (state) => {
       if (!(state == APP_STATE.READY)) return;
-      if (landingLoaded) return;
-
       const settings = await FetchSettings();
       userSettings.set(settings);
     });
-    
+
     const recent = await GetMostRecent(0, 6);
     mostRecent = recent.items;
 
@@ -42,8 +41,8 @@
   });
   const goToItemPage = (e) => {
     const item = e.detail.item;
-    const variant = e.detail.layer;
-    navigateToOutfitPackage(item, variant.variantId);
+    const variant = e.detail.layer as OutfitLayer;
+    navigateToOutfitPackage(item, variant.id);
   };
 </script>
 

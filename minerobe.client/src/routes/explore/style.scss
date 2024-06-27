@@ -1,6 +1,7 @@
-#view-title {
-  max-width: 100vw;
-  text-align: center;
-  display: block;
-  font-size: var(--size-font-header);
+.layout {
+  display: flex;
+  height: calc(100vh - 60px);
+  .list {
+    flex: 1;
+  }
 }

@@ -59,6 +59,7 @@
   onMount(async () => {
     appState.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
+      if (!loading) return;
       providers = await CreateDefaultRenderProvider($defaultRenderer);
       var profile = await GetUserProfile($currentUser?.id);
       userProfile.set(profile);

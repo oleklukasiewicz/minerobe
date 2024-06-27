@@ -1,9 +1,6 @@
 <script lang="ts">
   import { OUTFIT_TYPE } from "$src/data/consts";
-  import {
-    RenderProvider,
-    RenderSnapshot,
-  } from "$src/data/render";
+  import { RenderProvider, RenderSnapshot } from "$src/data/render";
   import CloudIcon from "$icons/cloud.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import { currentUser } from "$src/data/cache";
@@ -39,7 +36,10 @@
     }
   };
 
-  $: aboveLimit = item.layers.length - multiple;
+  $: aboveLimit =
+    (item.totalLayersCount == null
+      ? item.layers.length
+      : item.totalLayersCount) - multiple;
 
   const onClick = function () {
     dispatch("select", {

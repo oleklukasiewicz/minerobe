@@ -15,6 +15,7 @@ export class OutfitPackage {
   createdAt: Date;
   modifiedAt: Date;
   isInWardrobe: boolean;
+  totalLayersCount: number;
   presentationConfig: OutfitPackagePresentationConfigModel;
   constructor(
     name: string,

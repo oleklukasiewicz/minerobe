@@ -1,33 +1,44 @@
 <script lang="ts">
-  import Button from "$lib/components/base/Button/Button.svelte";
   import DownloadIcon from "$icons/download.svg?raw";
+  import HeartIcon from "$icons/heart.svg?raw";
+  import HomeIcon from "$icons/home.svg?raw";
+  import LoaderIcon from "$icons/loader.svg?raw";
+  import ClockIcon from "$icons/clock.svg?raw";
   import { onMount } from "svelte";
   import Menu from "$lib/components/base/Menu/Menu.svelte";
-  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
 
-  onMount(() => {
-    console.log("mounted");
-  });
+  onMount(() => {});
+  const compare = (a, b) => {
+    return a?.value == b;
+  };
+  let selected = "all";
+  const onSelect = (e) => {
+    selected = e.detail.value;
+  };
 </script>
 
-<h1 id="view-title">Explore new outfits</h1>
-<Button
-  fab="dynamic"
-  icon={DownloadIcon}
-  label="tets"
-  size="small"
-/>
-<Menu label="Wardrobe" open items={
-  [
-    { label: "All", icon: DownloadIcon },
-    { label: "Tops", icon: DownloadIcon,type: "separator"},
-    { label: "Bottoms", icon: DownloadIcon,type: "header"},
-    { label: "Shoes", icon: DownloadIcon,badge:"4" },
-    { label: "Accessories", icon: DownloadIcon },
-  ]
-}>
-</Menu>
-<Checkbox value={true} />
+<div class="layout">
+  <div>
+    <Menu
+      comparer={compare}
+      value={selected}
+      label="Explore"
+      on:select={onSelect}
+      open
+      items={[
+        { label: "All", icon: HomeIcon, value: "all" },
+        { label: "Featured", icon: LoaderIcon, value: "featured" },
+        { type: "separator" },
+        { label: "Liked", icon: HeartIcon, value: "liked" },
+        { label: "Downloaded", icon: DownloadIcon, value: "downloaded" },
+        { label: "Last updated", icon: ClockIcon, value: "lastUpdated" },
+        { label: "Collections", type: "header" },
+      ]}
+    ></Menu>
+  </div>
+  <div class="list"></div>
+</div>
+
 <style lang="scss">
   @import "style.scss";
 </style>
