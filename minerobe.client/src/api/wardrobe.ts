@@ -38,9 +38,7 @@ export const SetStudioPackage = async function (packageId: string) {
   return resp;
 };
 export const GetWardrobePackages = async function (
-  type: string = null,
-  outfitType: string = null,
-  phrase: string = "",
+  filter: any = {},
   page: number = 0,
   pageSize: number = -1
 ) {
@@ -49,11 +47,7 @@ export const GetWardrobePackages = async function (
     {
       page,
       pageSize,
-      filter: {
-        type,
-        outfitType,
-        phrase,
-      },
+      filter,
     }
   )) as PagedResponse;
   return req;

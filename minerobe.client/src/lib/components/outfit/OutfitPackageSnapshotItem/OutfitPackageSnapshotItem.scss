@@ -10,6 +10,7 @@
   flex-direction: column;
   transition: var(--time);
   background-color: var(--color-theme-D1);
+  border: 2px solid transparent;
   cursor: pointer;
   &.dense {
     max-width: 400px;
@@ -50,37 +51,18 @@
   }
   &:hover {
     background-color: var(--color-accent);
+    border-color: var(--color-theme-font);
     .data-area {
       & .name,
       .icon-small,
       .above-limit {
         color: var(--color-theme-D1);
       }
-      .color-view {
-        border: 2px solid var(--color-accent-L1);
-      }
       .item-social-info {
         color: var(--color-theme-D1);
       }
     }
   }
-  &:active {
-    background-color: var(--color-hover);
-    .data-area {
-      .color-view {
-        border: 2px solid var(--color-theme-D5);
-      }
-    }
-  }
-}
-.color-view {
-  min-width: 16px;
-  min-height: 16px;
-  margin: 3px 2px;
-  vertical-align: middle;
-  display: inline-table;
-  transition: var(--time);
-  border: 2px solid var(--color-theme-D1);
 }
 .above-limit {
   min-width: 16px;
@@ -88,8 +70,7 @@
   margin: 2px 2px;
   font-family: minecraft;
 }
-.current-flag
-{
+.current-flag {
   position: absolute;
   background: var(--color-ancient);
   height: 24px;

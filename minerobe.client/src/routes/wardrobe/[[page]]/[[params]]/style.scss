@@ -7,12 +7,17 @@
   grid-template-columns: auto 1fr;
   grid-template-rows: auto;
   box-sizing: border-box;
-  .search-btn {
-    width: 300px;
-  }
   .header {
     display: flex;
     padding: 12px 12px 4px;
+    .filters {
+      flex:1;
+      display: grid;
+      flex-direction: row;
+      gap: 4px;
+      grid-template-columns: 50% 50%;
+      margin: 0px 8px;
+    }
   }
   &.mobile {
     display: flex;
@@ -22,8 +27,7 @@
       height: auto !important;
       max-width: 100vw;
     }
-    .header
-    {
+    .header {
       padding: 4px 4px 0px;
     }
     .search-btn {

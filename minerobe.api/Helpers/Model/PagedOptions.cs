@@ -21,5 +21,6 @@
     {
         public string Type { get; set; }
         public string OutfitType { get; set; }
+        public List<string> Colors { get; set; }
     }
 }

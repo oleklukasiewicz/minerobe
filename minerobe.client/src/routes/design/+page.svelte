@@ -28,6 +28,7 @@
     ALEX_MODEL,
     APP_STATE,
     OUTFIT_TYPE,
+    COLOR_TYPE,
   } from "$data/consts";
   import {
     currentUser,
@@ -90,6 +91,7 @@
   } from "$src/model/user";
   import { OutfitLayer, type OutfitPackage } from "$src/model/package";
   import type { PagedResponse } from "$src/model/base";
+  import { FindClosestColor } from "$src/helpers/image/colorHelper";
 
   const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
@@ -251,7 +253,19 @@
     modelTexture = await $itemRenderConfig.getLayersForRender(false);
   };
   const editLayer = async function (e) {
-    const layer = e.detail.texture;
+    const layer = e.detail.texture as OutfitLayer;
+
+    const colorStevename = await FindClosestColor(
+      layer.steve.color,
+      COLOR_TYPE.STRING_COLOR
+    );
+    const colorAlexname = await FindClosestColor(
+      layer.alex.color,
+      COLOR_TYPE.STRING_COLOR
+    );
+    layer.alex.colorName = colorAlexname.name;
+    layer.steve.colorName = colorStevename.name;
+
     await UpdatePackageLayer(await AddLayerSnapshot(layer));
   };
   const addNewRemoteLayer = async function (outfit: OutfitPackage) {

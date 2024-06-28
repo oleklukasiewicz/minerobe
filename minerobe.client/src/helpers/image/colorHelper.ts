@@ -138,3 +138,7 @@ export const ConvertColor = function (color: string, from: string, to: string) {
   }
   return color;
 };
+export const ConvertToStringColor = function (color: any) {
+  if (color == null) return "";
+  return `rgb(${color.r},${color.g},${color.b})`;
+};

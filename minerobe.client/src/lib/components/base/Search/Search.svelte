@@ -43,19 +43,21 @@
     <Button
       onlyIcon
       flat
+      size="small"
       icon={CloseIcon}
       type="secondary"
       label="Clear"
-      style="padding: 4px 7px;"
+      style="padding: 2px 3px;"
       on:click={onClear}
     />
   {/if}
   <Button
     on:click={onSearch}
     onlyIcon
+    size="small"
     icon={SearchIcon}
     label="Search"
-    style="padding: 4px 7px;"
+    style="padding: 1px 2px 1px 5px;"
   />
 </div>
 

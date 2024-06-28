@@ -1,10 +1,12 @@
-import { GetDominantColorFromImageContext } from "../image/colorHelper";
-import { GetContextFromBase64, GetOutfitType } from "../image/imageDataHelpers";
 import {
-  MergeFileDataToImage,
-} from "../../data/imageMerger";
+  FindClosestColor,
+  GetDominantColorFromImageContext,
+} from "../image/colorHelper";
+import { GetContextFromBase64, GetOutfitType } from "../image/imageDataHelpers";
+import { MergeFileDataToImage } from "../../data/imageMerger";
 import type { OutfitPackageRenderConfig } from "$src/data/model";
-import { FileData, type OutfitPackage } from "$src/model/package";
+import { FileData } from "$src/model/package";
+import { COLOR_TYPE } from "$src/data/consts";
 
 export const ExportImageLayers = async function (
   layers: FileData[],
@@ -58,7 +60,7 @@ export const ImportSingleImage = async function () {
 
   return new Promise<FileData>((resolve) => {
     input.onchange = (event: any) => {
-      const file =event.target.files[0];     
+      const file = event.target.files[0];
       resolve(ImportLayerFromFile(file));
     };
   });
@@ -88,11 +90,13 @@ export const ImportLayerFromFile = async function (file: File) {
       var context = await GetContextFromBase64(base64Data);
       const outfitType = GetOutfitType(context);
       const color = await GetDominantColorFromImageContext(context);
+      const colorName = await FindClosestColor(color, COLOR_TYPE.STRING_COLOR);
       var newLayer = new FileData(
         file.name.replace(/\.[^/.]+$/, ""),
         base64Data,
         outfitType,
-        color
+        color,
+        colorName.name
       );
       resolve(newLayer);
     };

@@ -42,16 +42,19 @@ export class FileData {
   contentSnapshot: string;
   type: string;
   color: string;
+  colorName: string;
   constructor(
     fileName: string,
     content: string,
     type: string = OUTFIT_TYPE.DEFAULT,
-    color: string = null
+    color: string = null,
+    colorName: string = null
   ) {
     this.fileName = fileName;
     this.content = content;
     this.type = type;
     this.color = color;
+    this.colorName = colorName;
   }
 }
 export class OutfitLayer {

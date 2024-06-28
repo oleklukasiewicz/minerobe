@@ -12,6 +12,8 @@
     navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
+  import CheckBoxIcon from "$icons/checkbox.svg?raw";
+  import CheckBoxOffIcon from "$icons/checkbox-off.svg?raw";
   import PlusIcon from "$icons/plus.svg?raw";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
@@ -25,7 +27,12 @@
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
-  import { APP_STATE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+  import {
+    APP_STATE,
+    COLORS_ARRAY,
+    OUTFIT_TYPE,
+    PACKAGE_TYPE,
+  } from "$src/data/consts";
   import { writable, type Writable } from "svelte/store";
   import {
     AddCollectionToWardrobe,
@@ -43,6 +50,9 @@
   import type { MinerobeUserSettingsSimple } from "$src/model/user";
   import type { PagedResponse } from "$src/model/base";
   import { OutfitPackageCollection } from "$src/model/collection";
+  import Select from "$lib/components/base/Select/Select.svelte";
+  import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
+  import { ConvertToStringColor } from "$src/helpers/image/colorHelper";
 
   const defaultList = {
     items: [],
@@ -85,7 +95,10 @@
     },
   ];
   let filter = {
+    type: null,
+    outfitType: null,
     phrase: "",
+    colors: [],
   };
   const mobileMenuItems = Array.from(menuItems);
   onMount(() => {
@@ -139,11 +152,9 @@
       type == "all" ||
       type == null
     ) {
-      const items = await GetWardrobePackages(
-        type == "all" ? null : type,
-        currentView.params,
-        filter.phrase
-      );
+      const mappedFilter = structuredClone(filter);
+      mappedFilter.colors = mappedFilter.colors?.map((x) => x.name);
+      const items = await GetWardrobePackages(mappedFilter);
       localWardobeItems.set(items);
     }
     if (type?.toLowerCase() == "collection") {
@@ -218,7 +229,6 @@
     navigateToCollection(response.id);
   };
   const filterOutfits = async function (e) {
-    filter.phrase = e.detail;
     await resfreshItems();
   };
   const onItemSelect = async function (e) {
@@ -242,6 +252,8 @@
       value: target.value || "all",
       params: target.params,
     };
+    filter.type = target.value == "all" ? null : target.value;
+    filter.outfitType = target.params;
     navigateToWardrobe(target.value, target.params);
     await resfreshItems();
   };
@@ -278,18 +290,48 @@
   <div>
     <div class="header">
       {#if !$isMobileView}
-        <h1 class="inline" style="margin: 0px;">
+        <h2 class="inline" style="margin: 0px;flex:1;">
           {currentView.value || "Wardrobe"}
-        </h1>
+        </h2>
       {/if}
-      <div style="flex:1;">
-        <div style="float: right;" class="search-btn">
-          <Search
-            dense={false}
-            on:search={filterOutfits}
-            on:clear={filterOutfits}
-          />
-        </div>
+      <div class="filters">
+        <Select
+          items={COLORS_ARRAY}
+          sorter={(a, b) => {
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+            return 0;
+          }}
+          multiple
+          clearable
+          bind:selectedItem={filter.colors}
+          itemText="normalizedName"
+          on:select={filterOutfits}
+          on:clear={filterOutfits}
+          let:item
+          let:itemText
+          let:selectedItem
+        >
+          <Button
+            textAlign="left"
+            size="small"
+            icon={selectedItem?.includes(item) ? CheckBoxIcon : CheckBoxOffIcon}
+            type={selectedItem?.includes(item) ? "primary" : "quaternary"}
+          >
+            <ColorBadge
+              small
+              colorName={item[itemText]}
+              color={ConvertToStringColor(item)}
+            />
+            {item[itemText]}
+          </Button>
+        </Select>
+        <Search
+          dense={false}
+          bind:value={filter.phrase}
+          on:search={filterOutfits}
+          on:clear={filterOutfits}
+        />
       </div>
     </div>
     <div class="outfits">

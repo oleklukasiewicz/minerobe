@@ -168,7 +168,7 @@ namespace minerobe.api.Services
 
             //add like
             var resp = await _socialService.Like(collection.Social.Id);
-            
+
             return resp;
 
         }
@@ -187,13 +187,13 @@ namespace minerobe.api.Services
             return resp;
         }
 
-        public async Task<List<OutfitPackage>> GetWardrobeOutfits(Guid wardrobeId,TypeFilter filter)
+        public async Task<List<OutfitPackage>> GetWardrobeOutfits(Guid wardrobeId, TypeFilter filter)
         {
             var wardrobe = await _context.Wardrobes.Where(x => x.Id == wardrobeId).FirstOrDefaultAsync();
             if (wardrobe == null)
                 return null;
 
-            var matchings = await _context.WardrobeMatchings.Where(x => x.WardrobeId == wardrobeId).OrderBy(x=>x.OutfitPackageId).ToListAsync();
+            var matchings = await _context.WardrobeMatchings.Where(x => x.WardrobeId == wardrobeId).OrderBy(x => x.OutfitPackageId).ToListAsync();
             var outfits = new List<OutfitPackage>();
             foreach (var matching in matchings)
             {
@@ -210,6 +210,16 @@ namespace minerobe.api.Services
                     outfits = outfits.Where(x => x.Name.Contains(filter.Phrase)).ToList();
                 if (!string.IsNullOrEmpty(filter.OutfitType))
                     outfits = outfits.Where(x => x.OutfitType.ToString() == filter.OutfitType).ToList();
+                if (filter.Colors != null && filter.Colors.Count > 0)
+                {
+                    outfits = outfits.Where(x =>
+                    {
+                        return x.Layers.Any(y =>
+                        {
+                            return filter.Colors.Contains(y.Alex.ColorName) || filter.Colors.Contains(y.Steve.ColorName);
+                        });
+                    }).ToList();
+                }
             }
 
             return outfits;
@@ -245,7 +255,7 @@ namespace minerobe.api.Services
             var matching = await _context.WardrobeMatchings.Where(x => x.OutfitPackageId == outfitId && x.WardrobeId == wardrobe.Id).FirstOrDefaultAsync();
             return matching != null;
         }
-    
+
         public async Task<WadrobeSummary> GetWadrobeSummary(Guid wardrobeId)
         {
             var matchings = await _context.WardrobeMatchings.Where(x => x.WardrobeId == wardrobeId).ToListAsync();

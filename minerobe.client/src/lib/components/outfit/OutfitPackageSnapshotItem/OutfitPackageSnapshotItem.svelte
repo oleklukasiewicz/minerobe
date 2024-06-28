@@ -1,14 +1,25 @@
 <script lang="ts">
-  import { OUTFIT_TYPE } from "$src/data/consts";
+  import {
+    COLOR_TYPE,
+    COLORS,
+    COLORS_ARRAY,
+    OUTFIT_TYPE,
+  } from "$src/data/consts";
   import { RenderProvider, RenderSnapshot } from "$src/data/render";
   import CloudIcon from "$icons/cloud.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import { currentUser } from "$src/data/cache";
-  import { FindColorTitle, FindColor } from "$src/helpers/image/colorHelper";
+  import {
+    FindColorTitle,
+    FindColor,
+    ConvertColor,
+    ConvertToStringColor,
+  } from "$src/helpers/image/colorHelper";
   import OutfitPackageSnapshotRender from "$component/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
   import type { OutfitLayer, OutfitPackage } from "$src/model/package";
+  import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
 
   export let item: OutfitPackage = null;
   export let dense = false;
@@ -99,12 +110,11 @@
         {#each item.layers
           .slice(0, !isSet ? multiple : 2)
           .filter((x) => x != null && x[item.model].color != null) as layer (layer.id)}
-          <span
-            class="color-view"
-            title={FindColorTitle(layer[item.model].color)}
-            on:click|stopPropagation={() => updateRender(layer)}
-            style="background-color: {FindColor(layer[item.model].color)};"
-          ></span>
+          <ColorBadge
+            colorName={layer[item.model].colorName}
+            color={ConvertToStringColor(COLORS[layer[item.model].colorName])}
+            on:click={() => updateRender(layer)}
+          ></ColorBadge>
         {/each}
         {#if aboveLimit > 0 && !isSet}
           <span class="above-limit" style="margin-left:4px;">

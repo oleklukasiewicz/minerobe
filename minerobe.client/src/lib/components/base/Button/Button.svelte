@@ -38,8 +38,8 @@
 
 <a
   bind:this={component}
-  on:click|stopPropagation
-  on:contextmenu|stopPropagation
+  on:click
+  on:contextmenu
   on:mouseenter={onHover}
   on:mouseleave={onHoverOut}
   class="button"

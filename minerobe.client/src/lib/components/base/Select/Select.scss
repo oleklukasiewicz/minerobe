@@ -1,0 +1,55 @@
+.select {
+  position: relative;
+  .selected-item-container {
+    display: flex;
+    max-width: 100%;
+    border: 2px solid var(--color-theme-D6);
+    box-sizing: border-box;
+    flex-direction: row;
+    .selected-item {
+      flex: 1;
+      overflow: hidden;
+      flex-direction: row;
+      border-right: 2px solid var(--color-theme-D6);
+      .selected-item-default {
+        font-family: minecraft;
+        background-color: var(--color-theme-D1);
+        height: 100%;
+        max-width: 100%;
+        padding: 3px 6px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        box-sizing: border-box;
+        display: block;
+      }
+    }
+  }
+  .items {
+    &.hidden {
+      display: none !important;
+    }
+    z-index: 5;
+    max-height: 50vh;
+    overflow-y: auto;
+    padding: 5px 0px;
+    overflow-x: hidden;
+    border: 2px solid var(--color-theme-D6);
+    border-top: 0px;
+    box-sizing: border-box;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-theme-D1);
+    .item-list-default {
+      font-family: minecraft;
+      padding: 3px 6px;
+      box-sizing: border-box;
+    }
+    .item-list-selected-default {
+      font-family: minecraft;
+      padding: 3px 6px;
+      box-sizing: border-box;
+    }
+  }
+}

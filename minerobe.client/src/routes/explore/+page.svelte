@@ -6,6 +6,7 @@
   import ClockIcon from "$icons/clock.svg?raw";
   import { onMount } from "svelte";
   import Menu from "$lib/components/base/Menu/Menu.svelte";
+  import Select from "$lib/components/base/Select/Select.svelte";
 
   onMount(() => {});
   const compare = (a, b) => {
@@ -36,7 +37,10 @@
       ]}
     ></Menu>
   </div>
-  <div class="list"></div>
+  <div class="list">
+    <Select let:item let:multiple selectedItem={"item2"} items={["item1", "item2", "item3"]}>
+    </Select>
+  </div>
 </div>
 
 <style lang="scss">

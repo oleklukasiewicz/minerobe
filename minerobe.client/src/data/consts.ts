@@ -76,7 +76,7 @@ export const COLORS = {
   BLACK: { r: 0, g: 0, b: 0 },
 };
 export const COLORS_ARRAY = Object.keys(COLORS).map((key) => {
-  return { ...COLORS[key] };
+  return { ...COLORS[key], name: key, normalizedName: key.replace(/_/g, " ") };
 });
 export const LAYER_TYPE = {
   LOCAL: "local",
@@ -158,6 +158,7 @@ export const DEFAULT_PACKAGE = {
     isNew: true,
   },
   isInWardrobe: false,
+  totalLayersCount: 0,
   presentationConfig: {
     isMerged: false,
     isSnapshot: false,
