@@ -11,6 +11,7 @@
   const dispatch = createEventDispatcher();
 
   export let items: any[] = [];
+  export let placeholder: string = "Select";
   export let multiple: boolean = false;
   export let selectedItem = null;
   export let mobile = false;
@@ -83,28 +84,34 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="selected-item" on:click={selectedClick}>
-      <slot name="selected" {selectedItem} {itemText} {multiple}>
-        {#if clickable && selectedItem != null}
-          <Button
-            textAlign="left"
-            size="small"
-            type={clickable ? "primary" : "quaternary"}
-            >{itemText == null ? selectedItem : selectedItem[itemText]}</Button
-          >
-        {:else}
-          <div class="selected-item-default">
-            {#if selectedItem != null}
-              {multiple == false
-                ? itemText == null
-                  ? selectedItem
-                  : selectedItem[itemText]
-                : itemText == null
-                  ? selectedItem
-                  : selectedItem.map((i) => i[itemText]).join(", ")}
-            {/if}
-          </div>
-        {/if}
-      </slot>
+      {#if selectedItem != null && (multiple ? selectedItem.length > 0 : true)}
+        <slot name="selected" {selectedItem} {itemText} {multiple}>
+          {#if clickable && selectedItem != null}
+            <Button
+              textAlign="left"
+              size="small"
+              type={clickable ? "primary" : "quaternary"}
+              >{itemText == null
+                ? selectedItem
+                : selectedItem[itemText]}</Button
+            >
+          {:else}
+            <div class="selected-item-default">
+              {#if selectedItem != null && selectedItem.length > 0}
+                {multiple == false
+                  ? itemText == null
+                    ? selectedItem
+                    : selectedItem[itemText]
+                  : itemText == null
+                    ? selectedItem
+                    : selectedItem.map((i) => i[itemText]).join(", ")}
+              {/if}
+            </div>
+          {/if}
+        </slot>
+      {:else}
+        <div class="select-placeholder">{placeholder}</div>
+      {/if}
     </div>
     {#if clearable && selectedItem != null}
       <Button

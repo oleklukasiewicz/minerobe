@@ -3,9 +3,16 @@
   .selected-item-container {
     display: flex;
     max-width: 100%;
+    background-color: var(--color-theme-D1);
     border: 2px solid var(--color-theme-D6);
     box-sizing: border-box;
     flex-direction: row;
+    .select-placeholder {
+      font-family: minecraft-simple;
+      font-size: 12px;
+      color: var(--color-theme-D4);
+      margin: 4px 6px;
+    }
     .selected-item {
       flex: 1;
       overflow: hidden;

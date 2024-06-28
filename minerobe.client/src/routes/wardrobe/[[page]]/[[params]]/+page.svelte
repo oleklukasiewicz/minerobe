@@ -302,6 +302,7 @@
             if (a.name > b.name) return 1;
             return 0;
           }}
+          placeholder="Color"
           multiple
           clearable
           bind:selectedItem={filter.colors}

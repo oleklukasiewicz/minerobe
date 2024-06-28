@@ -42,12 +42,11 @@
   {#if clearable && value}
     <Button
       onlyIcon
-      flat
       size="small"
       icon={CloseIcon}
       type="secondary"
       label="Clear"
-      style="padding: 2px 3px;"
+      style="padding: 1px 3px;"
       on:click={onClear}
     />
   {/if}
