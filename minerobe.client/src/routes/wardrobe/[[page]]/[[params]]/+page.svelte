@@ -54,7 +54,6 @@
   import Select from "$lib/components/base/Select/Select.svelte";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import { ConvertToStringColor } from "$src/helpers/image/colorHelper";
-  import { normalize } from "path";
 
   const defaultList = {
     items: [],
