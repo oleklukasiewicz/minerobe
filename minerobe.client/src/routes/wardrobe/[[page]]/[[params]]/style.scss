@@ -11,12 +11,12 @@
     display: flex;
     padding: 12px 12px 4px;
     .filters {
-      flex:1;
+      flex:2;
       display: grid;
       flex-direction: row;
       gap: 4px;
-      grid-template-columns: 50% 50%;
-      margin: 0px 8px;
+      grid-template-columns: 33% 33% 33%;
+      margin: 0px 4px;
     }
   }
   &.mobile {

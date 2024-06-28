@@ -31,6 +31,7 @@
     APP_STATE,
     COLORS_ARRAY,
     OUTFIT_TYPE,
+    OUTFIT_TYPE_ARRAY,
     PACKAGE_TYPE,
   } from "$src/data/consts";
   import { writable, type Writable } from "svelte/store";
@@ -53,6 +54,7 @@
   import Select from "$lib/components/base/Select/Select.svelte";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import { ConvertToStringColor } from "$src/helpers/image/colorHelper";
+  import { normalize } from "path";
 
   const defaultList = {
     items: [],
@@ -96,7 +98,7 @@
   ];
   let filter = {
     type: null,
-    outfitType: null,
+    outfitType: [],
     phrase: "",
     colors: [],
   };
@@ -138,6 +140,7 @@
         value: $page.params?.page || "all",
         params: $page.params?.params,
       };
+      setFilters(currentView);
       await resfreshItems();
     });
   });
@@ -154,6 +157,7 @@
     ) {
       const mappedFilter = structuredClone(filter);
       mappedFilter.colors = mappedFilter.colors?.map((x) => x.name);
+      mappedFilter.outfitType = mappedFilter.outfitType?.map((x) => x.name);
       const items = await GetWardrobePackages(mappedFilter);
       localWardobeItems.set(items);
     }
@@ -242,18 +246,24 @@
     const item = e.detail;
     navigateToCollection(item.id);
   };
+  const setFilters = function (target) {
+    currentView = {
+      value: target.value || "all",
+      params: target.params,
+    };
+    filter.type = target.value == "all" ? null : target.value;
+    const foundOutfitType = OUTFIT_TYPE_ARRAY.find(
+      (x) => x?.name?.toLowerCase() == target?.params?.toLowerCase()
+    );
+    filter.outfitType = foundOutfitType ? [foundOutfitType] : [];
+  };
   const onMenuItemSelect = async function (e) {
     const target = e.detail;
     if (target.value == "schedule") {
       goto("/schedule");
       return;
     }
-    currentView = {
-      value: target.value || "all",
-      params: target.params,
-    };
-    filter.type = target.value == "all" ? null : target.value;
-    filter.outfitType = target.params;
+    setFilters(target);
     navigateToWardrobe(target.value, target.params);
     await resfreshItems();
   };
@@ -295,6 +305,16 @@
         </h2>
       {/if}
       <div class="filters">
+        <Select
+          items={OUTFIT_TYPE_ARRAY}
+          placeholder="Outfit type"
+          bind:selectedItem={filter.outfitType}
+          multiple
+          clearable
+          itemText="normalizedName"
+          on:select={filterOutfits}
+          on:clear={filterOutfits}
+        ></Select>
         <Select
           items={COLORS_ARRAY}
           sorter={(a, b) => {

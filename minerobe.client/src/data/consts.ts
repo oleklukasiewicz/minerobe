@@ -93,6 +93,9 @@ export const OUTFIT_TYPE = {
   DEFAULT: "default",
   OUTFIT_SET: "set",
 };
+export const OUTFIT_TYPE_ARRAY = Object.keys(OUTFIT_TYPE).map((key) => {
+  return { name: OUTFIT_TYPE[key], normalizedName: key.replace(/_/g, " ") };
+});
 
 export const MODEL_TYPE = {
   ALEX: "alex",

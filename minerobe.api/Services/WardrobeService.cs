@@ -208,8 +208,8 @@ namespace minerobe.api.Services
                     outfits = outfits.Where(x => x.Type.ToString().ToLower() == filter.Type.ToLower()).ToList();
                 if (!string.IsNullOrEmpty(filter.Phrase))
                     outfits = outfits.Where(x => x.Name.Contains(filter.Phrase)).ToList();
-                if (!string.IsNullOrEmpty(filter.OutfitType))
-                    outfits = outfits.Where(x => x.OutfitType.ToString() == filter.OutfitType).ToList();
+                if (filter.OutfitType!= null && filter.OutfitType.Count>0)
+                    outfits = outfits.Where(x => filter.OutfitType.Contains(x.OutfitType.ToString().ToLower())).ToList();
                 if (filter.Colors != null && filter.Colors.Count > 0)
                 {
                     outfits = outfits.Where(x =>

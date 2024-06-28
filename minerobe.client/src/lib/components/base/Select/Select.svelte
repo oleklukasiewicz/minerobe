@@ -24,6 +24,9 @@
     if (a > b) return 1;
     return 0;
   };
+  export let comparer = function (a, b) {
+    return a === b;
+  };
 
   let menuWidth = 0;
   let menu = null;
@@ -113,7 +116,7 @@
         <div class="select-placeholder">{placeholder}</div>
       {/if}
     </div>
-    {#if clearable && selectedItem != null}
+    {#if clearable && selectedItem != null && (multiple ? selectedItem.length > 0 : true)}
       <Button
         onlyIcon
         style="padding:1px 3px 4px;"
@@ -147,7 +150,7 @@
             size="small"
             type={multiple
               ? (multiple && selectedItem?.includes(item)) ||
-                selectedItem == item
+                comparer(selectedItem, item)
                 ? "primary"
                 : "quaternary"
               : selectedItem == item
@@ -155,7 +158,7 @@
                 : "quaternary"}
             icon={multiple
               ? (multiple && selectedItem?.includes(item)) ||
-                selectedItem == item
+                comparer(selectedItem, item)
                 ? CheckBoxIcon
                 : CheckBoxOffIcon
               : null}
