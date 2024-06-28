@@ -10,7 +10,7 @@ namespace minerobe.api.ResponseModel.User
         public Guid OwnerId { get; set; }
         public string Theme { get; set; }
         public Guid? CurrentTexturePackageId { get; set; }
-        public CurrentTextureResponseModel CurrentTexture { get; set; }
+        public TextureRenderConfigResponseModel CurrentTexture { get; set; }
         public OutfitPackageListItemResponseModel? BaseTexture { get; set; }
         public UserLinkedAccount? LinkedAccount { get; set; }
         public DateTime CreatedAt { get; set; }

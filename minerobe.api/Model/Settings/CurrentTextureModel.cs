@@ -6,7 +6,7 @@ using minerobe.api.Helpers;
 
 namespace minerobe.api.Model
 {
-    public class CurrentTextureModel
+    public class TextureRenderConfigModel
     {
         public string Texture { get; set; }
         public string Model { get; set; }
@@ -14,9 +14,9 @@ namespace minerobe.api.Model
     }
     public static class CurrentTextureModelExtensions
     {
-        public static CurrentTextureConfig ToEntity(this CurrentTextureModel model)
+        public static TextureRenderConfig ToEntity(this TextureRenderConfigModel model)
         {
-            return new CurrentTextureConfig
+            return new TextureRenderConfig
             {
                 Texture = Encoding.UTF8.GetBytes(model.Texture),
                 Model = Enum.Parse<ModelType>(model.Model.ToFirstCapitalLetter()),

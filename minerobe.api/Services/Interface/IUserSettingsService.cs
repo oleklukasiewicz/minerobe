@@ -7,7 +7,7 @@ namespace minerobe.api.Services.Interface
     { 
         Task<UserSettings> GetSettings(Guid userId);
         Task<UserSettings> UpdateBaseTexture(Guid userId, OutfitPackage basetexture);
-        Task<UserSettings> UpdateCurrentTexture(Guid userId, Guid packageId, CurrentTextureConfig currentTexture);
+        Task<UserSettings> UpdateCurrentTexture(Guid userId, Guid packageId, TextureRenderConfig currentTexture);
         Task<UserSettings> UpdateTheme(Guid userId, string theme);
     }
 }

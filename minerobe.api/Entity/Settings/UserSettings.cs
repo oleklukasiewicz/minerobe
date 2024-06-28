@@ -12,13 +12,13 @@ namespace minerobe.api.Entity.Settings
         public Guid OwnerId { get; set; }
         public string Theme { get; set; }
         public Guid? CurrentTexturePackageId { get; set; }
-        public CurrentTextureConfig CurrentTexture { get; set; }
+        public TextureRenderConfig CurrentTexture { get; set; }
         public OutfitPackage? BaseTexture { get; set; }
         public UserLinkedAccount? LinkedAccount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }
-    public class CurrentTextureConfig
+    public class TextureRenderConfig 
     {
         public byte[] Texture { get; set; }
         public ModelType Model { get; set; }

@@ -3,7 +3,7 @@ using minerobe.api.Entity.Settings;
 
 namespace minerobe.api.ResponseModel.User
 {
-    public class CurrentTextureResponseModel
+    public class TextureRenderConfigResponseModel
     {
         public string Texture { get; set; }
         public string Model { get; set; }
@@ -11,9 +11,9 @@ namespace minerobe.api.ResponseModel.User
     }
     public static class CurrentTextureResponseModelExtensions
     {
-        public static CurrentTextureResponseModel ToResponseModel(this CurrentTextureConfig entity)
+        public static TextureRenderConfigResponseModel ToResponseModel(this TextureRenderConfig entity)
         {
-            return new CurrentTextureResponseModel
+            return new TextureRenderConfigResponseModel
             {
                 Texture = entity.Texture != null? Encoding.UTF8.GetString(entity.Texture): "",
                 Model = entity.Model.ToString().ToLower(),

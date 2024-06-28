@@ -56,7 +56,7 @@ namespace minerobe.api.Controllers
             return Ok(settings.ToSimpleResponseModel());
         }
         [HttpPost("CurrentTexture/{id}")]
-        public async Task<IActionResult> UpdateCurrentTexture(Guid id, [FromBody] CurrentTextureModel currentTexture)
+        public async Task<IActionResult> UpdateCurrentTexture(Guid id, [FromBody] TextureRenderConfigModel currentTexture)
         {
             var user = await _userService.GetFromExternalUser(User);
 
