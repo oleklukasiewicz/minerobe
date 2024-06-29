@@ -254,7 +254,7 @@
     const foundOutfitType = OUTFIT_TYPE_ARRAY.find(
       (x) => x?.name?.toLowerCase() == target?.params?.toLowerCase()
     );
-    filter.outfitType = foundOutfitType ? [foundOutfitType] : [];
+    filter.outfitType = foundOutfitType ? [foundOutfitType.name] : [];
   };
   const onMenuItemSelect = async function (e) {
     const target = e.detail;
