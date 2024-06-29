@@ -18,14 +18,22 @@
   export let clickable = false;
   export let opened = false;
   export let itemText = null;
+  export let itemValue = null;
   export let clearable = false;
+
+  let selectedItemValue = null;
+
   export let sorter = function (a, b) {
     if (a < b) return -1;
     if (a > b) return 1;
     return 0;
   };
-  export let comparer = function (a, b) {
-    return a === b;
+
+  export let comparer = function (selectedItemValue, item, isMultiple = false) {
+    if (isMultiple) {
+      return selectedItemValue?.includes(item);
+    }
+    return selectedItemValue == item;
   };
 
   let menuWidth = 0;
@@ -34,32 +42,42 @@
 
   const select = (item) => {
     if (multiple) {
-      if (selectedItem == null || Array.isArray(selectedItem) === false) {
-        if (selectedItem == null) selectedItem = [];
+      if (
+        selectedItemValue == null ||
+        Array.isArray(selectedItemValue) === false
+      ) {
+        if (selectedItemValue == null) selectedItemValue = [];
         else {
-          selectedItem = [selectedItem];
+          selectedItemValue = [selectedItemValue];
         }
       }
-      if (selectedItem.includes(item)) {
-        selectedItem = selectedItem.filter((i) => i !== item);
+      if (selectedItemValue.includes(item)) {
+        selectedItemValue = selectedItemValue.filter((i) => i !== item);
       } else {
-        selectedItem = [...selectedItem, item];
+        selectedItemValue = [...selectedItemValue, item];
       }
     } else {
-      selectedItem = item;
+      selectedItemValue = item;
+    }
+    if (itemValue) {
+      if (multiple) selectedItem = selectedItemValue.map((i) => i[itemValue]);
+      else selectedItem = selectedItemValue[itemValue];
     }
     opened = false;
-    dispatch("select", { item: selectedItem });
+    dispatch("select", { item: selectedItemValue });
   };
   const selectedClick = () => {
     if (clickable) {
-      dispatch("selectedClick", { item: selectedItem });
+      dispatch("selectedClick", { item: selectedItemValue });
     } else {
       opened = true;
     }
   };
   const clear = () => {
-    selectedItem = null;
+    selectedItemValue = null;
+    if (itemValue) {
+      selectedItem = selectedItemValue;
+    }
     dispatch("clear");
   };
 
@@ -72,7 +90,15 @@
     }
     if (itemsContainer) itemsContainer.style.minWidth = `${menuWidth}px`;
   };
+  let setSelectedItemValue = (value) => {
+    if (itemValue) {
+      if (multiple)
+        selectedItemValue = items.filter((i) => value?.includes(i[itemValue]));
+      else selectedItemValue = items.find((i) => i[itemValue] == value);
+    }
+  };
 
+  $: setSelectedItemValue(selectedItem);
   $: setMenuWidth(opened);
 </script>
 
@@ -87,27 +113,27 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="selected-item" on:click={selectedClick}>
-      {#if selectedItem != null && (multiple ? selectedItem.length > 0 : true)}
-        <slot name="selected" {selectedItem} {itemText} {multiple}>
-          {#if clickable && selectedItem != null}
+      {#if selectedItemValue != null && (multiple ? selectedItemValue.length > 0 : true)}
+        <slot name="selected" {selectedItemValue} {itemText} {multiple}>
+          {#if clickable && selectedItemValue != null}
             <Button
               textAlign="left"
               size="small"
               type={clickable ? "primary" : "quaternary"}
               >{itemText == null
-                ? selectedItem
-                : selectedItem[itemText]}</Button
+                ? selectedItemValue
+                : selectedItemValue[itemText]}</Button
             >
           {:else}
             <div class="selected-item-default">
-              {#if selectedItem != null && selectedItem.length > 0}
+              {#if selectedItemValue != null || selectedItemValue.length > 0}
                 {multiple == false
                   ? itemText == null
-                    ? selectedItem
-                    : selectedItem[itemText]
+                    ? selectedItemValue
+                    : selectedItemValue[itemText]
                   : itemText == null
-                    ? selectedItem
-                    : selectedItem.map((i) => i[itemText]).join(", ")}
+                    ? selectedItemValue
+                    : selectedItemValue.map((i) => i[itemText]).join(", ")}
               {/if}
             </div>
           {/if}
@@ -116,7 +142,7 @@
         <div class="select-placeholder">{placeholder}</div>
       {/if}
     </div>
-    {#if clearable && selectedItem != null && (multiple ? selectedItem.length > 0 : true)}
+    {#if clearable && selectedItemValue != null && (multiple ? selectedItemValue.length > 0 : true)}
       <Button
         onlyIcon
         style="padding:1px 3px 4px;"
@@ -145,20 +171,14 @@
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="selected item" on:click={() => select(item)}>
-        <slot {item} {multiple} {itemText} {selectedItem}>
+        <slot {item} {multiple} {itemText} {selectedItemValue}>
           <Button
             size="small"
-            type={multiple
-              ? (multiple && selectedItem?.includes(item)) ||
-                comparer(selectedItem, item)
-                ? "primary"
-                : "quaternary"
-              : selectedItem == item
-                ? "primary"
-                : "quaternary"}
+            type={comparer(selectedItemValue, item, multiple)
+              ? "primary"
+              : "quaternary"}
             icon={multiple
-              ? (multiple && selectedItem?.includes(item)) ||
-                comparer(selectedItem, item)
+              ? comparer(selectedItemValue, item, multiple)
                 ? CheckBoxIcon
                 : CheckBoxOffIcon
               : null}

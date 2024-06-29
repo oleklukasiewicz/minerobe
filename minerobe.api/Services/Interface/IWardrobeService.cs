@@ -16,7 +16,7 @@ namespace minerobe.api.Services.Interface
         Task<bool> SetStudio(Guid wardrobeId, Guid outfitId);
         Task<bool> SetStudio(Guid wardrobeId, OutfitPackage outfit);
         Task<bool> IsPackageInWardrobe(Guid wardrobeId, Guid outfitId);
-        Task<List<OutfitPackage>> GetWardrobeOutfits(Guid wardrobeId, TypeFilter filter);
+        Task<List<OutfitPackage>> GetWardrobeOutfits(Guid wardrobeId, OutfitFilter filter);
         Task<WadrobeSummary> GetWadrobeSummary(Guid wardrobeId);
         Task<SocialData> AddCollectionToWadrobe(Guid wardrobeId, Guid collectionId);
         Task<SocialData> RemoveCollectionFromWardrobe(Guid wardrobeId, Guid collectionId);

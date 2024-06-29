@@ -54,6 +54,7 @@
   import Select from "$lib/components/base/Select/Select.svelte";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import { ConvertToStringColor } from "$src/helpers/image/colorHelper";
+  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
 
   const defaultList = {
     items: [],
@@ -100,6 +101,7 @@
     outfitType: [],
     phrase: "",
     colors: [],
+    isShared: null,
   };
   const mobileMenuItems = Array.from(menuItems);
   onMount(() => {
@@ -155,8 +157,6 @@
       type == null
     ) {
       const mappedFilter = structuredClone(filter);
-      mappedFilter.colors = mappedFilter.colors?.map((x) => x.name);
-      mappedFilter.outfitType = mappedFilter.outfitType?.map((x) => x.name);
       const items = await GetWardrobePackages(mappedFilter);
       localWardobeItems.set(items);
     }
@@ -305,12 +305,26 @@
       {/if}
       <div class="filters">
         <Select
+          placeholder="Shared"
+          itemText="name"
+          itemValue="value"
+          clearable
+          items={[
+            { name: "Shared", value: true },
+            { name: "Not shared", value: false },
+          ]}
+          bind:selectedItem={filter.isShared}
+          on:select={filterOutfits}
+          on:clear={filterOutfits}
+        ></Select>
+        <Select
           items={OUTFIT_TYPE_ARRAY}
           placeholder="Outfit type"
           bind:selectedItem={filter.outfitType}
           multiple
           clearable
           itemText="normalizedName"
+          itemValue="name"
           on:select={filterOutfits}
           on:clear={filterOutfits}
         ></Select>
@@ -326,24 +340,33 @@
           clearable
           bind:selectedItem={filter.colors}
           itemText="normalizedName"
+          itemValue="name"
           on:select={filterOutfits}
           on:clear={filterOutfits}
           let:item
           let:itemText
-          let:selectedItem
+          let:selectedItemValue
         >
           <Button
             textAlign="left"
             size="small"
-            icon={selectedItem?.includes(item) ? CheckBoxIcon : CheckBoxOffIcon}
-            type={selectedItem?.includes(item) ? "primary" : "quaternary"}
+            icon={selectedItemValue?.includes(item)
+              ? CheckBoxIcon
+              : CheckBoxOffIcon}
+            type={selectedItemValue?.includes(item) ? "primary" : "quaternary"}
           >
             <ColorBadge
               small
               colorName={item[itemText]}
               color={ConvertToStringColor(item)}
             />
-            {item[itemText]}
+            <div
+              style="text-overflow: ellipsis;display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: calc(100% - 60px);"
+            >
+            {item[itemText]}</div>
           </Button>
         </Select>
         <Search

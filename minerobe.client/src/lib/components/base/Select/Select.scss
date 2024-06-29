@@ -12,6 +12,7 @@
       font-size: 12px;
       color: var(--color-theme-D4);
       margin: 4px 6px;
+      user-select: none;
     }
     .selected-item {
       flex: 1;

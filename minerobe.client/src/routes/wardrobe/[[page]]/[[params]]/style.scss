@@ -15,7 +15,7 @@
       display: grid;
       flex-direction: row;
       gap: 4px;
-      grid-template-columns: 33% 33% 33%;
+      grid-template-columns: 1fr 25% 25% 25%;
       margin: 0px 4px;
     }
   }

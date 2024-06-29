@@ -134,7 +134,7 @@ namespace minerobe.api.Controllers
             return Ok(res);
         }
         [HttpPost("{userId}/items")]
-        public async Task<IActionResult> GetItems (Guid userId, [FromBody] PagedOptions<TypeFilter> options)
+        public async Task<IActionResult> GetItems (Guid userId, [FromBody] PagedOptions<OutfitFilter> options)
         {
             var wardrobe = await _wardrobeService.Get(userId);
             if (wardrobe == null)
@@ -144,7 +144,7 @@ namespace minerobe.api.Controllers
             return Ok(res.ToListItemResponseModel().ToPagedResponse(options.Page, options.PageSize));
         }
         [HttpPost("{userId}/collections")]
-        public async Task<IActionResult> GetCollections(Guid userId, [FromBody] PagedOptions<TypeFilter> options)
+        public async Task<IActionResult> GetCollections(Guid userId, [FromBody] PagedOptions<OutfitFilter> options)
         {
             var wardrobe = await _wardrobeService.Get(userId);
             if (wardrobe == null)
@@ -153,7 +153,7 @@ namespace minerobe.api.Controllers
             return Ok(res.ToListItemResponseModel().ToPagedResponse(options.Page, options.PageSize));
         }
         [HttpPost("{userId}/collections/{id}")]
-        public async Task<IActionResult> GetCollectionsWithPackageContext(Guid userId,Guid id, [FromBody] PagedOptions<TypeFilter> options)
+        public async Task<IActionResult> GetCollectionsWithPackageContext(Guid userId,Guid id, [FromBody] PagedOptions<OutfitFilter> options)
         {
             var wardrobe = await _wardrobeService.Get(userId);
             if (wardrobe == null)
@@ -163,7 +163,7 @@ namespace minerobe.api.Controllers
         }
 
         [HttpPost("{userId}/items/singleLayer")]
-        public async Task<IActionResult> GetItemsSingleLayer(Guid userId, [FromBody] PagedOptions<TypeFilter> options)
+        public async Task<IActionResult> GetItemsSingleLayer(Guid userId, [FromBody] PagedOptions<OutfitFilter> options)
         {
             var wardrobe = await _wardrobeService.Get(userId);
             if (wardrobe == null)

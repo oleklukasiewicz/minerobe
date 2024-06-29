@@ -17,10 +17,11 @@
     {
         public string Phrase { get; set; }
     }
-    public class TypeFilter:SimpleFilter
+    public class OutfitFilter:SimpleFilter
     {
         public string Type { get; set; }
         public List<string> OutfitType { get; set; }
         public List<string> Colors { get; set; }
+        public bool? IsShared { get; set; }
     }
 }

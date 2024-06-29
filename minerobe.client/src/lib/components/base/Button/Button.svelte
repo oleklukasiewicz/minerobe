@@ -78,10 +78,10 @@
       {@html icon}
     </div>
   {/if}
+  <slot />
   {#if label != null && !onlyIcon}
     <span bind:this={componentLabel}>{label}</span>
   {/if}
-  <slot />
 </a>
 
 <style lang="scss">

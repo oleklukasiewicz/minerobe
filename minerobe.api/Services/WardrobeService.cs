@@ -187,7 +187,7 @@ namespace minerobe.api.Services
             return resp;
         }
 
-        public async Task<List<OutfitPackage>> GetWardrobeOutfits(Guid wardrobeId, TypeFilter filter)
+        public async Task<List<OutfitPackage>> GetWardrobeOutfits(Guid wardrobeId, OutfitFilter filter)
         {
             var wardrobe = await _context.Wardrobes.Where(x => x.Id == wardrobeId).FirstOrDefaultAsync();
             if (wardrobe == null)
@@ -208,8 +208,10 @@ namespace minerobe.api.Services
                     outfits = outfits.Where(x => x.Type.ToString().ToLower() == filter.Type.ToLower()).ToList();
                 if (!string.IsNullOrEmpty(filter.Phrase))
                     outfits = outfits.Where(x => x.Name.Contains(filter.Phrase)).ToList();
-                if (filter.OutfitType!= null && filter.OutfitType.Count>0)
+                if (filter.OutfitType != null && filter.OutfitType.Count > 0)
                     outfits = outfits.Where(x => filter.OutfitType.Contains(x.OutfitType.ToString().ToLower())).ToList();
+                if (filter.IsShared != null)
+                    outfits = outfits.Where(x => x.Social.IsShared==filter.IsShared).ToList();
                 if (filter.Colors != null && filter.Colors.Count > 0)
                 {
                     outfits = outfits.Where(x =>
