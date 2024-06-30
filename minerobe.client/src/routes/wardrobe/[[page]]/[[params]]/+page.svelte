@@ -78,7 +78,7 @@
     {
       label: "All",
       icon: SubscriptionIcon,
-      value: "all",
+      value: null,
     },
     {
       label: "Collections",
@@ -105,10 +105,6 @@
   };
   const mobileMenuItems = Array.from(menuItems);
   onMount(() => {
-    currentView = {
-      value: $page.params.page || "all",
-      params: $page.params.params,
-    };
     appState.subscribe(async (state) => {
       if (!(state == APP_STATE.READY)) return;
       if (loaded) return;
@@ -137,11 +133,6 @@
       menuItems.push(...outfitsMenuItems);
       loaded = true;
       if (!loaded) return;
-      currentView = {
-        value: $page.params?.page || "all",
-        params: $page.params?.params,
-      };
-      setFilters(currentView);
       await resfreshItems();
     });
   });
@@ -149,18 +140,24 @@
     localWardobeItems.set(defaultList);
     itemsLoaded = false;
     isCreatingNew = false;
-    const type = currentView.value;
+    const type = filter.type;
     if (
       type == PACKAGE_TYPE.OUTFIT_SET ||
       type == PACKAGE_TYPE.OUTFIT ||
-      type == "all" ||
       type == null
     ) {
-      const mappedFilter = structuredClone(filter);
-      const items = await GetWardrobePackages(mappedFilter);
+      currentView = {
+        value: type,
+        params: filter.outfitType.length == 1 ? filter.outfitType[0] : null,
+      };
+      const items = await GetWardrobePackages(filter);
       localWardobeItems.set(items);
     }
     if (type?.toLowerCase() == "collection") {
+      currentView = {
+        value: "collection",
+        params: null,
+      };
       const items = await GetWadrobeCollections(filter.phrase);
       localWardobeItems.set(items);
     }
@@ -231,6 +228,7 @@
     }
     navigateToCollection(response.id);
   };
+
   const filterOutfits = async function (e) {
     await resfreshItems();
   };
@@ -246,11 +244,7 @@
     navigateToCollection(item.id);
   };
   const setFilters = function (target) {
-    currentView = {
-      value: target.value || "all",
-      params: target.params,
-    };
-    filter.type = target.value == "all" ? null : target.value;
+    filter.type = target.value;
     const foundOutfitType = OUTFIT_TYPE_ARRAY.find(
       (x) => x?.name?.toLowerCase() == target?.params?.toLowerCase()
     );
@@ -267,7 +261,7 @@
     await resfreshItems();
   };
   const compare = (a, b) => {
-    return a?.value == b?.value && a?.params == b?.params;
+    return a?.value == b?.value && a?.params?.toLowerCase() == b?.params?.toLowerCase();
   };
 </script>
 
@@ -366,7 +360,8 @@
     overflow: hidden;
     max-width: calc(100% - 60px);"
             >
-            {item[itemText]}</div>
+              {item[itemText]}
+            </div>
           </Button>
         </Select>
         <Search
@@ -378,7 +373,7 @@
       </div>
     </div>
     <div class="outfits">
-      {#if currentView.value == "all"}
+      {#if currentView.value == null}
         <Button
           on:click={addNewSet}
           fab="dynamic"

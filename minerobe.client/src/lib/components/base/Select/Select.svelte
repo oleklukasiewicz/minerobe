@@ -20,36 +20,36 @@
   export let itemText = null;
   export let itemValue = null;
   export let clearable = false;
-
-  let selectedItemValue = null;
+  export let autocomplete = false;
 
   export let sorter = function (a, b) {
     if (a < b) return -1;
     if (a > b) return 1;
     return 0;
   };
-
   export let comparer = function (selectedItemValue, item, isMultiple = false) {
     if (isMultiple) {
       return selectedItemValue?.includes(item);
     }
     return selectedItemValue == item;
   };
+  export let filter = function (item, value) {
+    if (itemText) {
+      return item[itemText].toLowerCase().includes(value.toLowerCase());
+    }
+    return item.toLowerCase().includes(value.toLowerCase());
+  };
 
+  let selectedItemValue = null;
   let menuWidth = 0;
   let menu = null;
   let itemsContainer = null;
 
   const select = (item) => {
     if (multiple) {
-      if (
-        selectedItemValue == null ||
-        Array.isArray(selectedItemValue) === false
-      ) {
+      if (Array.isArray(selectedItemValue) === false) {
         if (selectedItemValue == null) selectedItemValue = [];
-        else {
-          selectedItemValue = [selectedItemValue];
-        }
+        selectedItemValue = [selectedItemValue];
       }
       if (selectedItemValue.includes(item)) {
         selectedItemValue = selectedItemValue.filter((i) => i !== item);
@@ -59,10 +59,12 @@
     } else {
       selectedItemValue = item;
     }
+
     if (itemValue) {
       if (multiple) selectedItem = selectedItemValue.map((i) => i[itemValue]);
       else selectedItem = selectedItemValue[itemValue];
     }
+
     opened = false;
     dispatch("select", { item: selectedItemValue });
   };
@@ -74,13 +76,14 @@
     }
   };
   const clear = () => {
-    selectedItemValue = null;
+    if (multiple) selectedItemValue = [];
+    else selectedItemValue = null;
+
     if (itemValue) {
       selectedItem = selectedItemValue;
     }
     dispatch("clear");
   };
-
   const setMenuWidth = (op) => {
     if (!opened) return;
     if (mobile) {
