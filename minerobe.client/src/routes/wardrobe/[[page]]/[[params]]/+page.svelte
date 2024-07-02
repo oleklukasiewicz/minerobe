@@ -14,6 +14,7 @@
   import { onMount } from "svelte";
   import CheckBoxIcon from "$icons/checkbox.svg?raw";
   import CheckBoxOffIcon from "$icons/checkbox-off.svg?raw";
+  import Sliders2Icon from "$icons/sliders-2.svg?raw";
   import PlusIcon from "$icons/plus.svg?raw";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
@@ -69,6 +70,7 @@
   let loaded = false;
   let itemsLoaded = false;
   let isCreatingNew = false;
+  let showFilters = false;
   let menuItems: any[] = [
     // {
     //   label: "Schedule",
@@ -261,7 +263,10 @@
     await resfreshItems();
   };
   const compare = (a, b) => {
-    return a?.value == b?.value && a?.params?.toLowerCase() == b?.params?.toLowerCase();
+    return (
+      a?.value == b?.value &&
+      a?.params?.toLowerCase() == b?.params?.toLowerCase()
+    );
   };
 </script>
 
@@ -297,79 +302,95 @@
           {currentView.value || "Wardrobe"}
         </h2>
       {/if}
-      <div class="filters">
-        <Select
-          placeholder="Shared"
-          itemText="name"
-          itemValue="value"
-          clearable
-          items={[
-            { name: "Shared", value: true },
-            { name: "Not shared", value: false },
-          ]}
-          bind:selectedItem={filter.isShared}
-          on:select={filterOutfits}
-          on:clear={filterOutfits}
-        ></Select>
-        <Select
-          items={OUTFIT_TYPE_ARRAY}
-          placeholder="Outfit type"
-          bind:selectedItem={filter.outfitType}
-          multiple
-          clearable
-          itemText="normalizedName"
-          itemValue="name"
-          on:select={filterOutfits}
-          on:clear={filterOutfits}
-        ></Select>
-        <Select
-          items={COLORS_ARRAY}
-          sorter={(a, b) => {
-            if (a.name < b.name) return -1;
-            if (a.name > b.name) return 1;
-            return 0;
-          }}
-          placeholder="Color"
-          multiple
-          clearable
-          bind:selectedItem={filter.colors}
-          itemText="normalizedName"
-          itemValue="name"
-          on:select={filterOutfits}
-          on:clear={filterOutfits}
-          let:item
-          let:itemText
-          let:selectedItemValue
-        >
-          <Button
-            textAlign="left"
-            size="small"
-            icon={selectedItemValue?.includes(item)
-              ? CheckBoxIcon
-              : CheckBoxOffIcon}
-            type={selectedItemValue?.includes(item) ? "primary" : "quaternary"}
+      <div class="filters" class:mobile={$isMobileView}>
+        {#if showFilters || !$isMobileView}
+          <Select
+            placeholder="Shared"
+            itemText="name"
+            itemValue="value"
+            clearable
+            items={[
+              { name: "Shared", value: true },
+              { name: "Not shared", value: false },
+            ]}
+            bind:selectedItem={filter.isShared}
+            on:select={filterOutfits}
+            on:clear={filterOutfits}
+          ></Select>
+          <Select
+            items={OUTFIT_TYPE_ARRAY}
+            placeholder="Outfit type"
+            bind:selectedItem={filter.outfitType}
+            multiple
+            clearable
+            itemText="normalizedName"
+            itemValue="name"
+            on:select={filterOutfits}
+            on:clear={filterOutfits}
+          ></Select>
+          <Select
+            items={COLORS_ARRAY}
+            sorter={(a, b) => {
+              if (a.name < b.name) return -1;
+              if (a.name > b.name) return 1;
+              return 0;
+            }}
+            placeholder="Color"
+            multiple
+            clearable
+            bind:selectedItem={filter.colors}
+            itemText="normalizedName"
+            itemValue="name"
+            on:select={filterOutfits}
+            on:clear={filterOutfits}
+            let:item
+            let:itemText
+            let:selectedItemValue
           >
-            <ColorBadge
-              small
-              colorName={item[itemText]}
-              color={ConvertToStringColor(item)}
-            />
-            <div
-              style="text-overflow: ellipsis;display: inline-block;
+            <Button
+              textAlign="left"
+              size="small"
+              icon={selectedItemValue?.includes(item)
+                ? CheckBoxIcon
+                : CheckBoxOffIcon}
+              type={selectedItemValue?.includes(item)
+                ? "primary"
+                : "quaternary"}
+            >
+              <ColorBadge
+                small
+                colorName={item[itemText]}
+                color={ConvertToStringColor(item)}
+              />
+              <div
+                style="text-overflow: ellipsis;display: inline-block;
     white-space: nowrap;
     overflow: hidden;
     max-width: calc(100% - 60px);"
-            >
-              {item[itemText]}
-            </div>
-          </Button>
-        </Select>
-        <Search
-          dense={false}
-          bind:value={filter.phrase}
-          on:search={filterOutfits}
-          on:clear={filterOutfits}
-        />
+              >
+                {item[itemText]}
+              </div>
+            </Button>
+          </Select>
+        {/if}
+        <div style="display:flex; gap:4px;">
+          {#if $isMobileView}
+            <Button
+              icon={Sliders2Icon}
+              onlyIcon
+              size="small"
+              style="height:31.5px;padding:2px 4px"
+              label="Filters"
+              on:click={() => (showFilters = !showFilters)}
+            ></Button>{/if}
+          <Search
+            style="flex:1;"
+            dense={false}
+            bind:value={filter.phrase}
+            on:search={filterOutfits}
+            on:clear={filterOutfits}
+          />
+        </div>
       </div>
     </div>
     <div class="outfits">

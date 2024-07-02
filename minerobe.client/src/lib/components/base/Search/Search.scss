@@ -2,7 +2,7 @@
   display: inline-flex;
   flex-direction: row;
   vertical-align: top;
-  width: 100%;
+  max-width: 100%;
   border: 2px solid var(--color-theme-D6);
   input {
     transition: var(--time);

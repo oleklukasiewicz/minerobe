@@ -6,6 +6,7 @@
 
   export let value = null;
   export let dense = true;
+  export let style = "";
   export let clearable = true;
 
   const dispatch = createEventDispatcher();
@@ -29,7 +30,7 @@
   };
 </script>
 
-<div class="search" class:dense>
+<div class="search" class:dense {style}>
   <input
     type="text"
     style="font-size: var(--size-font-caption);"
