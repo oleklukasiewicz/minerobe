@@ -7,6 +7,7 @@
   import { createEventDispatcher } from "svelte";
   import Button from "../Button/Button.svelte";
   import { clickOutside } from "$src/helpers/data/component";
+  import { isMobileView } from "$src/data/cache";
 
   const dispatch = createEventDispatcher();
 
@@ -14,7 +15,6 @@
   export let placeholder: string = "Select";
   export let multiple: boolean = false;
   export let selectedItem = null;
-  export let mobile = false;
   export let clickable = false;
   export let opened = false;
   export let itemText = null;
@@ -86,12 +86,12 @@
   };
   const setMenuWidth = (op) => {
     if (!opened) return;
-    if (mobile) {
-      menuWidth = window.innerWidth;
+    if ($isMobileView) {
+      itemsContainer.style.minWidth = null;
     } else {
       menuWidth = menu?.offsetWidth;
+      if (itemsContainer) itemsContainer.style.minWidth = `${menuWidth}px`;
     }
-    if (itemsContainer) itemsContainer.style.minWidth = `${menuWidth}px`;
   };
   let setSelectedItemValue = (value) => {
     if (itemValue) {
@@ -107,6 +107,8 @@
 
 <div
   class="select"
+  class:opened
+  class:mobile={$isMobileView}
   bind:this={menu}
   use:clickOutside
   on:click_outside={() => (opened = false)}
@@ -164,6 +166,9 @@
       on:click={() => (opened = !opened)}
     ></Button>
   </div>
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div class="select-mobile-bg" on:click={() => (opened = false)}></div>
   <div
     class="items"
     class:opened

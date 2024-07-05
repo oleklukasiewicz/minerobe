@@ -19,5 +19,11 @@ namespace minerobe.api.Controllers
            _javaXboxAuthService.Authenticate();
             return Ok();
         }
+        [HttpGet("Response")]
+        public IActionResult Response([FromQuery]string code,[FromQuery]string state)
+        {
+           
+            return Ok();
+        }
     }
 }

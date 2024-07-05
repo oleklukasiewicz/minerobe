@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using minerobe.api.Configuration;
 using minerobe.api.Database;
 using minerobe.api.Services;
 using minerobe.api.Services.Integration;
@@ -7,6 +8,9 @@ using minerobe.api.Services.Interface;
 using minerobe.api.Services.View;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//add configuiration from app settings
+builder.Services.Configure<MicrosoftAuthConfig>(builder.Configuration.GetSection("MicrosoftAuth"));
 
 // Add services to the container.
 //integrations

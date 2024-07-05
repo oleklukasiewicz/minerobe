@@ -2,7 +2,7 @@
 using minerobe.api.Entity.Package;
 using System.Text;
 
-namespace minerobe.api.ResponseModel
+namespace minerobe.api.ResponseModel.Package
 {
     public class FileDataResponseModel
     {
@@ -18,7 +18,7 @@ namespace minerobe.api.ResponseModel
         {
 
             var content = toSnapshot ?
-                (entity?.ContentSnapshot != null ? Encoding.UTF8.GetString(entity?.ContentSnapshot) : "") : (entity?.Content != null ? Encoding.UTF8.GetString(entity?.Content) : "");
+                entity?.ContentSnapshot != null ? Encoding.UTF8.GetString(entity?.ContentSnapshot) : "" : entity?.Content != null ? Encoding.UTF8.GetString(entity?.Content) : "";
             return new FileDataResponseModel
             {
                 FileName = entity.FileName,
