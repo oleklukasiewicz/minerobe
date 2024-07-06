@@ -16,7 +16,8 @@
   },
   "modelOpt": {
     "steve": "Classic",
-    "alex": "Slim"
+    "alex": "Slim",
+    "oldFormat": "Minimal format"
   },
   "navigation": {
     "explore": "Explore",

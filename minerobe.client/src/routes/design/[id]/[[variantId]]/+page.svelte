@@ -67,6 +67,8 @@
     type MinerobeUserSettingsSimple,
   } from "$src/model/user.js";
   import type { OutfitLayer, OutfitPackage } from "$src/model/package.js";
+  import Expander from "$lib/components/base/Expander/Expander.svelte";
+  import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
 
   export let data;
   const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
@@ -87,6 +89,7 @@
   let isSkinSetting = false;
   let loaded = false;
   let defaultRenderProvider;
+  let capes = [];
 
   let isCollectionPickerLoading = true;
   let pickerCollections = [];
@@ -109,6 +112,7 @@
       if (state == APP_STATE.READY) {
         const settings = await FetchSettings();
         userSettings.set(settings);
+        capes = settings.linkedAccount?.capes || [];
       }
       localPackage.set(outfitPackage);
       isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
@@ -154,7 +158,7 @@
     );
     await updateAnimation(HandsUpAnimation);
     await updateAnimation(DefaultAnimation);
-    
+
     if ($currentUser?.id == $localPackage.publisher.id) return;
     const resp = await SetAsDownloadPackage($localPackage.social.id);
     if (resp == null) return;
@@ -356,6 +360,23 @@
           {/each}
         </div>
       {/if}
+      {#if isItemSet && $userSettings.linkedAccount != null}
+        <SectionTitle label="Capes" placeholder={!loaded} />
+        {#if capes.length == 0}
+          <InfoLabel
+            closeable={false}
+            type="info"
+            description="You have no capes linked to your minecraft account"
+          />
+        {:else}
+          <div style="display:flex;flex-direaction:row;flex-wrap:wrap;gap:8px;">
+            {#each Array(3) as _}
+              <ItemCape />
+            {/each}
+          </div>
+        {/if}
+        <br />
+      {/if}
       {#if $localPackage.description != null && $localPackage.description.trim().length > 0}
         <SectionTitle label={$_("description")} placeholder={!loaded} />
         <div id="item-description" class="description">
@@ -373,10 +394,9 @@
       <br />
       <Placeholder style="height:24px;width:200px;" {loaded}>
         <Checkbox
-          label="Old format model"
+          label={$_("modelOpt.oldFormat")}
           style="margin-left:12px;"
           bind:value={$itemRenderConfig.isFlatten}
-          on:change={updateTexture}
         />
       </Placeholder>
       <br />

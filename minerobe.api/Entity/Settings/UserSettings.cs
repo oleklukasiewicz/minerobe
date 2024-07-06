@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using minerobe.api.Entity.Package;
 using minerobe.api.Extensions;
+using minerobe.api.ResponseModel.Integration.JavaXbox;
 
 namespace minerobe.api.Entity.Settings
 {
@@ -14,7 +15,7 @@ namespace minerobe.api.Entity.Settings
         public Guid? CurrentTexturePackageId { get; set; }
         public TextureRenderConfig CurrentTexture { get; set; }
         public OutfitPackage? BaseTexture { get; set; }
-        public UserLinkedAccount? LinkedAccount { get; set; }
+        public JavaXboxProfile? LinkedAccount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }

@@ -1,5 +1,6 @@
 ﻿using minerobe.api.Entity.Package;
 using minerobe.api.Entity.Settings;
+using minerobe.api.ResponseModel.Integration.JavaXbox;
 using minerobe.api.ResponseModel.Package;
 
 namespace minerobe.api.ResponseModel.User
@@ -12,7 +13,7 @@ namespace minerobe.api.ResponseModel.User
         public Guid? CurrentTexturePackageId { get; set; }
         public TextureRenderConfigResponseModel CurrentTexture { get; set; }
         public OutfitPackageListItemResponseModel? BaseTexture { get; set; }
-        public UserLinkedAccount? LinkedAccount { get; set; }
+        public JavaXboxProfileResponseModel? LinkedAccount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }
@@ -27,7 +28,8 @@ namespace minerobe.api.ResponseModel.User
                 Theme = entity.Theme,
                 BaseTexture = entity.BaseTexture?.ToListItemResponseModel(),
                 CurrentTexturePackageId = entity.CurrentTexturePackageId,
-                CurrentTexture= entity.CurrentTexture?.ToResponseModel()
+                CurrentTexture= entity.CurrentTexture?.ToResponseModel(),
+                LinkedAccount = entity.LinkedAccount?.ToResponseModel(),
                 
             };
         }

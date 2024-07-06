@@ -3,13 +3,19 @@
   import Button from "../Button/Button.svelte";
 
   export let label = "";
+  export let type: "warning" | "info" = "info";
   export let description = "";
   export let closeable = true;
 
   let isClosed = false;
 </script>
 
-<div class="info-label" class:hidden={isClosed}>
+<div
+  class="info-label"
+  class:warning={type == "warning"}
+  class:info={type == "info"}
+  class:hidden={isClosed}
+>
   <div style="display: flex;">
     <span class="label-text">{label}</span>
     {#if closeable}
@@ -29,9 +35,14 @@
 
 <style lang="scss">
   .info-label {
-    background-color: var(--color-warning);
     padding: 8px;
     box-sizing: border-box;
+    &.warning {
+      background-color: var(--color-warning);
+    }
+    &.info {
+      background-color: var(--color-info);
+    }
     .label-text {
       font-family: minecraft;
       flex: 1;

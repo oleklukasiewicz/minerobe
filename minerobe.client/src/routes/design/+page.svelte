@@ -678,7 +678,7 @@
       <Placeholder style="height:24px;width:200px;" {loaded}>
         <Checkbox
           style="margin-left:12px;"
-          label="Old format model"
+          label={$_("modelOpt.oldFormat")}
           bind:value={$itemRenderConfig.isFlatten}
         />
       </Placeholder>

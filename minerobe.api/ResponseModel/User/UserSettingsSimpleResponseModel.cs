@@ -1,4 +1,5 @@
 ﻿using minerobe.api.Entity.Settings;
+using minerobe.api.ResponseModel.Integration.JavaXbox;
 using minerobe.api.ResponseModel.Package;
 
 namespace minerobe.api.ResponseModel.User
@@ -9,7 +10,7 @@ namespace minerobe.api.ResponseModel.User
         public Guid OwnerId { get; set; }
         public Guid? CurrentTexturePackageId { get; set; }
         public OutfitPackageListItemResponseModel? BaseTexture { get; set; }
-        public UserLinkedAccount? LinkedAccount { get; set; }
+        public JavaXboxProfileSimpleResponseModel? LinkedAccount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }
@@ -23,6 +24,7 @@ namespace minerobe.api.ResponseModel.User
                 OwnerId = entity.OwnerId,
                 BaseTexture = entity.BaseTexture?.ToListItemResponseModel(),
                 CurrentTexturePackageId = entity.CurrentTexturePackageId,
+                LinkedAccount = entity.LinkedAccount?.ToSimpleResponseModel(),
             };
         }
     }

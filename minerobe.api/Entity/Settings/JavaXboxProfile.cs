@@ -1,6 +1,6 @@
 ﻿namespace minerobe.api.ResponseModel.Integration.JavaXbox
 {
-    public class JavaXboxProfileResponseModel
+    public class JavaXboxProfile
     {
         public string UserId { get; set; }
         public string Username { get; set; }

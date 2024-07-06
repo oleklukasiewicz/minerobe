@@ -40,7 +40,7 @@
         onlyIcon
         icon="{(group == null ? opened : group == value)
           ? ChevronUpIcon
-          : ChevronDownIcon}}"
+          : ChevronDownIcon}"
       />
     </span>
   </div>

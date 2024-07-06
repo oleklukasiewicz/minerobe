@@ -2,7 +2,6 @@
 {
     .expander-header
     {
-        padding: 8px;
         font-family: minecraft;
         background-color: var(--color-theme-D1);
         grid-template-columns: 1fr auto; 
@@ -14,8 +13,7 @@
             gap: 8px;
             .expander-label
             {
-                height: 20px;
-                padding-top: 2px;
+                padding-top: 0px;
                 padding-right: 8px;
                 display: inline-block;
                 overflow: hidden;

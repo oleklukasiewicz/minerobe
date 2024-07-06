@@ -1,0 +1,33 @@
+<script lang="ts">
+    
+</script>
+<div class="item-cape"></div>
+
+<style lang="scss">
+  .item-cape {
+    min-height: 64px;
+    max-height: 92px;
+    padding: 3px;
+    box-sizing: border-box;
+    aspect-ratio: 1/1;
+    border: 4px solid var(--color-theme-D2);
+    transition: var(--time);
+    display: flex;
+    &:hover {
+      border-color: var(--color-accent);
+      background-color: var(--color-accent-L1);
+    }
+    &:active {
+      border-color: var(--color-accent-L1);
+      background-color: var(--color-accent-L2);
+    }
+    &.selected {
+      border-color: var(--color-accent-L1);
+      background-color: var(--color-accent);
+      &:hover {
+        border-color: var(--color-accent);
+        background-color: var(--color-accent-D1);
+      }
+    }
+  }
+</style>
