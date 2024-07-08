@@ -61,7 +61,7 @@
       on:click={skinSet}
     />
   {/if}
-  <div>
+  <div style={$isMobileView || !setMySkinAvailable ? "flex:1;" : ""}>
     <Button
       on:click={downloadImage}
       label={$_("download")}
