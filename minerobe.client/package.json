@@ -29,7 +29,7 @@
 		"firebase": "^10.12.3",
 		"gltf-loader": "^1.0.0",
 		"path": "^0.12.7",
-		"pixelmatch": "^5.3.0",
+		"pixelmatch": "^6.0.0",
 		"sass": "^1.77.2",
 		"svelte-i18n": "^4.0.0",
 		"svelte-writable-derived": "^3.1.1",
