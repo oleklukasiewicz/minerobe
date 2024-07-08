@@ -23,7 +23,7 @@
     }
   };
   onMount(() => {
-    const matcher = window.matchMedia("(max-width: 468px)");
+    const matcher = window.matchMedia("(max-width: 568px)");
     navMobileMode = matcher.matches;
     matcher.addEventListener("change", (e) => {
       navMobileMode = e.matches;
@@ -48,7 +48,7 @@
         <Search
           dense={false}
           dark
-          style="width:50%;min-width:150px"
+          style="width:100%;min-width:150px"
           placeholder={"Search outfits, sets and collections"}
           on:search={()=>navigate("explore")}
         />
@@ -104,7 +104,6 @@
     display: flex;
     position: fixed;
     z-index: 10;
-    gap: 8px;
     top: 0;
     width: 100%;
     &.mobile {
@@ -121,11 +120,12 @@
       background-color: var(--color-theme-font);
       display: grid;
       grid-template-columns: 23% 1fr 23%;
-      gap: 8px;
+      gap: 12px;
     }
     #nav-title {
-      display: flex;
-      align-items: center;
+      display: table;
+      padding: 8px 0px;
+      box-sizing: border-box;
       img {
         height: 24px;
       }

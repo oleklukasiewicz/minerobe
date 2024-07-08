@@ -9,8 +9,10 @@
     transition: var(--time);
     background-color: var(--color-theme-D1);
     padding-left: 8px;
+    padding-right: 8px;
     max-width: 100vw;
     border: 0px;
+    box-sizing: border-box;
     border-right: 2px solid var(--color-theme-D6);
     &:hover {
       background-color: var(--color-theme-D3);
@@ -22,8 +24,6 @@
   &.dense {
     max-height: 28px;
     input {
-      padding-left: 8px;
-      box-sizing: border-box;
       max-height: 28px;
       font-size: 8px;
     }
