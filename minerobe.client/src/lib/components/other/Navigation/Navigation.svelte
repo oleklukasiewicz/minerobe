@@ -48,7 +48,7 @@
         <Search
           dense={false}
           dark
-          style="width:100%;min-width:150px;max-width:450px;"
+          style="width:100%;max-width:400px;"
           placeholder={"Search outfits, sets and collections"}
           on:search={()=>navigate("explore")}
         />
@@ -99,7 +99,7 @@
     color: var(--color-theme);
     font-family: minecraft;
     height: 60px;
-    padding: 10px 10px 10px 10px;
+    padding: 10px 16px;
     box-sizing: border-box;
     display: flex;
     position: fixed;
@@ -120,7 +120,7 @@
       background-color: var(--color-theme-font);
       display: grid;
       grid-template-columns: 23% 1fr 23%;
-      gap: 12px;
+      gap: 16px;
     }
     #nav-title {
       display: table;
