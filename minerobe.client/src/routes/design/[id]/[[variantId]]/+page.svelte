@@ -360,7 +360,7 @@
           {/each}
         </div>
       {/if}
-      {#if isItemSet && $userSettings.linkedAccount != null}
+      {#if isItemSet && $userSettings?.linkedAccount != null}
         <SectionTitle label="Capes" placeholder={!loaded} />
         {#if capes.length == 0}
           <InfoLabel
