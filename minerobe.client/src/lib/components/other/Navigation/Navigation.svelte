@@ -48,7 +48,7 @@
         <Search
           dense={false}
           dark
-          style="width:100%;min-width:150px"
+          style="width:100%;min-width:150px;max-width:450px;"
           placeholder={"Search outfits, sets and collections"}
           on:search={()=>navigate("explore")}
         />
