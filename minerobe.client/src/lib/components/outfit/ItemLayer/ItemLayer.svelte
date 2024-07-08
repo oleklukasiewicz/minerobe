@@ -128,16 +128,18 @@
       </div>
     </span>
     {#if link}
-    <Button
-      icon={ExternalLinkIcon}
-      label={"Go to outfit page"}
-      type="tertiary"
-      href={link}
-      onlyIcon
-      size="large"
-      style="margin:10px;"
-    />
-  {/if}
+      <div>
+        <Button
+          icon={ExternalLinkIcon}
+          label={"Go to outfit page"}
+          type="tertiary"
+          href={link}
+          onlyIcon
+          size="large"
+          style="margin:10px;"
+        />
+      </div>
+    {/if}
   </div>
   {#if !readonly}
     <div class="actions">
