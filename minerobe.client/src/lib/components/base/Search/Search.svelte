@@ -8,6 +8,8 @@
   export let dense = true;
   export let style = "";
   export let clearable = true;
+  export let placeholder = "Search";
+  export let dark = false;
 
   const dispatch = createEventDispatcher();
 
@@ -30,11 +32,11 @@
   };
 </script>
 
-<div class="search" class:dense {style}>
+<div class="search" class:dense {style} class:dark>
   <input
     type="text"
     style="font-size: var(--size-font-caption);"
-    placeholder="Search"
+    {placeholder}
     bind:value
     class="search-input"
     on:input={onInput}
@@ -43,21 +45,22 @@
   {#if clearable && value}
     <Button
       onlyIcon
-      size="small"
       icon={CloseIcon}
       type="secondary"
+      size="auto"
+      {dark}
+      iconSize="small"
       label="Clear"
-      style="padding: 1px 3px;"
       on:click={onClear}
     />
   {/if}
   <Button
     on:click={onSearch}
     onlyIcon
-    size="small"
+    size="auto"
+    iconSize="small"
     icon={SearchIcon}
     label="Search"
-    style="padding: 1px 2px 1px 5px;"
   />
 </div>
 

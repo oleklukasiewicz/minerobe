@@ -6,8 +6,8 @@
   export let icon: string = null;
   export let type: "primary" | "secondary" | "tertiary" | "quaternary" =
     "primary";
-  export let size: "small" | "medium" | "large" = "medium";
-  export let iconSize: "small" | "medium" | "large" = size;
+  export let size: "small" | "medium" | "large" | "auto" = "medium";
+  export let iconSize: "small" | "medium" | "large" | "auto" = size;
   export let disabled: boolean = false;
   export let onlyIcon: boolean = false;
   export let textAlign: "left" | "center" | "right" = "center";
@@ -16,6 +16,7 @@
   export let target: "_blank" | "_self" = "_blank";
   export let fab: "static" | "dynamic" | "expanded" | null = null;
   export let flat = false;
+  export let dark = false;
 
   let component = null;
   let componentLabel = null;
@@ -47,6 +48,7 @@
   {style}
   {href}
   {target}
+  class:dark
   class:flat
   class:link={href != null}
   class:icon={onlyIcon && icon != null}

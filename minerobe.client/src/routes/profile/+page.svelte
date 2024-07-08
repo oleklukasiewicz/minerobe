@@ -36,6 +36,7 @@
   } from "$src/data/render";
   import { CurrentTexture, MinerobeUserProfile } from "$src/model/user";
   import type { OutfitPackage } from "$src/model/package";
+  import LinkAccountDialog from "$lib/components/dialog/LinkAccountDialog.svelte";
 
   const userProfile: Writable<MinerobeUserProfile> = writable(
     new MinerobeUserProfile()
@@ -170,10 +171,10 @@
           {/if} -->
         </div>
         <div class="actions">
-          <!-- {#if $userSettings?.linkedAccount?.name == null}
+          {#if $userProfile?.linkedAccount == null}
              <Button
               type="primary"
-              on:click={linkAccount}
+              on:click={() => (isAuthDialogOpen = true)}
               label="Link account"
             /> 
           {:else}
@@ -182,7 +183,7 @@
               label="Unlink account"
               type="tertiary"
             />
-          {/if} -->
+          {/if}
         </div>
       {/if}
     </div>
@@ -199,13 +200,8 @@
 </div>
 <Dialog bind:open={isAuthDialogOpen} label={$_("link_to_mc")}>
   <div class="auth-dialog">
-    <!-- <LinkAccountDialog
-      isAuthorized={!requireUserInteraction}
-      {profile}
-      {authCode}
-      {authUrl}
-      on:unlink={unlinkAccount}
-    /> -->
+    <LinkAccountDialog
+    />
   </div>
 </Dialog>
 <Dialog bind:open={isBaseTextureDialogOpen} label="Base texture">

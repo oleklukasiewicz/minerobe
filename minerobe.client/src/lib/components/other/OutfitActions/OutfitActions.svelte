@@ -61,67 +61,79 @@
       on:click={skinSet}
     />
   {/if}
-  <Button
-    on:click={downloadImage}
-    label={$_("download")}
-    onlyIcon={!$isMobileView && setMySkinAvailable}
-    icon={DownloadIcon}
-    disabled={outfitPackage.layers.length == 0 || loading}
-    size="large"
-  />
-  {#if $currentUser?.id != null}
+  <div>
     <Button
-      on:click={collectionDialog}
-      label={"Add to collection"}
-      onlyIcon={!$isMobileView}
+      on:click={downloadImage}
+      label={$_("download")}
+      onlyIcon={!$isMobileView && setMySkinAvailable}
+      icon={DownloadIcon}
       disabled={outfitPackage.layers.length == 0 || loading}
-      icon={ListIcon}
       size="large"
-      type="tertiary"
     />
+  </div>
+  {#if $currentUser?.id != null}
+    <div>
+      <Button
+        on:click={collectionDialog}
+        label={"Add to collection"}
+        onlyIcon={!$isMobileView}
+        disabled={outfitPackage.layers.length == 0 || loading}
+        icon={ListIcon}
+        size="large"
+        type="tertiary"
+      />
+    </div>
   {/if}
   {#if outfitPackage.publisher?.id != $currentUser?.id && !$isUserGuest && readonly}
     {#if isPackageInWardrobe == false || $isUserGuest}
-      <Button
-        on:click={addToWardrobe}
-        onlyIcon={!$isMobileView}
-        icon={HearthIcon}
-        disabled={loading || $isUserGuest}
-        size="large"
-        type="tertiary"
-        label="Add to wardrobe"
-      />
+      <div>
+        <Button
+          on:click={addToWardrobe}
+          onlyIcon={!$isMobileView}
+          icon={HearthIcon}
+          disabled={loading || $isUserGuest}
+          size="large"
+          type="tertiary"
+          label="Add to wardrobe"
+        />
+      </div>
     {:else}
-      <Button
-        on:click={removeFromWardrobe}
-        onlyIcon={!$isMobileView}
-        icon={HearthIcon}
-        disabled={loading || $isUserGuest}
-        size="large"
-        label="Remove from wardrobe"
-      />
+      <div>
+        <Button
+          on:click={removeFromWardrobe}
+          onlyIcon={!$isMobileView}
+          icon={HearthIcon}
+          disabled={loading || $isUserGuest}
+          size="large"
+          label="Remove from wardrobe"
+        />
+      </div>
     {/if}
   {/if}
   {#if outfitPackage.publisher.id == $currentUser?.id && !readonly}
     {#if outfitPackage.social.isShared}
-      <Button
-        on:click={shareDialog}
-        type="tertiary"
-        icon={MoreHorizontalIcon}
-        onlyIcon={!$isMobileView}
-        label={$_("shareinfo")}
-        size="large"
-      />
+      <div>
+        <Button
+          on:click={shareDialog}
+          type="tertiary"
+          icon={MoreHorizontalIcon}
+          onlyIcon={!$isMobileView}
+          label={$_("shareinfo")}
+          size="large"
+        />
+      </div>
     {:else}
-      <Button
-        on:click={sharePackage}
-        type="tertiary"
-        icon={CloudIcon}
-        disabled={outfitPackage.layers.length == 0 || loading}
-        onlyIcon={!$isMobileView}
-        label={$_("sharePackage")}
-        size="large"
-      />
+      <div>
+        <Button
+          on:click={sharePackage}
+          type="tertiary"
+          icon={CloudIcon}
+          disabled={outfitPackage.layers.length == 0 || loading}
+          onlyIcon={!$isMobileView}
+          label={$_("sharePackage")}
+          size="large"
+        />
+      </div>
     {/if}
   {/if}
 </div>

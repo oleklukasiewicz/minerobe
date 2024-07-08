@@ -25,12 +25,13 @@
     await getCurrentUser();
     setup();
   });
+  let navMobileMode = false;
 </script>
 
 {#if !$isLoading}
   <ToastController items={$currentToasts} />
-  <Navigation />
-  <div id="view">
+  <Navigation bind:navMobileMode />
+  <div id="view" class:mobile={navMobileMode}>
     <slot />
   </div>
 {/if}

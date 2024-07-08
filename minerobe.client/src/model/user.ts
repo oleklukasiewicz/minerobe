@@ -4,6 +4,7 @@ export class MinerobeUserProfile {
   user: MinerobeUser;
   settings: MinerobeUserSettings;
   social: PackageSocialData;
+  linkedAccount: any;
 }
 export class MinerobeUser {
   id: string;

@@ -27,6 +27,10 @@
   }
   &.top {
     min-width: 0px;
+    .header
+    {
+      padding-bottom: 0px;
+    }
     .items {
       flex-direction: row;
     }

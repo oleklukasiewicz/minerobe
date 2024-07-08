@@ -11,7 +11,8 @@
   }
   position: relative;
   .selected-item-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
     max-width: 100%;
     background-color: var(--color-theme-D1);
     border: 2px solid var(--color-theme-D6);

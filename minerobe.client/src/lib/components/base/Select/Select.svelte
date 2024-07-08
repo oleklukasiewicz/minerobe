@@ -150,7 +150,6 @@
     {#if clearable && selectedItemValue != null && (multiple ? selectedItemValue.length > 0 : true)}
       <Button
         onlyIcon
-        style="padding:1px 3px 4px;"
         icon={CloseIcon}
         type="secondary"
         size="small"
@@ -159,7 +158,6 @@
     {/if}
     <Button
       onlyIcon
-      style="padding:1px 3px 4px;"
       icon={opened ? ChevronUpIcon : ChevronDownIcon}
       type="primary"
       size="small"

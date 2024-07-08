@@ -39,12 +39,13 @@
   flex-direction: column;
 }
 .profile-cards {
-  display: flex;
-  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr ));
+  max-width: 100%;
   min-height: 200px;
-  padding: 10px;
   box-sizing: border-box;
   gap: 10px;
+  padding: 10px;
   flex-wrap: wrap;
 }
 
@@ -55,9 +56,8 @@
   grid-template-rows: auto 1fr auto;
   gap: 10px;
   padding: 10px;
-  min-width: 150px;
+  max-width: 500px;
   aspect-ratio: 5/8;
-  max-width: 15vw;
   background-color: var(--color-theme-D1);
   .main-data
   {

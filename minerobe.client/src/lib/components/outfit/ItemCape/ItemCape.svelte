@@ -1,7 +1,7 @@
 <script lang="ts">
-    
+    export let selected = false;
 </script>
-<div class="item-cape"></div>
+<div class="item-cape" class:selected></div>
 
 <style lang="scss">
   .item-cape {

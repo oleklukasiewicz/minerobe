@@ -375,17 +375,20 @@
         {/if}
         <div style="display:flex; gap:4px;">
           {#if $isMobileView}
-            <Button
-              icon={Sliders2Icon}
-              onlyIcon
-              size="small"
-              style="height:31.5px;padding:2px 4px"
-              label="Filters"
-              on:click={() => (showFilters = !showFilters)}
-            ></Button>{/if}
+            <div>
+              <Button
+                icon={Sliders2Icon}
+                onlyIcon
+                size="small"
+                style="height:31.5px;padding:2px 4px"
+                label="Filters"
+                on:click={() => (showFilters = !showFilters)}
+              ></Button>
+            </div>
+          {/if}
           <Search
             style="flex:1;"
-            dense={false}
+            dense={true}
             bind:value={filter.phrase}
             on:search={filterOutfits}
             on:clear={filterOutfits}

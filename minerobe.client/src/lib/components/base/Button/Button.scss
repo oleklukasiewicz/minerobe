@@ -2,12 +2,12 @@
   display: block;
   text-decoration: none;
   flex: 1;
-  transition: background-color var(--time), color var(--time), border-color var(--time);
+  transition: background-color var(--time), color var(--time),
+    border-color var(--time);
   box-sizing: border-box;
   user-select: none;
   cursor: pointer;
-  &.flat
-  {
+  &.flat {
     border: 0px solid transparent !important;
   }
   &.medium {
@@ -27,20 +27,6 @@
   }
   &.text-center {
     text-align: center;
-  }
-  .icon {
-    display: inline-block;
-    max-height: 16px;
-    width: 16px;
-    margin-right: 6px;
-    vertical-align: top;
-    transform: translate(-6px, -2px);
-  }
-  &.icon {
-    flex: 0;
-    .icon {
-      transform: translate(-2px, 0);
-    }
   }
   span {
     display: inline;
@@ -97,6 +83,13 @@
     background-color: var(--color-theme-D2);
     border-top: 2px solid var(--color-theme-D1);
     border-bottom: 2px solid var(--color-theme-D3);
+    &.dark {
+      background-color: var(--color-theme-D5);
+      border-top: 2px solid var(--color-theme-D4);
+      border-bottom: 2px solid var(--color-theme-D6);
+      color: var(--color-accent-font);
+    }
+
     &:hover {
       color: var(--color-accent-font);
       background-color: var(--color-hover);
@@ -165,8 +158,7 @@
       padding: 8px 14px 10px;
       font-size: 15px;
       &.with-label {
-        & span
-        {
+        & span {
           line-height: 30px;
           vertical-align: middle;
         }
@@ -232,6 +224,19 @@
       }
     }
   }
+  .icon {
+    display: inline-grid;
+  }
+  &.icon {
+    padding: 0px !important;
+    margin: 0px;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1 !important;
+    .icon {
+      flex: 1;
+    }
+  }
   &.fab {
     position: absolute;
     z-index: 5;
@@ -242,26 +247,20 @@
     gap: 2px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     &.fab-dynamic {
-      &.large
-      {
+      &.large {
         padding-left: 16px;
+        padding-right: 6px;
       }
-      &.small
-      {
-        padding:2px 3px 6px 7px;
-        span
-        {
+      &.small {
+        padding: 2px 3px 6px 7px;
+        span {
           padding-right: 4px;
         }
       }
       span {
         transition: var(--time) cubic-bezier(0.1, 0.9, 0.2, 1);
         display: inline-table;
-      }
-      &:hover {
-        span {
-          margin-right: 0;
-        }
+        margin-right: 8px;
       }
     }
   }
