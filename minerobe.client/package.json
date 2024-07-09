@@ -22,7 +22,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@sveltejs/adapter-node": "^5.0.1",
+		"@sveltejs/adapter-node": "^5.2.0",
 		"axios": "^1.7.2",
 		"color-diff": "^1.4.0",
 		"dotenv": "^16.4.5",
