@@ -24,12 +24,17 @@
       color: var(--color-theme-D4);
       margin: 4px 6px;
       user-select: none;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
     .selected-item {
       flex: 1;
-      overflow: hidden;
       flex-direction: row;
       border-right: 2px solid var(--color-theme-D6);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
       .selected-item-default {
         font-family: minecraft;
         background-color: var(--color-theme-D1);

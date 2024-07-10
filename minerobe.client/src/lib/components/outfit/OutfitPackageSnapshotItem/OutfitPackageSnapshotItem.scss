@@ -37,6 +37,11 @@
       display: flex;
       flex-direction: row;
     }
+    & > .data-row {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+    }
     padding: 8px;
     box-sizing: border-box;
     & .name {
@@ -69,9 +74,10 @@
   }
 }
 .above-limit {
-  min-width: 16px;
-  min-height: 16px;
-  margin: 2px 2px;
+  margin: 2px;
+  transform: translateY(1px);
+  box-sizing: border-box;
+  display: inline-table;
   font-family: minecraft;
 }
 .current-flag {

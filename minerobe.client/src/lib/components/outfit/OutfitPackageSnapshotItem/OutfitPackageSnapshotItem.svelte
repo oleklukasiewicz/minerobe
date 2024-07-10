@@ -95,7 +95,7 @@
         <div class="share-icon icon-small">{@html CloudIcon}</div>
       {/if}
     </div>
-    <div class="title-row">
+    <div class="data-row">
       <div style="flex:1;">
         <!-- {#if item.publisher.id != $currentUser?.id}
           <Label variant="unique" {dense}>{item.publisher.name}</Label>
@@ -107,20 +107,22 @@
         </div>
       </div>
       {#if multiple > 0}
-        {#each item.layers
-          .slice(0, !isSet ? multiple : 2)
-          .filter((x) => x != null && x[item.model].color != null) as layer (layer.id)}
-          <ColorBadge
-            colorName={layer[item.model].colorName}
-            color={ConvertToStringColor(COLORS[layer[item.model].colorName])}
-            on:click={() => updateRender(layer)}
-          ></ColorBadge>
-        {/each}
-        {#if aboveLimit > 0 && !isSet}
-          <span class="above-limit" style="margin-left:4px;">
-            +{aboveLimit}
-          </span>
-        {/if}
+        <div>
+          {#each item.layers
+            .slice(0, !isSet ? multiple : 2)
+            .filter((x) => x != null && x[item.model].color != null) as layer (layer.id)}
+            <ColorBadge
+              colorName={layer[item.model].colorName}
+              color={ConvertToStringColor(COLORS[layer[item.model].colorName])}
+              on:click={() => updateRender(layer)}
+            ></ColorBadge>
+          {/each}
+          {#if aboveLimit > 0 && !isSet}
+            <span class="above-limit">
+              +{aboveLimit}
+            </span>
+          {/if}
+        </div>
       {/if}
     </div>
   </div>

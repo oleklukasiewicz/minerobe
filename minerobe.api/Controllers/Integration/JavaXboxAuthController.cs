@@ -9,35 +9,33 @@ namespace minerobe.api.Controllers.Integration
     public class JavaXboxAuthController : Controller
     {
         private readonly IUserService _userService;
-        private readonly IJavaXboxAuthService _javaXboxAuthService;
-        public JavaXboxAuthController(IUserService userService,IJavaXboxAuthService javaXboxAuthService)
+        private readonly IJavaXboxAuthAltService _javaXboxAuthService;
+        public JavaXboxAuthController(IUserService userService, IJavaXboxAuthAltService javaXboxAuthService)
         {
             _userService = userService;
             _javaXboxAuthService = javaXboxAuthService;
         }
-        [HttpPost("Link")]
-        public async Task<IActionResult> Link()
+        
+        [HttpGet("Auth"),AllowAnonymous]
+        public IActionResult Auth()
         {
-            var user = _userService.GetFromExternalUser(User);
-            return Ok();
+            var url = _javaXboxAuthService.BeginFlow();
+            return Ok(url);
         }
-        [HttpGet("Status")]
-        public async Task<IActionResult> Status()
+        [HttpGet("Redirect"),AllowAnonymous]
+        public async Task<IActionResult> Redirect([FromQuery]string code, [FromQuery]string state)
         {
-            var user = _userService.GetFromExternalUser(User);
-            return Ok();
+            var response = await _javaXboxAuthService.Authenticate(code, state);
+            return Ok(response);
         }
-        [HttpPost("Unlink")]
-        public async Task<IActionResult> Unlink()
+        [HttpPut("Redirect"), AllowAnonymous]
+        public async Task<IActionResult> Redirect()
         {
-            var user = _userService.GetFromExternalUser(User);
-            return Ok();
+           var refreshToken = Request.Headers["msRefresh"];
+            var response = _javaXboxAuthService.Refresh(refreshToken);
+            return Ok(response);
         }
-        [HttpGet("Profile")]
-        public async Task<IActionResult> Profile()
-        {
-            var user = _userService.GetFromExternalUser(User);
-            return Ok();
-        }
+
+
     }
 }

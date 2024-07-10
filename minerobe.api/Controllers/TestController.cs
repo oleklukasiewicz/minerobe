@@ -8,21 +8,22 @@ namespace minerobe.api.Controllers
     [AllowAnonymous]
     public class TestController : Controller
     {
-        private readonly IJavaXboxAuthService _javaXboxAuthService;
-        public TestController(IJavaXboxAuthService javaXboxAuthService)
+        private readonly IJavaXboxAuthAltService _javaXboxAuthService;
+        public TestController(IJavaXboxAuthAltService javaXboxAuthService)
         {
             _javaXboxAuthService = javaXboxAuthService;
         }
         [HttpGet]
         public IActionResult Index()
         {
-           _javaXboxAuthService.Authenticate();
-            return Ok();
+          var url= _javaXboxAuthService.BeginFlow();
+            return Ok(url);
         }
         [HttpGet("Response")]
-        public IActionResult Response([FromQuery]string code,[FromQuery]string state)
+        public async Task<IActionResult> Response([FromQuery]string code,[FromQuery]string state)
         {
            
+            var response = await _javaXboxAuthService.Authenticate(code,state);
             return Ok();
         }
     }

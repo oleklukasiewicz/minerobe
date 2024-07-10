@@ -50,7 +50,7 @@
           dark
           style="width:100%;max-width:400px;"
           placeholder={"Search outfits, sets and collections"}
-          on:search={()=>navigate("explore")}
+          on:search={()=>navigate("/explore")}
         />
       </div>
       <div style="display:flex;gap:8px">
@@ -108,6 +108,8 @@
     width: 100%;
     &.mobile {
       bottom: 0;
+      height: 50px;
+      padding: 4px;
       top: auto;
       .items {
         grid-template-columns: 1fr 1fr 1fr 1fr;

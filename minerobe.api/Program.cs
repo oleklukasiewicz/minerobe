@@ -15,7 +15,9 @@ builder.Services.Configure<MicrosoftAuthConfig>(builder.Configuration.GetSection
 // Add services to the container.
 //integrations
 builder.Services.AddTransient<IJavaXboxAuthService, JavaXboxAuthService>();
+builder.Services.AddTransient<IJavaXboxAuthAltService, JavaXboxAuthAltService>();
 
+//entities and services
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<ISocialService, SocialService>();
 builder.Services.AddTransient<IPackageService, PackageService>();
