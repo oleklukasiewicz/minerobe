@@ -462,6 +462,7 @@
     );
     if (result) {
       showToast("Skin changed", HumanHandsUpIcon);
+      applyAnimations($itemPackage, CHANGE_TYPE.SKIN_SET,-1);
       userSettings.set(result);
     }
     isSkinSetting = false;
@@ -545,7 +546,7 @@
       <div class="item-name">
         <SectionTitle label={$_("name")} placeholder={!loaded} />
         <Placeholder style="height:46px;margin-bottom:16px;" {loaded}>
-          <div style="display:flex; flex-direction:row">
+          <div style="display:grid; grid-template-columns:1fr auto;gap:8px;">
             <input
               id="item-title"
               class:disabled={$itemPackage?.publisher.id != $currentUser?.id}

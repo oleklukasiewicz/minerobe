@@ -18,8 +18,7 @@
   }
   &.small {
     height: 28px;
-    &>span
-    {
+    & > span {
       transform: translateY(2px);
     }
   }
@@ -58,9 +57,12 @@
       border-bottom-color: var(--color-active-D1);
     }
     &.medium {
-      padding: 6px 12px 10px;
+      padding: 7px 12px 8px;
       &.icon {
         padding: 6px;
+      }
+      & > .icon {
+        transform: translateY(-1px);
       }
     }
     &.large {
@@ -79,10 +81,8 @@
     &.small {
       padding: 1px 6px 6px;
       &.icon {
-       
       }
-      &>span
-      {
+      & > span {
         transform: translateY(1px);
       }
     }
@@ -163,6 +163,12 @@
       padding: 8px 12px 7px;
       &.icon {
         padding: 6px;
+        & > .icon {
+          transform: translateY(0px);
+        }
+      }
+      & > .icon {
+        transform: translateY(-2px);
       }
     }
     &.large {

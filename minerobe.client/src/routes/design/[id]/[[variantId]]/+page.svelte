@@ -182,6 +182,7 @@
     );
     if (result) {
       showToast("Skin changed", HumanHandsUpIcon);
+      applyAnimations($localPackage, CHANGE_TYPE.SKIN_SET,-1);
       userSettings.set(result);
     }
     isSkinSetting = false;
