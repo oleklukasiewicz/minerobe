@@ -1,8 +1,6 @@
 <script lang="ts">
   import {
-    COLOR_TYPE,
     COLORS,
-    COLORS_ARRAY,
     OUTFIT_TYPE,
   } from "$src/data/consts";
   import { RenderProvider, RenderSnapshot } from "$src/data/render";
@@ -10,9 +8,6 @@
   import LoaderIcon from "$icons/loader.svg?raw";
   import { currentUser } from "$src/data/cache";
   import {
-    FindColorTitle,
-    FindColor,
-    ConvertColor,
     ConvertToStringColor,
   } from "$src/helpers/image/colorHelper";
   import OutfitPackageSnapshotRender from "$component/render/OutfitPackageSnapshotRender.svelte";

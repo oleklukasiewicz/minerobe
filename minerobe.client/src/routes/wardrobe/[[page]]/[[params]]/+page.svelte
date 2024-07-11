@@ -55,7 +55,6 @@
   import Select from "$lib/components/base/Select/Select.svelte";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import { ConvertToStringColor } from "$src/helpers/image/colorHelper";
-  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
 
   const defaultList = {
     items: [],
@@ -357,18 +356,21 @@
                 ? "primary"
                 : "quaternary"}
             >
-              <ColorBadge
-                small
-                colorName={item[itemText]}
-                color={ConvertToStringColor(item)}
-              />
               <div
-                style="text-overflow: ellipsis;display: inline-block;
-    white-space: nowrap;
-    overflow: hidden;
-    max-width: calc(100% - 60px);"
+                style="display: inline-flex;gap:4px;
+    max-width: calc(100% - 40px);transform:translateY(-5px)"
               >
-                {item[itemText]}
+                <ColorBadge
+                  small
+                  colorName={item[itemText]}
+                  color={ConvertToStringColor(item)}
+                />
+                <div
+                  style="white-space: nowrap;display:block;text-overflow: ellipsis;
+    overflow: hidden;"
+                >
+                  {item[itemText]}
+                </div>
               </div>
             </Button>
           </Select>

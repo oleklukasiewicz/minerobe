@@ -42,7 +42,7 @@
   const goToItemPage = (e) => {
     const item = e.detail.item;
     const variant = e.detail.layer as OutfitLayer;
-    navigateToOutfitPackage(item, variant.id);
+    navigateToOutfitPackage(item, variant?.id);
   };
 </script>
 

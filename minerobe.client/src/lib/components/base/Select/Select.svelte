@@ -88,9 +88,14 @@
     if (!opened) return;
     if ($isMobileView) {
       itemsContainer.style.minWidth = null;
+      itemsContainer.style.maxWidth = null;
     } else {
       menuWidth = menu?.offsetWidth;
-      if (itemsContainer) itemsContainer.style.minWidth = `${menuWidth}px`;
+      if (itemsContainer) 
+      {
+        itemsContainer.style.minWidth = `${menuWidth}px`;
+        itemsContainer.style.maxWidth = `${menuWidth}px`;
+      }
     }
   };
   let setSelectedItemValue = (value) => {
@@ -188,8 +193,9 @@
                 ? CheckBoxIcon
                 : CheckBoxOffIcon
               : null}
-            textAlign="left">{itemText == null ? item : item[itemText]}</Button
-          >
+            label={itemText == null ? item : item[itemText]}
+            textAlign="left"
+          ></Button>
         </slot>
       </div>
     {/each}

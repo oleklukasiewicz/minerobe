@@ -18,6 +18,10 @@
   }
   &.small {
     height: 28px;
+    &>span
+    {
+      transform: translateY(2px);
+    }
   }
   &.text-left {
     text-align: left;
@@ -29,8 +33,11 @@
     text-align: center;
   }
   span {
-    display: inline;
+    display: inline-block;
     vertical-align: top;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   &.primary {
     background-color: var(--color-accent);
@@ -70,9 +77,13 @@
       }
     }
     &.small {
-      padding: 2px 6px 6px;
+      padding: 1px 6px 6px;
       &.icon {
-        padding: 2px;
+       
+      }
+      &>span
+      {
+        transform: translateY(1px);
       }
     }
   }
@@ -133,10 +144,6 @@
     background-color: transparent;
     color: var(--color-accent);
     font-family: minecraft-simple;
-    & > span {
-      display: inline-block;
-      transform: translateY(-3px);
-    }
     &.alt-style {
       color: var(--color-accent-font);
     }
@@ -165,6 +172,8 @@
         & span {
           line-height: 30px;
           vertical-align: middle;
+          display: inline-block;
+          transform: translateY(-3px);
         }
         .icon {
           margin-right: 12px;
@@ -176,7 +185,7 @@
       }
     }
     &.small {
-      padding: 4px 6px 4px;
+      padding: 2px 6px 4px;
       &.icon {
         padding: 2px;
       }
@@ -222,7 +231,7 @@
       }
     }
     &.small {
-      padding: 4px 6px 4px;
+      padding: 2px 6px 4px;
       &.icon {
         padding: 2px;
       }

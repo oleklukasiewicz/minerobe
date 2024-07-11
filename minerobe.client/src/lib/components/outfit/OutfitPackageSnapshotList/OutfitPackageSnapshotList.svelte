@@ -63,6 +63,11 @@
     dispatch("innerselect", e.detail);
     selectOutfit(e.detail.item);
   };
+
+  const reRenderList = function (val) {
+    items = [ ...items ];
+  };
+  $: reRenderList(baseTexture);
 </script>
 
 <div
