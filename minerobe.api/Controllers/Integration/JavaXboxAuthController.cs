@@ -16,9 +16,11 @@ namespace minerobe.api.Controllers.Integration
             _javaXboxAuthService = javaXboxAuthService;
         }
         
-        [HttpGet("Auth"),AllowAnonymous]
+        [HttpGet("Auth")]
         public IActionResult Auth()
         {
+            var user = _userService.GetFromToken(User);
+
             var url = _javaXboxAuthService.BeginFlow();
             return Ok(url);
         }

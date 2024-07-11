@@ -72,6 +72,11 @@ namespace minerobe.api.Services
             
             return newUser;
         }
+        //alias
+        public async Task<MinerobeUser> GetFromToken(ClaimsPrincipal externalUser)
+        {
+            return await GetFromExternalUser(externalUser);
+        }
 
         private async Task<MinerobeUser> CreateNewUser(ClaimsPrincipal externalUser)
         {

@@ -15,7 +15,6 @@ namespace minerobe.api.Entity.Settings
         public Guid? CurrentTexturePackageId { get; set; }
         public TextureRenderConfig CurrentTexture { get; set; }
         public OutfitPackage? BaseTexture { get; set; }
-        public JavaXboxProfile? LinkedAccount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }
@@ -33,7 +32,6 @@ namespace minerobe.api.Entity.Settings
             builder.HasKey(x => x.Id);
             builder.Property(x => x.BaseTexture).StoreAsJSON();
             builder.Property(x => x.OwnerId).IsRequired();
-            builder.Property(x => x.LinkedAccount).StoreAsJSON();
             builder.Property(x=> x.CreatedAt).HasDefaultValueSql("getdate()");
             builder.Property(x=>x.CurrentTexture).StoreAsJSON();
         }

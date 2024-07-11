@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using minerobe.api.Database;
 
@@ -11,9 +12,11 @@ using minerobe.api.Database;
 namespace minerobe.api.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240711175101_linked-account-separation")]
+    partial class linkedaccountseparation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,51 +77,6 @@ namespace minerobe.api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OutfitPackageCollectionMatching", (string)null);
-                });
-
-            modelBuilder.Entity("minerobe.api.Entity.Integration.JavaXboxProfile", b =>
-                {
-                    b.Property<Guid>("AccountId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("newsequentialid()");
-
-                    b.Property<string>("Capes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("CurrentCapeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CurrentSkinId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Skins")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("AccountId");
-
-                    b.ToTable("JavaXboxProfile", "integration");
-                });
-
-            modelBuilder.Entity("minerobe.api.Entity.Integration.UserXboxAccountMatching", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("newsequentialid()");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("XboxUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserXboxAccountMatching", "integration");
                 });
 
             modelBuilder.Entity("minerobe.api.Entity.Package.OutfitLayer", b =>

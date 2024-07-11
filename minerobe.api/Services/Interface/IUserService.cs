@@ -12,5 +12,8 @@ namespace minerobe.api.Services.Interface
         Task<MinerobeUser> Login(ClaimsPrincipal externalUser);
         Task<MinerobeUser> GetFromExternalId(string externalId);
         Task<MinerobeUser> GetFromExternalUser(ClaimsPrincipal externalUser);
+
+        // alias
+        Task<MinerobeUser> GetFromToken(ClaimsPrincipal externalUser);
     }
 }

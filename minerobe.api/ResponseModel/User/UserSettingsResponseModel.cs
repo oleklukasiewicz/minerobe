@@ -13,7 +13,6 @@ namespace minerobe.api.ResponseModel.User
         public Guid? CurrentTexturePackageId { get; set; }
         public TextureRenderConfigResponseModel CurrentTexture { get; set; }
         public OutfitPackageListItemResponseModel? BaseTexture { get; set; }
-        public JavaXboxProfileResponseModel? LinkedAccount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }
@@ -29,7 +28,6 @@ namespace minerobe.api.ResponseModel.User
                 BaseTexture = entity.BaseTexture?.ToListItemResponseModel(),
                 CurrentTexturePackageId = entity.CurrentTexturePackageId,
                 CurrentTexture= entity.CurrentTexture?.ToResponseModel(),
-                LinkedAccount = entity.LinkedAccount?.ToResponseModel(),
                 
             };
         }
