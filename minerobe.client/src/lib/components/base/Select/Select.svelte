@@ -20,7 +20,7 @@
   export let itemText = null;
   export let itemValue = null;
   export let clearable = false;
-  export let autocomplete = false;
+  // export let autocomplete = false;
 
   export let sorter = function (a, b) {
     if (a < b) return -1;
@@ -33,12 +33,12 @@
     }
     return selectedItemValue == item;
   };
-  export let filter = function (item, value) {
-    if (itemText) {
-      return item[itemText].toLowerCase().includes(value.toLowerCase());
-    }
-    return item.toLowerCase().includes(value.toLowerCase());
-  };
+  // export let filter = function (item, value) {
+  //   if (itemText) {
+  //     return item[itemText].toLowerCase().includes(value.toLowerCase());
+  //   }
+  //   return item.toLowerCase().includes(value.toLowerCase());
+  // };
 
   let selectedItemValue = null;
   let menuWidth = 0;
