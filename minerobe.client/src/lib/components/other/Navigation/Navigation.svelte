@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { isMobileView, currentUser } from "$src/data/cache";
+  import { isMobileView, currentUser, isMobileNavigation } from "$src/data/cache";
   import { _ } from "svelte-i18n";
   import HomeIcon from "$src/icons/home.svg?raw";
   import SearchIcon from "$src/icons/search.svg?raw";
@@ -9,9 +9,6 @@
   import Search from "$lib/components/base/Search/Search.svelte";
   import { navigate, navigateToProfile } from "$src/helpers/other/navigationHelper";
   import { loginUser } from "$src/api/auth";
-  import { onMount } from "svelte";
-
-  export let navMobileMode = false;
 
   const profileAction = async () => {
     if ($currentUser) {
@@ -22,13 +19,6 @@
       isMenuOpened = false;
     }
   };
-  onMount(() => {
-    const matcher = window.matchMedia("(max-width: 568px)");
-    navMobileMode = matcher.matches;
-    matcher.addEventListener("change", (e) => {
-      navMobileMode = e.matches;
-    });
-  });
 
   let isMenuOpened = false;
 </script>
@@ -37,9 +27,9 @@
   id="nav"
   class:opened={isMenuOpened}
   class:closed={!isMenuOpened}
-  class:mobile={navMobileMode}
+  class:mobile={$isMobileNavigation}
 >
-  {#if !navMobileMode}
+  {#if !$isMobileNavigation}
     <div class="items">
       <a id="nav-title" href={"/"}>
         <img src="/texture/logo.png" alt="Logo" />
@@ -73,7 +63,7 @@
       </div>
     </div>{:else}
     <div class="items">
-      <NavigationItem icon={HomeIcon} minimal viewId="./" />
+      <NavigationItem icon={HomeIcon} minimal viewId="" />
       <NavigationItem icon={SearchIcon} minimal viewId="explore" />
       <NavigationItem
         icon={SubscriptionIcon}

@@ -6,6 +6,7 @@
   import { onMount } from "svelte";
   import {
     currentToasts,
+    isMobileNavigation,
     preSetup,
     setup,
     snapshotTemporaryNode,
@@ -25,13 +26,12 @@
     await getCurrentUser();
     setup();
   });
-  let navMobileMode = false;
 </script>
 
 {#if !$isLoading}
   <ToastController items={$currentToasts} />
-  <Navigation bind:navMobileMode />
-  <div id="view" class:mobile={navMobileMode}>
+  <Navigation />
+  <div id="view" class:mobile={$isMobileNavigation}>
     <slot />
   </div>
 {/if}

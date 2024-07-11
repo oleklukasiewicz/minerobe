@@ -133,6 +133,10 @@
     background-color: transparent;
     color: var(--color-accent);
     font-family: minecraft-simple;
+    & > span {
+      display: inline-block;
+      transform: translateY(-3px);
+    }
     &.alt-style {
       color: var(--color-accent-font);
     }
@@ -246,6 +250,9 @@
     overflow: hidden;
     gap: 2px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    &.nav-fab {
+      bottom: 62px;
+    }
     &.fab-dynamic {
       &.large {
         padding-left: 16px;

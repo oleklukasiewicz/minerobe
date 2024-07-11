@@ -15,6 +15,10 @@ import type { MinerobeUser } from "$src/model/user";
 const isMobileViewWritable: Writable<boolean> = writable(false);
 export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
 
+const isMobileNavigationWritable: Writable<boolean> = writable(false);
+export const isMobileNavigation: Readable<boolean> =
+  readonly(isMobileNavigationWritable);
+
 export const planksTexture: Readable<string> = readable(planksTextureRaw);
 export const defaultRenderer: Writable<string> = writable(null);
 
@@ -33,6 +37,12 @@ export const preSetup = function () {
   isMobileViewWritable.set(matcher.matches);
   matcher.addEventListener("change", (e) => {
     isMobileViewWritable.set(e.matches);
+  });
+
+  const matchernav = window.matchMedia("(max-width: 568px)");
+  isMobileNavigationWritable.set(matchernav.matches);
+  matchernav.addEventListener("change", (e) => {
+     isMobileNavigationWritable.set(e.matches);
   });
 };
 export const setup = function () {
