@@ -6,7 +6,9 @@ namespace minerobe.api.Entity.Integration
 {
     public class JavaXboxProfile
     {
-        public Guid AccountId { get; set; }
+        public Guid Id { get; set; }
+        public string AccountId { get; set; }
+        public string UUID { get; set; }
         public string Username { get; set; }
         public List<JavaXboxSkin> Skins { get; set; }
         public List<JavaXboxCape> Capes { get; set; }
@@ -29,8 +31,8 @@ namespace minerobe.api.Entity.Integration
     {         
         public void Configure(EntityTypeBuilder<JavaXboxProfile> builder)
         {
-            builder.Property(x => x.AccountId).ValueGeneratedOnAdd().HasDefaultValueSql("newsequentialid()");
-            builder.HasKey(x => x.AccountId);
+            builder.Property(x => x.Id).ValueGeneratedOnAdd().HasDefaultValueSql("newsequentialid()");
+            builder.HasKey(x => x.Id);
             builder.Property(x => x.Skins).StoreAsJSON();
             builder.Property(x => x.Capes).StoreAsJSON();
             builder.ToTable("JavaXboxProfile", "integration");

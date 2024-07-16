@@ -5,7 +5,6 @@ using minerobe.api.Services.Interface;
 namespace minerobe.api.Controllers.Integration
 {
     [Route("JavaXboxAuth")]
-    [AllowAnonymous]
     public class JavaXboxAuthController : Controller
     {
         private readonly IUserService _userService;
@@ -16,28 +15,21 @@ namespace minerobe.api.Controllers.Integration
             _javaXboxAuthService = javaXboxAuthService;
         }
         
-        [HttpGet("Auth")]
-        public IActionResult Auth()
+        [HttpGet("Link")]
+        public async Task<IActionResult> Auth()
         {
-            var user = _userService.GetFromToken(User);
+            var user = await _userService.GetFromToken(User);
 
-            _javaXboxAuthService.Authenticate();
-            return Ok();
+            var profile=await _javaXboxAuthService.LinkAccount(user);
+            return Ok(profile);
         }
-        [HttpGet("Redirect"),AllowAnonymous]
-        public async Task<IActionResult> Redirect([FromQuery]string code, [FromQuery]string state)
+        [HttpGet("Profile")]
+        public async Task<IActionResult> GetProfile()
         {
-            //var response = await _javaXboxAuthService.Authenticate(code, state);
-            return Ok();
-        }
-        [HttpPut("Redirect"), AllowAnonymous]
-        public async Task<IActionResult> Redirect()
-        {
-           var refreshToken = Request.Headers["msRefresh"];
-            //var response = _javaXboxAuthService.Refresh(refreshToken);
-            return Ok();
-        }
+            var user = await _userService.GetFromToken(User);
 
-
+            var profile=await _javaXboxAuthService.GetProfile(user);
+            return Ok(profile);
+        }
     }
 }

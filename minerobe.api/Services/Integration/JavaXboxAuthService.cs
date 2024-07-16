@@ -13,6 +13,10 @@ using MojangAPI;
 using MojangAPI.Model;
 using minerobe.api.Entity.Integration;
 using minerobe.api.Database;
+using CmlLib.Core.Auth;
+using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
 
 
 namespace minerobe.api.Services.Integration
@@ -22,30 +26,39 @@ namespace minerobe.api.Services.Integration
     {
         private readonly MicrosoftAuthConfig _config;
         private readonly BaseDbContext _ctx;
-        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options,BaseDbContext ctx)
+        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx)
         {
             _config = options.Value;
             _ctx = ctx;
         }
-        public async void Authenticate()
+        public async Task<JavaXboxProfile> GetProfile(MinerobeUser user)
         {
             var app = await MsalClientHelper.BuildApplicationWithCache(_config.ClientId);
+            var profileMatch = await _ctx.Set<UserXboxAccountMatching>().Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
+            if (profileMatch == null)
+                return null;
+            var integrationprofile = await _ctx.Set<JavaXboxProfile>().Where(x => x.Id == profileMatch.XboxUserId).FirstOrDefaultAsync();
 
             var loginHandler = JELoginHandlerBuilder.BuildDefault();
 
-            var authenticator = loginHandler.CreateAuthenticatorWithNewAccount(default);
-            authenticator.AddMsalOAuth(app, msal => msal.DeviceCode(deviceCode =>
-            {
-                Console.WriteLine(deviceCode.VerificationUrl);
-                Console.WriteLine(deviceCode.UserCode);
-                return Task.CompletedTask;
-            }));
-            authenticator.AddXboxAuthForJE(xbox => xbox.Basic());
-            authenticator.AddJEAuthenticator();
-            var session = await authenticator.ExecuteForLauncherAsync();
+            var accounts = loginHandler.AccountManager.GetAccounts();
+            var selectedAccount = accounts.GetAccount(integrationprofile.AccountId);
+            if (selectedAccount == null)
+                return null;
+
+            var session = await loginHandler.Authenticate(selectedAccount);
+            var profile = await GetProfileData(session,integrationprofile);
+
+            _ctx.Set<JavaXboxProfile>().Update(profile);
+            await _ctx.SaveChangesAsync();
+            return profile;
         }
         public async Task<JavaXboxProfile> LinkAccount(MinerobeUser user)
         {
+            var match = await _ctx.Set<UserXboxAccountMatching>().Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
+            if (match != null)
+                return null;
+
             var app = await MsalClientHelper.BuildApplicationWithCache(_config.ClientId);
             var loginHandler = JELoginHandlerBuilder.BuildDefault();
 
@@ -59,32 +72,91 @@ namespace minerobe.api.Services.Integration
             authenticator.AddXboxAuthForJE(xbox => xbox.Basic());
             authenticator.AddJEAuthenticator();
             var session = await authenticator.ExecuteForLauncherAsync();
-            //get user profgfile
-           Mojang mojang = new Mojang(new HttpClient());
-           var profile = await mojang.GetProfileUsingAccessToken(session.AccessToken);
-            //add support for capes
 
-            var integrationprofile = new JavaXboxProfile();
+            var selectedAccount = loginHandler.AccountManager.GetDefaultAccount();
 
-            if(profile?.UUID != null )
+            if (session.AccessToken != null)
             {
-                integrationprofile.AccountId = Guid.NewGuid();
-                integrationprofile.Username = profile.Name;
-                //add skins and capes
-
-                _ctx.Set<JavaXboxProfile>().Add(integrationprofile);
+                var profile = new JavaXboxProfile();
+                profile.Id = Guid.NewGuid();
+                profile.AccountId = selectedAccount.Identifier;
+                profile = await GetProfileData(session, profile);
 
                 var matchings = new UserXboxAccountMatching
                 {
                     Id = Guid.NewGuid(),
                     UserId = user.Id,
-                    XboxUserId = integrationprofile.AccountId
+                    XboxUserId = profile.Id
                 };
                 _ctx.Set<UserXboxAccountMatching>().Add(matchings);
+                _ctx.Set<JavaXboxProfile>().Add(profile);
+
                 await _ctx.SaveChangesAsync();
+                return profile;
             }
 
-            return integrationprofile;
+            return null;
+        }
+
+        private async Task<JavaXboxProfile> GetProfileData(MSession session, JavaXboxProfile profile)
+        {
+            Mojang mojang = new Mojang(new HttpClient());
+            var mojangData = await mojang.GetProfileUsingAccessToken(session.AccessToken);
+            if (mojangData?.UUID != null)
+            {
+
+                var url = "https://api.minecraftservices.com/minecraft/profile";
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.AccessToken);
+                var response = await client.GetAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
+                var json = JObject.Parse(content);
+
+                profile.UUID = mojangData.UUID;
+                profile.Username = mojangData.Name;
+                profile.Skins = new List<JavaXboxSkin>();
+                profile.Capes = new List<JavaXboxCape>();
+                if (json["skins"] != null)
+                {
+                    foreach (var skin in json["skins"])
+                    {
+                        var skinData = new JavaXboxSkin();
+                        //get texture from url
+                        var textureUrl = skin["url"].ToString();
+                        var textureResponse = await client.GetAsync(textureUrl);
+                        var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
+                        skinData.Texture = textureContent;
+                        skinData.Id = Guid.Parse(skin["id"].ToString());
+                        profile.Skins.Add(skinData);
+                        if(skin["state"].ToString().ToUpper()=="ACTIVE")
+                        {
+                            profile.CurrentSkinId = skinData.Id;
+                        }
+                    }
+                }
+                if (json["capes"] != null)
+                {
+                    foreach (var cape in json["capes"])
+                    {
+                        var capeData = new JavaXboxCape();
+                        //get texture from url
+                        var textureUrl = cape["url"].ToString();
+                        var textureResponse = await client.GetAsync(textureUrl);
+                        var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
+                        capeData.Texture = textureContent;
+                        capeData.Id =Guid.Parse(cape["id"].ToString());
+                        capeData.Name = cape["alias"].ToString();
+                        profile.Capes.Add(capeData);
+                        if (cape["state"].ToString().ToUpper() == "ACTIVE")
+                        {
+                            profile.CurrentCapeId = capeData.Id;
+                        }
+                    }
+                }
+
+            }
+            return profile;
         }
     }
+
 }

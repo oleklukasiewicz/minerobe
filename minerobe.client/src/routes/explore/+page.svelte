@@ -7,14 +7,16 @@
   import { onMount } from "svelte";
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import Select from "$lib/components/base/Select/Select.svelte";
+  import { GetAccount, LinkAccount } from "$src/api/integration/minecraft";
 
   onMount(() => {});
   const compare = (a, b) => {
     return a?.value == b;
   };
   let selected = "all";
-  const onSelect = (e) => {
+  const onSelect = async (e) => {
     selected = e.detail.value;
+     await GetAccount();
   };
 </script>
 

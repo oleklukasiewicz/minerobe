@@ -4,7 +4,7 @@ namespace minerobe.api.ResponseModel.Integration.JavaXbox
 {
     public class JavaXboxProfileSimpleResponseModel
     {
-        public Guid AccountId { get; set; }
+        public Guid Id { get; set; }
         public string Username { get; set; }
         public List<JavaXboxCape> Capes { get; set; }
         public Guid? CurrentCapeId { get; set; }
@@ -15,7 +15,7 @@ namespace minerobe.api.ResponseModel.Integration.JavaXbox
         {
             return new JavaXboxProfileSimpleResponseModel
             {
-                AccountId=entity.AccountId,
+                Id = entity.Id,
                 Username = entity.Username,
                 Capes = entity.Capes,
                 CurrentCapeId = entity.CurrentCapeId,
