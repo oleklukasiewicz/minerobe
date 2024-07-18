@@ -17,6 +17,7 @@ using CmlLib.Core.Auth;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
+using System.Text;
 
 
 namespace minerobe.api.Services.Integration
@@ -47,7 +48,7 @@ namespace minerobe.api.Services.Integration
                 return null;
 
             var session = await loginHandler.Authenticate(selectedAccount);
-            var profile = await GetProfileData(session,integrationprofile);
+            var profile = await GetProfileData(session, integrationprofile);
 
             _ctx.Set<JavaXboxProfile>().Update(profile);
             await _ctx.SaveChangesAsync();
@@ -55,10 +56,7 @@ namespace minerobe.api.Services.Integration
         }
         public async Task<JavaXboxProfile> LinkAccount(MinerobeUser user)
         {
-            var match = await _ctx.Set<UserXboxAccountMatching>().Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
-            if (match != null)
-                return null;
-
+            await UnLinkAccount(user);
             var app = await MsalClientHelper.BuildApplicationWithCache(_config.ClientId);
             var loginHandler = JELoginHandlerBuilder.BuildDefault();
 
@@ -97,7 +95,39 @@ namespace minerobe.api.Services.Integration
 
             return null;
         }
+        public async Task<bool> UnLinkAccount(MinerobeUser user)
+        {
+            var match = await _ctx.Set<UserXboxAccountMatching>().Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
+            JavaXboxProfile profile= null;
+            if (match == null)
+                return false;
+            profile = await _ctx.Set<JavaXboxProfile>().Where(x => x.Id == match.XboxUserId).FirstOrDefaultAsync();
 
+            var app = await MsalClientHelper.BuildApplicationWithCache(_config.ClientId);
+            var loginHandler = JELoginHandlerBuilder.BuildDefault();
+            var accounts = loginHandler.AccountManager.GetAccounts();
+
+            var selectedAccount = accounts.GetAccount(profile.AccountId);
+            if (selectedAccount == null)
+                return false;
+
+            await loginHandler.Signout(selectedAccount);
+
+            if (match != null)
+                _ctx.Set<UserXboxAccountMatching>().Remove(match);
+            if (profile != null)
+                _ctx.Set<JavaXboxProfile>().Remove(profile);
+            await _ctx.SaveChangesAsync();
+            return true;
+        }
+        public async Task<string> GetUserCurrentSkin(Guid userId)
+        {
+            var settings = await _ctx.UserSettings.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
+            if (settings == null)
+                return null;
+            var texture = settings.CurrentTexture.Texture;
+            return Encoding.UTF8.GetString(texture);
+        }
         private async Task<JavaXboxProfile> GetProfileData(MSession session, JavaXboxProfile profile)
         {
             Mojang mojang = new Mojang(new HttpClient());
@@ -128,7 +158,7 @@ namespace minerobe.api.Services.Integration
                         skinData.Texture = textureContent;
                         skinData.Id = Guid.Parse(skin["id"].ToString());
                         profile.Skins.Add(skinData);
-                        if(skin["state"].ToString().ToUpper()=="ACTIVE")
+                        if (skin["state"].ToString().ToUpper() == "ACTIVE")
                         {
                             profile.CurrentSkinId = skinData.Id;
                         }
@@ -144,7 +174,7 @@ namespace minerobe.api.Services.Integration
                         var textureResponse = await client.GetAsync(textureUrl);
                         var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
                         capeData.Texture = textureContent;
-                        capeData.Id =Guid.Parse(cape["id"].ToString());
+                        capeData.Id = Guid.Parse(cape["id"].ToString());
                         capeData.Name = cape["alias"].ToString();
                         profile.Capes.Add(capeData);
                         if (cape["state"].ToString().ToUpper() == "ACTIVE")

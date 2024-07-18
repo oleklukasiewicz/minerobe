@@ -7,5 +7,7 @@ namespace minerobe.api.Services.Interface
     {
         Task<JavaXboxProfile> GetProfile(MinerobeUser user);
         Task<JavaXboxProfile> LinkAccount(MinerobeUser user);
+        Task<string> GetUserCurrentSkin(Guid userId);
+        Task<bool> UnLinkAccount(MinerobeUser user);
     }
 }

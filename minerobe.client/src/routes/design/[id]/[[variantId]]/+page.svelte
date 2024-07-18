@@ -67,10 +67,11 @@
     type MinerobeUserSettingsSimple,
   } from "$src/model/user.js";
   import type { OutfitLayer, OutfitPackage } from "$src/model/package.js";
-  import Expander from "$lib/components/base/Expander/Expander.svelte";
   import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
+  import { GetAccount } from "$src/api/integration/minecraft.js";
 
   export let data;
+  const integrationSettings = writable(null);
   const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
   const localPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -112,7 +113,9 @@
       if (state == APP_STATE.READY) {
         const settings = await FetchSettings();
         userSettings.set(settings);
-        capes = settings.linkedAccount?.capes || [];
+
+        const integrationProfile = await GetAccount();
+        integrationSettings.set(integrationProfile);
       }
       localPackage.set(outfitPackage);
       isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
@@ -182,7 +185,7 @@
     );
     if (result) {
       showToast("Skin changed", HumanHandsUpIcon);
-      applyAnimations($localPackage, CHANGE_TYPE.SKIN_SET,-1);
+      applyAnimations($localPackage, CHANGE_TYPE.SKIN_SET, -1);
       userSettings.set(result);
     }
     isSkinSetting = false;
@@ -361,9 +364,9 @@
           {/each}
         </div>
       {/if}
-      {#if isItemSet && $userSettings?.linkedAccount != null}
+      {#if isItemSet && $integrationSettings != null}
         <SectionTitle label="Capes" placeholder={!loaded} />
-        {#if capes.length == 0}
+        {#if $integrationSettings.capes.length == 0}
           <InfoLabel
             closeable={false}
             type="info"
@@ -371,8 +374,8 @@
           />
         {:else}
           <div style="display:flex;flex-direaction:row;flex-wrap:wrap;gap:8px;">
-            {#each Array(3) as _}
-              <ItemCape />
+            {#each $integrationSettings.capes as cape}
+              <ItemCape item={cape}/>
             {/each}
           </div>
         {/if}

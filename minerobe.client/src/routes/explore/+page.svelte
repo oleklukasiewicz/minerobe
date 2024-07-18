@@ -16,7 +16,7 @@
   let selected = "all";
   const onSelect = async (e) => {
     selected = e.detail.value;
-     await GetAccount();
+     await LinkAccount();
   };
 </script>
 

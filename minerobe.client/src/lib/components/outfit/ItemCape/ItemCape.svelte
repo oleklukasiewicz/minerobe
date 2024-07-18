@@ -1,7 +1,26 @@
 <script lang="ts">
-    export let selected = false;
+  import { GetImageArea } from "$src/helpers/image/imageDataHelpers";
+  import { onMount } from "svelte";
+
+  export let selected = false;
+  export let item;
+
+  let texture = "";
+  onMount(async () => {
+    texture = await GetImageArea(
+      "data:image/png;base64," + item.texture,
+      1,
+      0,
+      10,
+      10
+    );
+  });
 </script>
-<div class="item-cape" class:selected></div>
+
+<div class="item-cape" class:selected title={item.name}>
+  <!-- svelte-ignore a11y-missing-attribute -->
+  <img src={texture} />
+</div>
 
 <style lang="scss">
   .item-cape {
@@ -13,6 +32,9 @@
     border: 4px solid var(--color-theme-D2);
     transition: var(--time);
     display: flex;
+    & > img {
+      image-rendering: pixelated;
+    }
     &:hover {
       border-color: var(--color-accent);
       background-color: var(--color-accent-L1);

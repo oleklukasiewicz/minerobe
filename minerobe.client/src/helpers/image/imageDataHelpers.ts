@@ -189,3 +189,30 @@ export const MergePackageLayers = async function (
   let merged = await MergeLayersToImage(layers, config);
   return merged;
 };
+export const GetImageArea = function (
+  base64Image,
+  x,
+  y,
+  width,
+  height
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(img, x, y, width, height, 0, 0, width, height);
+        resolve(canvas.toDataURL());
+      } else {
+        reject(new Error("Failed to get 2D context"));
+      }
+    };
+    img.onerror = (error) => {
+      reject(error);
+    };
+    img.src = base64Image;
+  });
+};
