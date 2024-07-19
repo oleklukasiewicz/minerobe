@@ -37,10 +37,14 @@
   import { CurrentTexture, MinerobeUserProfile } from "$src/model/user";
   import type { OutfitPackage } from "$src/model/package";
   import LinkAccountDialog from "$lib/components/dialog/LinkAccountDialog.svelte";
+  import { GetAccount, GetFullAccount } from "$src/api/integration/minecraft";
+  import { GetImageArea } from "$src/helpers/image/imageDataHelpers";
 
   const userProfile: Writable<MinerobeUserProfile> = writable(
     new MinerobeUserProfile()
   );
+  const minecraftAccount = writable(null);
+
   const baseTexture: Readable<OutfitPackage> = derived(
     userProfile,
     ($userProfile) => $userProfile?.settings?.baseTexture
@@ -64,6 +68,11 @@
       providers = await CreateDefaultRenderProvider($defaultRenderer);
       var profile = await GetUserProfile($currentUser?.id);
       userProfile.set(profile);
+      if (profile.settings.integrations.includes("minecraft")) {
+        var account = await GetFullAccount();
+        minecraftAccount.set(account);
+      }
+
       loading = false;
     });
   });
@@ -162,21 +171,27 @@
       {#if !loading}
         <div class="main-data">
           <!-- svelte-ignore a11y-missing-attribute -->
-          <!-- {#if $userSettings?.linkedAccount?.name != null}
-            <img src={profilePhoto} style="min-width: calc(100% - 80px);" />
-            <span class="mc-font">{$userSettings.linkedAccount.name}</span>
+
+          {#if $minecraftAccount.skin != null}
+            {#await GetImageArea($minecraftAccount.skin.texture, 8, 8, 8, 8) then texture}
+              <img
+                src={texture}
+                style="min-width: calc(100% - 80px); image-rendering: pixelated;"
+              />
+            {/await}
+            <span class="mc-font">{$minecraftAccount.username}</span>
           {:else}
-            <span class="icon-big">{@html AvatarIcon}</span>
+            <!-- <span class="icon-big">{@html AvatarIcon}</span> -->
             <span class="mc-font">Not linked</span>
-          {/if} -->
+          {/if}
         </div>
         <div class="actions">
-          {#if $userProfile?.linkedAccount == null}
-             <Button
+          {#if $minecraftAccount == null}
+            <Button
               type="primary"
               on:click={() => (isAuthDialogOpen = true)}
               label="Link account"
-            /> 
+            />
           {:else}
             <Button
               on:click={() => (isAuthDialogOpen = true)}
@@ -200,8 +215,7 @@
 </div>
 <Dialog bind:open={isAuthDialogOpen} label={$_("link_to_mc")}>
   <div class="auth-dialog">
-    <LinkAccountDialog
-    />
+    <LinkAccountDialog />
   </div>
 </Dialog>
 <Dialog bind:open={isBaseTextureDialogOpen} label="Base texture">

@@ -4,7 +4,6 @@ export class MinerobeUserProfile {
   user: MinerobeUser;
   settings: MinerobeUserSettings;
   social: PackageSocialData;
-  linkedAccount: any;
 }
 export class MinerobeUser {
   id: string;
@@ -23,7 +22,7 @@ export class MinerobeUserSettings {
   currentTexture: CurrentTexture;
   currentTexturePackageId: string;
   baseTexture: OutfitPackage;
-  linkedAccount: any;
+  integrations: string[];
   theme: string;
 }
 export class CurrentTexture {
@@ -36,7 +35,6 @@ export class MinerobeUserSettingsSimple {
   ownerId: string;
   currentTexturePackageId: string;
   baseTexture: OutfitPackage;
-  linkedAccount: any;
 }
 export class CurrentTextureConfig {
   texture: string;

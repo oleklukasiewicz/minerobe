@@ -152,6 +152,7 @@ namespace minerobe.api.Services.Integration
                 profile.Username = mojangData.Name;
                 profile.Skins = new List<JavaXboxSkin>();
                 profile.Capes = new List<JavaXboxCape>();
+                var dataClient = new HttpClient();
                 if (json["skins"] != null)
                 {
                     foreach (var skin in json["skins"])
@@ -159,9 +160,9 @@ namespace minerobe.api.Services.Integration
                         var skinData = new JavaXboxSkin();
                         //get texture from url
                         var textureUrl = skin["url"].ToString();
-                        var textureResponse = await client.GetAsync(textureUrl);
+                        var textureResponse = await dataClient.GetAsync(textureUrl);
                         var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
-                        skinData.Texture = textureContent;
+                        skinData.Texture = "data:image/png;base64,"+ Convert.ToBase64String(textureContent);
                         skinData.Id = Guid.Parse(skin["id"].ToString());
                         profile.Skins.Add(skinData);
                         if (skin["state"].ToString().ToUpper() == "ACTIVE")
@@ -179,7 +180,7 @@ namespace minerobe.api.Services.Integration
                         var textureUrl = cape["url"].ToString();
                         var textureResponse = await client.GetAsync(textureUrl);
                         var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
-                        capeData.Texture = textureContent;
+                        capeData.Texture = "data:image/png;base64,"+ Convert.ToBase64String(textureContent);
                         capeData.Id = Guid.Parse(cape["id"].ToString());
                         capeData.Name = cape["alias"].ToString();
                         profile.Capes.Add(capeData);

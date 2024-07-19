@@ -8,3 +8,7 @@ export const GetAccount = async function () {
     const res = await GetRequest("/api/JavaXboxAuth/Profile" );
     return res;
 }
+export const GetFullAccount = async function () {
+    const res = await GetRequest("/api/JavaXboxAuth/FullProfile" );
+    return res;
+}

@@ -8,7 +8,7 @@
   let texture = "";
   onMount(async () => {
     texture = await GetImageArea(
-      "data:image/png;base64," + item.texture,
+      item.texture,
       1,
       0,
       10,

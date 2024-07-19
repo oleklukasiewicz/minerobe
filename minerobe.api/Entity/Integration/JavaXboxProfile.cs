@@ -18,13 +18,13 @@ namespace minerobe.api.Entity.Integration
     public class JavaXboxCape
     {
         public Guid? Id { get; set; }
-        public byte[] Texture { get; set; }
+        public string Texture { get; set; }
         public string Name { get; set; }
     }
     public class JavaXboxSkin
     {
         public Guid? Id { get; set; }
-        public byte[] Texture { get; set; }
+        public string Texture { get; set; }
         public string Name { get; set; }
     }
     public class JavaXboxProfileConfig: IEntityTypeConfiguration<JavaXboxProfile>

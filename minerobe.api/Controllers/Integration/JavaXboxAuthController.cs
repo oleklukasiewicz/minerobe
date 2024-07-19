@@ -32,6 +32,14 @@ namespace minerobe.api.Controllers.Integration
             var profile = await _javaXboxAuthService.GetProfile(user);
             return Ok(profile.ToSimpleResponseModel());
         }
+        [HttpGet("FullProfile")]
+        public async Task<IActionResult> GetFullProfile()
+        {
+            var user = await _userService.GetFromToken(User);
+
+            var profile = await _javaXboxAuthService.GetProfile(user);
+            return Ok(profile.ToResponseModel());
+        }
         [HttpGet("Unlink")]
         public async Task<IActionResult> Unlink()
         {
