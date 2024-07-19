@@ -10,14 +10,14 @@ namespace minerobe.api.Services
     {
         private readonly BaseDbContext _context;
         private readonly IPackageService _packageService;
-        public UserSettingsService(BaseDbContext context,IPackageService packageService)
+        public UserSettingsService(BaseDbContext context, IPackageService packageService)
         {
             _context = context;
             _packageService = packageService;
         }
         public async Task<UserSettings> GetSettings(Guid userId)
         {
-            var settings= await _context.UserSettings.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
+            var settings = await _context.UserSettings.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
             var defaultPackage = new OutfitPackage()
             {
                 Model = ModelType.Steve,
@@ -41,7 +41,7 @@ namespace minerobe.api.Services
                 await _context.SaveChangesAsync();
             }
 
-            if(settings.BaseTexture == null)
+            if (settings.BaseTexture == null)
             {
                 settings.BaseTexture = defaultPackage;
                 _context.UserSettings.Update(settings);
@@ -57,7 +57,7 @@ namespace minerobe.api.Services
 
             settings.Theme = theme;
             settings.ModifiedAt = DateTime.Now;
-            
+
             _context.UserSettings.Update(settings);
             await _context.SaveChangesAsync();
             return await GetSettings(userId);
@@ -75,7 +75,7 @@ namespace minerobe.api.Services
             await _context.SaveChangesAsync();
             return await GetSettings(userId);
         }
-        public async Task<UserSettings> UpdateCurrentTexture(Guid userId, Guid packageId , TextureRenderConfig textureConfig)
+        public async Task<UserSettings> UpdateCurrentTexture(Guid userId, Guid packageId, TextureRenderConfig textureConfig)
         {
             var settings = await _context.UserSettings.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
             if (settings == null)
@@ -83,14 +83,14 @@ namespace minerobe.api.Services
             var package = await _packageService.GetById(packageId);
             if (package == null)
                 return null;
-            
+
 
             settings.CurrentTexture = textureConfig;
 
             settings.CurrentTexturePackageId = packageId;
             settings.ModifiedAt = DateTime.Now;
 
-            _context.UserSettings.Update(settings);            
+            _context.UserSettings.Update(settings);
             await _context.SaveChangesAsync();
             return await GetSettings(userId);
         }
@@ -101,6 +101,8 @@ namespace minerobe.api.Services
             if (settings == null)
                 return null;
 
+            if (settings.Integrations == null)
+                settings.Integrations = new List<string>();
             settings.Integrations.Add(integrationId);
             settings.ModifiedAt = DateTime.Now;
 
@@ -113,8 +115,8 @@ namespace minerobe.api.Services
             var settings = await _context.UserSettings.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
             if (settings == null)
                 return null;
-
-            settings.Integrations.Remove(integrationId);
+            if (settings.Integrations != null)
+                settings.Integrations.Remove(integrationId);
             settings.ModifiedAt = DateTime.Now;
 
             _context.UserSettings.Update(settings);

@@ -35,7 +35,7 @@ namespace minerobe.api.Entity.Settings
             builder.Property(x => x.OwnerId).IsRequired();
             builder.Property(x=> x.CreatedAt).HasDefaultValueSql("getdate()");
             builder.Property(x=>x.CurrentTexture).StoreAsJSON();
-            builder.Property(x=>x.Integrations).StoreAsJSON().HasDefaultValue("[]");
+            builder.Property(x=>x.Integrations).StoreAsJSON();
         }
     }
 }

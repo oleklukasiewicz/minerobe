@@ -28,7 +28,7 @@ namespace minerobe.api.Services.Integration
         private readonly MicrosoftAuthConfig _config;
         private readonly IUserSettingsService _userSettingsService;
         private readonly BaseDbContext _ctx;
-        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx,, IUserSettingsService userSettingsService)
+        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx, IUserSettingsService userSettingsService)
         {
             _config = options.Value;
             _ctx = ctx;

@@ -114,8 +114,10 @@
         const settings = await FetchSettings();
         userSettings.set(settings);
 
-        const integrationProfile = await GetAccount();
-        integrationSettings.set(integrationProfile);
+        if (settings.integrations.includes("minecraft")) {
+          const integrationProfile = await GetAccount();
+          integrationSettings.set(integrationProfile);
+        }
       }
       localPackage.set(outfitPackage);
       isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
@@ -375,7 +377,7 @@
         {:else}
           <div style="display:flex;flex-direaction:row;flex-wrap:wrap;gap:8px;">
             {#each $integrationSettings.capes as cape}
-              <ItemCape item={cape}/>
+              <ItemCape item={cape} />
             {/each}
           </div>
         {/if}
