@@ -13,8 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<MicrosoftAuthConfig>(builder.Configuration.GetSection("MicrosoftAuth"));
 
 // Add services to the container.
-//integrations
-builder.Services.AddTransient<IJavaXboxAuthService, JavaXboxAuthService>();
 
 //entities and services
 builder.Services.AddTransient<IUserService, UserService>();
@@ -25,6 +23,8 @@ builder.Services.AddTransient<IWardrobeService, WardrobeService>();
 builder.Services.AddTransient<IUserSettingsService, UserSettingsService>();
 builder.Services.AddTransient<ILandingViewService, LandingViewService>();
 
+//integrations
+builder.Services.AddTransient<IJavaXboxAuthService, JavaXboxAuthService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>

@@ -17,6 +17,7 @@ namespace minerobe.api.Entity.Settings
         public OutfitPackage? BaseTexture { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
+        public List<string> Integrations { get; set; }
     }
     public class TextureRenderConfig 
     {
@@ -34,6 +35,7 @@ namespace minerobe.api.Entity.Settings
             builder.Property(x => x.OwnerId).IsRequired();
             builder.Property(x=> x.CreatedAt).HasDefaultValueSql("getdate()");
             builder.Property(x=>x.CurrentTexture).StoreAsJSON();
+            builder.Property(x=>x.Integrations).StoreAsJSON().HasDefaultValue("[]");
         }
     }
 }

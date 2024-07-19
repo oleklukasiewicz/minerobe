@@ -95,5 +95,31 @@ namespace minerobe.api.Services
             return await GetSettings(userId);
         }
 
+        public async Task<UserSettings> AddIntegration(Guid userId, string integrationId)
+        {
+            var settings = await _context.UserSettings.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
+            if (settings == null)
+                return null;
+
+            settings.Integrations.Add(integrationId);
+            settings.ModifiedAt = DateTime.Now;
+
+            _context.UserSettings.Update(settings);
+            await _context.SaveChangesAsync();
+            return await GetSettings(userId);
+        }
+        public async Task<UserSettings> RemoveIntegration(Guid userId, string integrationId)
+        {
+            var settings = await _context.UserSettings.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
+            if (settings == null)
+                return null;
+
+            settings.Integrations.Remove(integrationId);
+            settings.ModifiedAt = DateTime.Now;
+
+            _context.UserSettings.Update(settings);
+            await _context.SaveChangesAsync();
+            return await GetSettings(userId);
+        }
     }
 }

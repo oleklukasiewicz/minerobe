@@ -26,11 +26,13 @@ namespace minerobe.api.Services.Integration
     public class JavaXboxAuthService : IJavaXboxAuthService
     {
         private readonly MicrosoftAuthConfig _config;
+        private readonly IUserSettingsService _userSettingsService;
         private readonly BaseDbContext _ctx;
-        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx)
+        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx,, IUserSettingsService userSettingsService)
         {
             _config = options.Value;
             _ctx = ctx;
+            _userSettingsService = userSettingsService;
         }
         public async Task<JavaXboxProfile> GetProfile(MinerobeUser user)
         {
@@ -90,6 +92,9 @@ namespace minerobe.api.Services.Integration
                 _ctx.Set<JavaXboxProfile>().Add(profile);
 
                 await _ctx.SaveChangesAsync();
+               await  _userSettingsService.AddIntegration(user.Id,"minecraft");
+
+
                 return profile;
             }
 
@@ -118,6 +123,7 @@ namespace minerobe.api.Services.Integration
             if (profile != null)
                 _ctx.Set<JavaXboxProfile>().Remove(profile);
             await _ctx.SaveChangesAsync();
+            await  _userSettingsService.RemoveIntegration(user.Id,"minecraft");
             return true;
         }
         public async Task<string> GetUserCurrentSkin(Guid userId)

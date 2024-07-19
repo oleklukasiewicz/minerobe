@@ -15,6 +15,7 @@ namespace minerobe.api.ResponseModel.User
         public OutfitPackageListItemResponseModel? BaseTexture { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
+        public List<string> Integrations { get; set; }
     }
     public static class UserSettingsResponseModelExtensions
     {
@@ -28,6 +29,9 @@ namespace minerobe.api.ResponseModel.User
                 BaseTexture = entity.BaseTexture?.ToListItemResponseModel(),
                 CurrentTexturePackageId = entity.CurrentTexturePackageId,
                 CurrentTexture= entity.CurrentTexture?.ToResponseModel(),
+                CreatedAt = entity.CreatedAt,
+                ModifiedAt = entity.ModifiedAt,
+                Integrations = entity.Integrations,
                 
             };
         }
