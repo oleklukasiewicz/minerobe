@@ -18,11 +18,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using System.Text;
-
-
 namespace minerobe.api.Services.Integration
 {
-
     public class JavaXboxAuthService : IJavaXboxAuthService
     {
         private readonly MicrosoftAuthConfig _config;
@@ -36,20 +33,11 @@ namespace minerobe.api.Services.Integration
         }
         public async Task<JavaXboxProfile> GetProfile(MinerobeUser user)
         {
-            var app = await MsalClientHelper.BuildApplicationWithCache(_config.ClientId);
             var profileMatch = await _ctx.Set<UserXboxAccountMatching>().Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
             if (profileMatch == null)
                 return null;
             var integrationprofile = await _ctx.Set<JavaXboxProfile>().Where(x => x.Id == profileMatch.XboxUserId).FirstOrDefaultAsync();
-
-            var loginHandler = JELoginHandlerBuilder.BuildDefault();
-
-            var accounts = loginHandler.AccountManager.GetAccounts();
-            var selectedAccount = accounts.GetAccount(integrationprofile.AccountId);
-            if (selectedAccount == null)
-                return null;
-
-            var session = await loginHandler.Authenticate(selectedAccount);
+            var session = await GetUserSession(user.Id);
             var profile = await GetProfileData(session, integrationprofile);
 
             _ctx.Set<JavaXboxProfile>().Update(profile);
@@ -92,7 +80,7 @@ namespace minerobe.api.Services.Integration
                 _ctx.Set<JavaXboxProfile>().Add(profile);
 
                 await _ctx.SaveChangesAsync();
-               await  _userSettingsService.AddIntegration(user.Id,"minecraft");
+                await _userSettingsService.AddIntegration(user.Id, "minecraft");
 
 
                 return profile;
@@ -103,7 +91,7 @@ namespace minerobe.api.Services.Integration
         public async Task<bool> UnLinkAccount(MinerobeUser user)
         {
             var match = await _ctx.Set<UserXboxAccountMatching>().Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
-            JavaXboxProfile profile= null;
+            JavaXboxProfile profile = null;
             if (match == null)
                 return false;
             profile = await _ctx.Set<JavaXboxProfile>().Where(x => x.Id == match.XboxUserId).FirstOrDefaultAsync();
@@ -123,7 +111,7 @@ namespace minerobe.api.Services.Integration
             if (profile != null)
                 _ctx.Set<JavaXboxProfile>().Remove(profile);
             await _ctx.SaveChangesAsync();
-            await  _userSettingsService.RemoveIntegration(user.Id,"minecraft");
+            await _userSettingsService.RemoveIntegration(user.Id, "minecraft");
             return true;
         }
         public async Task<string> GetUserCurrentSkin(Guid userId)
@@ -133,6 +121,34 @@ namespace minerobe.api.Services.Integration
                 return null;
             var texture = settings.CurrentTexture.Texture;
             return Encoding.UTF8.GetString(texture);
+        }
+        public async Task<bool> SetUserSkin(Guid userId, string texture)
+        {
+            var session = await GetUserSession(userId);
+            return false;
+        }
+        private async Task<MSession> GetUserSession(Guid userId)
+        {
+            var profileMatch = await _ctx.Set<UserXboxAccountMatching>().Where(x => x.UserId == userId).FirstOrDefaultAsync();
+            if (profileMatch == null)
+                return null;
+            var integrationprofile = await _ctx.Set<JavaXboxProfile>().Where(x => x.Id == profileMatch.XboxUserId).FirstOrDefaultAsync();
+
+            var loginHandler = JELoginHandlerBuilder.BuildDefault();
+
+
+            var app = await MsalClientHelper.BuildApplicationWithCache(_config.ClientId);
+            var accounts = loginHandler.AccountManager.GetAccounts();
+            var selectedAccount = accounts.GetAccount(integrationprofile.AccountId);
+            if (selectedAccount == null)
+                return null;
+
+            var authenticator = loginHandler.CreateAuthenticator(selectedAccount, default);
+            authenticator.AddMsalOAuth(app, msal => msal.Silent());
+            authenticator.AddXboxAuthForJE(xbox => xbox.Basic());
+            authenticator.AddJEAuthenticator();
+            var session = await authenticator.ExecuteForLauncherAsync();
+            return session;
         }
         private async Task<JavaXboxProfile> GetProfileData(MSession session, JavaXboxProfile profile)
         {
@@ -162,7 +178,7 @@ namespace minerobe.api.Services.Integration
                         var textureUrl = skin["url"].ToString();
                         var textureResponse = await dataClient.GetAsync(textureUrl);
                         var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
-                        skinData.Texture = "data:image/png;base64,"+ Convert.ToBase64String(textureContent);
+                        skinData.Texture = "data:image/png;base64," + Convert.ToBase64String(textureContent);
                         skinData.Id = Guid.Parse(skin["id"].ToString());
                         profile.Skins.Add(skinData);
                         if (skin["state"].ToString().ToUpper() == "ACTIVE")
@@ -180,7 +196,7 @@ namespace minerobe.api.Services.Integration
                         var textureUrl = cape["url"].ToString();
                         var textureResponse = await client.GetAsync(textureUrl);
                         var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
-                        capeData.Texture = "data:image/png;base64,"+ Convert.ToBase64String(textureContent);
+                        capeData.Texture = "data:image/png;base64," + Convert.ToBase64String(textureContent);
                         capeData.Id = Guid.Parse(cape["id"].ToString());
                         capeData.Name = cape["alias"].ToString();
                         profile.Capes.Add(capeData);
@@ -195,5 +211,4 @@ namespace minerobe.api.Services.Integration
             return profile;
         }
     }
-
 }

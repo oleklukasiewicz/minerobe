@@ -12,3 +12,7 @@ export const GetFullAccount = async function () {
     const res = await GetRequest("/api/JavaXboxAuth/FullProfile" );
     return res;
 }
+export const UnLinkAccount = async function () {
+    const res = await GetRequest("/api/JavaXboxAuth/UnLink" );
+    return res;
+}

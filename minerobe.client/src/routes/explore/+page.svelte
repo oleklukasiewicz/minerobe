@@ -7,7 +7,6 @@
   import { onMount } from "svelte";
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import Select from "$lib/components/base/Select/Select.svelte";
-  import { GetAccount, LinkAccount } from "$src/api/integration/minecraft";
 
   onMount(() => {});
   const compare = (a, b) => {
@@ -16,7 +15,6 @@
   let selected = "all";
   const onSelect = async (e) => {
     selected = e.detail.value;
-     await LinkAccount();
   };
 </script>
 
@@ -40,8 +38,12 @@
     ></Menu>
   </div>
   <div class="list">
-    <Select let:item let:multiple selectedItem={"item2"} items={["item1", "item2", "item3"]}>
-    </Select>
+    <Select
+      let:item
+      let:multiple
+      selectedItem={"item2"}
+      items={["item1", "item2", "item3"]}
+    ></Select>
   </div>
 </div>
 

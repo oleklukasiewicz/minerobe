@@ -17,7 +17,6 @@
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import Dialog from "$component/base/Dialog/Dialog.svelte";
-  import OutfitPackageSnapshotRender from "$component/render/OutfitPackageSnapshotRender.svelte";
   import LoginIcon from "$src/icons/login.svg?raw";
   import BaseTextureDialog from "$lib/components/dialog/BaseTextureDialog.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
@@ -37,7 +36,11 @@
   import { CurrentTexture, MinerobeUserProfile } from "$src/model/user";
   import type { OutfitPackage } from "$src/model/package";
   import LinkAccountDialog from "$lib/components/dialog/LinkAccountDialog.svelte";
-  import { GetAccount, GetFullAccount } from "$src/api/integration/minecraft";
+  import {
+    GetFullAccount,
+    LinkAccount,
+    UnLinkAccount,
+  } from "$src/api/integration/minecraft";
   import { GetImageArea } from "$src/helpers/image/imageDataHelpers";
 
   const userProfile: Writable<MinerobeUserProfile> = writable(
@@ -88,6 +91,14 @@
     const texture = event.detail;
     await UpdateBaseTexture(texture);
     isBaseTextureDialogOpen = false;
+  };
+  const unLink = async () => {
+    await UnLinkAccount();
+    minecraftAccount.set({});
+  };
+  const linkAccount = async () => {
+    var profile = await LinkAccount();
+    minecraftAccount.set(profile);
   };
 </script>
 
@@ -172,8 +183,8 @@
         <div class="main-data">
           <!-- svelte-ignore a11y-missing-attribute -->
 
-          {#if $minecraftAccount.skin != null}
-            {#await GetImageArea($minecraftAccount.skin.texture, 8, 8, 8, 8) then texture}
+          {#if $minecraftAccount?.skin != null}
+            {#await GetImageArea($minecraftAccount?.skin?.texture, 8, 8, 8, 8) then texture}
               <img
                 src={texture}
                 style="min-width: calc(100% - 80px); image-rendering: pixelated;"
@@ -215,7 +226,7 @@
 </div>
 <Dialog bind:open={isAuthDialogOpen} label={$_("link_to_mc")}>
   <div class="auth-dialog">
-    <LinkAccountDialog />
+    <LinkAccountDialog profile={$minecraftAccount} on:unlink={unLink} on:link={linkAccount} />
   </div>
 </Dialog>
 <Dialog bind:open={isBaseTextureDialogOpen} label="Base texture">
