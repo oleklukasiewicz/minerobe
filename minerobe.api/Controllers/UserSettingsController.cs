@@ -17,10 +17,12 @@ namespace minerobe.api.Controllers
     {
         private readonly IUserSettingsService _userSettingsService;
         private readonly IUserService _userService;
-        public UserSettingsController(IUserSettingsService userSettingsService, IUserService userService)
+        private readonly IJavaXboxAuthService _javaXboxAuthService;
+        public UserSettingsController(IUserSettingsService userSettingsService, IUserService userService, IJavaXboxAuthService javaXboxAuthService)
         {
             _userSettingsService = userSettingsService;
             _userService = userService;
+            _javaXboxAuthService = javaXboxAuthService;
         }
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -60,7 +62,10 @@ namespace minerobe.api.Controllers
         {
             var user = await _userService.GetFromExternalUser(User);
 
-            var settings = await _userSettingsService.UpdateCurrentTexture(user.Id, id, currentTexture.ToEntity());
+            var entity = currentTexture.ToEntity();
+            var settings = await _userSettingsService.UpdateCurrentTexture(user.Id, id, entity);
+            if (settings.Integrations.Contains("minecraft"))
+                await _javaXboxAuthService.SetUserSkin(user.Id, entity.Model);
             if (settings == null)
                 return NotFound();
 

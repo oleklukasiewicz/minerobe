@@ -22,7 +22,7 @@ namespace minerobe.api.Controllers.Integration
             var user = await _userService.GetFromToken(User);
 
             var profile = await _javaXboxAuthService.LinkAccount(user);
-            return Ok(profile);
+            return Ok(profile.ToResponseModel());
         }
         [HttpGet("Profile")]
         public async Task<IActionResult> GetProfile()

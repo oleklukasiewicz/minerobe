@@ -84,12 +84,10 @@ namespace minerobe.api.Services
             if (package == null)
                 return null;
 
-
             settings.CurrentTexture = textureConfig;
 
             settings.CurrentTexturePackageId = packageId;
             settings.ModifiedAt = DateTime.Now;
-
             _context.UserSettings.Update(settings);
             await _context.SaveChangesAsync();
             return await GetSettings(userId);

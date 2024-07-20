@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using System.Text;
+using minerobe.api.Entity.Package;
 namespace minerobe.api.Services.Integration
 {
     public class JavaXboxAuthService : IJavaXboxAuthService
@@ -122,10 +123,41 @@ namespace minerobe.api.Services.Integration
             var texture = settings.CurrentTexture.Texture;
             return Encoding.UTF8.GetString(texture);
         }
-        public async Task<bool> SetUserSkin(Guid userId, string texture)
+        public async Task<bool> SetUserSkin(Guid userId, ModelType model)
         {
             var session = await GetUserSession(userId);
-            return false;
+            var url = "https://api.minecraftservices.com/minecraft/profile/skins";
+            var body = new
+            {
+                variant = model == ModelType.Steve ? "classic" : "slim",
+                url = _config.OriginUri + "/JavaXboxAuth/SkinTexture/" + userId
+            };
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.AccessToken);
+            var response = await client.PostAsJsonAsync(url, body);
+            return response.IsSuccessStatusCode;
+        }
+        public async Task<bool> SetUserCape(Guid userId, Guid capeId)
+        {
+            var session = await GetUserSession(userId);
+            var url = "https://api.minecraftservices.com/minecraft/profile/capes/active";
+            var body = new
+            {
+                capeId = capeId
+            };
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.AccessToken);
+            var response = await client.PostAsJsonAsync(url, body);
+            return response.IsSuccessStatusCode;
+        }
+        public async Task<bool> HideUserCape(Guid userId)
+        {
+            var session = await GetUserSession(userId);
+            var url = "https://api.minecraftservices.com/minecraft/profile/capes/active";
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.AccessToken);
+            var response = await client.DeleteAsync(url);
+            return response.IsSuccessStatusCode;
         }
         private async Task<MSession> GetUserSession(Guid userId)
         {
