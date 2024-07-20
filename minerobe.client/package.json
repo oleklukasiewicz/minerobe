@@ -30,7 +30,7 @@
 		"gltf-loader": "^1.0.0",
 		"path": "^0.12.7",
 		"pixelmatch": "^6.0.0",
-		"sass": "^1.77.6",
+		"sass": "^1.77.8",
 		"svelte-i18n": "^4.0.0",
 		"svelte-writable-derived": "^3.1.1",
 		"three": "^0.166.1"
