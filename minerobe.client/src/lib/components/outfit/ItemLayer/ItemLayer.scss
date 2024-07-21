@@ -40,10 +40,10 @@
       background-color: var(--color-theme-D2);
     }
     &.selected {
+      background-color: var(--color-accent);
       input {
         color: var(--color-accent-font);
       }
-      background-color: var(--color-accent);
       & .render {
         border-color: var(--color-accent-L1);
         background-color: var(--color-accent-L2);
