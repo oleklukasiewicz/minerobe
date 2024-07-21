@@ -43,6 +43,7 @@
     &.selected {
       border-color: var(--color-accent-L1);
       background-color: var(--color-accent);
+      color: var(--color-accent-font);
       &:hover {
         border-color: var(--color-accent);
         background-color: var(--color-accent-D1);

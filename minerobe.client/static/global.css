@@ -1,389 +1,384 @@
-@font-face{
-    font-family: minecraft;
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    ascent-override: 100%;
-    src: url(/font/minecraftBolder.ttf) format("truetype");
+@font-face {
+  font-family: minecraft;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  ascent-override: 100%;
+  src: url(/font/minecraftBolder.ttf) format("truetype");
 }
-@font-face{
-    font-family: minecraft-simple;
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url(/font/minecraftSimple.ttf) format("truetype");
+@font-face {
+  font-family: minecraft-simple;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/font/minecraftSimple.ttf) format("truetype");
 }
-:root{
-    --color-theme-font: #222222;
-    --color-accent: #3b8526;
-    --color-accent-L2: #8be468;
-    --color-accent-L1: rgb(107, 195, 73);
-    --color-accent-D1: #2a631c;
-    --color-accent-D2: #214717;
-    --color-unique: #e79836;
-    --color-unique-A1: #ec620e;
-    --color-rare: #1de495;
-    --color-rare-A1: #0ebd77;
-    --color-legend: #ca31e9;
-    --color-legend-A1: rgb(146, 8, 146);
-    --color-ancient: #f8604c;
-    --color-ancient-A1: #be4b3b;
-    --color-common: #c6c6c6;
-    --color-common-A1: #888;
-    --color-accent-font: #FFF;
-    --color-active: #4a494b;
-    --color-active-L1: #8d8e92;
-    --color-active-D1: #000;
-    --color-hover: #3d3938;
-    --color-hover-L1: #8d8e92;
-    --color-hover-D1: #171615;
-    --time: 0.3s;
-    --time-A1: 0.6s;
-    --color-theme: #f2f2f2;
-    --color-theme-D1: #e2e2e2;
-    --color-theme-D2: #c2c2c2;
-    --color-theme-D3: #a2a2a2;
-    --color-theme-D4: #828282;
-    --color-theme-D5: #626262;
-    --color-theme-D6: #424242;
-    --color-theme-D7: #282828;
-    --size-font-icon: 13px;
-    --size-font-caption: 12px;
-    --size-font-base: 14px;
-    --size-font-subtitlealt: 16px;
-    --size-font-subtitle: 20px;
-    --size-font-title: 24px;
-    --size-font-subheader: 34px;
-    --size-font-header: 46px;
-    --color-dialog: rgba(0,0,0,.6);
-    --color-warning: #f3c995;
-    --color-info: #c0d1f5;
-    --color-error: #b84343;
+:root {
+  --color-theme-font: #222222;
+  --color-accent: #3b8526;
+  --color-accent-L2: #8be468;
+  --color-accent-L1: rgb(107, 195, 73);
+  --color-accent-D1: #2a631c;
+  --color-accent-D2: #214717;
+  --color-unique: #e79836;
+  --color-unique-A1: #ec620e;
+  --color-rare: #1de495;
+  --color-rare-A1: #0ebd77;
+  --color-legend: #ca31e9;
+  --color-legend-A1: rgb(146, 8, 146);
+  --color-ancient: #f8604c;
+  --color-ancient-A1: #be4b3b;
+  --color-common: #c6c6c6;
+  --color-common-A1: #888;
+  --color-accent-font: #fff;
+  --color-active: #4a494b;
+  --color-active-L1: #8d8e92;
+  --color-active-D1: #000;
+  --color-hover: #3d3938;
+  --color-hover-L1: #8d8e92;
+  --color-hover-D1: #171615;
+  --time: 0.3s;
+  --time-A1: 0.6s;
+  --color-theme: #f2f2f2;
+  --color-theme-D1: #e2e2e2;
+  --color-theme-D2: #c2c2c2;
+  --color-theme-D3: #a2a2a2;
+  --color-theme-D4: #828282;
+  --color-theme-D5: #626262;
+  --color-theme-D6: #424242;
+  --color-theme-D7: #282828;
+  --size-font-icon: 13px;
+  --size-font-caption: 12px;
+  --size-font-base: 14px;
+  --size-font-subtitlealt: 16px;
+  --size-font-subtitle: 20px;
+  --size-font-title: 24px;
+  --size-font-subheader: 34px;
+  --size-font-header: 46px;
+  --color-dialog: rgba(0, 0, 0, 0.6);
+  --color-warning: #f3c995;
+  --color-info: #c0d1f5;
+  --color-error: #b84343;
 }
-@keyframes Blink{
-    0%{
-        opacity: .5;
-    }
-    50%{
-        opacity: 1;
-    }
-    100%{
-        opacity: .5;
-    }
+@keyframes Blink {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
 }
-@keyframes FabPeek{
-    0%{
-        max-width: 300px;
-    }
-    100%{
-        max-width: 42px;
-    }
+@keyframes FabPeek {
+  0% {
+    max-width: 300px;
+  }
+  100% {
+    max-width: 42px;
+  }
 }
-::selection{
-    background-color: rgba(107, 195, 73,0.7);
-    color: var(--color-accent-font);
+::selection {
+  background-color: rgba(107, 195, 73, 0.7);
+  color: var(--color-accent-font);
 }
-body{
-    font-family: Arial,Helvetica,sans-serif;
-    margin: 0;
-    background-color: var(--color-theme);
-    overflow-y: scroll;
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background-color: var(--color-theme);
+  overflow-y: scroll;
 }
-.disabled{
-    user-select: none;
-    pointer-events: none;
-    opacity: .5;
+.disabled {
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.5;
 }
 h1,
 h2,
 h3,
 h4,
 h5,
-h6{
-    font-family: minecraft;
+h6 {
+  font-family: minecraft;
 }
-br{
-    user-select: none;
+br {
+  user-select: none;
 }
-.label{
-    box-sizing: border-box;
-    display: inline-table;
-    font-family: minecraft;
-    font-size: medium;
-    box-shadow: 2px 2px 1px rgba(0,0,0,.6);
-    padding: 0px 8px 4px;
-    text-shadow: 0 1px rgba(255,255,255,.6);
-    user-select: none;
-    text-align: end;
+.label {
+  box-sizing: border-box;
+  display: inline-table;
+  font-family: minecraft;
+  font-size: medium;
+  box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.6);
+  padding: 0px 8px 4px;
+  text-shadow: 0 1px rgba(255, 255, 255, 0.6);
+  user-select: none;
+  text-align: end;
 }
-.label.dense
-{
-    padding: 1px 6px;
-    font-size: var(--size-font-caption);
+.label.dense {
+  padding: 1px 6px;
+  font-size: var(--size-font-caption);
 }
-.label.unique{
-    background: linear-gradient(var(--color-unique),var(--color-unique-A1));
+.label.unique {
+  background: linear-gradient(var(--color-unique), var(--color-unique-A1));
 }
-.label.rare{
-    background: linear-gradient(var(--color-rare),var(--color-rare-A1));
+.label.rare {
+  background: linear-gradient(var(--color-rare), var(--color-rare-A1));
 }
-.label.common{
-    background: linear-gradient(var(--color-common),var(--color-common-A1));
+.label.common {
+  background: linear-gradient(var(--color-common), var(--color-common-A1));
 }
-.label.legendary{
-    background: linear-gradient(var(--color-legend),var(--color-legend-A1));
+.label.legendary {
+  background: linear-gradient(var(--color-legend), var(--color-legend-A1));
 }
-.caption{
-    font-size: small;
-    color: var(--color-theme-D6);
-    font-family: minecraft;
-    margin: 8px 0;
-    display: table;
-    user-select: none;
+.caption {
+  font-size: small;
+  color: var(--color-theme-D6);
+  font-family: minecraft;
+  margin: 8px 0;
+  display: table;
+  user-select: none;
 }
-.font-caption{
-    font-size: var(--size-font-caption);
-    font-family: Arial,Helvetica,sans-serif;
+.font-caption {
+  font-size: var(--size-font-caption);
+  font-family: Arial, Helvetica, sans-serif;
 }
-.font-base{
-    font-size: var(--size-font-base);
-    font-family: Arial,Helvetica,sans-serif;
+.font-base {
+  font-size: var(--size-font-base);
+  font-family: Arial, Helvetica, sans-serif;
 }
-.font-subtitle{
-    font-size: var(--size-font-subtitle);
-    font-family: minecraft;
+.font-subtitle {
+  font-size: var(--size-font-subtitle);
+  font-family: minecraft;
 }
-.font-title{
-    font-size: var(--size-font-title);
-    font-family: minecraft;
+.font-title {
+  font-size: var(--size-font-title);
+  font-family: minecraft;
 }
-.font-subheader{
-    font-size: var(--size-font-subheader);
-    font-family: minecraft;
+.font-subheader {
+  font-size: var(--size-font-subheader);
+  font-family: minecraft;
 }
-.font-header{
-    font-size: var(--size-font-header);
-    font-family: minecraft;
+.font-header {
+  font-size: var(--size-font-header);
+  font-family: minecraft;
 }
-.list{
-    display: flex;
-    flex-direction: column;
+.list {
+  display: flex;
+  flex-direction: column;
 }
-.list.horizontal{
-    flex-direction: row;
+.list.horizontal {
+  flex-direction: row;
 }
-.list.small > .item{
-    border: 1px solid red;
-    padding: 4px;
-    box-sizing: border-box;
+.list.small > .item {
+  border: 1px solid red;
+  padding: 4px;
+  box-sizing: border-box;
 }
-button{
-    border: 0;
-    transition: background-color var(--time),border-color var(--time),color var(--time);
-    border-top: 2px solid var(--color-accent-L1);
-    background-color: var(--color-accent);
-    border-bottom: 2px solid var(--color-accent-D1);
-    color: var(--color-accent-font);
-    font-family: minecraft;
-    box-sizing: border-box;
-    padding: 7px 16px;
+button {
+  border: 0;
+  transition: background-color var(--time), border-color var(--time),
+    color var(--time);
+  border-top: 2px solid var(--color-accent-L1);
+  background-color: var(--color-accent);
+  border-bottom: 2px solid var(--color-accent-D1);
+  color: var(--color-accent-font);
+  font-family: minecraft;
+  box-sizing: border-box;
+  padding: 7px 16px;
 }
-button > svg,button > .icon,button > img{
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-    display: inline-table;
-    vertical-align: middle;
+button > svg,
+button > .icon,
+button > img {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  display: inline-table;
+  vertical-align: middle;
 }
-button.tertiary{
-    background-color: transparent;
-    border-color: transparent;
-    color: var(--color-theme-font);
+button.tertiary {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-theme-font);
 }
-button.icon{
-    width: 42px;
-    height: 42px;
-    padding: 6px 8px;
+button.icon {
+  width: 42px;
+  height: 42px;
+  padding: 6px 8px;
 }
-button.small{
-    padding: 3px 8px 2px;
+button.small {
+  padding: 3px 8px 2px;
 }
-button.icon.small{
-    width: 32px;
-    height: 32px;
-    padding: 3px 4px;
+button.icon.small {
+  width: 32px;
+  height: 32px;
+  padding: 3px 4px;
 }
-button.secondary{
-    background-color: transparent;
-    border-color: transparent;
-    color: var(--color-accent);
+button.secondary {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-accent);
 }
 button.secondary:hover,
-button:hover{
-    color: var(--color-accent-font);
-    background-color: var(--color-hover);
-    border-top-color: var(--color-hover-L1);
-    border-bottom-color: var(--color-hover-D1);
+button:hover {
+  color: var(--color-accent-font);
+  background-color: var(--color-hover);
+  border-top-color: var(--color-hover-L1);
+  border-bottom-color: var(--color-hover-D1);
 }
 button.secondary:active,
-button:active{
-    color: var(--color-accent-font);
-    background-color: var(--color-active);
-    border-top-color: var(--color-active-L1);
-    border-bottom-color: var(--color-active-D1);
+button:active {
+  color: var(--color-accent-font);
+  background-color: var(--color-active);
+  border-top-color: var(--color-active-L1);
+  border-bottom-color: var(--color-active-D1);
 }
-button.dark
-{
-    background-color: transparent;
-    border-color: transparent;
-    color: var(--color-accent-font);
+button.dark {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-accent-font);
 }
 button.dark:hover,
-button:hover{
-    color: var(--color-accent-font);
-    background-color: var(--color-hover);
-    border-top-color: var(--color-hover-L1);
-    border-bottom-color: var(--color-hover-D1);
+button:hover {
+  color: var(--color-accent-font);
+  background-color: var(--color-hover);
+  border-top-color: var(--color-hover-L1);
+  border-bottom-color: var(--color-hover-D1);
 }
 button.dark:active,
-button:active{
-    color: var(--color-accent-font);
-    background-color: var(--color-active);
-    border-top-color: var(--color-active-L1);
-    border-bottom-color: var(--color-active-D1);
+button:active {
+  color: var(--color-accent-font);
+  background-color: var(--color-active);
+  border-top-color: var(--color-active-L1);
+  border-bottom-color: var(--color-active-D1);
 }
-button.selected
-{
-    border-top: 2px solid var(--color-accent-L1);
-    background-color: var(--color-accent);
-    border-bottom: 2px solid var(--color-accent-D1);
-    color: var(--color-accent-font);
+button.selected {
+  border-top: 2px solid var(--color-accent-L1);
+  background-color: var(--color-accent);
+  border-bottom: 2px solid var(--color-accent-D1);
+  color: var(--color-accent-font);
 }
-button.fab
-{
-    position: fixed;
-    bottom: 16px;
-    right: 16px;
-    height: 48px;
-    padding: 11px;
-    z-index: 4;
+button.fab {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  height: 48px;
+  padding: 11px;
+  z-index: 4;
 }
-button.fab.dynamic
-{
-    max-width: 48px;
-    overflow: hidden;
-    transition: var(--time) cubic-bezier(0.1, 0.9, 0.2, 1);
+button.fab.dynamic {
+  max-width: 48px;
+  overflow: hidden;
+  transition: var(--time) cubic-bezier(0.1, 0.9, 0.2, 1);
 }
-button.fab.dynamic>div
-{
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 14px;
-    width: 100%;
+button.fab.dynamic > div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  width: 100%;
 }
-button.fab.dynamic>div>span
-{
-    margin-top: 4px;
-    margin-right: 12px;
-    text-wrap: nowrap;
-    vertical-align: middle;
+button.fab.dynamic > div > span {
+  margin-top: 4px;
+  margin-right: 12px;
+  text-wrap: nowrap;
+  vertical-align: middle;
 }
-button.fab.dynamic:hover
-{
-    max-width: 140px;
-    width: auto;
+button.fab.dynamic:hover {
+  max-width: 140px;
+  width: auto;
 }
-.separator.vertical{
-    width: 1px;
-    border-left: solid 2px var(--color-theme-D2);
-    margin: 10px 4px;
-}.separator.horizontal{
-    height: 1px;
-    border-bottom: solid 2px var(--color-theme-D2);
-    margin: 4px 10px;
-    width: 100%;
+.separator.vertical {
+  width: 1px;
+  border-left: solid 2px var(--color-theme-D2);
+  margin: 10px 4px;
 }
-.flex{
-    display: flex;
+.separator.horizontal {
+  height: 1px;
+  border-bottom: solid 2px var(--color-theme-D2);
+  margin: 4px 10px;
+  width: 100%;
 }
-.inline-flex{
-    display: inline-flex;
+.flex {
+  display: flex;
 }
-.inline{
-    display: inline!important;
+.inline-flex {
+  display: inline-flex;
 }
-.title{
-    font-family: minecraft;
-    font-size: var(--size-font-subheader);
-    border: 0;
-    background-color: transparent;
-    outline: 0;
-    border-bottom: 2px solid transparent;
-    width: 100%;
+.inline {
+  display: inline !important;
 }
-.title-input{
-    font-family: minecraft;
-    font-size: var(--size-font-subheader);
-    border: 0;
-    padding-bottom: 4px;
-    background-color: transparent;
-    outline: 0;
-    border-bottom: 2px solid transparent;
-    width: 100%;
+.title {
+  font-family: minecraft;
+  font-size: var(--size-font-subheader);
+  border: 0;
+  background-color: transparent;
+  outline: 0;
+  border-bottom: 2px solid transparent;
+  width: 100%;
 }
-.title-input:hover{
-    border-bottom: 2px solid var(--color-active-L1);
+.title-input {
+  font-family: minecraft;
+  font-size: var(--size-font-subheader);
+  border: 0;
+  padding-bottom: 4px;
+  background-color: transparent;
+  outline: 0;
+  border-bottom: 2px solid transparent;
+  width: 100%;
 }
-input{
-    font-family: minecraft-simple;
-    font-size: var(--size-font-base);
-    border: 0;
-    background-color: transparent;
-    outline: 0;
-    border-bottom: 2px solid transparent;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.title-input:hover {
+  border-bottom: 2px solid var(--color-active-L1);
 }
-input:hover{
-    border-bottom: 2px solid var(--color-active-L1);
+input {
+  font-family: minecraft-simple;
+  font-size: var(--size-font-base);
+  border: 0;
+  background-color: transparent;
+  outline: 0;
+  border-bottom: 2px solid transparent;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.icon-small>svg
-{
-    transform: scale(0.80)
+input:hover {
+  border-bottom: 2px solid var(--color-active-L1);
 }
-.icon-big>svg
-{
-    transform: scale(1.3)
+.icon-small > svg {
+  transform: scale(0.8);
 }
-.b-icon-small>svg
-{
-    transform: scale(0.7);
+.icon-big > svg {
+  transform: scale(1.3);
 }
-.b-icon-large>svg
-{
-    transform: scale(1);
+.b-icon-small > svg {
+  transform: scale(0.7);
 }
-.b-icon-medium>svg
-{
-    transform: scale(0.7);
+.b-icon-large > svg {
+  transform: scale(1);
 }
-textarea{
-   font-family: Arial, Helvetica, sans-serif;
-   background-color: transparent;
-   border: 2px solid var(--color-theme-D4);
-   outline: none;
-   resize: none;
-   padding: 8px;
-   box-sizing: border-box;
-   color: var(--color-theme-font);
+.b-icon-medium > svg {
+  transform: scale(0.7);
 }
-.mc-font
-{
-    font-family: minecraft;
+textarea {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: transparent;
+  border: 2px solid var(--color-theme-D4);
+  outline: none;
+  resize: none;
+  padding: 8px;
+  box-sizing: border-box;
+  color: var(--color-theme-font);
 }
-.mc-font-simple
-{
-    font-family: minecraft-simple;
+.mc-font {
+  font-family: minecraft;
+}
+.mc-font-simple {
+  font-family: minecraft-simple;
+}
+.horizontal-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-direction: row;
 }

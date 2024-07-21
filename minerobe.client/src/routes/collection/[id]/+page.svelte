@@ -63,13 +63,15 @@
     <Placeholder {loaded} style="width:75vw;height:48px">
       <div style="display:flex; flex-direction:row;gap:8px">
         <input class="title-input" bind:value={$localCollection.name} />
-        <Button
-          onlyIcon
-          type="tertiary"
-          icon={TrashIcon}
-          on:click={() => (isDeleteDialogOpen = true)}
-          label="Delete"
-        />
+        <div>
+          <Button
+            onlyIcon
+            type="tertiary"
+            icon={TrashIcon}
+            on:click={() => (isDeleteDialogOpen = true)}
+            label="Delete"
+          />
+        </div>
       </div>
     </Placeholder>
   </div>
@@ -94,7 +96,7 @@
   >
     <div style="text-align:center;margin:8px;">
       <span class="mc-font-simple">{"Do you want to delete collection?"}</span>
-      <div style="display:flex;flex-direction:row; gap:8px;margin-top:24px;">
+      <div class="horizontal-list" style="margin-top:24px;">
         <Button
           type="tertiary"
           on:click={() => {

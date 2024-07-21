@@ -44,13 +44,17 @@
     GetWadrobePackagesSingleLayer,
     GetWadrobeSummary,
   } from "$src/api/wardrobe";
-  import { OutfitPackageRenderConfig } from "$src/data/model";
+  import {
+    MinecraftIntegrationModel,
+    OutfitPackageRenderConfig,
+  } from "$src/data/model";
   import DefaultAnimation from "$animation/default";
 
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import TrashIcon from "$icons/trash.svg?raw";
+  import CloseBoxIcon from "$icons/close-box.svg?raw";
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
 
   import {
@@ -92,7 +96,12 @@
   import { OutfitLayer, type OutfitPackage } from "$src/model/package";
   import type { PagedResponse } from "$src/model/base";
   import { FindClosestColor } from "$src/helpers/image/colorHelper";
+  import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
+  import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
+  import { GetAccount } from "$src/api/integration/minecraft";
 
+  const integrationSettings: Writable<MinecraftIntegrationModel> =
+    writable(null);
   const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -139,6 +148,11 @@
       const settings = await FetchSettings();
       userSettings.set(settings);
 
+      if (settings?.integrations?.includes("minecraft")) {
+        const integrationProfile = await GetAccount();
+        integrationSettings.set(integrationProfile);
+      }
+
       isItemSet = $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET;
 
       $itemRenderConfig = new OutfitPackageRenderConfig(
@@ -156,6 +170,17 @@
           $userSettings.baseTexture.layers[0]
         );
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
+
+      if (
+        isItemSet &&
+        $userSettings.currentCapeId != null &&
+        $userSettings?.currentTexturePackageId == $itemPackage.id
+      ) {
+        var selectedCape = $integrationSettings?.capes.find(
+          (x) => x.id == $userSettings.currentCapeId
+        );
+        $itemRenderConfig.cape = selectedCape;
+      }
 
       loaded = true;
       updateTexture();
@@ -450,6 +475,9 @@
     applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, index);
   };
 
+  const setCape = function (cape) {
+    $itemRenderConfig.cape = cape;
+  };
   const skinSetted = async function () {
     isSkinSetting = true;
     var result = await SetCurrentTexture(
@@ -462,7 +490,7 @@
     );
     if (result) {
       showToast("Skin changed", HumanHandsUpIcon);
-      applyAnimations($itemPackage, CHANGE_TYPE.SKIN_SET,-1);
+      applyAnimations($itemPackage, CHANGE_TYPE.SKIN_SET, -1);
       userSettings.set(result);
     }
     isSkinSetting = false;
@@ -648,19 +676,49 @@
                 type="tertiary"
               />
             {/if}
-            <Button
-              on:click={importLayer}
-              icon={ImportPackageIcon}
-              disabled={!loaded}
-              label={isItemSet
-                ? $_("layersOpt.addLayer")
-                : $_("layersOpt.addVariant")}
-              type="tertiary"
-            />
+            <Placeholder {loaded} loadedStyle="flex:1;">
+              <Button
+                on:click={importLayer}
+                icon={ImportPackageIcon}
+                disabled={!loaded}
+                label={isItemSet
+                  ? $_("layersOpt.addLayer")
+                  : $_("layersOpt.addVariant")}
+                type="tertiary"
+              />
+            </Placeholder>
           </div>
         {/if}
       </div>
       <br />
+      {#if isItemSet && $integrationSettings != null}
+        <SectionTitle label="Capes" placeholder={!loaded} />
+        {#if $integrationSettings.capes.length == 0}
+          <InfoLabel
+            closeable={false}
+            type="info"
+            description="You have no capes linked to your minecraft account"
+          />
+        {:else}
+          <div class="horizontal-list">
+            {#each $integrationSettings.capes as cape}
+              <ItemCape
+                item={cape}
+                on:click={() => setCape(cape)}
+                selected={$itemRenderConfig.cape?.id == cape.id}
+              />
+            {/each}
+            <ItemCape
+              on:click={() => setCape(null)}
+              selected={$itemRenderConfig.cape?.id == null}
+              ><div style="margin:12px;">
+                {@html CloseBoxIcon}
+              </div></ItemCape
+            >
+          </div>
+        {/if}
+        <br />
+      {/if}
       <SectionTitle label={$_("description")} placeholder={!loaded} />
       <Placeholder style="height:64px;margin-bottom:8px;" {loaded}>
         <textarea
@@ -725,7 +783,7 @@
   >
     <div style="text-align:center;margin:8px;">
       <span class="mc-font-simple">{$_("dialog.confirmDeleteItem")}</span>
-      <div style="display:flex;flex-direction:row; gap:8px;margin-top:16px;">
+      <div style="margin-top:16px;" class="horizontal-list">
         <Button
           type="tertiary"
           on:click={() => {

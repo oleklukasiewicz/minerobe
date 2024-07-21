@@ -27,7 +27,10 @@
     currentUser,
   } from "$data/cache";
   import { replaceState } from "$app/navigation";
-  import { OutfitPackageRenderConfig } from "$src/data/model.js";
+  import {
+    MinecraftIntegrationModel,
+    OutfitPackageRenderConfig,
+  } from "$src/data/model.js";
   import { CreateDefaultRenderProvider } from "$src/data/render";
 
   import {
@@ -71,7 +74,8 @@
   import { GetAccount } from "$src/api/integration/minecraft.js";
 
   export let data;
-  const integrationSettings = writable(null);
+  const integrationSettings: Writable<MinecraftIntegrationModel> =
+    writable(null);
   const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
   const localPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -90,7 +94,6 @@
   let isSkinSetting = false;
   let loaded = false;
   let defaultRenderProvider;
-  let capes = [];
 
   let isCollectionPickerLoading = true;
   let pickerCollections = [];
@@ -154,7 +157,7 @@
         $userSettings.currentCapeId != null &&
         $userSettings?.currentTexturePackageId == $localPackage.id
       ) {
-        var selectedCape = $integrationSettings.capes.find(
+        var selectedCape = $integrationSettings?.capes.find(
           (x) => x.id == $userSettings.currentCapeId
         );
         $itemRenderConfig.cape = selectedCape;
@@ -376,7 +379,7 @@
       {:else if isItemSet}
         <Placeholder style="height:66px;margin-bottom:12px;" />
       {:else}
-        <div style="display:flex;flex-wrap:wrap;margin-bottom:22px;gap:8px;">
+        <div style="margin-bottom:22px;" class="horizontal-list">
           {#each new Array(8) as _}
             <Placeholder style="height:68px;width:68px;" />
           {/each}
@@ -391,7 +394,7 @@
             description="You have no capes linked to your minecraft account"
           />
         {:else}
-          <div style="display:flex;flex-direaction:row;flex-wrap:wrap;gap:8px;">
+          <div class="horizontal-list">
             {#each $integrationSettings.capes as cape}
               <ItemCape
                 item={cape}
@@ -402,7 +405,7 @@
             <ItemCape
               on:click={() => setCape(null)}
               selected={$itemRenderConfig.cape?.id == null}
-              ><div class="icon-big" style="margin:12px;">
+              ><div style="margin:12px;">
                 {@html CloseBoxIcon}
               </div></ItemCape
             >

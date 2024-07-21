@@ -19,7 +19,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="outfit-collection-item" on:click>
-  <div style="display:flex;flex-direction:row; gap:8px;margin-right:2px;">
+  <div class="horizontal-list" style="margin-right:2px;">
     <b class="mc-font" style="flex:1;margin-top:4px;">
       {item.name}
     </b>
