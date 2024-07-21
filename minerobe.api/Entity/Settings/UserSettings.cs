@@ -24,6 +24,7 @@ namespace minerobe.api.Entity.Settings
         public byte[] Texture { get; set; }
         public ModelType Model { get; set; }
         public bool IsFlat { get; set; }
+        public Guid? CapeId {get;set;}
     }
     public class UserSettingsConfig : IEntityTypeConfiguration<UserSettings>
     {

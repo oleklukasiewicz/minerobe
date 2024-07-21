@@ -9,6 +9,7 @@ namespace minerobe.api.ResponseModel.User
         public Guid Id { get; set; }
         public Guid OwnerId { get; set; }
         public Guid? CurrentTexturePackageId { get; set; }
+        public Guid? CurrentCapeId {get;set;}
         public OutfitPackageListItemResponseModel? BaseTexture { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
@@ -24,6 +25,7 @@ namespace minerobe.api.ResponseModel.User
                 OwnerId = entity.OwnerId,
                 BaseTexture = entity.BaseTexture?.ToListItemResponseModel(),
                 CurrentTexturePackageId = entity.CurrentTexturePackageId,
+                CurrentCapeId= entity.CurrentTexture?.CapeId,
                 Integrations = entity.Integrations,
                 CreatedAt = entity.CreatedAt,
                 ModifiedAt = entity.ModifiedAt

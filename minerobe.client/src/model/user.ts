@@ -34,15 +34,23 @@ export class MinerobeUserSettingsSimple {
   id: string;
   ownerId: string;
   currentTexturePackageId: string;
+  currentCapeId:string;
   baseTexture: OutfitPackage;
 }
 export class CurrentTextureConfig {
   texture: string;
   model: string;
   isFlat: boolean;
-  constructor(texture: string, model: string, isFlat: boolean) {
+  capeId: string;
+  constructor(
+    texture: string,
+    model: string,
+    isFlat: boolean,
+    capeId: string = null
+  ) {
     this.texture = texture;
     this.model = model;
     this.isFlat = isFlat;
+    this.capeId = capeId;
   }
 }

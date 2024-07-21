@@ -43,7 +43,7 @@
 
   import DefaultAnimation from "$animation/default";
   import HandsUpAnimation from "$animation/handsup";
-
+  import CloseBoxIcon from "$icons/close-box.svg?raw";
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
 
   import { ExportImageLayers } from "$src/helpers/data/dataTransferHelper.js";
@@ -149,6 +149,12 @@
         );
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
+      if(isItemSet && $userSettings.currentCapeId!=null)
+      {
+        var selectedCape = $integrationSettings.capes.find(x=>x.id==$userSettings.currentCapeId);
+        $itemRenderConfig.cape=selectedCape;
+      }
+
       loaded = true;
       updateTexture();
     });
@@ -182,7 +188,8 @@
       new CurrentTextureConfig(
         modelTexture,
         $localPackage.model,
-        $itemRenderConfig.isFlatten
+        $itemRenderConfig.isFlatten,
+        $itemRenderConfig.cape?.id
       )
     );
     if (result) {
@@ -241,6 +248,10 @@
     );
     isCollectionDialogOpen = false;
     showToast("Outfit removed from collection");
+  };
+
+  const setCape = function (cape) {
+    $itemRenderConfig.cape = cape;
   };
 
   itemRenderConfig.subscribe((config) => {
@@ -377,8 +388,19 @@
         {:else}
           <div style="display:flex;flex-direaction:row;flex-wrap:wrap;gap:8px;">
             {#each $integrationSettings.capes as cape}
-              <ItemCape item={cape} />
+              <ItemCape
+                item={cape}
+                on:click={() => setCape(cape)}
+                selected={$itemRenderConfig.cape?.id == cape.id}
+              />
             {/each}
+            <ItemCape
+              on:click={() => setCape(null)}
+              selected={$itemRenderConfig.cape?.id == null}
+              ><div class="icon-big" style="margin:12px;">
+                {@html CloseBoxIcon}
+              </div></ItemCape
+            >
           </div>
         {/if}
         <br />

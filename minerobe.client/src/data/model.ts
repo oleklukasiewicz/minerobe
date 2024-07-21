@@ -28,6 +28,11 @@ export class ModelMap {
     public rightArm: ModelPart
   ) {}
 }
+export class CapeModel {
+  public name: string;
+  public id: string;
+  public texture: string;
+}
 export class OutfitPackageRenderConfig {
   public constructor(
     public item: OutfitPackage = null,
@@ -36,7 +41,8 @@ export class OutfitPackageRenderConfig {
     public singleLayer: boolean = false,
     public selectedLayer: OutfitLayer = null,
     public isFlatten: boolean = false,
-    public excludedPartsFromFlat: string[] = ["head"]
+    public excludedPartsFromFlat: string[] = ["head"],
+    public cape: CapeModel = null
   ) {}
   getLayersForModel(ignoreBaseTexture: boolean = false) {
     let result;

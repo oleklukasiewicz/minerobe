@@ -11,6 +11,7 @@ namespace minerobe.api.Model
         public string Texture { get; set; }
         public string Model { get; set; }
         public bool IsFlat { get; set; }
+        public Guid? CapeId { get; set; }
     }
     public static class CurrentTextureModelExtensions
     {
@@ -20,7 +21,8 @@ namespace minerobe.api.Model
             {
                 Texture = Encoding.UTF8.GetBytes(model.Texture),
                 Model = Enum.Parse<ModelType>(model.Model.ToFirstCapitalLetter()),
-                IsFlat = model.IsFlat
+                IsFlat = model.IsFlat,
+                CapeId = model.CapeId
             };
         }
     }

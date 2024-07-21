@@ -26,8 +26,13 @@ let cUser;
 let cToken;
 auth.onAuthStateChanged(async (user) => {
   if (user) {
-    cToken = await user.getIdToken();
-    cUser = user;
+    try {
+      cToken = await user.getIdToken();
+      cUser = user;
+    } catch {
+      cUser = null;
+      cToken = null;
+    }
   } else {
     cUser = null;
     cToken = null;
@@ -39,8 +44,12 @@ export const getCurrentUserFromLocal = () => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       unsubscribe();
       if (user) {
-        cToken = await user.getIdToken();
-        cUser = user;
+        try {
+          cToken = await user.getIdToken();
+          cUser = user;
+        } catch {
+          resolve(user);
+        }
       }
       resolve(user);
     }, reject);

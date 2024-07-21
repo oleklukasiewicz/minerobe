@@ -3,23 +3,20 @@
   import { onMount } from "svelte";
 
   export let selected = false;
-  export let item;
+  export let item: any = {};
 
   let texture = "";
   onMount(async () => {
-    texture = await GetImageArea(
-      item.texture,
-      1,
-      0,
-      10,
-      10
-    );
+    if (item.texture) texture = await GetImageArea(item.texture, 1, 0, 10, 10);
   });
 </script>
 
-<div class="item-cape" class:selected title={item.name}>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="item-cape" class:selected title={item.name} on:click>
   <!-- svelte-ignore a11y-missing-attribute -->
   <img src={texture} />
+  <slot />
 </div>
 
 <style lang="scss">
