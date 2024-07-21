@@ -149,10 +149,15 @@
         );
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
-      if(isItemSet && $userSettings.currentCapeId!=null)
-      {
-        var selectedCape = $integrationSettings.capes.find(x=>x.id==$userSettings.currentCapeId);
-        $itemRenderConfig.cape=selectedCape;
+      if (
+        isItemSet &&
+        $userSettings.currentCapeId != null &&
+        $userSettings?.currentTexturePackageId == $localPackage.id
+      ) {
+        var selectedCape = $integrationSettings.capes.find(
+          (x) => x.id == $userSettings.currentCapeId
+        );
+        $itemRenderConfig.cape = selectedCape;
       }
 
       loaded = true;

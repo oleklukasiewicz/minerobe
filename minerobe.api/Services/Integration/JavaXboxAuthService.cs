@@ -147,7 +147,7 @@ namespace minerobe.api.Services.Integration
             };
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.AccessToken);
-            var response = await client.PostAsJsonAsync(url, body);
+            var response = await client.PutAsJsonAsync(url, body);
             return response.IsSuccessStatusCode;
         }
         public async Task<bool> HideUserCape(Guid userId)
