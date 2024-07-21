@@ -71,7 +71,7 @@
       providers = await CreateDefaultRenderProvider($defaultRenderer);
       var profile = await GetUserProfile($currentUser?.id);
       userProfile.set(profile);
-      if (profile.settings.integrations.includes("minecraft")) {
+      if (profile.settings?.integrations?.includes("minecraft")) {
         var account = await GetFullAccount();
         minecraftAccount.set(account);
       }

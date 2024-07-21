@@ -20,6 +20,7 @@ export class MinerobeUserSettings {
   id: string;
   ownerId: string;
   currentTexture: CurrentTexture;
+  currentCapeId:string;
   currentTexturePackageId: string;
   baseTexture: OutfitPackage;
   integrations: string[];

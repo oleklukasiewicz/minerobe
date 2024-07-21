@@ -114,7 +114,7 @@
         const settings = await FetchSettings();
         userSettings.set(settings);
 
-        if (settings.integrations.includes("minecraft")) {
+        if (settings?.integrations?.includes("minecraft")) {
           const integrationProfile = await GetAccount();
           integrationSettings.set(integrationProfile);
         }
