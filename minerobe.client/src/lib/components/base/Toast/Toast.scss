@@ -6,7 +6,7 @@
   margin-left: auto;
   margin-right: auto;
   display: table;
-
+  z-index: 20;
   background-color: var(--color-accent);
   &.error {
     background-color: var(--color-error);
@@ -17,7 +17,6 @@
   &.info {
     background-color: var(--color-info);
   }
-  z-index: 20;
   & > * {
     display: inline-table;
     color: var(--color-accent-font);

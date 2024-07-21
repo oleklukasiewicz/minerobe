@@ -1,4 +1,5 @@
 .outfit-picker {
+  max-width: 100%;
   .list {
     .hidden {
       display: none;
@@ -10,5 +11,4 @@
       gap: 4px;
     }
   }
-  max-width: 100%;
 }

@@ -10,6 +10,7 @@
   }
   .header {
     box-sizing: border-box;
+    padding-bottom: 8px;
     & span {
       font-family: minecraft;
       margin: 2px;
@@ -18,7 +19,6 @@
       display: inline-table;
       font-size: 15px;
     }
-    padding-bottom: 8px;
   }
   .items {
     display: flex;
