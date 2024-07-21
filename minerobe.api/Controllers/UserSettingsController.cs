@@ -64,8 +64,15 @@ namespace minerobe.api.Controllers
 
             var entity = currentTexture.ToEntity();
             var settings = await _userSettingsService.UpdateCurrentTexture(user.Id, id, entity);
+            //minecraft services integrations
             if (settings.Integrations.Contains("minecraft"))
+            {
                 await _javaXboxAuthService.SetUserSkin(user.Id, entity.Model);
+                if (currentTexture.CapeId != null)
+                    await _javaXboxAuthService.SetUserCape(user.Id, currentTexture.CapeId.Value);
+                else
+                    await _javaXboxAuthService.HideUserCape(user.Id);
+            }
             if (settings == null)
                 return NotFound();
 
