@@ -27,15 +27,4 @@ namespace minerobe.api.Entity.Integration
         public string Texture { get; set; }
         public string Name { get; set; }
     }
-    public class JavaXboxProfileConfig: IEntityTypeConfiguration<JavaXboxProfile>
-    {         
-        public void Configure(EntityTypeBuilder<JavaXboxProfile> builder)
-        {
-            builder.Property(x => x.Id).ValueGeneratedOnAdd().HasDefaultValueSql("newsequentialid()");
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Skins).StoreAsJSON();
-            builder.Property(x => x.Capes).StoreAsJSON();
-            builder.ToTable("JavaXboxProfile", "integration");
-        }
-    }
 }

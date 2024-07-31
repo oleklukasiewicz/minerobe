@@ -93,15 +93,15 @@ namespace minerobe.api.Services
             return await GetSettings(userId);
         }
 
-        public async Task<UserSettings> AddIntegration(Guid userId, string integrationId)
+        public async Task<UserSettings> AddIntegration(Guid userId, IntegrationMatching integration)
         {
             var settings = await _context.UserSettings.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
             if (settings == null)
                 return null;
 
             if (settings.Integrations == null)
-                settings.Integrations = new List<string>();
-            settings.Integrations.Add(integrationId);
+                settings.Integrations = new List<IntegrationMatching>();
+            settings.Integrations.Add(integration);
             settings.ModifiedAt = DateTime.Now;
 
             _context.UserSettings.Update(settings);
@@ -114,7 +114,11 @@ namespace minerobe.api.Services
             if (settings == null)
                 return null;
             if (settings.Integrations != null)
-                settings.Integrations.Remove(integrationId);
+            {
+                var integration = settings.Integrations.FirstOrDefault(x => x.Type.ToLower() == integrationId.ToLower());
+                if (integration != null)
+                    settings.Integrations.Remove(integration);
+            }
             settings.ModifiedAt = DateTime.Now;
 
             _context.UserSettings.Update(settings);

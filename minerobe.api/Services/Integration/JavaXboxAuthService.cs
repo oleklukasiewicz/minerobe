@@ -1,5 +1,4 @@
 ﻿using CmlLib.Core.Auth.Microsoft;
-using CmlLib.Core.MojangLauncher;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using minerobe.api.Configuration;
@@ -19,6 +18,9 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using minerobe.api.Entity.Package;
+using Newtonsoft.Json;
+using minerobe.api.Helpers;
+using minerobe.api.Entity.Settings;
 namespace minerobe.api.Services.Integration
 {
     public class JavaXboxAuthService : IJavaXboxAuthService
@@ -34,14 +36,14 @@ namespace minerobe.api.Services.Integration
         }
         public async Task<JavaXboxProfile> GetProfile(MinerobeUser user)
         {
-            var profileMatch = await _ctx.Set<UserXboxAccountMatching>().Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
-            if (profileMatch == null)
+            var integrationprofile = await _ctx.Set<IntegrationItem>().Where(x => x.OwnerId == user.Id && x.Type == "minecraft").FirstOrDefaultAsync();
+            if (integrationprofile == null)
                 return null;
-            var integrationprofile = await _ctx.Set<JavaXboxProfile>().Where(x => x.Id == profileMatch.XboxUserId).FirstOrDefaultAsync();
             var session = await GetUserSession(user.Id);
-            var profile = await GetProfileData(session, integrationprofile);
+            var profile = await GetProfileData(session, ((object)integrationprofile.Data).ToClass<JavaXboxProfile>());
+            integrationprofile.Data = profile;
 
-            _ctx.Set<JavaXboxProfile>().Update(profile);
+            _ctx.Set<IntegrationItem>().Update(integrationprofile);
             await _ctx.SaveChangesAsync();
             return profile;
         }
@@ -71,18 +73,21 @@ namespace minerobe.api.Services.Integration
                 profile.AccountId = selectedAccount.Identifier;
                 profile = await GetProfileData(session, profile);
 
-                var matchings = new UserXboxAccountMatching
+                var integration = new IntegrationItem()
                 {
                     Id = Guid.NewGuid(),
-                    UserId = user.Id,
-                    XboxUserId = profile.Id
+                    OwnerId = user.Id,
+                    Type = "minecraft",
+                    Data = profile
                 };
-                _ctx.Set<UserXboxAccountMatching>().Add(matchings);
-                _ctx.Set<JavaXboxProfile>().Add(profile);
+                _ctx.Set<IntegrationItem>().Add(integration);
 
                 await _ctx.SaveChangesAsync();
-                await _userSettingsService.AddIntegration(user.Id, "minecraft");
-
+                await _userSettingsService.AddIntegration(user.Id, new IntegrationMatching()
+                {
+                    Id = integration.Id,
+                    Type = "minecraft"
+                });
 
                 return profile;
             }
@@ -91,26 +96,25 @@ namespace minerobe.api.Services.Integration
         }
         public async Task<bool> UnLinkAccount(MinerobeUser user)
         {
-            var match = await _ctx.Set<UserXboxAccountMatching>().Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
-            JavaXboxProfile profile = null;
-            if (match == null)
+            var profile = await _ctx.Set<IntegrationItem>().Where(x => x.OwnerId == user.Id && x.Type == "minecraft").FirstOrDefaultAsync();
+            if (profile == null)
                 return false;
-            profile = await _ctx.Set<JavaXboxProfile>().Where(x => x.Id == match.XboxUserId).FirstOrDefaultAsync();
 
             var app = await MsalClientHelper.BuildApplicationWithCache(_config.ClientId);
             var loginHandler = JELoginHandlerBuilder.BuildDefault();
             var accounts = loginHandler.AccountManager.GetAccounts();
 
-            var selectedAccount = accounts.GetAccount(profile.AccountId);
+            var profileData = ((object)profile.Data).ToClass<JavaXboxProfile>();
+
+            var selectedAccount = accounts.GetAccount(profileData.AccountId);
             if (selectedAccount == null)
                 return false;
 
             await loginHandler.Signout(selectedAccount);
 
-            if (match != null)
-                _ctx.Set<UserXboxAccountMatching>().Remove(match);
             if (profile != null)
-                _ctx.Set<JavaXboxProfile>().Remove(profile);
+                _ctx.Set<IntegrationItem>().Remove(profile);
+
             await _ctx.SaveChangesAsync();
             await _userSettingsService.RemoveIntegration(user.Id, "minecraft");
             return true;
@@ -161,17 +165,18 @@ namespace minerobe.api.Services.Integration
         }
         private async Task<MSession> GetUserSession(Guid userId)
         {
-            var profileMatch = await _ctx.Set<UserXboxAccountMatching>().Where(x => x.UserId == userId).FirstOrDefaultAsync();
-            if (profileMatch == null)
+            var integrationprofile = await _ctx.Set<IntegrationItem>().Where(x => x.OwnerId == userId && x.Type == "minecraft").FirstOrDefaultAsync();
+            if (integrationprofile == null)
                 return null;
-            var integrationprofile = await _ctx.Set<JavaXboxProfile>().Where(x => x.Id == profileMatch.XboxUserId).FirstOrDefaultAsync();
 
             var loginHandler = JELoginHandlerBuilder.BuildDefault();
 
 
+            var profileData = ((object)integrationprofile.Data).ToClass<JavaXboxProfile>();
+
             var app = await MsalClientHelper.BuildApplicationWithCache(_config.ClientId);
             var accounts = loginHandler.AccountManager.GetAccounts();
-            var selectedAccount = accounts.GetAccount(integrationprofile.AccountId);
+            var selectedAccount = accounts.GetAccount(profileData.AccountId);
             if (selectedAccount == null)
                 return null;
 
