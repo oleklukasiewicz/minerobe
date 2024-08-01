@@ -1,7 +1,10 @@
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using minerobe.api;
 using minerobe.api.Configuration;
 using minerobe.api.Database;
+using minerobe.api.Jobs;
 using minerobe.api.Services;
 using minerobe.api.Services.Integration;
 using minerobe.api.Services.Interface;
@@ -26,6 +29,9 @@ builder.Services.AddTransient<ILandingViewService, LandingViewService>();
 //integrations
 builder.Services.AddTransient<IJavaXboxAuthService, JavaXboxAuthService>();
 
+//jobs
+builder.Services.AddTransient<IXboxJavaAuthRefresh, XboxJavaAuthRefresh>();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -42,6 +48,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<BaseDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BaseConnection")));
+//hangfire
+
+builder.Services.AddHangfire(config =>
+{
+    config.UseSimpleAssemblyNameTypeSerializer();
+    config.UseRecommendedSerializerSettings();
+    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("BaseConnection"));
+});
+builder.Services.AddHangfireServer();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -80,6 +95,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseHangfireDashboard("/hf");
+app.MapHangfireDashboard();
+app.StartJobs();
 
 app.UseHttpsRedirection();
 
@@ -90,3 +108,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+//hangfire

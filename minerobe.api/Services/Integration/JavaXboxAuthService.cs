@@ -187,6 +187,52 @@ namespace minerobe.api.Services.Integration
             var session = await authenticator.ExecuteForLauncherAsync();
             return session;
         }
+        public async Task<List<UserExpiration>>GetUsersExpirationsDates()
+        {
+            var profiles = await _ctx.Set<IntegrationItem>().Where(x => x.Type == "minecraft").ToListAsync();
+
+            var expList=new List<UserExpiration>();
+
+            var loginHandler = JELoginHandlerBuilder.BuildDefault();
+            var accounts = loginHandler.AccountManager.GetAccounts();
+
+            foreach (var profile in profiles)
+            {
+                var profileData = ((object)profile.Data).ToClass<JavaXboxProfile>();
+                var accountId = profileData.AccountId;
+                
+                var account=accounts.GetAccount(accountId);
+               
+                expList.Add(new UserExpiration
+                {
+                    UserId = profile.OwnerId,
+                });
+            }
+            return expList;
+        }
+
+        public async Task<string> RefreshToken(Guid userId)
+        {
+            var integrationprofile = await _ctx.Set<IntegrationItem>().Where(x => x.OwnerId == userId && x.Type == "minecraft").FirstOrDefaultAsync();
+            if (integrationprofile == null)
+                return null;
+            var profileData = ((object)integrationprofile.Data).ToClass<JavaXboxProfile>();
+            var app = await MsalClientHelper.BuildApplicationWithCache(_config.ClientId);
+            
+            var loginHandler = JELoginHandlerBuilder.BuildDefault();       
+            var accounts = loginHandler.AccountManager.GetAccounts();
+
+            var selectedAccount = accounts.GetAccount(profileData.AccountId);
+            if (selectedAccount == null)
+                return null;
+
+            var authenticator = loginHandler.CreateAuthenticator(selectedAccount, default);
+            authenticator.AddMsalOAuth(app, msal => msal.Silent());
+            authenticator.AddXboxAuthForJE(xbox => xbox.Basic());
+            authenticator.AddJEAuthenticator();
+            var session = await authenticator.ExecuteForLauncherAsync();
+            return "Token Updated";
+        }
         private async Task<JavaXboxProfile> GetProfileData(MSession session, JavaXboxProfile profile)
         {
             Mojang mojang = new Mojang(new HttpClient());
@@ -246,6 +292,14 @@ namespace minerobe.api.Services.Integration
 
             }
             return profile;
+        }
+
+
+        //helpers class
+        public class UserExpiration
+        {
+            public Guid UserId { get; set; }
+            public DateTime Expiration { get; set; }
         }
     }
 }

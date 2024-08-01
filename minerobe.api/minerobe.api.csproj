@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="CmlLib.Core.Auth.Microsoft" Version="3.1.0" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.14" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.14" />
     <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.4.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
@@ -18,7 +20,7 @@
     </PackageReference>
     <PackageReference Include="MojangAPI" Version="1.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
     <PackageReference Include="XboxAuthNet.Game.Msal" Version="0.1.0" />
   </ItemGroup>
 
