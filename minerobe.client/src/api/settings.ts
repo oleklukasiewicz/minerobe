@@ -3,6 +3,7 @@ import type { OutfitPackage } from "$src/model/package";
 import type {
   CurrentTextureConfig,
   MinerobeUserSettings,
+  MinerobeUserSettingsSimple,
 } from "$src/model/user";
 
 export const FetchSettings = async function () {
@@ -21,5 +22,5 @@ export const SetCurrentTexture = async function (
     "/api/UserSettings/CurrentTexture/" + packageId,
     config
   );
-  return res as MinerobeUserSettings;
+  return res as MinerobeUserSettingsSimple;
 };
