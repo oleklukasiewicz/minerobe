@@ -15,12 +15,8 @@ namespace minerobe.api.Jobs
         }
         public async Task<string> Refresh()
         {
-            var list = await _javaXboxAuthService.GetUsersExpirationsDates();
-            foreach (var user in list)
-            {
-                await _javaXboxAuthService.RefreshToken(user.UserId);
-            }
-            return "Refreshed";
+            var state = await _javaXboxAuthService.RefreshAllTokens();
+            return state;
         }
     }
 }

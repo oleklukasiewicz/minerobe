@@ -14,17 +14,17 @@ namespace minerobe.api.Controllers
             _javaXboxAuthService = javaXboxAuthService;
         }
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-          //var url= _javaXboxAuthService.BeginFlow();
+            //var response = await _javaXboxAuthService.Authenticate();
             return Ok();
         }
-        [HttpGet("Response")]
-        public async Task<IActionResult> Response([FromQuery]string code,[FromQuery]string state)
+        [HttpGet("Refresh/{token}")]
+        public async Task<IActionResult> Refresh(string token)
         {
-           
-           // var response = await _javaXboxAuthService.Authenticate(code,state);
+            //var response = await _javaXboxAuthService.Refresh(token);
             return Ok();
         }
+
     }
 }

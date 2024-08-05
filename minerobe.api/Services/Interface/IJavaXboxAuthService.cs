@@ -14,7 +14,8 @@ namespace minerobe.api.Services.Interface
         Task<bool> SetUserSkin(Guid userId, ModelType model);
         Task<bool> SetUserCape(Guid userId, Guid capeId);
         Task<bool> HideUserCape(Guid userId);
-        Task<List<UserExpiration>> GetUsersExpirationsDates();
-        Task<string> RefreshToken(Guid userId);
+        Task<string> RefreshAllTokens();
+        Task<FlowAuthentication> Authenticate();
+        Task<string> Refresh(string token);
     }
 }
