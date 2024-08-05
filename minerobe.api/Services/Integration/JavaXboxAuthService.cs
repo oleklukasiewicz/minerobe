@@ -34,9 +34,10 @@ namespace minerobe.api.Services.Integration
             if (auth != null)
             {
                 var profile = new JavaXboxProfile();
-                profile = await GetProfileData(auth.Token);
                 profile.Id = Guid.NewGuid();
                 profile.AccountId = auth.AccountId;
+                profile.Profile = await GetProfileData(auth.Token);
+                
 
                 var integration = new IntegrationItem()
                 {
@@ -95,9 +96,9 @@ namespace minerobe.api.Services.Integration
         }
 
         //requests
-        private async Task<JavaXboxProfile> GetProfileData(string token)
+        private async Task<ProfileData> GetProfileData(string token)
         {
-            var profile = new JavaXboxProfile();
+            var profile = new ProfileData();
 
             var url = "https://api.minecraftservices.com/minecraft/profile";
             var client = new HttpClient();
@@ -160,11 +161,13 @@ namespace minerobe.api.Services.Integration
             var data = ((object)integrationprofile.Data).ToClass<JavaXboxProfile>();
             var token = await GetTokenFromCache(data.AccountId);
             var profile = await GetProfileData(token);
-            integrationprofile.Data = profile;
+            
+            data.Profile = profile;
+            integrationprofile.Data = data;
 
             _ctx.Set<IntegrationItem>().Update(integrationprofile);
             await _ctx.SaveChangesAsync();
-            return profile;
+            return data;
         }
 
         public async Task<string> GetUserCurrentSkin(Guid userId)

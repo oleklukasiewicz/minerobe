@@ -17,10 +17,10 @@ namespace minerobe.api.ResponseModel.Integration.JavaXbox
             return new JavaXboxProfileResponseModel
             {
                 Id = entity.Id,
-                Username = entity.Username,
-                Skin = entity.Skins.Where(x=>x.Id==entity.CurrentSkinId).FirstOrDefault(),
-                Capes = entity.Capes,
-                CurrentCapeId = entity.CurrentCapeId,
+                Username = entity.Profile.Username,
+                Skin = entity.Profile.Skins.Where(x=>x.Id==entity.Profile.CurrentSkinId).FirstOrDefault(),
+                Capes = entity.Profile.Capes,
+                CurrentCapeId = entity.Profile.CurrentCapeId,
             };
         }
     }

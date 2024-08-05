@@ -16,9 +16,9 @@ namespace minerobe.api.ResponseModel.Integration.JavaXbox
             return new JavaXboxProfileSimpleResponseModel
             {
                 Id = entity.Id,
-                Username = entity.Username,
-                Capes = entity.Capes,
-                CurrentCapeId = entity.CurrentCapeId,
+                Username = entity.Profile.Username,
+                Capes = entity.Profile.Capes,
+                CurrentCapeId = entity.Profile.CurrentCapeId,
             };
         }
     }

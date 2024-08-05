@@ -8,12 +8,7 @@ namespace minerobe.api.Entity.Integration
     {
         public Guid Id { get; set; }
         public string AccountId { get; set; }
-        public string UUID { get; set; }
-        public string Username { get; set; }
-        public List<JavaXboxSkin> Skins { get; set; }
-        public List<JavaXboxCape> Capes { get; set; }
-        public Guid? CurrentSkinId { get; set; }
-        public Guid? CurrentCapeId { get; set; }
+        public ProfileData Profile { get; set; }
     }
     public class JavaXboxCape
     {
@@ -26,5 +21,14 @@ namespace minerobe.api.Entity.Integration
         public Guid? Id { get; set; }
         public string Texture { get; set; }
         public string Name { get; set; }
+    }
+    public class ProfileData
+    {
+        public string UUID { get; set; }
+        public string Username { get; set; }
+        public List<JavaXboxSkin> Skins { get; set; }
+        public List<JavaXboxCape> Capes { get; set; }
+        public Guid? CurrentSkinId { get; set; }
+        public Guid? CurrentCapeId { get; set; }
     }
 }
