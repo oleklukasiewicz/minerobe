@@ -87,12 +87,13 @@ namespace minerobe.api.Services.Integration
             var pca = await GetPca();
             var accountsEnum = await pca.GetAccountsAsync();
             var accounts = accountsEnum.ToList();
+            var result = "";
             for(int i = 0; i < accounts.Count; i++)
             {
                 var account = accounts.ElementAt(i);
-                await Refresh(account.HomeAccountId.Identifier);
+               result+= await Refresh(account.HomeAccountId.Identifier)+", ";
             }
-            return $"Refreshed: ({accounts.Count})";
+            return $"Refreshed: ({accounts.Count}) - {result}";
         }
 
         //requests
@@ -314,7 +315,7 @@ namespace minerobe.api.Services.Integration
             if (account == null)
                 return null;
             var token = await pca.AcquireTokenSilent(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" }, account).ExecuteAsync();
-            return token.AccessToken;
+            return token.ExpiresOn.ToString();
         }
        
         //token cache
