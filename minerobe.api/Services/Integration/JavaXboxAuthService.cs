@@ -13,6 +13,7 @@ using minerobe.api.Entity.Package;
 using Newtonsoft.Json;
 using minerobe.api.Helpers;
 using minerobe.api.Entity.Settings;
+using Microsoft.Identity.Client.Extensions.Msal;
 namespace minerobe.api.Services.Integration
 {
     public class JavaXboxAuthService : IJavaXboxAuthService
@@ -348,7 +349,19 @@ namespace minerobe.api.Services.Integration
         //pca helper
         public async Task<IPublicClientApplication> GetPca()
         {
-            return PublicClientApplicationBuilder.Create(_config.ClientId).WithAuthority("https://login.microsoftonline.com/consumers").WithDefaultRedirectUri().WithCacheOptions(CacheOptions.EnableSharedCacheOptions).Build();
+            var pca= PublicClientApplicationBuilder
+                .Create(_config.ClientId)
+                .WithAuthority("https://login.microsoftonline.com/consumers")
+                .WithDefaultRedirectUri()
+                .Build();
+
+            var storage = new StorageCreationPropertiesBuilder(_config.CacheFileName, Path.Combine(Directory.GetCurrentDirectory(),".cache",_config.CacheDirectory))
+               .WithCacheChangedEvent(_config.ClientId, "https://login.microsoftonline.com/consumers").Build();
+            var cacheHelper = await MsalCacheHelper.CreateAsync(storage);
+      
+            cacheHelper.RegisterCache(pca.UserTokenCache);
+
+            return pca;
         }
     }
 }

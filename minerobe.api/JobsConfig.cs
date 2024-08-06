@@ -6,7 +6,7 @@ namespace minerobe.api
     {
         public static void StartJobs(this IApplicationBuilder app)
         {
-            RecurringJob.AddOrUpdate<minerobe.api.Jobs.IXboxJavaAuthRefresh>("xboxJavaRefresh", x => x.Refresh(), "*/15 * * * *");
+            RecurringJob.AddOrUpdate<minerobe.api.Jobs.IXboxJavaAuthRefresh>("xboxJavaRefresh", x => x.Refresh(), "0 */5 * * *");
         }
     }
 }
