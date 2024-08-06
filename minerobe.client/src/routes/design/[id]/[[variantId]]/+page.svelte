@@ -131,12 +131,6 @@
         );
       }
       const varaint = outfitPackage.layers.find((x) => x.id == variantId);
-
-      
-      if($userSettings?.currentTextureConfig?.model!=null && $userSettings?.currentTexturePackageId == $localPackage.id)
-      {
-        data.model = $userSettings.currentTextureConfig.model == ALEX_MODEL ? MODEL_TYPE.ALEX : MODEL_TYPE.STEVE;
-      }
       
       const targetModel = data.model != null ? data.model : $localPackage.model;
       const targetModelName =
