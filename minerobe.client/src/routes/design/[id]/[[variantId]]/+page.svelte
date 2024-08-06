@@ -113,17 +113,18 @@
       outfitPackage = await GetPackage(id);
       if (!outfitPackage) return;
 
+      isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
+
       if (state == APP_STATE.READY) {
         const settings = await FetchSettings();
         userSettings.set(settings);
 
-        if (settings?.integrations?.includes("minecraft")) {
+        if (settings?.integrations?.includes("minecraft") && isItemSet) {
           const integrationProfile = await GetAccount();
           integrationSettings.set(integrationProfile);
         }
       }
       localPackage.set(outfitPackage);
-      isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
       if (!isItemSet) {
         $localPackage.layers = await sortOutfitLayersByColor(
           $localPackage.layers,
