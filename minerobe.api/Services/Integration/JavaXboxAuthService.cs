@@ -356,7 +356,14 @@ namespace minerobe.api.Services.Integration
                 .Build();
 
             var storage = new StorageCreationPropertiesBuilder(_config.CacheFileName, Path.Combine(Directory.GetCurrentDirectory(),".cache",_config.CacheDirectory))
-               .WithCacheChangedEvent(_config.ClientId, "https://login.microsoftonline.com/consumers").Build();
+               .WithCacheChangedEvent(_config.ClientId, "https://login.microsoftonline.com/consumers")
+               .WithLinuxKeyring(
+        schemaName: "msal.cache",
+        collection: "default",
+        secretLabel: "MSALCache",
+        attribute1: new KeyValuePair<string, string>("MsalClientID", "Microsoft.Developer.IdentityService"),
+        attribute2: new KeyValuePair<string, string>("MsalClientVersion", "1.0.0.0"))
+               .Build();
             var cacheHelper = await MsalCacheHelper.CreateAsync(storage);
       
             cacheHelper.RegisterCache(pca.UserTokenCache);
