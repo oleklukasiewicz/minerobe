@@ -113,17 +113,18 @@
       outfitPackage = await GetPackage(id);
       if (!outfitPackage) return;
 
+      isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
+
       if (state == APP_STATE.READY) {
         const settings = await FetchSettings();
         userSettings.set(settings);
 
-        if (settings?.integrations?.includes("minecraft")) {
+        if (settings?.integrations?.includes("minecraft") && isItemSet) {
           const integrationProfile = await GetAccount();
           integrationSettings.set(integrationProfile);
         }
       }
       localPackage.set(outfitPackage);
-      isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
       if (!isItemSet) {
         $localPackage.layers = await sortOutfitLayersByColor(
           $localPackage.layers,
@@ -131,12 +132,6 @@
         );
       }
       const varaint = outfitPackage.layers.find((x) => x.id == variantId);
-
-      
-      if($userSettings?.currentTextureConfig?.model!=null && $userSettings?.currentTexturePackageId == $localPackage.id)
-      {
-        data.model = $userSettings.currentTextureConfig.model == ALEX_MODEL ? MODEL_TYPE.ALEX : MODEL_TYPE.STEVE;
-      }
       
       const targetModel = data.model != null ? data.model : $localPackage.model;
       const targetModelName =
