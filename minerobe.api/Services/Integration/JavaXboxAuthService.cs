@@ -355,7 +355,7 @@ namespace minerobe.api.Services.Integration
                 .WithDefaultRedirectUri()
                 .Build();
 
-            var storage = new StorageCreationPropertiesBuilder(_config.CacheFileName, Path.Combine(Directory.GetCurrentDirectory(),".cache",_config.CacheDirectory))
+            var storage = new StorageCreationPropertiesBuilder(_config.CacheFileName, Path.Combine(".cache",_config.CacheDirectory))
                .WithCacheChangedEvent(_config.ClientId, "https://login.microsoftonline.com/consumers")
                .WithLinuxKeyring(
         schemaName: "msal.cache",
