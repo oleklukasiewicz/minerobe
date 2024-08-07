@@ -23,7 +23,7 @@
   .item-cape {
     min-height: 64px;
     max-height: 92px;
-    padding: 8px;
+    padding: 4px;
     box-sizing: border-box;
     aspect-ratio: 1/1;
     border: 4px solid var(--color-theme-D2);
