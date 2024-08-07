@@ -22,6 +22,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@microsoft/signalr": "^8.0.7",
 		"@sveltejs/adapter-node": "^5.2.0",
 		"axios": "^1.7.2",
 		"color-diff": "^1.4.0",

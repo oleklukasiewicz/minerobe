@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using minerobe.api.Helpers;
 using minerobe.api.Entity.Settings;
 using Microsoft.Identity.Client.Extensions.Msal;
+using minerobe.api.Hubs;
 namespace minerobe.api.Services.Integration
 {
     public class JavaXboxAuthService : IJavaXboxAuthService
@@ -21,16 +22,18 @@ namespace minerobe.api.Services.Integration
         private readonly MicrosoftAuthConfig _config;
         private readonly IUserSettingsService _userSettingsService;
         private readonly BaseDbContext _ctx;
-        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx, IUserSettingsService userSettingsService)
+        private readonly IDefaultHub _defaultHub;
+        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx, IUserSettingsService userSettingsService,IDefaultHub defaultHub)
         {
             _config = options.Value;
             _ctx = ctx;
             _userSettingsService = userSettingsService;
+            _defaultHub = defaultHub;
         }
         public async Task<JavaXboxProfile> LinkAccount(MinerobeUser user)
         {
             await UnLinkAccount(user);
-            var auth = await Authenticate();
+            var auth = await Authenticate(user.Id);
 
             if (auth != null)
             {
@@ -227,14 +230,14 @@ namespace minerobe.api.Services.Integration
         }
 
         //authorize flow
-        public async Task<FlowAuthentication> Authenticate()
+        public async Task<FlowAuthentication> Authenticate(Guid userId)
         {
             IPublicClientApplication pca = await GetPca();
 
-            var msalTokenRequest = await pca.AcquireTokenWithDeviceCode(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" }, fallback =>
+            var msalTokenRequest = await pca.AcquireTokenWithDeviceCode(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" },fallback =>
             {
-                Console.WriteLine(fallback.UserCode);
-                Console.WriteLine(fallback.VerificationUrl);
+                var message = new { UserCode = fallback.UserCode, VerificationUrl = fallback.VerificationUrl };
+                _defaultHub.SendMessage(userId,"linkToMc",message );
                 return Task.FromResult(0);
             }).ExecuteAsync();
 

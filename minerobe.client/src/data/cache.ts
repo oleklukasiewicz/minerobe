@@ -11,6 +11,7 @@ import { APP_STATE } from "$data/consts";
 import planksTextureRaw from "$src/texture/base_skin.png?url";
 import * as THREE from "three";
 import type { MinerobeUser } from "$src/model/user";
+import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 
 const isMobileViewWritable: Writable<boolean> = writable(false);
 export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
@@ -30,6 +31,7 @@ export const isUserGuest: Readable<boolean> = derived(
   currentUser,
   ($user) => $user?.id == null
 );
+export let serverWsConnection:Writable<any> = writable(null);
 
 let userSubscription;
 export const preSetup = function () {
@@ -57,6 +59,14 @@ export const setup = function () {
   userSubscription = currentUser.subscribe(async (user) => {
     appState.set(user != null ? APP_STATE.READY : APP_STATE.GUEST_READY);
   });
+  serverWsConnection.set( new HubConnectionBuilder().withUrl("/api/ws?userId="+get(currentUser).id,HttpTransportType.ServerSentEvents).build());
+
+  get(serverWsConnection).start().then(() => {
+    console.log("Connection started!");
+  }).catch((err) => {
+    console.error(err);
+  } );
+
 };
 export const currentToasts: Writable<any[]> = writable([]);
 export const showToast = function (

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using minerobe.api;
 using minerobe.api.Configuration;
 using minerobe.api.Database;
+using minerobe.api.Hubs;
 using minerobe.api.Jobs;
 using minerobe.api.Services;
 using minerobe.api.Services.Integration;
@@ -25,6 +26,9 @@ builder.Services.AddTransient<ICollectionService, CollectionService>();
 builder.Services.AddTransient<IWardrobeService, WardrobeService>();
 builder.Services.AddTransient<IUserSettingsService, UserSettingsService>();
 builder.Services.AddTransient<ILandingViewService, LandingViewService>();
+
+//hubs
+builder.Services.AddTransient<IDefaultHub, DefaultHub>();
 
 //integrations
 builder.Services.AddTransient<IJavaXboxAuthService, JavaXboxAuthService>();
@@ -68,7 +72,8 @@ builder.Services.AddHangfireServer(o =>
     o.Queues = new string[] { "default" };
     o.ServerName = "minerobe";
 });
-
+//signalr
+builder.Services.AddSignalR();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -118,6 +123,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseStaticFiles();
+app.MapHub<DefaultHub>("/ws");
 
 app.Run();
 

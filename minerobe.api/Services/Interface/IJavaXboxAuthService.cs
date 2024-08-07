@@ -15,7 +15,7 @@ namespace minerobe.api.Services.Interface
         Task<bool> SetUserCape(Guid userId, Guid capeId);
         Task<bool> HideUserCape(Guid userId);
         Task<string> RefreshAllTokens();
-        Task<FlowAuthentication> Authenticate();
+        Task<FlowAuthentication> Authenticate(Guid userId);
         Task<string> Refresh(string token);
     }
 }
