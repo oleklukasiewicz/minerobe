@@ -11,4 +11,19 @@
       gap: 4px;
     }
   }
+  .filters
+  {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    .search
+    {
+      flex: 1;
+      text-align: right;
+    }
+    .categories
+    {
+      margin: 3px 0px;
+    }
+  }
 }

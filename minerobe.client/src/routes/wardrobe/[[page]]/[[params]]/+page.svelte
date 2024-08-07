@@ -55,6 +55,7 @@
   import Select from "$lib/components/base/Select/Select.svelte";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import { ConvertToStringColor } from "$src/helpers/image/colorHelper";
+  import type { OutfitFilter } from "$src/model/filter";
 
   const defaultList = {
     items: [],
@@ -97,7 +98,7 @@
       value: PACKAGE_TYPE.OUTFIT,
     },
   ];
-  let filter = {
+  let filter:OutfitFilter = {
     type: null,
     outfitType: [],
     phrase: "",

@@ -99,6 +99,7 @@
   import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
   import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
   import { GetAccount } from "$src/api/integration/minecraft";
+  import { OutfitFilter } from "$src/model/filter";
 
   const integrationSettings: Writable<MinecraftIntegrationModel> =
     writable(null);
@@ -374,13 +375,12 @@
   //picker
   const openOutfitPicker = async function () {
     isOutfitPickerOpen = true;
+    let filters:OutfitFilter = new OutfitFilter();
+    filters.type= PACKAGE_TYPE.OUTFIT
     const options = {
       itemsPerPage: 24,
       page: 0,
-      filters: {
-        category: "",
-        search: "",
-      },
+      filter:filters
     };
     const summary = await GetWadrobeSummary();
     pickerCategories = summary.outfitTypes
@@ -394,9 +394,7 @@
   const fetchWadrobeItems = async function (options) {
     isPickerLoading = true;
     const items = await GetWadrobePackagesSingleLayer(
-      PACKAGE_TYPE.OUTFIT,
-      options.filters.category,
-      options.filters.search,
+      options.filter,
       options.page,
       options.itemsPerPage
     );

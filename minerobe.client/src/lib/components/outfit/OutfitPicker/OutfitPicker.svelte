@@ -8,6 +8,7 @@
   import Search from "$component/base/Search/Search.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import type { OutfitPackage } from "$src/model/package";
+  import { OutfitFilter } from "$src/model/filter";
 
   export let outfits: OutfitPackage[] = [];
   export let totalItemsCount = 0;
@@ -17,13 +18,11 @@
   export let itemsPerPage = 1;
   //export let viewMode: "compact" | "full" = "full";
 
+  let filter:OutfitFilter = new OutfitFilter();
   let options = {
     itemsPerPage: itemsPerPage,
     page: 0,
-    filters: {
-      category: "",
-      search: "",
-    },
+    filter:filter
   };
   $:paginate(options);
 
@@ -43,35 +42,36 @@
   });
 
   const selectCategory = function (category) {
-    options.filters.category = category;
+    options.filter.outfitType=[category];
    options.page = 0;
   };
   const paginate = function (opt) {
     dispatch("optionsChanged", options);
   };
   const onSearch = function (e) {
-    options.filters.search = e.detail;
+    options.filter.phrase = e.detail;
   };
 </script>
 
 <div class="outfit-picker">
-  <div>
+  <div class="filters">
+    <div class="categories">
     <button
       class="small"
       style="padding-bottom:4px;"
-      class:secondary={options.filters.category != "" && options.filters.category != null}
+      class:secondary={options.filter.outfitType.length !=0 && options.filter.outfitType[0]!=""}
       on:click={() => selectCategory("")}>ALL</button
     >
     &nbsp;
     {#each categories as category}
       <button
         class="small"
-        class:secondary={options.filters.category  != category}
+        class:secondary={options.filter.outfitType[0]  != category}
         style="margin-left:4px;padding-bottom:4px;"
         on:click={() => selectCategory(category)}>{category}</button
       >
-    {/each}
-    <div style="margin-top:8px;">
+    {/each}</div>
+    <div class="search">
       <Search on:input={onSearch} />
     </div>
   </div>
