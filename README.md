@@ -36,12 +36,22 @@ VITE_MESSAGING_SENDER_ID=<value>
 VITE_APP_ID=<value>
 VITE_MEASUREMENT_ID=<value>
 ```
-Add appsettings file in minerobe.api project and add connection to your firebase app.
+Add appsettings file in minerobe.api project and add connection to your firebase app for user authentication.
 ```
 "Jwt": {
   "Authority": "https://securetoken.google.com/<your_app_id>",
   "Audience": "<your_app_id>"
 }
+```
+
+Optionally you can add parameters for integration with minecraft services using MSAL.
+```
+ "MicrosoftAuth": {
+   "ClientId": "<your-client-id>",
+   "OriginUri": "<your-origin-uri>",
+   "CacheDirectory": "<your-cache-directory>",
+   "CacheFileName": "<your-cache-file-name>"
+ }
 ```
 
 ## Screeenshots
