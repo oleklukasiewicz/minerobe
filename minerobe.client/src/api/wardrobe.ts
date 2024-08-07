@@ -108,7 +108,7 @@ export const GetWadrobePackagesSingleLayer = async function (
       pageSize,
       filter: {
         type,
-        outfitType,
+        outfitType: [outfitType],
         phrase,
       },
     }

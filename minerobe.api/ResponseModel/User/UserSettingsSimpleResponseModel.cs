@@ -28,7 +28,7 @@ namespace minerobe.api.ResponseModel.User
                 CurrentTexturePackageId = entity.CurrentTexturePackageId,
                 CurrentTextureConfig = entity.CurrentTexture.ToConfigResponse(),
                 CurrentCapeId= entity.CurrentTexture?.CapeId,
-                Integrations = entity.Integrations.Select(x=>x.Type).ToList(),
+                Integrations = entity.Integrations?.Select(x=>x.Type).ToList(),
                 CreatedAt = entity.CreatedAt,
                 ModifiedAt = entity.ModifiedAt
             };
