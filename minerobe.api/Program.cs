@@ -56,20 +56,32 @@ builder.Services.AddHangfire(config =>
     config.UseRecommendedSerializerSettings();
     config.UseSqlServerStorage(builder.Configuration.GetConnectionString("BaseConnection"));
 });
-builder.Services.AddHangfireServer();
+builder.Services.AddHangfireServer(o =>
+{
+    o.WorkerCount = 1;
+    o.Queues = new string[] { "integration" };
+    o.ServerName = "minerobe.integration";
+});
+builder.Services.AddHangfireServer(o =>
+{
+    o.WorkerCount = 1;
+    o.Queues = new string[] { "default" };
+    o.ServerName = "minerobe";
+});
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme()
-    { 
-        Name="Authorization",
-        Type=Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-        Scheme="Bearer",
-        BearerFormat="JWT",
-        In=Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description="JWT Authorization header using the Bearer scheme"
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme"
     });
     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement()
     {

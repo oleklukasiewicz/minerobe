@@ -1,7 +1,9 @@
-﻿using minerobe.api.Services.Interface;
+﻿using Hangfire;
+using minerobe.api.Services.Interface;
 
 namespace minerobe.api.Jobs
 {
+    [Queue("integration")]
     public interface IXboxJavaAuthRefresh
     {
         public Task<string> Refresh();
