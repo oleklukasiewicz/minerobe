@@ -8,12 +8,11 @@
 
   const dispatch = createEventDispatcher();
 
-  export let isAuthorized: boolean = false;
   export let profile: any = null;
   export let authUrl: string = "";
   export let authCode: string = "";
-  let linkText = "Link account";
-  let unLinkText = "Unlink account";
+  export let linkText = "Link account";
+  export let unLinkText = "Unlink account";
 
   const unlink = function () {
     unLinkText = "Unlinking...";
@@ -24,7 +23,6 @@
     showToast("Code copied to clipboard");
   };
   const link = function () {
-    linkText = "Linking...";
     dispatch("link");
   };
 </script>

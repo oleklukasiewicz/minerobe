@@ -7,6 +7,7 @@
     isMobileView,
     defaultRenderer,
     serverWsConnection,
+    showToast,
   } from "$src/data/cache";
   import { APP_STATE, MODEL_TYPE } from "$src/data/consts";
   import { onMount } from "svelte";
@@ -99,22 +100,39 @@
     isAuthDialogOpen = false;
   };
 
-  let authUrl =null, authCode = null;
+  let authUrl =null, authCode = null,linkText = "Link account",unLinkText = "Unlink account";
   const linkAccount = async () => {
    
     if (authUrl == null || authCode == null) return;
+    linkText="Linking...";
     window.open(authUrl, "_blank");
    
   };
   const startMcLinkFlow = async () => {
     $serverWsConnection.on("linkToMc", (data) => {
-      authUrl = data.verificationUrl;
-      authCode = data.userCode;
+     
+      const currentStatus= data.status.status;
+      if(currentStatus===5)
+       linkText="Getting code...";
+      if(currentStatus===6)
+        linkText="Link account";
+
+        if(currentStatus===4 || currentStatus===2)
+        linkText="Getting data...";
+
+
+      if(!data.status.isSuccess)
+       showToast("Failed to link account",undefined, "error");
+      if(currentStatus !== 6) return;
+      authUrl = data.data.verificationUrl;
+      authCode = data.data.userCode;
       isAuthDialogOpen = true;
     });
-    minecraftAccount.set(profile);
     var profile = await LinkAccount();
+    showToast("Success",undefined, "success");
+    minecraftAccount.set(profile);
     isAuthDialogOpen = false;
+    linkText="Link account";
   };
 </script>
 
@@ -213,11 +231,11 @@
           {/if}
         </div>
         <div class="actions">
-          {#if $minecraftAccount == null}
+          {#if $minecraftAccount?.id == null}
             <Button
               type="primary"
               on:click={startMcLinkFlow}
-              label="Link account"
+              label={linkText}
             />
           {:else}
             <Button
@@ -242,7 +260,7 @@
 </div>
 <Dialog bind:open={isAuthDialogOpen} label={$_("link_to_mc")}>
   <div class="auth-dialog">
-    <LinkAccountDialog profile={$minecraftAccount} on:unlink={unLink} on:link={linkAccount}  {authCode} {authUrl}/>
+    <LinkAccountDialog profile={$minecraftAccount} on:unlink={unLink} on:link={linkAccount} {linkText}  {authCode} {authUrl}/>
   </div>
 </Dialog>
 <Dialog bind:open={isBaseTextureDialogOpen} label="Base texture">

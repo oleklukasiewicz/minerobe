@@ -17,13 +17,23 @@ using Microsoft.Identity.Client.Extensions.Msal;
 using minerobe.api.Hubs;
 namespace minerobe.api.Services.Integration
 {
+    public enum JavaXboxAuthStatus
+    {
+        Failed,
+        Success,
+        ConnectingToMojang,
+        AuthorizedInMs,
+        ConnectingToXbox,
+        ConnectingToMs,
+        AwaitingUserInput
+    }
     public class JavaXboxAuthService : IJavaXboxAuthService
     {
         private readonly MicrosoftAuthConfig _config;
         private readonly IUserSettingsService _userSettingsService;
         private readonly BaseDbContext _ctx;
         private readonly IDefaultHub _defaultHub;
-        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx, IUserSettingsService userSettingsService,IDefaultHub defaultHub)
+        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx, IUserSettingsService userSettingsService, IDefaultHub defaultHub)
         {
             _config = options.Value;
             _ctx = ctx;
@@ -41,7 +51,7 @@ namespace minerobe.api.Services.Integration
                 profile.Id = Guid.NewGuid();
                 profile.AccountId = auth.AccountId;
                 profile.Profile = await GetProfileData(auth.Token);
-                
+
 
                 var integration = new IntegrationItem()
                 {
@@ -73,7 +83,7 @@ namespace minerobe.api.Services.Integration
             var profileData = ((object)profile.Data).ToClass<JavaXboxProfile>();
 
             var pca = await GetPca();
-            var selectedAccount =await pca.GetAccountAsync(profileData.AccountId);
+            var selectedAccount = await pca.GetAccountAsync(profileData.AccountId);
             if (selectedAccount == null)
                 return false;
 
@@ -92,10 +102,10 @@ namespace minerobe.api.Services.Integration
             var accountsEnum = await pca.GetAccountsAsync();
             var accounts = accountsEnum.ToList();
             var result = "";
-            for(int i = 0; i < accounts.Count; i++)
+            for (int i = 0; i < accounts.Count; i++)
             {
                 var account = accounts.ElementAt(i);
-               result+= await Refresh(account.HomeAccountId.Identifier)+", ";
+                result += await Refresh(account.HomeAccountId.Identifier) + ", ";
             }
             return $"Refreshed: ({accounts.Count}) - {result}";
         }
@@ -165,13 +175,20 @@ namespace minerobe.api.Services.Integration
 
             var data = ((object)integrationprofile.Data).ToClass<JavaXboxProfile>();
             var token = await GetTokenFromCache(data.AccountId);
-            var profile = await GetProfileData(token);
-            
-            data.Profile = profile;
-            integrationprofile.Data = data;
+            try
+            {
+                var profile = await GetProfileData(token);
 
-            _ctx.Set<IntegrationItem>().Update(integrationprofile);
-            await _ctx.SaveChangesAsync();
+                data.Profile = profile;
+                integrationprofile.Data = data;
+
+                _ctx.Set<IntegrationItem>().Update(integrationprofile);
+                await _ctx.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return data;
+            }
             return data;
         }
 
@@ -227,32 +244,82 @@ namespace minerobe.api.Services.Integration
             public string MsalToken { get; set; }
             public string AccountId { get; set; }
             public DateTime RetrievedAt { get; set; }
+            public FlowStatus Status { get; set; }
+        }
+        public class FlowStatus
+        {
+            public JavaXboxAuthStatus Status { get; set; }
+            public bool IsSuccess { get; set; }
+        }
+        public class FlowStep
+        {
+            public FlowStatus Status { get; set; }
+            public dynamic Data { get; set; }
         }
 
         //authorize flow
         public async Task<FlowAuthentication> Authenticate(Guid userId)
         {
-            IPublicClientApplication pca = await GetPca();
-
-            var msalTokenRequest = await pca.AcquireTokenWithDeviceCode(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" },fallback =>
+            var status = new FlowStatus() { Status = JavaXboxAuthStatus.ConnectingToMs, IsSuccess = true };
+            try
             {
-                var message = new { UserCode = fallback.UserCode, VerificationUrl = fallback.VerificationUrl };
-                _defaultHub.SendMessage(userId,"linkToMc",message );
-                return Task.FromResult(0);
-            }).ExecuteAsync();
+                IPublicClientApplication pca = await GetPca();
+                await _defaultHub.SendMessage(userId, "linkToMc", new FlowStep()
+                {
+                    Status = status,
+                });
 
-            var accountId = msalTokenRequest.Account.HomeAccountId.Identifier;
-            var accounts = await pca.GetAccountsAsync();
 
-            var msalToken = msalTokenRequest.AccessToken;
-            var msalTokenExpireOn = msalTokenRequest.ExpiresOn;
+                var msalTokenRequest = await pca.AcquireTokenWithDeviceCode(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" }, fallback =>
+                {
+                    status.Status = JavaXboxAuthStatus.AwaitingUserInput;
+                    var message = new { UserCode = fallback.UserCode, VerificationUrl = fallback.VerificationUrl };
+                    _defaultHub.SendMessage(userId, "linkToMc", new FlowStep()
+                    {
+                        Status = status,
+                        Data = message
+                    });
+                    return Task.FromResult(0);
+                }).ExecuteAsync();
 
-            var xstsToken = await AuthorizeToXbox(msalToken);
-            var token = xstsToken.token.ToString();
-            var uhs = xstsToken.uhs.ToString();
-            var accessToken = await AuthorizeToMinecraftServices(token, uhs);
+                var accountId = msalTokenRequest.Account.HomeAccountId.Identifier;
 
-            return new FlowAuthentication() { Token = accessToken, MsalToken = msalToken, RetrievedAt = DateTime.Now,AccountId=accountId };
+                var msalToken = msalTokenRequest.AccessToken;
+                var msalTokenExpireOn = msalTokenRequest.ExpiresOn;
+
+                status.Status = JavaXboxAuthStatus.ConnectingToXbox;
+                await _defaultHub.SendMessage(userId, "linkToMc", new FlowStep()
+                {
+                    Status = status,
+                    Data = null
+                });
+
+                var xstsToken = await AuthorizeToXbox(msalToken);
+                var token = xstsToken.token.ToString();
+                var uhs = xstsToken.uhs.ToString();
+
+                status.Status = JavaXboxAuthStatus.ConnectingToMojang;
+                await _defaultHub.SendMessage(userId, "linkToMc", new FlowStep()
+                {
+                    Status = status,
+                    Data = null
+                });
+                var accessToken = await AuthorizeToMinecraftServices(token, uhs);
+
+                status.Status = JavaXboxAuthStatus.Success;
+                await _defaultHub.SendMessage(userId, "linkToMc", new FlowStep()
+                {
+                    Status = status,
+                    Data = null
+                });
+
+                return new FlowAuthentication() { Token = accessToken, MsalToken = msalToken, RetrievedAt = DateTime.Now, AccountId = accountId, Status = status };
+            }
+            catch (Exception ex)
+            {
+                status.IsSuccess = false;
+                return new FlowAuthentication() { Status = status };
+            }
         }
         private async Task<dynamic> AuthorizeToXbox(string token)
         {
@@ -321,7 +388,7 @@ namespace minerobe.api.Services.Integration
             var token = await pca.AcquireTokenSilent(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" }, account).ExecuteAsync();
             return token.ExpiresOn.ToString();
         }
-       
+
         //token cache
         public async Task<string> GetTokenFromCache(string accountId)
         {
@@ -341,29 +408,29 @@ namespace minerobe.api.Services.Integration
             return accessToken;
         }
         public async Task<string> GetTokenFromCacheByUserId(Guid userId)
-            {
+        {
             var profile = await _ctx.Set<IntegrationItem>().Where(x => x.OwnerId == userId && x.Type == "minecraft").FirstOrDefaultAsync();
             if (profile == null)
                 return null;
             var profileData = ((object)profile.Data).ToClass<JavaXboxProfile>();
             return await GetTokenFromCache(profileData.AccountId);
         }
-    
+
         //pca helper
         public async Task<IPublicClientApplication> GetPca()
         {
-            var pca= PublicClientApplicationBuilder
+            var pca = PublicClientApplicationBuilder
                 .Create(_config.ClientId)
                 .WithAuthority("https://login.microsoftonline.com/consumers")
                 .WithDefaultRedirectUri()
                 .Build();
 
-            var storage = new StorageCreationPropertiesBuilder(_config.CacheFileName, Path.Combine(".cache",_config.CacheDirectory))
+            var storage = new StorageCreationPropertiesBuilder(_config.CacheFileName, Path.Combine(".cache", _config.CacheDirectory))
                .WithCacheChangedEvent(_config.ClientId, "https://login.microsoftonline.com/consumers")
                .WithLinuxUnprotectedFile()
                .Build();
             var cacheHelper = await MsalCacheHelper.CreateAsync(storage);
-      
+
             cacheHelper.RegisterCache(pca.UserTokenCache);
 
             return pca;
