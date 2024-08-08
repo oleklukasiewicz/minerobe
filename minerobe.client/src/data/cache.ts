@@ -59,7 +59,9 @@ export const setup = function () {
   userSubscription = currentUser.subscribe(async (user) => {
     appState.set(user != null ? APP_STATE.READY : APP_STATE.GUEST_READY);
   });
-  serverWsConnection.set( new HubConnectionBuilder().withUrl("/api/ws?userId="+get(currentUser).id,HttpTransportType.ServerSentEvents).build());
+  serverWsConnection.set( new HubConnectionBuilder().withUrl("/api/ws?userId="+get(currentUser).id,HttpTransportType.ServerSentEvents)
+  .withKeepAliveInterval(15000)
+  .withAutomaticReconnect().build());
 
   get(serverWsConnection).start().then(() => {
     console.log("Connection started!");
