@@ -6,6 +6,7 @@
     currentUser,
     isMobileView,
     defaultRenderer,
+    serverWsConnection,
   } from "$src/data/cache";
   import { APP_STATE, MODEL_TYPE } from "$src/data/consts";
   import { onMount } from "svelte";
@@ -95,10 +96,25 @@
   const unLink = async () => {
     await UnLinkAccount();
     minecraftAccount.set({});
+    isAuthDialogOpen = false;
   };
+
+  let authUrl =null, authCode = null;
   const linkAccount = async () => {
-    var profile = await LinkAccount();
+   
+    if (authUrl == null || authCode == null) return;
+    window.open(authUrl, "_blank");
+   
+  };
+  const startMcLinkFlow = async () => {
+    $serverWsConnection.on("linkToMc", (data) => {
+      authUrl = data.verificationUrl;
+      authCode = data.userCode;
+      isAuthDialogOpen = true;
+    });
     minecraftAccount.set(profile);
+    var profile = await LinkAccount();
+    isAuthDialogOpen = false;
   };
 </script>
 
@@ -200,7 +216,7 @@
           {#if $minecraftAccount == null}
             <Button
               type="primary"
-              on:click={() => (isAuthDialogOpen = true)}
+              on:click={startMcLinkFlow}
               label="Link account"
             />
           {:else}
@@ -226,7 +242,7 @@
 </div>
 <Dialog bind:open={isAuthDialogOpen} label={$_("link_to_mc")}>
   <div class="auth-dialog">
-    <LinkAccountDialog profile={$minecraftAccount} on:unlink={unLink} on:link={linkAccount} />
+    <LinkAccountDialog profile={$minecraftAccount} on:unlink={unLink} on:link={linkAccount}  {authCode} {authUrl}/>
   </div>
 </Dialog>
 <Dialog bind:open={isBaseTextureDialogOpen} label="Base texture">

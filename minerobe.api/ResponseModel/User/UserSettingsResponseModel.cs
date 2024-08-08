@@ -31,7 +31,7 @@ namespace minerobe.api.ResponseModel.User
                 CurrentTexture= entity.CurrentTexture?.ToResponseModel(),
                 CreatedAt = entity.CreatedAt,
                 ModifiedAt = entity.ModifiedAt,
-                Integrations = entity.Integrations.Select(x=>x.Type).ToList(),
+                Integrations = entity.Integrations?.Select(x=>x.Type).ToList(),
                 
             };
         }
