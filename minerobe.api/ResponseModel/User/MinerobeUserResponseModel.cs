@@ -16,7 +16,7 @@ namespace minerobe.api.ResponseModel.User
             {
                 Id = entity.Id,
                 Name = entity.Name,
-                Avatar = "data:image/png;base64," + entity.Avatar
+                Avatar = entity.Avatar
             };
         }
     }

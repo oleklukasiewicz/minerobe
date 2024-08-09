@@ -190,6 +190,8 @@ namespace minerobe.api.Services.Integration
             try
             {
                 var token = await GetTokenFromCache(data.AccountId);
+                if (token == null)
+                    return data;
                 var profile = await GetProfileData(token);
 
                     data.Profile = profile;
@@ -321,12 +323,16 @@ namespace minerobe.api.Services.Integration
                 var accountId = msalTokenRequest.Account.HomeAccountId.Identifier;
                 var msalToken = msalTokenRequest.AccessToken;
                 var msalTokenExpireOn = msalTokenRequest.ExpiresOn;
+                if (msalToken == null)
+                    throw new Exception("Failed to authorize to ms");
 
                 //connecting to xbox
                 status.Status = JavaXboxAuthStatus.ConnectingToXbox;
                 await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
-
                 var xstsToken = await AuthorizeToXbox(msalToken);
+                if(xstsToken== null)
+                    throw new Exception("Failed to authorize to xbox");
+
                 var token = xstsToken.token.ToString();
                 var uhs = xstsToken.uhs.ToString();
 
@@ -334,6 +340,8 @@ namespace minerobe.api.Services.Integration
                 status.Status = JavaXboxAuthStatus.ConnectingToMojang;
                 await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
                 var accessToken = await AuthorizeToMinecraftServices(token, uhs);
+                if (accessToken == null)
+                    throw new Exception("Failed to authorize to mojang");
 
                 status.Status = JavaXboxAuthStatus.Success;
                 await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
@@ -384,7 +392,11 @@ namespace minerobe.api.Services.Integration
             var xstsTokenResponse = await xstsTokenClient.PostAsync(xstsAuthorizeUrl, new StringContent(JsonConvert.SerializeObject(xstsAuthorizeBody), Encoding.UTF8, "application/json"));
             var xstsTokenContent = await xstsTokenResponse.Content.ReadAsStringAsync();
             var xstsTokenJson = JObject.Parse(xstsTokenContent);
+
             var xstsAuthorizeToken = xstsTokenJson["Token"];
+            if (xstsAuthorizeToken == null)
+                return null;
+
             var uhs = xstsTokenJson["DisplayClaims"]["xui"][0]["uhs"].ToString();
 
             return new { token = xstsAuthorizeToken, uhs = uhs };
@@ -400,8 +412,12 @@ namespace minerobe.api.Services.Integration
             var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json"));
             var content = await response.Content.ReadAsStringAsync();
             var json = JObject.Parse(content);
-            var accessToken = json["access_token"].ToString();
-            return accessToken;
+
+            var accessToken = json["access_token"];
+            if (accessToken == null)
+                return null;
+
+            return accessToken.ToString();
         }
 
         //refresh flow
@@ -428,6 +444,9 @@ namespace minerobe.api.Services.Integration
             var msalTokenExpireOn = token.ExpiresOn;
 
             var xstsToken = await AuthorizeToXbox(msalToken);
+            if (xstsToken == null)
+                return null;
+
             var xsts = xstsToken.token.ToString();
             var uhs = xstsToken.uhs.ToString();
             var accessToken = await AuthorizeToMinecraftServices(xsts, uhs);

@@ -90,7 +90,7 @@ namespace minerobe.api.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var bytes = await response.Content.ReadAsByteArrayAsync();
-                    avatar = Convert.ToBase64String(bytes);
+                    avatar = "data:image/png;base64," + Convert.ToBase64String(bytes);
                 }
             }
 

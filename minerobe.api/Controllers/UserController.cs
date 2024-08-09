@@ -43,7 +43,7 @@ namespace minerobe.api.Controllers
         {
             var ent = user.ToEntity();
             ent.Id = id;
-
+          
             var updated = await _userService.Update(ent);
             if (updated == null)
                 return NotFound();

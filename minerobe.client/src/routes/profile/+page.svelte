@@ -22,7 +22,7 @@
   import LoginIcon from "$src/icons/login.svg?raw";
   import BaseTextureDialog from "$lib/components/dialog/BaseTextureDialog.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import { GetUserProfile } from "$src/api/user";
+  import { GetUserProfile, UpdateUserProfile } from "$src/api/user";
   import {
     derived,
     writable,
@@ -79,6 +79,10 @@
       }
 
       loading = false;
+      userProfile.subscribe(async (p) => {
+        if (p.user == null) return;
+        await UpdateUserProfile(p.user);
+      });
     });
   });
   const logout = async () => {
@@ -118,12 +122,15 @@
   };
   const startMcLinkFlow = async () => {
     cancelLinking();
-    abortLinking= new AbortController();
+    abortLinking = new AbortController();
     $serverWsConnection.on("linkToMc", (data) => {
       const currentStatus = data.status;
       if (currentStatus === "ConnectingToMs") linkText = "Getting code...";
       if (currentStatus === "AwaitingUserInput") linkText = "Link account";
-      if (currentStatus ==="ConnectingToXbox" || currentStatus === "ConnectingToMojang")
+      if (
+        currentStatus === "ConnectingToXbox" ||
+        currentStatus === "ConnectingToMojang"
+      )
         linkText = "Getting data...";
 
       if (!data.isSuccess)
@@ -133,7 +140,6 @@
       authUrl = data.data.verificationUrl;
       authCode = data.data.userCode;
       isAuthDialogOpen = true;
-
     });
     var profile = await LinkAccount(abortLinking);
     showToast("Success", undefined, "success");
@@ -156,8 +162,9 @@
       <Placeholder
         loaded={!loading}
         style="height:46px;margin-bottom:16px;min-width:200px"
-        ><h1>{$userProfile?.user?.name}</h1></Placeholder
       >
+        <input class="title-input" bind:value={$userProfile.user.name} />
+      </Placeholder>
       <Placeholder
         loaded={!loading}
         style="height:28px;margin-bottom:16px;min-width:100px"
@@ -265,7 +272,11 @@
     </div>
   </div>
 </div>
-<Dialog bind:open={isAuthDialogOpen} label={$_("link_to_mc")} on:close={cancelLinking}>
+<Dialog
+  bind:open={isAuthDialogOpen}
+  label={$_("link_to_mc")}
+  on:close={cancelLinking}
+>
   <div class="auth-dialog">
     <LinkAccountDialog
       profile={$minecraftAccount}
