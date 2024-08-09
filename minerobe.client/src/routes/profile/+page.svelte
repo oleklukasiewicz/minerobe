@@ -98,41 +98,48 @@
     await UnLinkAccount();
     minecraftAccount.set({});
     isAuthDialogOpen = false;
+    cancelLinking();
   };
 
-  let authUrl =null, authCode = null,linkText = "Link account",unLinkText = "Unlink account";
+  let authUrl = null,
+    authCode = null,
+    linkText = "Link account",
+    unLinkText = "Unlink account";
+
+  let abortLinking = new AbortController();
   const linkAccount = async () => {
-   
     if (authUrl == null || authCode == null) return;
-    linkText="Linking...";
+    linkText = "Linking...";
     window.open(authUrl, "_blank");
-   
+  };
+  const cancelLinking = () => {
+    abortLinking.abort();
+    isAuthDialogOpen = false;
   };
   const startMcLinkFlow = async () => {
+    cancelLinking();
+    abortLinking= new AbortController();
     $serverWsConnection.on("linkToMc", (data) => {
-     
-      const currentStatus= data.status.status;
-      if(currentStatus===5)
-       linkText="Getting code...";
-      if(currentStatus===6)
-        linkText="Link account";
+      const currentStatus = data.status;
+      if (currentStatus === "ConnectingToMs") linkText = "Getting code...";
+      if (currentStatus === "AwaitingUserInput") linkText = "Link account";
+      if (currentStatus ==="ConnectingToXbox" || currentStatus === "ConnectingToMojang")
+        linkText = "Getting data...";
 
-        if(currentStatus===4 || currentStatus===2)
-        linkText="Getting data...";
+      if (!data.isSuccess)
+        showToast("Failed to link account", undefined, "error");
 
-
-      if(!data.status.isSuccess)
-       showToast("Failed to link account",undefined, "error");
-      if(currentStatus !== 6) return;
+      if (currentStatus !== "AwaitingUserInput") return;
       authUrl = data.data.verificationUrl;
       authCode = data.data.userCode;
       isAuthDialogOpen = true;
+
     });
-    var profile = await LinkAccount();
-    showToast("Success",undefined, "success");
+    var profile = await LinkAccount(abortLinking);
+    showToast("Success", undefined, "success");
     minecraftAccount.set(profile);
     isAuthDialogOpen = false;
-    linkText="Link account";
+    linkText = "Link account";
   };
 </script>
 
@@ -258,9 +265,16 @@
     </div>
   </div>
 </div>
-<Dialog bind:open={isAuthDialogOpen} label={$_("link_to_mc")}>
+<Dialog bind:open={isAuthDialogOpen} label={$_("link_to_mc")} on:close={cancelLinking}>
   <div class="auth-dialog">
-    <LinkAccountDialog profile={$minecraftAccount} on:unlink={unLink} on:link={linkAccount} {linkText}  {authCode} {authUrl}/>
+    <LinkAccountDialog
+      profile={$minecraftAccount}
+      on:unlink={unLink}
+      on:link={linkAccount}
+      {linkText}
+      {authCode}
+      {authUrl}
+    />
   </div>
 </Dialog>
 <Dialog bind:open={isBaseTextureDialogOpen} label="Base texture">

@@ -3,15 +3,23 @@
 
   import CloseIcon from "$icons/close.svg?raw";
 
+  import { createEventDispatcher } from "svelte";
+  const dispatch = createEventDispatcher();
+
   export let open = false;
   export let style = "";
   export let label = "";
   export let showTitleBar = true;
+
+  const onClose = () => {
+    open = false;
+    dispatch("close");
+  };
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="dialog" class:open on:click={() => (open = false)}>
+<div class="dialog" class:open on:click={onClose}>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   {#if open}
@@ -24,7 +32,7 @@
             icon={CloseIcon}
             label="Close"
             onlyIcon
-            on:click={() => (open = false)}
+            on:click={onClose}
           />
         </div>
       {/if}

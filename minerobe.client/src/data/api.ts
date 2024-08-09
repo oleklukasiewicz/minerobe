@@ -81,9 +81,14 @@ export const getAuthUser = () => {
   return cUser;
 };
 
-export const PostRequest = async function (path: string, data: any) {
+export const PostRequest = async function (
+  path: string,
+  data: any,
+  abortController = null
+) {
   const res = await fetch(path, {
     method: "POST",
+    signal: abortController?.signal,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${cToken}`,
@@ -92,8 +97,12 @@ export const PostRequest = async function (path: string, data: any) {
   });
   return res.json();
 };
-export const GetRequest = async function (path: string) {
+export const GetRequest = async function (
+  path: string,
+  abortController = null
+) {
   const res = await axios.get(path, {
+    signal: abortController?.signal,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${cToken}`,
@@ -101,9 +110,14 @@ export const GetRequest = async function (path: string) {
   });
   return res.data;
 };
-export const PutRequest = async function (path: string, data: any) {
+export const PutRequest = async function (
+  path: string,
+  data: any,
+  abortController = null
+) {
   const res = await fetch(path, {
     method: "PUT",
+    signal: abortController?.signal,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${cToken}`,
@@ -112,9 +126,13 @@ export const PutRequest = async function (path: string, data: any) {
   });
   return res.json();
 };
-export const DeleteRequest = async function (path: string) {
+export const DeleteRequest = async function (
+  path: string,
+  abortController = null
+) {
   const res = await fetch(path, {
     method: "DELETE",
+    signal: abortController?.signal,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${cToken}`,
@@ -122,9 +140,14 @@ export const DeleteRequest = async function (path: string) {
   });
   return res.json();
 };
-export const PatchRequest = async function (path: string, data: any) {
+export const PatchRequest = async function (
+  path: string,
+  data: any,
+  abortController = null
+) {
   const res = await fetch(path, {
     method: "PATCH",
+    signal: abortController?.signal,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${cToken}`,

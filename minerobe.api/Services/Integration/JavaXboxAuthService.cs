@@ -15,6 +15,7 @@ using minerobe.api.Helpers;
 using minerobe.api.Entity.Settings;
 using Microsoft.Identity.Client.Extensions.Msal;
 using minerobe.api.Hubs;
+using Microsoft.AspNet.SignalR.Messaging;
 namespace minerobe.api.Services.Integration
 {
     public enum JavaXboxAuthStatus
@@ -33,6 +34,7 @@ namespace minerobe.api.Services.Integration
         private readonly IUserSettingsService _userSettingsService;
         private readonly BaseDbContext _ctx;
         private readonly IDefaultHub _defaultHub;
+        private const string authMessageHeader = "linkToMc";
         public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx, IUserSettingsService userSettingsService, IDefaultHub defaultHub)
         {
             _config = options.Value;
@@ -255,6 +257,31 @@ namespace minerobe.api.Services.Integration
         {
             public FlowStatus Status { get; set; }
             public dynamic Data { get; set; }
+            public FlowStep(FlowStatus status, dynamic data=null)
+            {
+
+                Status = status;
+                Data = data;
+            }
+            public FlowStep()
+            {
+
+            }
+            public FlowStepResponseModel ToResponseModel()
+            {
+                return new FlowStepResponseModel()
+                {
+                    Status = Status.Status.ToString(),
+                    IsSuccess = Status.IsSuccess,
+                    Data = Data
+                };
+            }
+        }
+        public class FlowStepResponseModel
+        {
+            public string Status { get; set; }
+            public bool IsSuccess { get; set; }
+            public dynamic Data { get; set; }
         }
 
         //authorize flow
@@ -263,61 +290,46 @@ namespace minerobe.api.Services.Integration
             var status = new FlowStatus() { Status = JavaXboxAuthStatus.ConnectingToMs, IsSuccess = true };
             try
             {
+                //connecting to ms
                 IPublicClientApplication pca = await GetPca();
-                await _defaultHub.SendMessage(userId, "linkToMc", new FlowStep()
-                {
-                    Status = status,
-                });
-
+                await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
 
                 var msalTokenRequest = await pca.AcquireTokenWithDeviceCode(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" }, fallback =>
                 {
                     status.Status = JavaXboxAuthStatus.AwaitingUserInput;
+                    
                     var message = new { UserCode = fallback.UserCode, VerificationUrl = fallback.VerificationUrl };
-                    _defaultHub.SendMessage(userId, "linkToMc", new FlowStep()
-                    {
-                        Status = status,
-                        Data = message
-                    });
+                    _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status,message).ToResponseModel());
+
                     return Task.FromResult(0);
                 }).ExecuteAsync();
 
                 var accountId = msalTokenRequest.Account.HomeAccountId.Identifier;
-
                 var msalToken = msalTokenRequest.AccessToken;
                 var msalTokenExpireOn = msalTokenRequest.ExpiresOn;
 
+                //connecting to xbox
                 status.Status = JavaXboxAuthStatus.ConnectingToXbox;
-                await _defaultHub.SendMessage(userId, "linkToMc", new FlowStep()
-                {
-                    Status = status,
-                    Data = null
-                });
+                await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
 
                 var xstsToken = await AuthorizeToXbox(msalToken);
                 var token = xstsToken.token.ToString();
                 var uhs = xstsToken.uhs.ToString();
 
+                //connecting to mojang
                 status.Status = JavaXboxAuthStatus.ConnectingToMojang;
-                await _defaultHub.SendMessage(userId, "linkToMc", new FlowStep()
-                {
-                    Status = status,
-                    Data = null
-                });
+                await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
                 var accessToken = await AuthorizeToMinecraftServices(token, uhs);
 
                 status.Status = JavaXboxAuthStatus.Success;
-                await _defaultHub.SendMessage(userId, "linkToMc", new FlowStep()
-                {
-                    Status = status,
-                    Data = null
-                });
+                await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
 
                 return new FlowAuthentication() { Token = accessToken, MsalToken = msalToken, RetrievedAt = DateTime.Now, AccountId = accountId, Status = status };
             }
             catch (Exception ex)
             {
                 status.IsSuccess = false;
+                await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
                 return new FlowAuthentication() { Status = status };
             }
         }
