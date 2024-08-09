@@ -4,7 +4,7 @@
   .header-area {
     background-color: var(--color-theme-D1);
     display: grid;
-    grid-template-columns: auto 1fr 1fr 1fr;
+    grid-template-columns: auto 1fr;
     gap: 16px;
     flex-direction: row;
     margin: 10px 10px 0px;
@@ -20,10 +20,6 @@
         image-rendering: pixelated;
         object-fit: contain;
       }
-    }
-    .header-name {
-      flex: 1;
-      max-width: 300px;
     }
   }
   &.mobile {

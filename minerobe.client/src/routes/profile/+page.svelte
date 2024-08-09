@@ -161,7 +161,7 @@
       <SectionTitle label="Profile" placeholder={loading} />
       <Placeholder
         loaded={!loading}
-        style="height:46px;margin-bottom:16px;min-width:200px"
+        style="height:46px;margin-bottom:16px;min-width:200px;"
       >
         <input class="title-input" bind:value={$userProfile.user.name} />
       </Placeholder>
