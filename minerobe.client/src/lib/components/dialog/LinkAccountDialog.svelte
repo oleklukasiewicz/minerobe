@@ -28,7 +28,7 @@
 </script>
 
 <div class="mc-auth">
-  {#if profile.id != null}
+  {#if profile?.id != null}
     <br />
     <span class="mc-font" style="font-size: var(--size-font-title);"
       >You are linked to</span
