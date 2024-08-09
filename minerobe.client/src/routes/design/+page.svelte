@@ -172,11 +172,7 @@
         );
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
-      if (
-        isItemSet &&
-        $userSettings.currentCapeId != null &&
-        $userSettings?.currentTexturePackageId == $itemPackage.id
-      ) {
+      if (isItemSet && $userSettings.currentCapeId != null) {
         var selectedCape = $integrationSettings?.capes.find(
           (x) => x.id == $userSettings.currentCapeId
         );
@@ -375,12 +371,12 @@
   //picker
   const openOutfitPicker = async function () {
     isOutfitPickerOpen = true;
-    let filters:OutfitFilter = new OutfitFilter();
-    filters.type= PACKAGE_TYPE.OUTFIT
+    let filters: OutfitFilter = new OutfitFilter();
+    filters.type = PACKAGE_TYPE.OUTFIT;
     const options = {
       itemsPerPage: 24,
       page: 0,
-      filter:filters
+      filter: filters,
     };
     const summary = await GetWadrobeSummary();
     pickerCategories = summary.outfitTypes

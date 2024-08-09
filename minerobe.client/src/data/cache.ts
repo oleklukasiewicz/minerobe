@@ -12,13 +12,16 @@ import planksTextureRaw from "$src/texture/base_skin.png?url";
 import * as THREE from "three";
 import type { MinerobeUser } from "$src/model/user";
 import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
+import { FetchSettings } from "$src/api/settings";
+import { RefreshAccount } from "$src/api/integration/minecraft";
 
 const isMobileViewWritable: Writable<boolean> = writable(false);
 export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
 
 const isMobileNavigationWritable: Writable<boolean> = writable(false);
-export const isMobileNavigation: Readable<boolean> =
-  readonly(isMobileNavigationWritable);
+export const isMobileNavigation: Readable<boolean> = readonly(
+  isMobileNavigationWritable
+);
 
 export const planksTexture: Readable<string> = readable(planksTextureRaw);
 export const defaultRenderer: Writable<string> = writable(null);
@@ -31,7 +34,7 @@ export const isUserGuest: Readable<boolean> = derived(
   currentUser,
   ($user) => $user?.id == null
 );
-export let serverWsConnection:Writable<any> = writable(null);
+export let serverWsConnection: Writable<any> = writable(null);
 
 let userSubscription;
 export const preSetup = function () {
@@ -44,7 +47,7 @@ export const preSetup = function () {
   const matchernav = window.matchMedia("(max-width: 568px)");
   isMobileNavigationWritable.set(matchernav.matches);
   matchernav.addEventListener("change", (e) => {
-     isMobileNavigationWritable.set(e.matches);
+    isMobileNavigationWritable.set(e.matches);
   });
 };
 export const setup = function () {
@@ -58,17 +61,32 @@ export const setup = function () {
   if (userSubscription) userSubscription();
   userSubscription = currentUser.subscribe(async (user) => {
     appState.set(user != null ? APP_STATE.READY : APP_STATE.GUEST_READY);
+    if (user == null) return;
+    // Setup SignalR
+    serverWsConnection.set(
+      new HubConnectionBuilder()
+        .withUrl(
+          "/api/ws?userId=" + get(currentUser).id,
+          HttpTransportType.ServerSentEvents
+        )
+        .withKeepAliveInterval(15000)
+        .withAutomaticReconnect()
+        .build()
+    );
+    get(serverWsConnection)
+      .start()
+      .then(() => {
+        console.log("Connection started!");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    //download userSettings for integrations
+    var userSettings = await FetchSettings();
+    if (userSettings?.integrations?.includes("minecraft")) {
+      await RefreshAccount();
+    }
   });
-  serverWsConnection.set( new HubConnectionBuilder().withUrl("/api/ws?userId="+get(currentUser).id,HttpTransportType.ServerSentEvents)
-  .withKeepAliveInterval(15000)
-  .withAutomaticReconnect().build());
-
-  get(serverWsConnection).start().then(() => {
-    console.log("Connection started!");
-  }).catch((err) => {
-    console.error(err);
-  } );
-
 };
 export const currentToasts: Writable<any[]> = writable([]);
 export const showToast = function (

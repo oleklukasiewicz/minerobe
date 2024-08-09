@@ -177,23 +177,29 @@ namespace minerobe.api.Services.Integration
             }
             return profile;
         }
-        public async Task<JavaXboxProfile> GetProfile(MinerobeUser user)
+        public async Task<JavaXboxProfile> GetProfile(MinerobeUser user,bool keepFresh =true)
         {
             var integrationprofile = await _ctx.Set<IntegrationItem>().Where(x => x.OwnerId == user.Id && x.Type == "minecraft").FirstOrDefaultAsync();
             if (integrationprofile == null)
                 return null;
 
             var data = ((object)integrationprofile.Data).ToClass<JavaXboxProfile>();
-            var token = await GetTokenFromCache(data.AccountId);
+            
+            if(!keepFresh)
+                return data;
             try
             {
+                var token = await GetTokenFromCache(data.AccountId);
                 var profile = await GetProfileData(token);
 
-                data.Profile = profile;
-                integrationprofile.Data = data;
+                    data.Profile = profile;
+                    integrationprofile.Data = data;
 
-                _ctx.Set<IntegrationItem>().Update(integrationprofile);
-                await _ctx.SaveChangesAsync();
+                    _ctx.Set<IntegrationItem>().Update(integrationprofile);
+                    var settings = await _ctx.UserSettings.Where(x => x.OwnerId == user.Id).FirstOrDefaultAsync();
+                    settings.CurrentTexture.CapeId = profile.CurrentCapeId;
+                    _ctx.UserSettings.Update(settings);
+                    await _ctx.SaveChangesAsync();
             }
             catch (Exception ex)
             {

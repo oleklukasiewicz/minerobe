@@ -120,7 +120,7 @@
         userSettings.set(settings);
 
         if (settings?.integrations?.includes("minecraft") && isItemSet) {
-          const integrationProfile = await GetAccount();
+          const integrationProfile = await GetAccount(false);
           integrationSettings.set(integrationProfile);
         }
       }
@@ -132,7 +132,7 @@
         );
       }
       const varaint = outfitPackage.layers.find((x) => x.id == variantId);
-      
+
       const targetModel = data.model != null ? data.model : $localPackage.model;
       const targetModelName =
         targetModel == MODEL_TYPE.ALEX ? MODEL_TYPE.ALEX : MODEL_TYPE.STEVE;
@@ -152,12 +152,8 @@
           $userSettings?.baseTexture.layers[0]
         );
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
-
-      if (
-        isItemSet &&
-        $userSettings.currentCapeId != null &&
-        $userSettings?.currentTexturePackageId == $localPackage.id
-      ) {
+      
+      if (isItemSet && $userSettings.currentCapeId != null) {
         var selectedCape = $integrationSettings?.capes.find(
           (x) => x.id == $userSettings.currentCapeId
         );

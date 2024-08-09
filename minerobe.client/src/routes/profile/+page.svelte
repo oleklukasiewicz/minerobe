@@ -74,7 +74,7 @@
       var profile = await GetUserProfile($currentUser?.id);
       userProfile.set(profile);
       if (profile.settings?.integrations?.includes("minecraft")) {
-        var account = await GetFullAccount();
+        var account = await GetFullAccount(false);
         minecraftAccount.set(account);
       }
 
