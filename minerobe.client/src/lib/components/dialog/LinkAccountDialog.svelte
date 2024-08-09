@@ -28,7 +28,7 @@
 </script>
 
 <div class="mc-auth">
-  {#if profile != null}
+  {#if profile.id != null}
     <br />
     <span class="mc-font" style="font-size: var(--size-font-title);"
       >You are linked to</span
@@ -36,7 +36,7 @@
     <br />
     <!-- svelte-ignore a11y-missing-attribute -->
     <div>
-      {#await GetImageArea(profile.skin.texture, 8, 8, 8, 8) then texture}
+      {#await GetImageArea(profile.skin?.texture, 8, 8, 8, 8) then texture}
         <img
           src={texture}
           style="min-width: calc(25%);image-rendering: pixelated;"

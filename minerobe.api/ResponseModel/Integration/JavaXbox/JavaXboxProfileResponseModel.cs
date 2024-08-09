@@ -18,9 +18,9 @@ namespace minerobe.api.ResponseModel.Integration.JavaXbox
             {
                 Id = entity.Id,
                 Username = entity.Profile.Username,
-                Skin = entity.Profile.Skins.Where(x=>x.Id==entity.Profile.CurrentSkinId).FirstOrDefault(),
+                Skin = entity.Profile.Skins?.Where(x=>x.Id==entity.Profile.CurrentSkinId).FirstOrDefault(),
                 Capes = entity.Profile.Capes,
-                CurrentCapeId = entity.Profile.CurrentCapeId,
+                CurrentCapeId = entity.Profile?.CurrentCapeId,
             };
         }
     }

@@ -116,56 +116,65 @@ namespace minerobe.api.Services.Integration
         private async Task<ProfileData> GetProfileData(string token)
         {
             var profile = new ProfileData();
-
-            var url = "https://api.minecraftservices.com/minecraft/profile";
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var response = await client.GetAsync(url);
-            var content = await response.Content.ReadAsStringAsync();
-            var json = JObject.Parse(content);
-
-            profile.UUID = json["id"].ToString();
-            profile.Username = json["name"].ToString();
-            profile.Skins = new List<JavaXboxSkin>();
-            profile.Capes = new List<JavaXboxCape>();
-
-            var dataClient = new HttpClient();
-            if (json["skins"] != null)
+            try
             {
-                foreach (var skin in json["skins"])
+                var url = "https://api.minecraftservices.com/minecraft/profile";
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var response = await client.GetAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
+                var json = JObject.Parse(content);
+
+                if(json["id"] == null)
+                    return profile;
+
+                profile.UUID = json["id"].ToString();
+                profile.Username = json["name"].ToString();
+                profile.Skins = new List<JavaXboxSkin>();
+                profile.Capes = new List<JavaXboxCape>();
+
+                var dataClient = new HttpClient();
+                if (json["skins"] != null)
                 {
-                    var skinData = new JavaXboxSkin();
-                    //get texture from url
-                    var textureUrl = skin["url"].ToString();
-                    var textureResponse = await dataClient.GetAsync(textureUrl);
-                    var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
-                    skinData.Texture = "data:image/png;base64," + Convert.ToBase64String(textureContent);
-                    skinData.Id = Guid.Parse(skin["id"].ToString());
-                    profile.Skins.Add(skinData);
-                    if (skin["state"].ToString().ToUpper() == "ACTIVE")
+                    foreach (var skin in json["skins"])
                     {
-                        profile.CurrentSkinId = skinData.Id;
+                        var skinData = new JavaXboxSkin();
+                        //get texture from url
+                        var textureUrl = skin["url"].ToString();
+                        var textureResponse = await dataClient.GetAsync(textureUrl);
+                        var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
+                        skinData.Texture = "data:image/png;base64," + Convert.ToBase64String(textureContent);
+                        skinData.Id = Guid.Parse(skin["id"].ToString());
+                        profile.Skins.Add(skinData);
+                        if (skin["state"].ToString().ToUpper() == "ACTIVE")
+                        {
+                            profile.CurrentSkinId = skinData.Id;
+                        }
+                    }
+                }
+                if (json["capes"] != null)
+                {
+                    foreach (var cape in json["capes"])
+                    {
+                        var capeData = new JavaXboxCape();
+                        //get texture from url
+                        var textureUrl = cape["url"].ToString();
+                        var textureResponse = await client.GetAsync(textureUrl);
+                        var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
+                        capeData.Texture = "data:image/png;base64," + Convert.ToBase64String(textureContent);
+                        capeData.Id = Guid.Parse(cape["id"].ToString());
+                        capeData.Name = cape["alias"].ToString();
+                        profile.Capes.Add(capeData);
+                        if (cape["state"].ToString().ToUpper() == "ACTIVE")
+                        {
+                            profile.CurrentCapeId = capeData.Id;
+                        }
                     }
                 }
             }
-            if (json["capes"] != null)
+            catch (Exception ex)
             {
-                foreach (var cape in json["capes"])
-                {
-                    var capeData = new JavaXboxCape();
-                    //get texture from url
-                    var textureUrl = cape["url"].ToString();
-                    var textureResponse = await client.GetAsync(textureUrl);
-                    var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
-                    capeData.Texture = "data:image/png;base64," + Convert.ToBase64String(textureContent);
-                    capeData.Id = Guid.Parse(cape["id"].ToString());
-                    capeData.Name = cape["alias"].ToString();
-                    profile.Capes.Add(capeData);
-                    if (cape["state"].ToString().ToUpper() == "ACTIVE")
-                    {
-                        profile.CurrentCapeId = capeData.Id;
-                    }
-                }
+                return profile;
             }
             return profile;
         }
