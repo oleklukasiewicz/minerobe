@@ -474,18 +474,22 @@
   };
   const skinSetted = async function () {
     isSkinSetting = true;
-    var result = await SetCurrentTexture(
-      $itemPackage.id,
-      new CurrentTextureConfig(
-        modelTexture,
-        $itemPackage.model,
-        $itemRenderConfig.isFlatten
-      )
-    );
-    if (result) {
-      showToast("Skin changed", HumanHandsUpIcon);
-      applyAnimations($itemPackage, CHANGE_TYPE.SKIN_SET, -1);
-      userSettings.set(result);
+    try {
+      var result = await SetCurrentTexture(
+        $itemPackage.id,
+        new CurrentTextureConfig(
+          modelTexture,
+          $itemPackage.model,
+          $itemRenderConfig.isFlatten
+        )
+      );
+      if (result) {
+        showToast("Skin changed", HumanHandsUpIcon);
+        applyAnimations($itemPackage, CHANGE_TYPE.SKIN_SET, -1);
+        userSettings.set(result);
+      }
+    } catch (e) {
+      showToast("Failed to set skin", undefined, "error");
     }
     isSkinSetting = false;
   };

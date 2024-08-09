@@ -152,7 +152,7 @@
           $userSettings?.baseTexture.layers[0]
         );
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
-      
+
       if (isItemSet && $userSettings.currentCapeId != null) {
         var selectedCape = $integrationSettings?.capes.find(
           (x) => x.id == $userSettings.currentCapeId
@@ -188,19 +188,23 @@
   };
   const skinSetted = async function () {
     isSkinSetting = true;
-    var result = await SetCurrentTexture(
-      $localPackage.id,
-      new CurrentTextureConfig(
-        modelTexture,
-        $localPackage.model,
-        $itemRenderConfig.isFlatten,
-        $itemRenderConfig.cape?.id
-      )
-    );
-    if (result) {
-      showToast("Skin changed", HumanHandsUpIcon);
-      applyAnimations($localPackage, CHANGE_TYPE.SKIN_SET, -1);
-      userSettings.set(result);
+    try {
+      var result = await SetCurrentTexture(
+        $localPackage.id,
+        new CurrentTextureConfig(
+          modelTexture,
+          $localPackage.model,
+          $itemRenderConfig.isFlatten,
+          $itemRenderConfig.cape?.id
+        )
+      );
+      if (result) {
+        showToast("Skin changed", HumanHandsUpIcon);
+        applyAnimations($localPackage, CHANGE_TYPE.SKIN_SET, -1);
+        userSettings.set(result);
+      }
+    } catch (e) {
+      showToast("Failed to set skin", undefined, "error");
     }
     isSkinSetting = false;
   };
