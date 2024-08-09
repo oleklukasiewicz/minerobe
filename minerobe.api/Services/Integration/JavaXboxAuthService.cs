@@ -83,6 +83,11 @@ namespace minerobe.api.Services.Integration
                 return false;
 
             var profileData = ((object)profile.Data).ToClass<JavaXboxProfile>();
+            if (profile != null)
+                _ctx.Set<IntegrationItem>().Remove(profile);
+
+            await _ctx.SaveChangesAsync();
+            await _userSettingsService.RemoveIntegration(user.Id, "minecraft");
 
             var pca = await GetPca();
             var selectedAccount = await pca.GetAccountAsync(profileData.AccountId);
@@ -90,12 +95,6 @@ namespace minerobe.api.Services.Integration
                 return false;
 
             await pca.RemoveAsync(selectedAccount);
-
-            if (profile != null)
-                _ctx.Set<IntegrationItem>().Remove(profile);
-
-            await _ctx.SaveChangesAsync();
-            await _userSettingsService.RemoveIntegration(user.Id, "minecraft");
             return true;
         }
         public async Task<string> RefreshAllTokens()
