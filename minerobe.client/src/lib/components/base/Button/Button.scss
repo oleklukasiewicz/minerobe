@@ -254,6 +254,13 @@
       flex: 1;
     }
   }
+  &.with-icon
+  {
+    & > span
+    {
+      max-width: calc(100% - 32px);
+    }
+  }
   &.fab {
     position: absolute;
     z-index: 5;

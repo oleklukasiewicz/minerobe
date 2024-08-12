@@ -11,7 +11,6 @@
   import ListIcon from "$icons/list.svg?raw";
   import HearthIcon from "$icons/heart.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
-  import { PACKAGE_TYPE } from "$src/data/consts";
   import type { OutfitPackage } from "$src/model/package";
 
   const dispatch = createEventDispatcher();
@@ -22,12 +21,7 @@
   export let mobile: boolean = false;
   export let readonly: boolean = false;
   export let isSkinSetting: boolean = false;
-  let setMySkinAvailable = false;
-  const setMySkinAvailableCheck = (paack, user) => {
-    setMySkinAvailable =
-      outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET && $currentUser?.id != null;
-  };
-  $: setMySkinAvailableCheck(outfitPackage, $currentUser);
+  export let setMySkinAvailable = false;
   export const downloadImage = function () {
     dispatch("download");
   };

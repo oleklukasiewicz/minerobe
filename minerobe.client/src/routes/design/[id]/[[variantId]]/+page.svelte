@@ -440,6 +440,9 @@
       {#if loaded}
         <OutfitActions
           readonly={true}
+          setMySkinAvailable={$currentUser?.id != null &&
+            isItemSet &&
+            $integrationSettings?.id != null}
           isPackageInWardrobe={$localPackage.isInWardrobe}
           outfitPackage={$localPackage}
           {isSkinSetting}

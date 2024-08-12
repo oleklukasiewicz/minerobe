@@ -480,7 +480,8 @@
         new CurrentTextureConfig(
           modelTexture,
           $itemPackage.model,
-          $itemRenderConfig.isFlatten
+          $itemRenderConfig.isFlatten,
+          $itemRenderConfig.cape?.id
         )
       );
       if (result) {
@@ -743,6 +744,9 @@
       {#if loaded}
         <OutfitActions
           outfitPackage={$itemPackage}
+          setMySkinAvailable={$currentUser?.id != null &&
+            isItemSet &&
+            $integrationSettings?.id != null}
           {isSkinSetting}
           loading={!loaded}
           mobile={$isMobileView}
