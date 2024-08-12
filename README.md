@@ -48,7 +48,7 @@ Optionally you can add parameters for integration with minecraft services using 
 ```
  "MicrosoftAuth": {
    "ClientId": "<your-client-id>",
-   "OriginUri": "<your-origin-uri>",
+   "OriginUri": "<your-origin-uri (only for self hosted instances)>",
    "CacheDirectory": "<your-cache-directory>",
    "CacheFileName": "<your-cache-file-name>"
  }
