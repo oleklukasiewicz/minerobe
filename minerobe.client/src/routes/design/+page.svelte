@@ -148,6 +148,17 @@
       $itemPackage = await GetStudioPackage();
       isItemSet = $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET;
 
+      //loading render
+      $itemRenderConfig = new OutfitPackageRenderConfig(
+        $itemPackage,
+        $itemPackage.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL,
+        undefined,
+        !isItemSet,
+        $itemRenderConfig.selectedLayer == null && $itemLayers.length > 0
+          ? $itemLayers[$itemLayers.length - 1]
+          : null
+      );
+
       //load settings
       userSettings = await FetchSettings();
       if (userSettings?.integrations?.includes("minecraft")) {
@@ -159,17 +170,6 @@
           $itemRenderConfig.cape = selectedCape;
         }
       }
-
-      //loading render
-      $itemRenderConfig = new OutfitPackageRenderConfig(
-        $itemPackage,
-        $itemPackage.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL,
-        undefined,
-        !isItemSet,
-        $itemRenderConfig.selectedLayer == null && $itemLayers.length > 0
-          ? $itemLayers[$itemLayers.length - 1]
-          : null
-      );
 
       if (isItemSet && userSettings.baseTexture.layers.length > 0)
         $itemRenderConfig.setBaseTextureFromLayer(

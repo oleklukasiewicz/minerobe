@@ -50,7 +50,6 @@
   } from "$data/cache";
 
   import DefaultAnimation from "$animation/default";
-  import HandsUpAnimation from "$animation/handsup";
   import CloseBoxIcon from "$icons/close-box.svg?raw";
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
 
@@ -129,6 +128,16 @@
       if ($localPackage.model != targetModel.name)
         itemModelType.set(targetModel.name);
 
+      //loading render config
+      $itemRenderConfig = new OutfitPackageRenderConfig(
+        $localPackage,
+        targetModel,
+        undefined,
+        !isItemSet,
+        targetVariant,
+        isFlat
+      );
+
       //loading settings
       if (state == APP_STATE.READY) {
         userSettings = await FetchSettings();
@@ -144,16 +153,6 @@
           }
         }
       }
-
-      //loading render config
-      $itemRenderConfig = new OutfitPackageRenderConfig(
-        $localPackage,
-        targetModel,
-        undefined,
-        !isItemSet,
-        targetVariant,
-        isFlat
-      );
 
       //loading texture
       if (isItemSet && userSettings?.baseTexture.layers.length > 0)
@@ -178,7 +177,7 @@
     applyAnimations($localPackage, CHANGE_TYPE.DOWNLOAD, -1);
 
     if ($currentUser?.id == $localPackage.publisher.id) return;
-    
+
     const resp = await SetAsDownloadPackage($localPackage.social.id);
     if (resp == null) return;
     $localPackage.social = resp;
@@ -252,10 +251,7 @@
   };
   const removeFromCollection = async function (e) {
     const collection = e.detail.collection;
-    await RemovePackageFromCollection(
-      collection.id,
-      $localPackage.id
-    );
+    await RemovePackageFromCollection(collection.id, $localPackage.id);
     isCollectionDialogOpen = false;
     showToast("Outfit removed from collection");
   };
