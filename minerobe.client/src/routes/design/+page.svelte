@@ -45,9 +45,11 @@
     GetWadrobeSummary,
   } from "$src/api/wardrobe";
   import {
-    MinecraftIntegrationModel,
     OutfitPackageRenderConfig,
-  } from "$src/data/model";
+  } from "$model/render";
+  import {
+    MinecraftIntegrationModel,
+  } from "$model/integration/minecraft";
   import DefaultAnimation from "$animation/default";
 
   import ImportPackageIcon from "$icons/upload.svg?raw";

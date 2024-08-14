@@ -23,6 +23,7 @@ const config = {
       $helpers: "src/helpers",
       $texture: "src/texture",
       $component: "src/lib/components",
+      $model: "src/model",
     },
     serviceWorker: {
       register: false,

@@ -4,7 +4,7 @@ import {
 } from "../image/colorHelper";
 import { GetContextFromBase64, GetOutfitType } from "../image/imageDataHelpers";
 import { MergeFileDataToImage } from "../../data/imageMerger";
-import type { OutfitPackageRenderConfig } from "$src/data/model";
+import type { OutfitPackageRenderConfig } from "$model/render";
 import { FileData } from "$src/model/package";
 import { COLOR_TYPE } from "$src/data/consts";
 

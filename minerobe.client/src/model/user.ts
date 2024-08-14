@@ -38,6 +38,7 @@ export class MinerobeUserSettingsSimple {
   currentTexturePackageId: string;
   currentCapeId:string;
   baseTexture: OutfitPackage;
+  integrations: string[];
 }
 export class CurrentTextureConfig {
   texture: string;

@@ -11,9 +11,8 @@ import BottomIcon from "$icons/clothes/bottom.svg?raw";
 import ShoesIcon from "$icons/clothes/shoes.svg?raw";
 import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
 import { ConvertColor, GetColorFromFileData } from "./colorHelper";
-import { normalizeStringCase } from "../data/dataHelper";
 import { MergeLayersToImage } from "$src/data/imageMerger";
-import { OutfitPackageRenderConfig } from "$src/data/model";
+import { OutfitPackageRenderConfig } from "$model/render";
 import type { OutfitLayer, OutfitPackage } from "$src/model/package";
 
 export const GetOutfitType = function (imageContext: any) {

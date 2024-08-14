@@ -10,7 +10,7 @@
   import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
   import { onMount } from "svelte";
   import { MergeLayersToImage } from "$src/data/imageMerger";
-  import { OutfitPackageRenderConfig } from "$src/data/model";
+  import { OutfitPackageRenderConfig } from "$model/render";
   import type { OutfitPackage } from "$src/model/package";
 
   export let item: OutfitPackage = null;

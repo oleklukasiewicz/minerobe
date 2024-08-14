@@ -17,22 +17,19 @@
   import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
   import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
+  import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
 
-  import {
-    defaultRenderer,
-    isMobileView,
-    baseTexture,
-    appState,
-    showToast,
-    currentUser,
-  } from "$data/cache";
   import { replaceState } from "$app/navigation";
-  import {
-    MinecraftIntegrationModel,
-    OutfitPackageRenderConfig,
-  } from "$src/data/model.js";
-  import { CreateDefaultRenderProvider } from "$src/data/render";
 
+  import { MinecraftIntegrationModel } from "$model/integration/minecraft";
+  import { OutfitPackageRenderConfig } from "$model/render";
+  import {
+    CurrentTextureConfig,
+    type MinerobeUserSettingsSimple,
+  } from "$model/user";
+  import type { OutfitPackage } from "$model/package";
+
+  import { CreateDefaultRenderProvider } from "$data/render";
   import {
     CHANGE_TYPE,
     DEFAULT_PACKAGE,
@@ -43,6 +40,14 @@
     ALEX_MODEL,
     APP_STATE,
   } from "$data/consts";
+  import {
+    defaultRenderer,
+    isMobileView,
+    baseTexture,
+    appState,
+    showToast,
+    currentUser,
+  } from "$data/cache";
 
   import DefaultAnimation from "$animation/default";
   import HandsUpAnimation from "$animation/handsup";
@@ -51,8 +56,9 @@
 
   import { ExportImageLayers } from "$src/helpers/data/dataTransferHelper.js";
   import { sortOutfitLayersByColor } from "$src/helpers/image/imageDataHelpers.js";
-
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
+
+  import { GetAccount } from "$src/api/integration/minecraft.js";
   import { GetPackage } from "$src/api/pack.js";
   import { SetAsDownloadPackage } from "$src/api/social.js";
   import {
@@ -65,28 +71,16 @@
     RemovePackageFromCollection,
   } from "$src/api/collection.js";
   import { FetchSettings, SetCurrentTexture } from "$src/api/settings.js";
-  import {
-    CurrentTextureConfig,
-    type MinerobeUserSettingsSimple,
-  } from "$src/model/user.js";
-  import type { OutfitLayer, OutfitPackage } from "$src/model/package.js";
-  import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
-  import { GetAccount } from "$src/api/integration/minecraft.js";
 
   export let data;
-  const integrationSettings: Writable<MinecraftIntegrationModel> =
-    writable(null);
-  const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
   const localPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
-  const itemLayers: Writable<OutfitLayer[]> = propertyStore(
-    localPackage,
-    "layers"
-  );
   const itemModelType: Writable<string> = propertyStore(localPackage, "model");
-
   const itemRenderConfig: Writable<OutfitPackageRenderConfig> = writable(
     new OutfitPackageRenderConfig()
   );
+
+  let integrationSettings: MinecraftIntegrationModel = null;
+  let userSettings: MinerobeUserSettingsSimple = null;
 
   let isItemSet = false;
 
@@ -102,66 +96,75 @@
   let updateAnimation: (animation: any) => void = () => {};
 
   onMount(async () => {
-    let id = data.id;
-    let variantId = data.variantId;
-    let outfitPackage: OutfitPackage;
+    const id = data.id;
+    const variantId = data.variantId;
+    const model = data.model;
+    const isFlat = data.isFlat;
 
     appState.subscribe(async (state) => {
       if (state != APP_STATE.READY && state != APP_STATE.GUEST_READY) return;
+
       defaultRenderProvider =
         await CreateDefaultRenderProvider($defaultRenderer);
-      outfitPackage = await GetPackage(id);
-      if (!outfitPackage) return;
 
-      isItemSet = outfitPackage.type == PACKAGE_TYPE.OUTFIT_SET;
+      //loading package data
+      $localPackage = await GetPackage(id);
+      if (!$localPackage) return;
 
-      if (state == APP_STATE.READY) {
-        const settings = await FetchSettings();
-        userSettings.set(settings);
+      isItemSet = $localPackage.type == PACKAGE_TYPE.OUTFIT_SET;
+      const targetVariant =
+        $localPackage.layers.find((x) => x.id == variantId) ||
+        $localPackage.layers[0];
+      const targetModelName = model || $localPackage.model;
+      const targetModel =
+        targetModelName == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
 
-        if (settings?.integrations?.includes("minecraft") && isItemSet) {
-          const integrationProfile = await GetAccount(false);
-          integrationSettings.set(integrationProfile);
-        }
-      }
-      localPackage.set(outfitPackage);
       if (!isItemSet) {
         $localPackage.layers = await sortOutfitLayersByColor(
           $localPackage.layers,
           $itemModelType
         );
       }
-      const varaint = outfitPackage.layers.find((x) => x.id == variantId);
 
-      const targetModel = data.model != null ? data.model : $localPackage.model;
-      const targetModelName =
-        targetModel == MODEL_TYPE.ALEX ? MODEL_TYPE.ALEX : MODEL_TYPE.STEVE;
-      if ($localPackage.model != targetModel)
-        itemModelType.set(targetModelName);
+      if ($localPackage.model != targetModel.name)
+        itemModelType.set(targetModel.name);
 
+      //loading settings
+      if (state == APP_STATE.READY) {
+        userSettings = await FetchSettings();
+
+        if (userSettings?.integrations?.includes("minecraft") && isItemSet) {
+          integrationSettings = await GetAccount(false);
+
+          if (isItemSet && userSettings.currentCapeId != null) {
+            const selectedCape = integrationSettings.capes.find(
+              (x) => x.id == userSettings.currentCapeId
+            );
+            $itemRenderConfig.cape = selectedCape;
+          }
+        }
+      }
+
+      //loading render config
       $itemRenderConfig = new OutfitPackageRenderConfig(
         $localPackage,
-        targetModel == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL,
+        targetModel,
         undefined,
         !isItemSet,
-        varaint ? varaint : $itemLayers[0],
-        data.isFlat == true
+        targetVariant,
+        isFlat
       );
-      if (isItemSet && $userSettings?.baseTexture.layers.length > 0)
+
+      //loading texture
+      if (isItemSet && userSettings?.baseTexture.layers.length > 0)
         $itemRenderConfig.setBaseTextureFromLayer(
-          $userSettings?.baseTexture.layers[0]
+          userSettings?.baseTexture.layers[0]
         );
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
-      if (isItemSet && $userSettings.currentCapeId != null) {
-        var selectedCape = $integrationSettings?.capes.find(
-          (x) => x.id == $userSettings.currentCapeId
-        );
-        $itemRenderConfig.cape = selectedCape;
-      }
-
       loaded = true;
-      updateTexture();
+      //force render
+      itemRenderConfig.update((x) => x);
     });
   });
 
@@ -172,20 +175,16 @@
       $itemRenderConfig,
       $localPackage.name
     );
-    await updateAnimation(HandsUpAnimation);
-    await updateAnimation(DefaultAnimation);
+    applyAnimations($localPackage, CHANGE_TYPE.DOWNLOAD, -1);
 
     if ($currentUser?.id == $localPackage.publisher.id) return;
+    
     const resp = await SetAsDownloadPackage($localPackage.social.id);
     if (resp == null) return;
     $localPackage.social = resp;
   };
 
   //texture
-  const updateTexture = async () => {
-    if (!loaded) return;
-    modelTexture = await $itemRenderConfig.getLayersForRender(false);
-  };
   const skinSetted = async function () {
     isSkinSetting = true;
     try {
@@ -201,13 +200,14 @@
       if (result) {
         showToast("Skin changed", HumanHandsUpIcon);
         applyAnimations($localPackage, CHANGE_TYPE.SKIN_SET, -1);
-        userSettings.set(result);
+        userSettings = result;
       }
     } catch (e) {
       showToast("Failed to set skin", undefined, "error");
     }
     isSkinSetting = false;
   };
+
   //sharing
   const addToWardrobe = async function () {
     const resp = await AddPackageToWardrobe($localPackage.id);
@@ -230,9 +230,10 @@
     layerIndex: number
   ) {
     const anims = GetAnimationForPackageChange(pack, changeType, layerIndex);
-    if (anims.filter((x) => x).length >= 1) return;
+    if (anims.filter((x) => x).length == 1) return;
     anims.forEach((anim) => updateAnimation(anim));
   };
+
   //collection
   const openCollectionPicker = async function () {
     isCollectionDialogOpen = true;
@@ -245,13 +246,13 @@
   };
   const addToCollection = async function (e) {
     const collection = e.detail.collection;
-    var result = await AddPackageToCollection(collection.id, $localPackage.id);
+    await AddPackageToCollection(collection.id, $localPackage.id);
     isCollectionDialogOpen = false;
     showToast("Outfit added to collection");
   };
   const removeFromCollection = async function (e) {
     const collection = e.detail.collection;
-    var result = await RemovePackageFromCollection(
+    await RemovePackageFromCollection(
       collection.id,
       $localPackage.id
     );
@@ -263,14 +264,12 @@
     $itemRenderConfig.cape = cape;
   };
 
-  itemRenderConfig.subscribe((config) => {
+  itemRenderConfig.subscribe(async (config) => {
     if (!loaded) return;
-    updateTexture();
+    modelTexture = await $itemRenderConfig.getLayersForRender(false);
     if (!isItemSet)
       replaceState(
         "/design/" +
-          $localPackage.type +
-          "/" +
           $localPackage.id +
           "/" +
           $itemRenderConfig.selectedLayer.id,
@@ -320,7 +319,7 @@
         <Placeholder style="height:26px;max-width:100px;" {loaded}>
           <div style="display: flex;gap:4px;height:24px">
             <Label variant="unique">{$localPackage.publisher.name}</Label>
-            {#if $userSettings?.currentTexturePackageId == $localPackage.id}
+            {#if userSettings?.currentTexturePackageId == $localPackage.id}
               <Label variant="ancient">Current skin</Label>
             {/if}
             &nbsp;
@@ -341,7 +340,7 @@
           />
         {/if}
         {#if isItemSet}
-          {#each [...$itemLayers].reverse() as item (item.id + item.id)}
+          {#each [...$localPackage.layers].reverse() as item (item.id + item.id)}
             <div class="item-layer">
               <ItemLayer
                 {item}
@@ -386,9 +385,9 @@
           {/each}
         </div>
       {/if}
-      {#if isItemSet && $integrationSettings != null}
+      {#if isItemSet && integrationSettings != null}
         <SectionTitle label="Capes" placeholder={!loaded} />
-        {#if $integrationSettings.capes.length == 0}
+        {#if integrationSettings.capes.length == 0}
           <InfoLabel
             closeable={false}
             type="info"
@@ -396,7 +395,7 @@
           />
         {:else}
           <div class="horizontal-list">
-            {#each $integrationSettings.capes as cape}
+            {#each integrationSettings.capes as cape}
               <ItemCape
                 item={cape}
                 on:click={() => setCape(cape)}
@@ -442,7 +441,7 @@
           readonly={true}
           setMySkinAvailable={$currentUser?.id != null &&
             isItemSet &&
-            $integrationSettings?.id != null}
+            integrationSettings?.id != null}
           isPackageInWardrobe={$localPackage.isInWardrobe}
           outfitPackage={$localPackage}
           {isSkinSetting}
