@@ -55,6 +55,7 @@
   class:icon={onlyIcon && icon != null}
   class:with-label={label != null && !onlyIcon}
   class:with-icon={icon != null}
+  class:without-icon={!icon}
   class:primary={type === "primary"}
   class:secondary={type === "secondary"}
   class:tertiary={type === "tertiary"}

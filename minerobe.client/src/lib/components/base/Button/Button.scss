@@ -261,6 +261,13 @@
       max-width: calc(100% - 32px);
     }
   }
+  &.without-icon
+  {
+    & > span
+    {
+      max-width: 100%;
+    }
+  }
   &.fab {
     position: absolute;
     z-index: 5;
