@@ -24,6 +24,7 @@ const config = {
       $texture: "src/texture",
       $component: "src/lib/components",
       $model: "src/model",
+      $api: "src/api",
     },
     serviceWorker: {
       register: false,

@@ -18,6 +18,8 @@
   import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
   import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
+  import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
+  import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
 
   import {
     CHANGE_TYPE,
@@ -38,18 +40,8 @@
     baseTexture,
     appState,
   } from "$data/cache";
-  import {
-    GetStudioPackage,
-    GetWadrobeCollectionsWithPackageContext,
-    GetWadrobePackagesSingleLayer,
-    GetWadrobeSummary,
-  } from "$src/api/wardrobe";
-  import {
-    OutfitPackageRenderConfig,
-  } from "$model/render";
-  import {
-    MinecraftIntegrationModel,
-  } from "$model/integration/minecraft";
+  import { CreateDefaultRenderProvider } from "$data/render";
+
   import DefaultAnimation from "$animation/default";
 
   import ImportPackageIcon from "$icons/upload.svg?raw";
@@ -63,13 +55,18 @@
     ExportImageLayers,
     ImportImage,
     ImportLayerFromFile,
-  } from "$src/helpers/data/dataTransferHelper";
+  } from "$helpers/data/dataTransferHelper";
   import {
     navigateToOutfitPackage,
     navigateToWardrobe,
-  } from "$src/helpers/other/navigationHelper";
-  import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper";
-  import { CreateDefaultRenderProvider } from "$src/data/render";
+  } from "$helpers/other/navigationHelper";
+  import { GetAnimationForPackageChange } from "$helpers/render/animationHelper";
+  import {
+    AddLayerSnapshot,
+    GetGlobalLayer,
+  } from "$helpers/package/packageHelper";
+  import { FindClosestColor } from "$helpers/image/colorHelper";
+
   import {
     AddPackageLayer,
     AddRemoteLayerToPackage,
@@ -81,31 +78,30 @@
     UpdatePackageData,
     UpdatePackageLayer,
   } from "$src/api/pack";
-  import { SharePackage, UnSharePackage } from "$src/api/social";
   import {
-    AddLayerSnapshot,
-    GetGlobalLayer,
-  } from "$src/helpers/package/packageHelper";
+    GetStudioPackage,
+    GetWadrobeCollectionsWithPackageContext,
+    GetWadrobePackagesSingleLayer,
+    GetWadrobeSummary,
+  } from "$src/api/wardrobe";
+  import { GetAccount } from "$src/api/integration/minecraft";
+  import { SharePackage, UnSharePackage } from "$src/api/social";
   import {
     AddPackageToCollection,
     RemovePackageFromCollection,
   } from "$src/api/collection";
   import { FetchSettings, SetCurrentTexture } from "$src/api/settings";
+
   import {
     CurrentTextureConfig,
     type MinerobeUserSettingsSimple,
-  } from "$src/model/user";
-  import { OutfitLayer, type OutfitPackage } from "$src/model/package";
-  import type { PagedResponse } from "$src/model/base";
-  import { FindClosestColor } from "$src/helpers/image/colorHelper";
-  import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
-  import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
-  import { GetAccount } from "$src/api/integration/minecraft";
-  import { OutfitFilter } from "$src/model/filter";
+  } from "$model/user";
+  import { OutfitLayer, type OutfitPackage } from "$model/package";
+  import type { PagedResponse } from "$model/base";
+  import { OutfitPackageRenderConfig } from "$model/render";
+  import { MinecraftIntegrationModel } from "$model/integration/minecraft";
+  import { OutfitFilter } from "$model/filter";
 
-  const integrationSettings: Writable<MinecraftIntegrationModel> =
-    writable(null);
-  const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
@@ -115,6 +111,9 @@
   const itemRenderConfig: Writable<OutfitPackageRenderConfig> = writable(
     new OutfitPackageRenderConfig()
   );
+
+  let integrationSettings: MinecraftIntegrationModel = null;
+  let userSettings: MinerobeUserSettingsSimple = null;
 
   let isItemSet = false;
   let isSkinSetting = false;
@@ -145,19 +144,23 @@
       if (state != APP_STATE.READY) return;
       defaultProvider = await CreateDefaultRenderProvider($defaultRenderer);
 
-      const pack = await GetStudioPackage();
-      $itemPackage = pack;
-
-      const settings = await FetchSettings();
-      userSettings.set(settings);
-
-      if (settings?.integrations?.includes("minecraft")) {
-        const integrationProfile = await GetAccount();
-        integrationSettings.set(integrationProfile);
-      }
-
+      //load package
+      $itemPackage = await GetStudioPackage();
       isItemSet = $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET;
 
+      //load settings
+      userSettings = await FetchSettings();
+      if (userSettings?.integrations?.includes("minecraft")) {
+        integrationSettings = await GetAccount();
+        if (isItemSet && userSettings.currentCapeId != null) {
+          var selectedCape = integrationSettings?.capes.find(
+            (x) => x.id == userSettings.currentCapeId
+          );
+          $itemRenderConfig.cape = selectedCape;
+        }
+      }
+
+      //loading render
       $itemRenderConfig = new OutfitPackageRenderConfig(
         $itemPackage,
         $itemPackage.model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL,
@@ -168,21 +171,16 @@
           : null
       );
 
-      if (isItemSet && $userSettings.baseTexture.layers.length > 0)
+      if (isItemSet && userSettings.baseTexture.layers.length > 0)
         $itemRenderConfig.setBaseTextureFromLayer(
-          $userSettings.baseTexture.layers[0]
+          userSettings.baseTexture.layers[0]
         );
       else $itemRenderConfig.setBaseTextureFromString($baseTexture);
 
-      if (isItemSet && $userSettings.currentCapeId != null) {
-        var selectedCape = $integrationSettings?.capes.find(
-          (x) => x.id == $userSettings.currentCapeId
-        );
-        $itemRenderConfig.cape = selectedCape;
-      }
-
       loaded = true;
-      updateTexture();
+
+      //force render
+      itemRenderConfig.update((v) => v);
     });
   });
 
@@ -271,10 +269,6 @@
       showToast($_("toast.variantAdded"));
       return layers;
     });
-  };
-  const updateTexture = async () => {
-    if (!loaded) return;
-    modelTexture = await $itemRenderConfig.getLayersForRender(false);
   };
   const editLayer = async function (e) {
     const layer = e.detail.texture as OutfitLayer;
@@ -435,7 +429,6 @@
       });
 
       applyAnimations($itemPackage, CHANGE_TYPE.LAYER_ADD, 0);
-      updateTexture();
     }
     isDragging = false;
   };
@@ -489,7 +482,7 @@
       if (result) {
         showToast("Skin changed", HumanHandsUpIcon);
         applyAnimations($itemPackage, CHANGE_TYPE.SKIN_SET, -1);
-        userSettings.set(result);
+        userSettings = result;
       }
     } catch (e) {
       showToast("Failed to set skin", undefined, "error");
@@ -533,9 +526,9 @@
       await SetGlobalLayer(globalLayer);
     }
   });
-  itemRenderConfig.subscribe((layer) => {
+  itemRenderConfig.subscribe(async (layer) => {
     if (!loaded) return;
-    updateTexture();
+    modelTexture = await $itemRenderConfig.getLayersForRender(false);
   });
   itemModelType.subscribe(async (model) => {
     if (!loaded) return;
@@ -601,7 +594,7 @@
           {#if $itemPackage.social.isShared}
             <Label variant="rare">{$_("shared")}</Label>
           {/if}
-          {#if $userSettings.currentTexturePackageId == $itemPackage.id}
+          {#if userSettings.currentTexturePackageId == $itemPackage.id}
             <Label variant="ancient">Current skin</Label>
           {/if}
           <br />
@@ -692,9 +685,9 @@
         {/if}
       </div>
       <br />
-      {#if isItemSet && $integrationSettings != null}
+      {#if isItemSet && integrationSettings != null}
         <SectionTitle label="Capes" placeholder={!loaded} />
-        {#if $integrationSettings.capes.length == 0}
+        {#if integrationSettings.capes.length == 0}
           <InfoLabel
             closeable={false}
             type="info"
@@ -702,7 +695,7 @@
           />
         {:else}
           <div class="horizontal-list">
-            {#each $integrationSettings.capes as cape}
+            {#each integrationSettings.capes as cape}
               <ItemCape
                 item={cape}
                 on:click={() => setCape(cape)}
@@ -748,7 +741,7 @@
           outfitPackage={$itemPackage}
           setMySkinAvailable={$currentUser?.id != null &&
             isItemSet &&
-            $integrationSettings?.id != null}
+            integrationSettings?.id != null}
           {isSkinSetting}
           loading={!loaded}
           mobile={$isMobileView}
