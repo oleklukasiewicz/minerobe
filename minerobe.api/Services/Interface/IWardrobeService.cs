@@ -2,6 +2,7 @@
 using minerobe.api.Entity.Collection;
 using minerobe.api.Entity.Package;
 using minerobe.api.Entity.Wardrobe;
+using minerobe.api.Helpers.Filter;
 using minerobe.api.Helpers.Model;
 using minerobe.api.Helpers.WardrobeHelpers;
 

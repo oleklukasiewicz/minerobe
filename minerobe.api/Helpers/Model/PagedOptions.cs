@@ -13,15 +13,4 @@
         public int PageSize { get; set; }
         public List<T> Items { get; set; }
     }
-    public class SimpleFilter
-    {
-        public string Phrase { get; set; }
-    }
-    public class OutfitFilter:SimpleFilter
-    {
-        public string Type { get; set; }
-        public List<string> OutfitType { get; set; }
-        public List<string> Colors { get; set; }
-        public bool? IsShared { get; set; }
-    }
 }

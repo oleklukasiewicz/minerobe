@@ -5,6 +5,7 @@ using minerobe.api.Entity.Collection;
 using minerobe.api.Entity.Package;
 using minerobe.api.Entity.Wardrobe;
 using minerobe.api.Helpers;
+using minerobe.api.Helpers.Filter;
 using minerobe.api.Helpers.Model;
 using minerobe.api.Helpers.WardrobeHelpers;
 using minerobe.api.Services.Interface;
@@ -204,27 +205,7 @@ namespace minerobe.api.Services
 
             if (filter != null)
             {
-                if (!string.IsNullOrEmpty(filter.Type))
-                    outfits = outfits.Where(x => x.Type.ToString().ToLower() == filter.Type.ToLower()).ToList();
-                if (!string.IsNullOrEmpty(filter.Phrase))
-                    outfits = outfits.Where(x => x.Name.ToLower().Contains(filter.Phrase.ToLower())).ToList();
-                if (filter.OutfitType != null && filter.OutfitType.Where(x => x.Length > 0).ToList().Count > 0)
-                {
-                    filter.OutfitType=filter.OutfitType.Select(x => x.ToLower().ToString()).ToList();
-                    outfits = outfits.Where(x => filter.OutfitType.Contains(x.OutfitType.ToString().ToLower())).ToList();
-                }
-                if (filter.IsShared != null)
-                    outfits = outfits.Where(x => x.Social.IsShared==filter.IsShared).ToList();
-                if (filter.Colors != null && filter.Colors.Count > 0)
-                {
-                    outfits = outfits.Where(x =>
-                    {
-                        return x.Layers.Any(y =>
-                        {
-                            return filter.Colors.Contains(y.Alex.ColorName) || filter.Colors.Contains(y.Steve.ColorName);
-                        });
-                    }).ToList();
-                }
+                outfits = filter.Filter(outfits).ToList();
             }
 
             return outfits;

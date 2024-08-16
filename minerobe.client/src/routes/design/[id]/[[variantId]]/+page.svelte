@@ -17,7 +17,7 @@
   import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
   import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
-  import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
+  import OutfitCapes from "$lib/components/other/OutfitCapes/OutfitCapes.svelte";
 
   import { replaceState } from "$app/navigation";
 
@@ -50,7 +50,6 @@
   } from "$data/cache";
 
   import DefaultAnimation from "$animation/default";
-  import CloseBoxIcon from "$icons/close-box.svg?raw";
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
 
   import { ExportImageLayers } from "$src/helpers/data/dataTransferHelper.js";
@@ -70,7 +69,7 @@
     RemovePackageFromCollection,
   } from "$src/api/collection.js";
   import { FetchSettings, SetCurrentTexture } from "$src/api/settings.js";
-
+  
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemModelType: Writable<string> = propertyStore(localPackage, "model");
@@ -257,7 +256,7 @@
   };
 
   const setCape = function (cape) {
-    $itemRenderConfig.cape = cape;
+    $itemRenderConfig.cape = cape.detail;
   };
 
   itemRenderConfig.subscribe(async (config) => {
@@ -383,30 +382,7 @@
       {/if}
       {#if isItemSet && integrationSettings != null}
         <SectionTitle label="Capes" placeholder={!loaded} />
-        {#if integrationSettings.capes.length == 0}
-          <InfoLabel
-            closeable={false}
-            type="info"
-            description="You have no capes linked to your minecraft account"
-          />
-        {:else}
-          <div class="horizontal-list">
-            {#each integrationSettings.capes as cape}
-              <ItemCape
-                item={cape}
-                on:click={() => setCape(cape)}
-                selected={$itemRenderConfig.cape?.id == cape.id}
-              />
-            {/each}
-            <ItemCape
-              on:click={() => setCape(null)}
-              selected={$itemRenderConfig.cape?.id == null}
-              ><div style="margin:12px;">
-                {@html CloseBoxIcon}
-              </div></ItemCape
-            >
-          </div>
-        {/if}
+        <OutfitCapes capes={integrationSettings.capes} selectedCape={$itemRenderConfig.cape} on:select={setCape} />
         <br />
       {/if}
       {#if $localPackage.description != null && $localPackage.description.trim().length > 0}

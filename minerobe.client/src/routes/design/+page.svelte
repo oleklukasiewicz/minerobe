@@ -18,8 +18,7 @@
   import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
   import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
-  import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
-  import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
+  import OutfitCapes from "$lib/components/other/OutfitCapes/OutfitCapes.svelte";
 
   import {
     CHANGE_TYPE,
@@ -48,7 +47,6 @@
   import AddIcon from "$icons/plus.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import TrashIcon from "$icons/trash.svg?raw";
-  import CloseBoxIcon from "$icons/close-box.svg?raw";
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
 
   import {
@@ -465,7 +463,7 @@
   };
 
   const setCape = function (cape) {
-    $itemRenderConfig.cape = cape;
+    $itemRenderConfig.cape = cape.detail;
   };
   const skinSetted = async function () {
     isSkinSetting = true;
@@ -687,30 +685,10 @@
       <br />
       {#if isItemSet && integrationSettings != null}
         <SectionTitle label="Capes" placeholder={!loaded} />
-        {#if integrationSettings.capes.length == 0}
-          <InfoLabel
-            closeable={false}
-            type="info"
-            description="You have no capes linked to your minecraft account"
-          />
-        {:else}
-          <div class="horizontal-list">
-            {#each integrationSettings.capes as cape}
-              <ItemCape
-                item={cape}
-                on:click={() => setCape(cape)}
-                selected={$itemRenderConfig.cape?.id == cape.id}
-              />
-            {/each}
-            <ItemCape
-              on:click={() => setCape(null)}
-              selected={$itemRenderConfig.cape?.id == null}
-              ><div style="margin:12px;">
-                {@html CloseBoxIcon}
-              </div></ItemCape
-            >
-          </div>
-        {/if}
+        <OutfitCapes
+          capes={integrationSettings.capes}
+          selectedCape={$itemRenderConfig.cape}
+          on:select={setCape}/>
         <br />
       {/if}
       <SectionTitle label={$_("description")} placeholder={!loaded} />
