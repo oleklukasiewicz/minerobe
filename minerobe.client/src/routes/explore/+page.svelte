@@ -7,8 +7,20 @@
   import { onMount } from "svelte";
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import Select from "$lib/components/base/Select/Select.svelte";
+  import OutfitPresenter from "$lib/components/outfit/OutfitPresenter/OutfitPresenter.svelte";
 
-  onMount(() => {});
+  import { appState } from "$data/cache";
+  import { GetStudioPackage } from "$src/api/wardrobe";
+  import { APP_STATE } from "$src/data/consts";
+  let testpackage = null;
+  let laoded = false;
+  onMount(async () => {
+    appState.subscribe(async (state) => {
+      if (state != APP_STATE.READY) return;
+      testpackage = await GetStudioPackage();
+      laoded = true;
+    });
+  });
   const compare = (a, b) => {
     return a?.value == b;
   };
@@ -44,6 +56,9 @@
       selectedItem={"item2"}
       items={["item1", "item2", "item3"]}
     ></Select>
+    {#if laoded}
+      <OutfitPresenter item={testpackage} />
+    {/if}
   </div>
 </div>
 

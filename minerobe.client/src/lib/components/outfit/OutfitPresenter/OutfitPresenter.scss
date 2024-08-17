@@ -1,0 +1,9 @@
+.outfit-presenter {
+  aspect-ratio: 1;
+  min-width: 60px;
+  max-width: 60px;
+  transition: box-shadow var(--time);
+  &.dragging {
+    box-shadow: inset 0px 0px 0px 5px var(--color-accent);
+  }
+}
