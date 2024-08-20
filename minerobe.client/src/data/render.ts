@@ -7,11 +7,24 @@ import { get } from "svelte/store";
 import { MODEL_TYPE, STEVE_MODEL, ALEX_MODEL } from "./consts";
 import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
 export class CameraConfig {
-  rotation: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
-  position: THREE.Vector3 = new THREE.Vector3(0, 0.05, 1);
-  lookAt: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
-  lookAtEnabled: boolean = false;
-  fov: number = 75;
+  rotation: THREE.Vector3;
+  position: THREE.Vector3;
+  lookAt: THREE.Vector3;
+  lookAtEnabled: boolean;
+  fov: number;
+  constructor(
+    fov = 75,
+    position: THREE.Vector3 = new THREE.Vector3(0, 0.05, 1),
+    lookAt: THREE.Vector3 = new THREE.Vector3(0, 0, 0),
+    lookAtEnabled: boolean = true,
+    rotation: THREE.Vector3 = new THREE.Vector3(0, 0, 0)
+  ) {
+    this.fov = fov;
+    this.position = position;
+    this.lookAt = lookAt;
+    this.lookAtEnabled = lookAtEnabled;
+    this.rotation = rotation;
+  }
 }
 
 export class RenderSnapshot {
@@ -139,7 +152,10 @@ export const RenderFromSnapshot = async function (
   if (node) node.src = dataUrl;
   return dataUrl;
 };
-export const PrepareSceneForRender = async function (model: string) {
+export const PrepareSceneForRender = async function (
+  model: string,
+  disableDefaultModelRotation = false
+) {
   let scene = new THREE.Scene();
   let modelLoader = new GLTFLoader();
   scene.position.y = -1;
@@ -169,6 +185,15 @@ export const PrepareSceneForRender = async function (model: string) {
       resolve(gltf.scene);
     });
   });
+  if (disableDefaultModelRotation) {
+    const renderScene: any = gltfScene;
+    renderScene.getObjectByName("RightArm").rotation.set(0, 0, 0);
+    renderScene.getObjectByName("LeftArm").rotation.set(0, 0, 0);
+    renderScene.getObjectByName("RightLeg").rotation.set(0, 0, 0);
+    renderScene.getObjectByName("LeftLeg").rotation.set(0, 0, 0);
+    renderScene.getObjectByName("Head").rotation.set(0, 0, 0);
+  }
+
   return { scene, camera, renderScene: gltfScene, modelLoader: modelLoader };
 };
 export const CreateDynamicRender = async function (
@@ -480,19 +505,23 @@ export const CreateDynamicRender = async function (
     },
   };
 };
-export const CreateDefaultRenderProvider = async function (renderer) {
+export const CreateDefaultRenderProvider = async function (
+  renderer,
+  disableDefaultModelRotation = false
+) {
   let steveListProvider = new RenderProvider();
   let alexListProvider = new RenderProvider();
   steveListProvider.renderer = renderer;
   steveListProvider.textureLoader = new THREE.TextureLoader();
-  let steveScene = await PrepareSceneForRender(STEVE_MODEL.model);
+  let steveScene = await PrepareSceneForRender(STEVE_MODEL.model,disableDefaultModelRotation);
   steveListProvider.scene = steveScene.scene;
+
   steveListProvider.camera = steveScene.camera;
   steveListProvider.name = "steve";
 
   alexListProvider.renderer = renderer;
   alexListProvider.textureLoader = new THREE.TextureLoader();
-  let alexScene = await PrepareSceneForRender(ALEX_MODEL.model);
+  let alexScene = await PrepareSceneForRender(ALEX_MODEL.model,disableDefaultModelRotation);
   alexListProvider.scene = alexScene.scene;
   alexListProvider.camera = alexScene.camera;
   alexListProvider.name = "alex";

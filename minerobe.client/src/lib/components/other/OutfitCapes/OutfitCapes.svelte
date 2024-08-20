@@ -1,5 +1,6 @@
 <script lang="ts">
   import CloseBoxIcon from "$icons/close-box.svg?raw";
+  import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
   import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
   import type { CapeModel } from "$src/model/integration/minecraft";
 

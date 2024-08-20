@@ -1,6 +1,6 @@
 import { MODEL_TYPE, ALEX_MODEL, STEVE_MODEL } from "$data/consts";
 import type { FileData, OutfitLayer } from "$src/model/package";
-import type { OutfitPackageRenderConfig } from "./model";
+import type { OutfitPackageRenderConfig } from "$src/model/render";
 
 // Defaults
 const defaultOptions = {

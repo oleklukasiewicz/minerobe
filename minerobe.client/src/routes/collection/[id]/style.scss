@@ -8,3 +8,9 @@
   margin: 8px 8px 0px;
   padding: 24px 16px 64px;
 }
+.collection-showcase {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+  grid-template-rows: auto auto auto;
+  gap: 8px;
+}

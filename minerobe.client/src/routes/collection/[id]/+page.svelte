@@ -1,4 +1,5 @@
 <script lang="ts">
+  import OutfitPresenter from "$lib/components/outfit/OutfitPresenter/OutfitPresenter.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import OutfitPackageSnapshotList from "$lib/components/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
@@ -50,7 +51,7 @@
   const goToItemPage = async (e) => {
     const item: OutfitPackage = e.detail.item;
     const variant: OutfitLayer = e.detail.layer;
-    
+
     if (!item.social.isShared && $currentUser.id == item.publisher.id) {
       const resp = await SetStudioPackage(item.id);
       if (resp == null) return;
@@ -82,6 +83,13 @@
         </div>
       </div>
     </Placeholder>
+    <div style="display: table;margin-top:12px">
+      <div class="collection-showcase">
+        {#each new Array(15) as item}
+          <OutfitPresenter />
+        {/each}
+      </div>
+    </div>
   </div>
   <div class="outfits">
     <OutfitPackageSnapshotList
