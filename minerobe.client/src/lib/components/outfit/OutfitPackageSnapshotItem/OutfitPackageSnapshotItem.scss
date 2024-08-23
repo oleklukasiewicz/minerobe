@@ -88,3 +88,12 @@
   top: 4px;
   left: 4px;
 }
+.user-flag {
+  position: absolute;
+  height: 24px;
+  top: 6px;
+  right: 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}

@@ -23,21 +23,24 @@
   onMount(async () => {
     // let landing ;
     appState.subscribe(async (state) => {
-      if (!(state == APP_STATE.READY)) return;
-      const settings = await FetchSettings();
-      userSettings.set(settings);
+      if (!(state == APP_STATE.READY || state == APP_STATE.GUEST_READY)) return;
+
+      const recent = await GetMostRecent(0, 6);
+      mostRecent = recent.items;
+
+      const liked = await GetMostLiked(0, 6);
+      mostLiked = liked.items;
+
+      const downloaded = await GetMostDownloaded(0, 6);
+      mostDownloaded = downloaded.items;
+
+      if (state == APP_STATE.READY) {
+        const settings = await FetchSettings();
+        userSettings.set(settings);
+      }
+
+      landingLoaded = true;
     });
-
-    const recent = await GetMostRecent(0, 6);
-    mostRecent = recent.items;
-
-    const liked = await GetMostLiked(0, 6);
-    mostLiked = liked.items;
-
-    const downloaded = await GetMostDownloaded(0, 6);
-    mostDownloaded = downloaded.items;
-
-    landingLoaded = true;
   });
   const goToItemPage = (e) => {
     const item = e.detail.item;
@@ -57,6 +60,7 @@
   <h2 class="list-title">Most Recent</h2>
   <OutfitPackageSnapshotList
     items={mostRecent}
+    isLikeable={true}
     loading={!landingLoaded}
     renderer={$defaultRenderer}
     dense={false}
@@ -68,6 +72,7 @@
   <h2 class="list-title">Most Liked</h2>
   <OutfitPackageSnapshotList
     items={mostLiked}
+    isLikeable={true}
     loading={!landingLoaded}
     renderer={$defaultRenderer}
     baseTexture={$userSettings?.baseTexture?.layers[0]}
@@ -79,6 +84,7 @@
   <h2 class="list-title">Most Downloaded</h2>
   <OutfitPackageSnapshotList
     items={mostDownloaded}
+    isLikeable={true}
     loading={!landingLoaded}
     renderer={$defaultRenderer}
     dense={false}

@@ -15,22 +15,31 @@ namespace minerobe.api.Controllers.View
     {
         private readonly ILandingViewService _landingViewService;
         private readonly IPackageService _packageService;
-        public LandingViewController(ILandingViewService landingViewService, IPackageService packageService)
+        private readonly IWardrobeService _wardrobeService;
+        private readonly IUserService _userService;
+        public LandingViewController(ILandingViewService landingViewService, IPackageService packageService, IWardrobeService wardrobeService, IUserService userService)
         {
             _packageService = packageService;
             _landingViewService = landingViewService;
+            _userService = userService;
+            _wardrobeService = wardrobeService;
         }
         [HttpPost("recent")]
         public async Task<IActionResult> GetMostRecent([FromBody]PagedOptions<SimpleFilter> options)
         {
             var packages = await _landingViewService.GetMostRecent();
             var packagesPage = packages.Where(x => x.IsShared == true).ToPagedResponse(options.Page, options.PageSize);
+            var user = await _userService.GetFromExternalUser(User);
 
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in packagesPage.Items)
             {
                 var package = await _packageService.GetById(item.PackageId);
-                items.Add(package.ToListItemResponseModel());
+
+                var isInwadrobe = false;
+                if(user != null)
+                    isInwadrobe = await _wardrobeService.IsPackageInWardrobe(user.Id, item.PackageId);
+                items.Add(package.ToListItemResponseModel(2,isInwadrobe));
             }
 
             var mappedRespose = packagesPage.MapResponseOptions<OutfitPackageView, OutfitPackageListItemResponseModel>();
@@ -43,12 +52,18 @@ namespace minerobe.api.Controllers.View
         {
             var packages = await _landingViewService.GetMostLiked();
             var packagesPage = packages.Where(x => x.IsShared == true).ToPagedResponse(options.Page, options.PageSize);
+            var user = await _userService.GetFromExternalUser(User);
+
 
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in packagesPage.Items)
             {
                 var package = await _packageService.GetById(item.PackageId);
-                items.Add(package.ToListItemResponseModel());
+
+                var isInwadrobe = false;
+                if (user != null)
+                    isInwadrobe = await _wardrobeService.IsPackageInWardrobe(user.Id, item.PackageId);
+                items.Add(package.ToListItemResponseModel(2,isInwadrobe));
             }
 
             var mappedRespose = packagesPage.MapResponseOptions<OutfitPackageView, OutfitPackageListItemResponseModel>();
@@ -61,12 +76,18 @@ namespace minerobe.api.Controllers.View
         {
             var packages = await _landingViewService.GetMostDownloaded();
             var packagesPage = packages.Where(x => x.IsShared == true).ToPagedResponse(options.Page, options.PageSize);
+            var user = await _userService.GetFromExternalUser(User);
+
 
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in packagesPage.Items)
             {
                 var package = await _packageService.GetById(item.PackageId);
-                items.Add(package.ToListItemResponseModel());
+
+                var isInwadrobe = false;
+                if (user != null)
+                    isInwadrobe = await _wardrobeService.IsPackageInWardrobe(user.Id, item.PackageId);
+                items.Add(package.ToListItemResponseModel(2,isInwadrobe));
             }
 
             var mappedRespose = packagesPage.MapResponseOptions<OutfitPackageView, OutfitPackageListItemResponseModel>();

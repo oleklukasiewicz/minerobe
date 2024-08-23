@@ -1,20 +1,18 @@
 <script lang="ts">
-  import {
-    COLORS,
-    OUTFIT_TYPE,
-  } from "$src/data/consts";
+  import { COLORS, OUTFIT_TYPE } from "$src/data/consts";
   import { RenderProvider, RenderSnapshot } from "$src/data/render";
   import CloudIcon from "$icons/cloud.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import { currentUser } from "$src/data/cache";
-  import {
-    ConvertToStringColor,
-  } from "$src/helpers/image/colorHelper";
+  import { ConvertToStringColor } from "$src/helpers/image/colorHelper";
   import OutfitPackageSnapshotRender from "$component/render/OutfitPackageSnapshotRender.svelte";
   import { createEventDispatcher, onMount } from "svelte";
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
   import type { OutfitLayer, OutfitPackage } from "$src/model/package";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
+
+  import HeartIcon from "$icons/heart.svg?raw";
+  import HeartFilledIcon from "$icons/heart-filled.svg?raw";
 
   export let item: OutfitPackage = null;
   export let dense = false;
@@ -22,6 +20,8 @@
   export let multiple = 2;
   export let style = "";
   export let isCurrentSkin = false;
+  export let isLikeable = true;
+  export let isLiked = false;
 
   const dispatch = createEventDispatcher();
   let aboveLimit = 0;
@@ -67,9 +67,24 @@
 >
   {#if isCurrentSkin}
     <div class="current-flag" title="Current skin">
-      <div class="icon-small">{@html LoaderIcon}</div>
+      <div class="icon">{@html LoaderIcon}</div>
     </div>
   {/if}
+
+  <div class="user-flag">
+    {#if isLikeable && $currentUser?.id != item.publisher?.id && $currentUser != null}
+      <div class="icon-small">
+        {#if isLiked}
+          {@html HeartFilledIcon}
+        {:else}
+          {@html HeartIcon}
+        {/if}
+      </div>
+    {/if}
+    {#if item.social.isShared && item.publisher.id == $currentUser?.id}
+    <div class="icon-small">{@html CloudIcon}</div>
+  {/if}
+  </div>
   <div class="render-area">
     <!-- svelte-ignore a11y-missing-attribute -->
     {#if item.layers.length > 0}
@@ -86,9 +101,6 @@
   <div class="data-area">
     <div class="title-row">
       <b class="name">{item.name} </b>
-      {#if item.social.isShared && item.publisher.id == $currentUser?.id}
-        <div class="share-icon icon-small">{@html CloudIcon}</div>
-      {/if}
     </div>
     <div class="data-row">
       <div style="flex:1;">

@@ -8,7 +8,7 @@
   import DeleteIcon from "$src/icons/close.svg?raw";
   import UserPlusIcon from "$src/icons/user-plus.svg?raw";
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
-  import { LAYER_TYPE } from "$src/data/consts";
+  import { LAYER_TYPE, MODEL_TYPE } from "$src/data/consts";
   import OutfitLayerRender from "$component/render/OutfitLayerRender.svelte";
   import { RenderProvider } from "$src/data/render";
   import Label from "$component/base/Label/Label.svelte";
@@ -32,6 +32,9 @@
   let dispatch = createEventDispatcher();
 
   let isDragging = false;
+  let isAlexDragging = false;
+  let isSteveDragging = false;
+
   let up = function () {
     dispatch("up", {
       texture: item,
@@ -42,7 +45,7 @@
       texture: item,
     });
   };
-  let handleDrop = function (event) {
+  let handleDrop = function (event, model = MODEL_TYPE.ALEX) {
     event.preventDefault();
     if (multiVariant && item.type != LAYER_TYPE.REMOTE) {
       const files = event.dataTransfer.files;
@@ -50,19 +53,50 @@
       dispatch("dropvariant", {
         files: files,
         texture: item,
+        model: model,
       });
     }
   };
+  //all
   const handleRenderDragOver = function (event) {
     event.preventDefault();
     isDragging = true;
   };
-  const handleRenderDragEnter = function (event) {
-    isDragging = true;
-  };
-  const handleRenderDragLeave = function (event) {
+  const handleRenderDragEnd = function (event) {
+    if (isSteveDragging || isAlexDragging) return;
     isDragging = false;
   };
+
+  const handleDragEnter = function (event) {
+    event.preventDefault();
+  };
+  
+  //alex
+  const handleAlexDrop = function (event) {
+    handleDrop(event, MODEL_TYPE.ALEX);
+  };
+  const handleRenderAlexDragOver = function (event) {
+    isAlexDragging = true;
+    isSteveDragging = false;
+  };
+  const handleRenderAlexDragEnd = function (event) {
+    event.preventDefault();
+    isAlexDragging = false;
+  };
+
+  //steve
+  const handleSteveDrop = function (event) {
+    handleDrop(event, MODEL_TYPE.STEVE);
+  };
+  const handleRenderSteveDragOver = function (event) {
+    isSteveDragging = true;
+    isAlexDragging = false;
+  };
+  const handleRenderSteveDragEnd = function (event) {
+    event.preventDefault();
+    isSteveDragging = false;
+  };
+
   let down = function () {
     dispatch("down", {
       texture: item,
@@ -85,6 +119,13 @@
       css: (t) => `opacity: ${t}; transform: scale(${0.9 + t * 0.1})`,
     };
   }
+  function fadeIn(node, { duration }) {
+    return {
+      duration,
+      easing: cubicOut,
+      css: (t) => `opacity: ${t}`,
+    };
+  }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -100,10 +141,39 @@
   in:fadeInScale={{ duration: 300 }}
   out:fadeInScale={{ duration: 300 }}
   on:drop={handleDrop}
-  on:dragenter={handleRenderDragEnter}
-  on:dragleave={handleRenderDragLeave}
+  on:dragleave={handleRenderDragEnd}
   on:dragover={handleRenderDragOver}
+  on:dragenter={handleDragEnter}
+  on:dragend={handleRenderDragEnd}
 >
+  {#if isDragging && multiVariant && item.type != LAYER_TYPE.REMOTE}
+    <div
+      class="model-selection"
+      in:fadeIn={{ duration: 300 }}
+      out:fadeIn={{ duration: 300 }}
+    >
+      <div
+        class:drop-hover={isAlexDragging}
+        on:dragleave={handleRenderAlexDragEnd}
+        on:dragend={handleRenderAlexDragEnd}
+        on:dragover={handleRenderAlexDragOver}
+        on:drop={handleAlexDrop}
+        on:dragenter={handleRenderAlexDragOver}
+      >
+        {$_("modelOpt.alex")}
+      </div>
+      <div
+        class:drop-hover={isSteveDragging}
+        on:dragleave={handleRenderSteveDragEnd}
+        on:dragend={handleRenderSteveDragEnd}
+        on:dragover={handleRenderSteveDragOver}
+        on:drop={handleSteveDrop}
+        on:dragenter={handleRenderSteveDragOver}
+      >
+        {$_("modelOpt.steve")}
+      </div>
+    </div>
+  {/if}
   <div class="data">
     <div class="render">
       <OutfitLayerRender {item} {renderProvider} {modelName} />

@@ -447,10 +447,11 @@
   };
   const addNewDropVariant = async function (e) {
     const layer = e.detail.texture;
+    const model = e.detail.model;
     const index = $itemLayers.indexOf(layer);
 
     const newLayer = await ImportLayerFromFile(e.detail.files[0]);
-    layer[$itemModelType] = newLayer;
+    layer[model] = newLayer;
 
     const response = await UpdatePackageLayer(await AddLayerSnapshot(layer));
     if (response == null) return;
@@ -688,7 +689,8 @@
         <OutfitCapes
           capes={integrationSettings.capes}
           selectedCape={$itemRenderConfig.cape}
-          on:select={setCape}/>
+          on:select={setCape}
+        />
         <br />
       {/if}
       <SectionTitle label={$_("description")} placeholder={!loaded} />

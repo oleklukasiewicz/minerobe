@@ -18,6 +18,7 @@
   export let baseTexture: OutfitLayer = null;
   export let placeholderCount = 48;
   export let currentSkinId = null;
+  export let isLikeable = false;
 
   const dispatch = createEventDispatcher();
 
@@ -81,6 +82,8 @@
       {#each items as item}
         <OutfitPackageSnapshotItem
           on:select={selectRenderedOutfit}
+          isLikeable={isLikeable}
+          isLiked={item.isInWardrobe}
           isCurrentSkin={currentSkinId == item.id}
           multiple={item.type == PACKAGE_TYPE.OUTFIT_SET ? 1 : 2}
           item={normalizeItem(item)}
