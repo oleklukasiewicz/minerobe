@@ -70,7 +70,7 @@
   const handleDragEnter = function (event) {
     event.preventDefault();
   };
-  
+
   //alex
   const handleAlexDrop = function (event) {
     handleDrop(event, MODEL_TYPE.ALEX);
@@ -140,7 +140,6 @@
   on:click
   in:fadeInScale={{ duration: 300 }}
   out:fadeInScale={{ duration: 300 }}
-  on:drop={handleDrop}
   on:dragleave={handleRenderDragEnd}
   on:dragover={handleRenderDragOver}
   on:dragenter={handleDragEnter}
