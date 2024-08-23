@@ -159,7 +159,7 @@
 
       //load settings
       userSettings = await FetchSettings();
-      if (userSettings?.integrations?.includes("minecraft")) {
+      if (userSettings?.integrations?.includes("minecraft") && isItemSet) {
         integrationSettings = await GetAccount();
         if (isItemSet && userSettings.currentCapeId != null) {
           var selectedCape = integrationSettings?.capes.find(
