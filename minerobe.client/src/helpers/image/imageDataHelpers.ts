@@ -56,7 +56,7 @@ export const GetOutfitType = function (imageContext: any) {
   }
   //body
   if (bodyPercentage > 0.3) {
-    if (legsPercentage > 0.1) return OUTFIT_TYPE.SUIT;
+    if (legsPercentage > 0.3) return OUTFIT_TYPE.SUIT;
     return OUTFIT_TYPE.TOP;
   }
   //shoes / bottom
