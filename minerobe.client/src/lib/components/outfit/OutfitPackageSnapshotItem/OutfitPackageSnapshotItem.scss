@@ -57,6 +57,9 @@
   &:hover {
     background-color: var(--color-accent);
     border-color: var(--color-theme-font);
+    .user-flag {
+      color: var(--color-theme-D1);
+    }
     .data-area {
       & .name,
       .icon-small,

@@ -10,6 +10,8 @@ using minerobe.api.Services;
 using minerobe.api.Services.Integration;
 using minerobe.api.Services.Interface;
 using minerobe.api.Services.View;
+using minerobe.api.ServicesHelpers;
+using minerobe.api.ServicesHelpers.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,10 @@ builder.Services.AddTransient<ICollectionService, CollectionService>();
 builder.Services.AddTransient<IWardrobeService, WardrobeService>();
 builder.Services.AddTransient<IUserSettingsService, UserSettingsService>();
 builder.Services.AddTransient<ILandingViewService, LandingViewService>();
+
+// services helpers
+builder.Services.AddTransient<IOutfitPackageServiceHelper, OutfitPackageServiceHelper>();
+
 
 //hubs
 builder.Services.AddTransient<IDefaultHub, DefaultHub>();
