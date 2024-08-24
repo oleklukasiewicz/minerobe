@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
-using minerobe.api.Entity.Package;
+using minerobe.api.Entity.Summary;
 using minerobe.api.Services.Interface;
 
 namespace minerobe.api.Services.View
@@ -14,19 +14,19 @@ namespace minerobe.api.Services.View
             _packageService = packageService;
             _context = context;
         }
-        public async Task<IQueryable<OutfitPackageView>> GetMostRecent()
+        public async Task<IQueryable<OutfitPackageSummary>> GetMostRecent()
         {
-            var packages = _context.OutfitPackageViews.OrderByDescending(x => x.ModifiedAt == null ? x.CreatedAt : x.ModifiedAt).AsQueryable();
+            var packages = _context.OutfitPackageSummarys.OrderByDescending(x => x.ModifiedAt == null ? x.CreatedAt : x.ModifiedAt).AsQueryable();
             return packages;
         }
-        public async Task<IQueryable<OutfitPackageView>> GetMostLiked()
+        public async Task<IQueryable<OutfitPackageSummary>> GetMostLiked()
         {
-            var packages = _context.OutfitPackageViews.OrderByDescending(x => x.Likes).AsQueryable();
+            var packages = _context.OutfitPackageSummarys.OrderByDescending(x => x.Likes).AsQueryable();
             return packages;
         }
-        public async Task<IQueryable<OutfitPackageView>> GetMostDownloaded()
+        public async Task<IQueryable<OutfitPackageSummary>> GetMostDownloaded()
         {
-            var packages = _context.OutfitPackageViews.OrderByDescending(x => x.Downloads).AsQueryable();
+            var packages = _context.OutfitPackageSummarys.OrderByDescending(x => x.Downloads).AsQueryable();
             return packages;
         }
     }

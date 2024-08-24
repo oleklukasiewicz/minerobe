@@ -1,11 +1,11 @@
-﻿using minerobe.api.Entity.Package;
+﻿using minerobe.api.Entity.Summary;
 
 namespace minerobe.api.Services.Interface
 {
     public interface ILandingViewService
     {
-        Task<IQueryable<OutfitPackageView>> GetMostDownloaded();
-        Task<IQueryable<OutfitPackageView>> GetMostLiked();
-        Task<IQueryable<OutfitPackageView>> GetMostRecent();
+        Task<IQueryable<OutfitPackageSummary>> GetMostDownloaded();
+        Task<IQueryable<OutfitPackageSummary>> GetMostLiked();
+        Task<IQueryable<OutfitPackageSummary>> GetMostRecent();
     }
 }

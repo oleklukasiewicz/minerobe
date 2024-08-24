@@ -2,6 +2,7 @@
 using minerobe.api.Entity.Collection;
 using minerobe.api.Entity.Package;
 using minerobe.api.Entity.Settings;
+using minerobe.api.Entity.Summary;
 using minerobe.api.Entity.User;
 using minerobe.api.Entity.Wardrobe;
 using minerobe.api.Helpers.Model;
@@ -12,6 +13,7 @@ using minerobe.api.ResponseModel.Collection;
 using minerobe.api.ResponseModel.Package;
 using minerobe.api.ResponseModel.User;
 using minerobe.api.ResponseModel.Wardrobe;
+using minerobe.api.Services.Interface;
 using System.Text;
 using System.Text.Unicode;
 using System.Threading.Tasks;
@@ -67,17 +69,16 @@ namespace minerobe.api.Helpers
             };
             return pagedResponse;
         }
-        public static PagedResponse<TDestination> MapResponseOptions<T, TDestination>(this PagedResponse<T> response)
+        public static PagedResponse<TDestination> MapResponseOptions<T, TDestination>(this PagedResponse<T> response, List<TDestination> items)
         {
             var pagedResponse = new PagedResponse<TDestination>
             {
-                Items = new List<TDestination>(),
+                Items = items,
                 Page = response.Page,
                 PageSize = response.PageSize,
                 Total = response.Total
             };
             return pagedResponse;
         }
-
     }
 }

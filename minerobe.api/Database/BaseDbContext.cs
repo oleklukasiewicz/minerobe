@@ -3,6 +3,7 @@ using minerobe.api.Entity;
 using minerobe.api.Entity.Collection;
 using minerobe.api.Entity.Package;
 using minerobe.api.Entity.Settings;
+using minerobe.api.Entity.Summary;
 using minerobe.api.Entity.User;
 using minerobe.api.Entity.Wardrobe;
 using System.Reflection;
@@ -12,7 +13,7 @@ namespace minerobe.api.Database
     public class BaseDbContext:DbContext
     {
         public DbSet<OutfitPackage> OutfitPackages { get; set; }
-        public DbSet<OutfitPackageView> OutfitPackageViews { get; set; }
+        public DbSet<OutfitPackageSummary> OutfitPackageSummarys { get; set; }
         public DbSet<OutfitLayer> OutfitLayers { get; set; }
         public DbSet<MinerobeUser> MinerobeUsers { get; set;}
         public DbSet<MinerobeUserLink> MinerobeUserLinks { get; set; }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.Entity.Package;
+using minerobe.api.Entity.Summary;
 using minerobe.api.Helpers;
 using minerobe.api.Helpers.Filter;
 using minerobe.api.Helpers.Model;
@@ -26,7 +26,7 @@ namespace minerobe.api.Controllers.View
             _outfitPackageServiceHelper = outfitPackageServiceHelper;
         }
         [HttpPost("recent")]
-        public async Task<IActionResult> GetMostRecent([FromBody]PagedOptions<SimpleFilter> options)
+        public async Task<IActionResult> GetMostRecent([FromBody] PagedOptions<SimpleFilter> options)
         {
             var user = await _userService.GetFromExternalUser(User);
 
@@ -35,24 +35,20 @@ namespace minerobe.api.Controllers.View
 
             var items = await _outfitPackageServiceHelper.AddUserContextToPage(packagesPage, user?.Id);
 
-            var mappedRespose = packagesPage.MapResponseOptions<OutfitPackageView, OutfitPackageListItemResponseModel>();
-            mappedRespose.Items = items;
-
+            var mappedRespose = packagesPage.MapResponseOptions(items);
             return Ok(mappedRespose);
         }
         [HttpPost("liked")]
-        public async Task<IActionResult> GetMostLiked([FromBody]PagedOptions<SimpleFilter> options)
+        public async Task<IActionResult> GetMostLiked([FromBody] PagedOptions<SimpleFilter> options)
         {
             var user = await _userService.GetFromExternalUser(User);
 
             var packages = await _landingViewService.GetMostLiked();
             var packagesPage = packages.Where(x => x.IsShared == true).ToPagedResponse(options.Page, options.PageSize);
-            
+
             var items = await _outfitPackageServiceHelper.AddUserContextToPage(packagesPage, user?.Id);
 
-            var mappedRespose = packagesPage.MapResponseOptions<OutfitPackageView, OutfitPackageListItemResponseModel>();
-            mappedRespose.Items = items;
-
+            var mappedRespose = packagesPage.MapResponseOptions(items);
             return Ok(mappedRespose);
         }
         [HttpPost("downloaded")]
@@ -65,9 +61,7 @@ namespace minerobe.api.Controllers.View
 
             var items = await _outfitPackageServiceHelper.AddUserContextToPage(packagesPage, user?.Id);
 
-            var mappedRespose = packagesPage.MapResponseOptions<OutfitPackageView, OutfitPackageListItemResponseModel>();
-            mappedRespose.Items = items;
-
+            var mappedRespose = packagesPage.MapResponseOptions(items);
             return Ok(mappedRespose);
         }
     }

@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace minerobe.api.Entity.Package
+namespace minerobe.api.Entity.Summary
 {
-    public class OutfitPackageView
+    public class OutfitPackageSummary
     {
         public Guid PackageId { get; set; }
         public DateTime? ModifiedAt { get; set; }
@@ -18,9 +18,9 @@ namespace minerobe.api.Entity.Package
         public int Likes { get; set; }
         public bool IsShared { get; set; }
     }
-    public class OutfitPackageViewConfiguration : IEntityTypeConfiguration<OutfitPackageView>
+    public class OutfitPackageSummaryConfiguration : IEntityTypeConfiguration<OutfitPackageSummary>
     {
-        public void Configure(EntityTypeBuilder<OutfitPackageView> builder)
+        public void Configure(EntityTypeBuilder<OutfitPackageSummary> builder)
         {
             builder.HasNoKey();
             builder.ToView("vPackagesView");

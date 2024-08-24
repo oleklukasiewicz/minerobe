@@ -10,10 +10,11 @@ import {
 import { APP_STATE } from "$data/consts";
 import planksTextureRaw from "$src/texture/base_skin.png?url";
 import * as THREE from "three";
-import type { MinerobeUser } from "$src/model/user";
+import { UserPreferences, type MinerobeUser } from "$src/model/user";
 import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 import { FetchSettings } from "$src/api/settings";
 import { RefreshAccount } from "$src/api/integration/minecraft";
+import { persisted } from "svelte-persisted-store";
 
 const isMobileViewWritable: Writable<boolean> = writable(false);
 export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
@@ -21,6 +22,11 @@ export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);
 const isMobileNavigationWritable: Writable<boolean> = writable(false);
 export const isMobileNavigation: Readable<boolean> = readonly(
   isMobileNavigationWritable
+);
+
+export const userPreferences = persisted(
+  "userPreferences",
+  new UserPreferences()
 );
 
 export const planksTexture: Readable<string> = readable(planksTextureRaw);
@@ -61,7 +67,10 @@ export const setup = function () {
   if (userSubscription) userSubscription();
   userSubscription = currentUser.subscribe(async (user) => {
     appState.set(user != null ? APP_STATE.READY : APP_STATE.GUEST_READY);
-    if (user == null) return;
+    if (user == null) {
+      userPreferences.reset();
+      return;
+    }
     // Setup SignalR
     serverWsConnection.set(
       new HubConnectionBuilder()

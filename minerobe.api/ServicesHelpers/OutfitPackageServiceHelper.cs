@@ -1,4 +1,4 @@
-﻿using minerobe.api.Entity.Package;
+﻿using minerobe.api.Entity.Summary;
 using minerobe.api.Helpers.Model;
 using minerobe.api.ResponseModel.Package;
 using minerobe.api.Services;
@@ -16,7 +16,7 @@ namespace minerobe.api.ServicesHelpers
             _wardrobeService = wardrobeService;
             _packageService = packageService;
         }
-        public async Task<List<OutfitPackageListItemResponseModel>> AddUserContextToPage(PagedResponse<OutfitPackageView> page, Guid? userId=null)
+        public async Task<List<OutfitPackageListItemResponseModel>> AddUserContextToPage(PagedResponse<OutfitPackageSummary> page, Guid? userId=null)
         {
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)

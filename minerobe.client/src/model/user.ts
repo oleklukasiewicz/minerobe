@@ -57,3 +57,8 @@ export class CurrentTextureConfig {
     this.capeId = capeId;
   }
 }
+export class UserPreferences {
+  isWardobeMenuOpen: boolean;
+  wadrobeView: string;
+  wardrobePageParams: any;
+}

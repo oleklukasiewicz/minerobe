@@ -4,6 +4,7 @@
     currentUser,
     defaultRenderer,
     isMobileView,
+    userPreferences,
   } from "$src/data/cache";
   import {
     navigateToCollection,
@@ -24,7 +25,6 @@
   import Search from "$component/base/Search/Search.svelte";
   import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import { page } from "$app/stores";
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import { _ } from "svelte-i18n";
   import { goto } from "$app/navigation";
@@ -66,11 +66,15 @@
   const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
 
   const localWardobeItems: Writable<PagedResponse> = writable(defaultList);
-  let currentView: any = {};
+  let currentView: any = {
+    value: $userPreferences.wadrobeView,
+    params: $userPreferences.wardrobePageParams,
+  };
   let loaded = false;
   let itemsLoaded = false;
   let isCreatingNew = false;
   let showFilters = false;
+  let isMenuOpen = $userPreferences.isWardobeMenuOpen;
   let menuItems: any[] = [
     // {
     //   label: "Schedule",
@@ -98,7 +102,7 @@
       value: PACKAGE_TYPE.OUTFIT,
     },
   ];
-  let filter:OutfitFilter = {
+  let filter: OutfitFilter = {
     type: null,
     outfitType: [],
     phrase: "",
@@ -132,7 +136,8 @@
       menuItems.push({
         type: "separator",
       });
-      menuItems.push(...outfitsMenuItems);
+      menuItems = [...menuItems, ...outfitsMenuItems];
+
       loaded = true;
       if (!loaded) return;
       await resfreshItems();
@@ -148,18 +153,10 @@
       type == PACKAGE_TYPE.OUTFIT ||
       type == null
     ) {
-      currentView = {
-        value: type,
-        params: filter.outfitType.length == 1 ? filter.outfitType[0] : null,
-      };
       const items = await GetWardrobePackages(filter);
       localWardobeItems.set(items);
     }
     if (type?.toLowerCase() == "collection") {
-      currentView = {
-        value: "collection",
-        params: null,
-      };
       const items = await GetWadrobeCollections(filter.phrase);
       localWardobeItems.set(items);
     }
@@ -254,12 +251,14 @@
   };
   const onMenuItemSelect = async function (e) {
     const target = e.detail;
+    $userPreferences.wadrobeView = target.value;
+    $userPreferences.wardrobePageParams = target.params;
+    currentView = target;
     if (target.value == "schedule") {
       goto("/schedule");
       return;
     }
     setFilters(target);
-    navigateToWardrobe(target.value, target.params);
     await resfreshItems();
   };
   const compare = (a, b) => {
@@ -268,6 +267,11 @@
       a?.params?.toLowerCase() == b?.params?.toLowerCase()
     );
   };
+
+  const setUserPreferencesMenu = function (isMenuOpenState) {
+    $userPreferences.isWardobeMenuOpen = isMenuOpenState;
+  };
+  $: setUserPreferencesMenu(isMenuOpen);
 </script>
 
 <div class="wardrobe-view" class:mobile={$isMobileView}>
@@ -286,7 +290,7 @@
     {:else}
       <Menu
         items={menuItems}
-        open
+        bind:open={isMenuOpen}
         toggleable={!$isMobileView}
         label={$isMobileView ? null : "Wardrobe"}
         value={currentView}

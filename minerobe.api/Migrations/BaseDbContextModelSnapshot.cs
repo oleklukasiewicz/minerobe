@@ -166,7 +166,7 @@ namespace minerobe.api.Migrations
                     b.ToTable("Packages", (string)null);
                 });
 
-            modelBuilder.Entity("minerobe.api.Entity.Package.OutfitPackageView", b =>
+            modelBuilder.Entity("minerobe.api.Entity.Package.OutfitPackageSummary", b =>
                 {
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
