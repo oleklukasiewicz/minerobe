@@ -24,7 +24,7 @@
 	"dependencies": {
 		"@microsoft/signalr": "^8.0.7",
 		"@sveltejs/adapter-node": "^5.2.1",
-		"axios": "^1.7.4",
+		"axios": "^1.7.5",
 		"color-diff": "^1.4.0",
 		"dotenv": "^16.4.5",
 		"firebase": "^10.12.5",
