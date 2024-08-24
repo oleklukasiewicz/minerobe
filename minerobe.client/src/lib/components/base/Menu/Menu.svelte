@@ -11,7 +11,7 @@
   export let label: string = null;
   export let items: any[] = [];
   export let footerItems: any[] = [];
-  export let value: string = null;
+  export let value: any = null;
   export let top: boolean = false;
   export let toggleable: boolean = true;
   export let comparer: (a: any, b: any) => boolean = (a, b) => a == b;

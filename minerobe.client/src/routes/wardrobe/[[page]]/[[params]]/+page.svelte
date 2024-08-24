@@ -10,7 +10,6 @@
     navigateToCollection,
     navigateToDesign,
     navigateToOutfitPackage,
-    navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
   import CheckBoxIcon from "$icons/checkbox.svg?raw";
@@ -55,7 +54,7 @@
   import Select from "$lib/components/base/Select/Select.svelte";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import { ConvertToStringColor } from "$src/helpers/image/colorHelper";
-  import type { OutfitFilter } from "$src/model/filter";
+  import { OutfitFilter } from "$src/model/filter";
 
   const defaultList = {
     items: [],
@@ -66,10 +65,8 @@
   const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
 
   const localWardobeItems: Writable<PagedResponse> = writable(defaultList);
-  let currentView: any = {
-    value: $userPreferences.wadrobeView,
-    params: $userPreferences.wardrobePageParams,
-  };
+  let currentFilter: OutfitFilter =
+    $userPreferences.wadrobeFilter || new OutfitFilter();
   let loaded = false;
   let itemsLoaded = false;
   let isCreatingNew = false;
@@ -84,31 +81,32 @@
     {
       label: "All",
       icon: SubscriptionIcon,
-      value: null,
+      filter: {
+        type: null,
+      },
     },
     {
       label: "Collections",
       icon: ListIcon,
-      value: "collection",
+      filter: {
+        type: "collection",
+      },
     },
     {
       label: "Sets",
       icon: AnimationIcon,
-      value: PACKAGE_TYPE.OUTFIT_SET,
+      filter: {
+        type: PACKAGE_TYPE.OUTFIT_SET,
+      },
     },
     {
       label: "Outfits",
       icon: ShoppingBagIcon,
-      value: PACKAGE_TYPE.OUTFIT,
+      filter: {
+        type: PACKAGE_TYPE.OUTFIT,
+      },
     },
   ];
-  let filter: OutfitFilter = {
-    type: null,
-    outfitType: [],
-    phrase: "",
-    colors: [],
-    isShared: null,
-  };
   const mobileMenuItems = Array.from(menuItems);
   onMount(() => {
     appState.subscribe(async (state) => {
@@ -124,10 +122,12 @@
         .map((x) => {
           return {
             label: x.outfitType,
-            value: PACKAGE_TYPE.OUTFIT,
             icon: GetOutfitIconFromType(x.outfitType),
-            params: x.outfitType,
             badge: x.count,
+            filter: {
+              outfitType: [x.outfitType.toLowerCase()],
+              type: PACKAGE_TYPE.OUTFIT,
+            },
           };
         })
         .filter(
@@ -147,17 +147,17 @@
     localWardobeItems.set(defaultList);
     itemsLoaded = false;
     isCreatingNew = false;
-    const type = filter.type;
+    const type = currentFilter.type;
     if (
       type == PACKAGE_TYPE.OUTFIT_SET ||
       type == PACKAGE_TYPE.OUTFIT ||
       type == null
     ) {
-      const items = await GetWardrobePackages(filter);
+      const items = await GetWardrobePackages(currentFilter);
       localWardobeItems.set(items);
     }
     if (type?.toLowerCase() == "collection") {
-      const items = await GetWadrobeCollections(filter.phrase);
+      const items = await GetWadrobeCollections(currentFilter.phrase);
       localWardobeItems.set(items);
     }
     itemsLoaded = true;
@@ -228,9 +228,6 @@
     navigateToCollection(response.id);
   };
 
-  const filterOutfits = async function (e) {
-    await resfreshItems();
-  };
   const onItemSelect = async function (e) {
     const item = e.detail.item;
     const resp = await SetStudioPackage(item.id);
@@ -242,36 +239,42 @@
     const item = e.detail;
     navigateToCollection(item.id);
   };
-  const setFilters = function (target) {
-    filter.type = target.value;
-    const foundOutfitType = OUTFIT_TYPE_ARRAY.find(
-      (x) => x?.name?.toLowerCase() == target?.params?.toLowerCase()
-    );
-    filter.outfitType = foundOutfitType ? [foundOutfitType.name] : [];
+  const setFilters = async function (target) {
+    if (!loaded) return;
+    currentFilter = target;
+    await resfreshItems();
   };
   const onMenuItemSelect = async function (e) {
-    const target = e.detail;
-    $userPreferences.wadrobeView = target.value;
-    $userPreferences.wardrobePageParams = target.params;
-    currentView = target;
-    if (target.value == "schedule") {
+    const target: OutfitFilter = e.detail.filter;
+    currentFilter = structuredClone(target);
+    if (target.type == "schedule") {
       goto("/schedule");
       return;
     }
-    setFilters(target);
+    setFilters(currentFilter);
     await resfreshItems();
   };
   const compare = (a, b) => {
-    return (
-      a?.value == b?.value &&
-      a?.params?.toLowerCase() == b?.params?.toLowerCase()
-    );
+    const aFilter: OutfitFilter = a?.filter;
+    const bFilter: OutfitFilter = b;
+
+    const isOutfitTypeEmptyA =
+      aFilter.outfitType?.length == 0 || aFilter.outfitType == null;
+    const isOutfitTypeEmptyB =
+      bFilter.outfitType?.length == 0 || bFilter.outfitType == null;
+
+    if (aFilter.type == bFilter.type) {
+      if (isOutfitTypeEmptyA && isOutfitTypeEmptyB) return true;
+      if (!isOutfitTypeEmptyA && !isOutfitTypeEmptyB) {
+        if (aFilter.outfitType[0] == bFilter.outfitType[0]) return true;
+      }
+    }
+    return false;
   };
 
-  const setUserPreferencesMenu = function (isMenuOpenState) {
-    $userPreferences.isWardobeMenuOpen = isMenuOpenState;
-  };
-  $: setUserPreferencesMenu(isMenuOpen);
+  $: setFilters(currentFilter);
+  $: $userPreferences.isWardobeMenuOpen = isMenuOpen;
+  $: $userPreferences.wadrobeFilter = currentFilter;
 </script>
 
 <div class="wardrobe-view" class:mobile={$isMobileView}>
@@ -283,7 +286,7 @@
         top
         toggleable={!$isMobileView}
         label={$isMobileView ? null : "Wardrobe"}
-        value={currentView}
+        value={currentFilter}
         on:select={onMenuItemSelect}
         comparer={compare}
       />
@@ -293,7 +296,7 @@
         bind:open={isMenuOpen}
         toggleable={!$isMobileView}
         label={$isMobileView ? null : "Wardrobe"}
-        value={currentView}
+        value={currentFilter}
         on:select={onMenuItemSelect}
         comparer={compare}
       />
@@ -303,7 +306,7 @@
     <div class="header">
       {#if !$isMobileView}
         <h2 class="inline" style="margin: 0px;flex:1;">
-          {currentView.value || "Wardrobe"}
+          {currentFilter.type || "Wardrobe"}
         </h2>
       {/if}
       <div class="filters" class:mobile={$isMobileView}>
@@ -317,20 +320,16 @@
               { name: "Shared", value: true },
               { name: "Not shared", value: false },
             ]}
-            bind:selectedItem={filter.isShared}
-            on:select={filterOutfits}
-            on:clear={filterOutfits}
+            bind:selectedItem={currentFilter.isShared}
           ></Select>
           <Select
             items={OUTFIT_TYPE_ARRAY}
             placeholder="Outfit type"
-            bind:selectedItem={filter.outfitType}
+            bind:selectedItem={currentFilter.outfitType}
             multiple
             clearable
             itemText="normalizedName"
             itemValue="name"
-            on:select={filterOutfits}
-            on:clear={filterOutfits}
           ></Select>
           <Select
             items={COLORS_ARRAY}
@@ -342,11 +341,9 @@
             placeholder="Color"
             multiple
             clearable
-            bind:selectedItem={filter.colors}
+            bind:selectedItem={currentFilter.colors}
             itemText="normalizedName"
             itemValue="name"
-            on:select={filterOutfits}
-            on:clear={filterOutfits}
             let:item
             let:itemText
             let:selectedItemValue
@@ -396,15 +393,13 @@
           <Search
             style="flex:1;"
             dense={true}
-            bind:value={filter.phrase}
-            on:search={filterOutfits}
-            on:clear={filterOutfits}
+            bind:value={currentFilter.phrase}
           />
         </div>
       </div>
     </div>
     <div class="outfits">
-      {#if currentView.value == null}
+      {#if currentFilter.type == null}
         <Button
           on:click={addNewSet}
           fab="dynamic"
@@ -430,7 +425,7 @@
           />
         </div>
       {/if}
-      {#if currentView.value == PACKAGE_TYPE.OUTFIT_SET}
+      {#if currentFilter.type == PACKAGE_TYPE.OUTFIT_SET}
         <Button
           on:click={addNewSet}
           fab="dynamic"
@@ -456,7 +451,7 @@
           />
         </div>
       {/if}
-      {#if currentView.value == PACKAGE_TYPE.OUTFIT}
+      {#if currentFilter.type == PACKAGE_TYPE.OUTFIT}
         <Button
           on:click={addNewOutfit}
           fab="dynamic"
@@ -480,7 +475,7 @@
           />
         </div>
       {/if}
-      {#if currentView.value == "collection"}
+      {#if currentFilter.type == "collection"}
         <OutfitPackageCollectionList
           minItemWidth="255px"
           maxItemWidth="1fr"

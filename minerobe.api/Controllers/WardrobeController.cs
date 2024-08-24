@@ -140,7 +140,7 @@ namespace minerobe.api.Controllers
             var wardrobe = await _wardrobeService.Get(userId);
             if (wardrobe == null)
                 return NotFound();
-            var res = await _wardrobeService.GetWardrobeOutfits(wardrobe.Id, options.Filter);
+            var res = await _wardrobeService.GetWardrobeOutfits(wardrobe.Id, options?.Filter);
             
             return Ok(res.ToListItemResponseModel().ToPagedResponse(options.Page, options.PageSize));
         }

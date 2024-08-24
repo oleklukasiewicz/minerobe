@@ -1,3 +1,4 @@
+import { OutfitFilter } from "./filter";
 import type { OutfitPackage, PackageSocialData } from "./package";
 
 export class MinerobeUserProfile {
@@ -20,7 +21,7 @@ export class MinerobeUserSettings {
   id: string;
   ownerId: string;
   currentTexture: CurrentTexture;
-  currentCapeId:string;
+  currentCapeId: string;
   currentTexturePackageId: string;
   baseTexture: OutfitPackage;
   integrations: string[];
@@ -34,9 +35,9 @@ export class CurrentTexture {
 export class MinerobeUserSettingsSimple {
   id: string;
   ownerId: string;
-  currentTextureConfig:any
+  currentTextureConfig: any;
   currentTexturePackageId: string;
-  currentCapeId:string;
+  currentCapeId: string;
   baseTexture: OutfitPackage;
   integrations: string[];
 }
@@ -59,6 +60,5 @@ export class CurrentTextureConfig {
 }
 export class UserPreferences {
   isWardobeMenuOpen: boolean;
-  wadrobeView: string;
-  wardrobePageParams: any;
+  wadrobeFilter: OutfitFilter = new OutfitFilter();
 }
