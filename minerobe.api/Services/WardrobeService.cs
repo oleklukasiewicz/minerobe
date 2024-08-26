@@ -233,23 +233,18 @@ namespace minerobe.api.Services
         public async Task<WadrobeSummary> GetWadrobeSummary(Guid wardrobeId)
         {
             var matchings = await _context.WardrobeMatchings.Where(x => x.WardrobeId == wardrobeId).ToListAsync();
-            var outfits = new List<OutfitPackage>();
-            foreach (var matching in matchings)
-            {
-                var outfit = await _packageService.GetById(matching.OutfitPackageId);
-                if (outfit != null)
-                    outfits.Add(outfit);
-            }
+            var outfits = await GetWardrobeOutfits(wardrobeId, null);
+            
             var summary = new WadrobeSummary();
             summary.OutfitTypes = new List<WadrobeSummaryOutfitType>();
             foreach (var outfit in outfits)
             {
-                var type = summary.OutfitTypes.Where(x => x.OutfitType == outfit.OutfitType.ToString()).FirstOrDefault();
+                var type = summary.OutfitTypes.Where(x => x.OutfitType == ((OutfitType)outfit.OutfitType).ToString()).FirstOrDefault();
                 if (type == null)
                 {
                     type = new WadrobeSummaryOutfitType()
                     {
-                        OutfitType = outfit.OutfitType.ToString(),
+                        OutfitType = ((OutfitType)outfit.OutfitType).ToString(),
                         Count = 1
                     };
                     summary.OutfitTypes.Add(type);

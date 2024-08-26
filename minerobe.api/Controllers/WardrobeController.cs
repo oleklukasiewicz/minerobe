@@ -49,7 +49,10 @@ namespace minerobe.api.Controllers
         [HttpGet("{id}/studio")]
         public async Task<IActionResult> GetStudio(Guid id)
         {
-            var studio = await _wardrobeService.GetStudio(id);
+            var wardrobeId= await _wardrobeService.GetWardrobeId(id);
+            if (wardrobeId == null)
+                return NotFound();
+            var studio = await _wardrobeService.GetStudio(wardrobeId.Value);
             if (studio == null)
                 return NotFound();
             return Ok(studio.ToResponseModel());
