@@ -240,7 +240,7 @@
     navigateToCollection(item.id);
   };
   const setFilters = async function (target) {
-    if (!loaded) return;
+    if (!loaded || !itemsLoaded) return;
     currentFilter = target;
     await resfreshItems();
   };
@@ -252,7 +252,6 @@
       return;
     }
     setFilters(currentFilter);
-    await resfreshItems();
   };
   const compare = (a, b) => {
     const aFilter: OutfitFilter = a?.filter;
