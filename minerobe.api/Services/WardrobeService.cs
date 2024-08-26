@@ -3,6 +3,7 @@ using minerobe.api.Database;
 using minerobe.api.Entity;
 using minerobe.api.Entity.Collection;
 using minerobe.api.Entity.Package;
+using minerobe.api.Entity.Summary;
 using minerobe.api.Entity.Wardrobe;
 using minerobe.api.Helpers;
 using minerobe.api.Helpers.Filter;
@@ -187,29 +188,6 @@ namespace minerobe.api.Services
 
             return resp;
         }
-
-        public async Task<List<OutfitPackage>> GetWardrobeOutfits(Guid wardrobeId, OutfitFilter filter)
-        {
-            var wardrobe = await _context.Wardrobes.Where(x => x.Id == wardrobeId).FirstOrDefaultAsync();
-            if (wardrobe == null)
-                return null;
-
-            var matchings = await _context.WardrobeMatchings.Where(x => x.WardrobeId == wardrobeId).OrderBy(x => x.OutfitPackageId).ToListAsync();
-            var outfits = new List<OutfitPackage>();
-            foreach (var matching in matchings)
-            {
-                var outfit = await _packageService.GetById(matching.OutfitPackageId);
-                if (outfit != null)
-                    outfits.Add(outfit);
-            }
-
-            if (filter != null)
-            {
-                outfits = filter.Filter(outfits).ToList();
-            }
-
-            return outfits;
-        }
         public async Task<List<OutfitPackageCollection>> GetWardrobeCollections(Guid wardrobeId, SimpleFilter filter)
         {
             var wardrobe = await _context.Wardrobes.Where(x => x.Id == wardrobeId).FirstOrDefaultAsync();
@@ -272,6 +250,18 @@ namespace minerobe.api.Services
                 }
             }
             return summary;
+        }
+    
+        public async Task<IQueryable<OutfitPackageAgregation>> GetWardrobeOutfits(Guid wardrobeId,OutfitFilter filter)
+        {
+            var wardrobe = await _context.Wardrobes.Where(x => x.Id == wardrobeId).FirstOrDefaultAsync();
+            var userId = wardrobe.OwnerId;
+            var outfits = _context.Set<OutfitPackageAgregation>().FromSqlInterpolated($"SELECT * FROM fGetWardrobeOutfits({userId})");
+            if (filter != null)
+            {
+                outfits = filter.Filter(outfits);
+            }
+            return outfits;
         }
     }
 }

@@ -166,49 +166,6 @@ namespace minerobe.api.Migrations
                     b.ToTable("Packages", (string)null);
                 });
 
-            modelBuilder.Entity("minerobe.api.Entity.Package.OutfitPackageSummary", b =>
-                {
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Downloads")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsFeatured")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsShared")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("LayersCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Likes")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("OutfitType")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("PackageId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Publisher")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("SocialDataId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("vPackagesView", (string)null);
-                });
-
             modelBuilder.Entity("minerobe.api.Entity.Package.PackageLayerMatching", b =>
                 {
                     b.Property<Guid>("Id")
@@ -303,6 +260,49 @@ namespace minerobe.api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SocialData", (string)null);
+                });
+
+            modelBuilder.Entity("minerobe.api.Entity.Summary.OutfitPackageAgregation", b =>
+                {
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Downloads")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsShared")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LayersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Likes")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("OutfitType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("PackageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Publisher")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SocialDataId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vPackagesView", (string)null);
                 });
 
             modelBuilder.Entity("minerobe.api.Entity.User.MinerobeUser", b =>

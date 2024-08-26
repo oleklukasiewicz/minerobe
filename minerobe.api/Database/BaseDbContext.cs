@@ -13,7 +13,7 @@ namespace minerobe.api.Database
     public class BaseDbContext:DbContext
     {
         public DbSet<OutfitPackage> OutfitPackages { get; set; }
-        public DbSet<OutfitPackageSummary> OutfitPackageSummarys { get; set; }
+        public DbSet<OutfitPackageAgregation> OutfitPackageAgregations { get; set; }
         public DbSet<OutfitLayer> OutfitLayers { get; set; }
         public DbSet<MinerobeUser> MinerobeUsers { get; set;}
         public DbSet<MinerobeUserLink> MinerobeUserLinks { get; set; }

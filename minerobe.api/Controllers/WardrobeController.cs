@@ -8,6 +8,7 @@ using minerobe.api.ResponseModel.Collection;
 using minerobe.api.ResponseModel.Package;
 using minerobe.api.ResponseModel.Wardrobe;
 using minerobe.api.Services.Interface;
+using minerobe.api.ServicesHelpers.Interface;
 
 namespace minerobe.api.Controllers
 {
@@ -16,13 +17,15 @@ namespace minerobe.api.Controllers
     public class WardrobeController : Controller
     {
         private readonly IWardrobeService _wardrobeService;
+        private readonly IOutfitPackageServiceHelper _outfitHelper;
         private readonly IUserService _userService;
         private readonly IPackageService _packageService;
-        public WardrobeController(IWardrobeService wardrobeService, IUserService userService, IPackageService packageService)
+        public WardrobeController(IWardrobeService wardrobeService, IUserService userService, IPackageService packageService,IOutfitPackageServiceHelper outfitHelper)
         {
             _wardrobeService = wardrobeService;
             _userService = userService;
             _packageService = packageService;
+            _outfitHelper = outfitHelper;
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -141,8 +144,11 @@ namespace minerobe.api.Controllers
             if (wardrobe == null)
                 return NotFound();
             var res = await _wardrobeService.GetWardrobeOutfits(wardrobe.Id, options?.Filter);
-            
-            return Ok(res.ToListItemResponseModel().ToPagedResponse(options.Page, options.PageSize));
+            var paged= res.ToPagedResponse(options.Page, options.PageSize);
+
+            var items = await _outfitHelper.ToOutfitPackage(paged);
+
+            return Ok(paged.MapResponseOptions(items));
         }
         [HttpPost("{userId}/collections")]
         public async Task<IActionResult> GetCollections(Guid userId, [FromBody] PagedOptions<OutfitFilter> options)
@@ -170,7 +176,11 @@ namespace minerobe.api.Controllers
             if (wardrobe == null)
                 return NotFound();
             var res = await _wardrobeService.GetWardrobeOutfits(wardrobe.Id, options.Filter);
-            return Ok(res.ToSingleLayerResponseModel(true).ToPagedResponse(options.Page, options.PageSize));
+            var paged = res.ToPagedResponse(options.Page, options.PageSize);
+
+            var items = await _outfitHelper.ToOutfitPackage(paged);
+
+            return Ok(paged.MapResponseOptions(items));
         }
         [HttpGet("{userId}/summary")]
         public async Task<IActionResult> GetSummary(Guid userId)

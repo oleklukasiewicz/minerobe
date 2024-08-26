@@ -14,19 +14,19 @@ namespace minerobe.api.Services.View
             _packageService = packageService;
             _context = context;
         }
-        public async Task<IQueryable<OutfitPackageSummary>> GetMostRecent()
+        public async Task<IQueryable<OutfitPackageAgregation>> GetMostRecent()
         {
-            var packages = _context.OutfitPackageSummarys.OrderByDescending(x => x.ModifiedAt == null ? x.CreatedAt : x.ModifiedAt).AsQueryable();
+            var packages = _context.OutfitPackageAgregations.OrderByDescending(x => x.ModifiedAt == null ? x.CreatedAt : x.ModifiedAt).AsQueryable();
             return packages;
         }
-        public async Task<IQueryable<OutfitPackageSummary>> GetMostLiked()
+        public async Task<IQueryable<OutfitPackageAgregation>> GetMostLiked()
         {
-            var packages = _context.OutfitPackageSummarys.OrderByDescending(x => x.Likes).AsQueryable();
+            var packages = _context.OutfitPackageAgregations.OrderByDescending(x => x.Likes).AsQueryable();
             return packages;
         }
-        public async Task<IQueryable<OutfitPackageSummary>> GetMostDownloaded()
+        public async Task<IQueryable<OutfitPackageAgregation>> GetMostDownloaded()
         {
-            var packages = _context.OutfitPackageSummarys.OrderByDescending(x => x.Downloads).AsQueryable();
+            var packages = _context.OutfitPackageAgregations.OrderByDescending(x => x.Downloads).AsQueryable();
             return packages;
         }
     }

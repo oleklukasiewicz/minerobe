@@ -3,9 +3,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace minerobe.api.Entity.Summary
 {
-    public class OutfitPackageSummary
+    public class OutfitPackageAgregation
     {
         public Guid PackageId { get; set; }
+        public string Name { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public string Publisher { get; set; }
@@ -17,10 +18,11 @@ namespace minerobe.api.Entity.Summary
         public bool IsFeatured { get; set; }
         public int Likes { get; set; }
         public bool IsShared { get; set; }
+        public string Colors { get; set; }
     }
-    public class OutfitPackageSummaryConfiguration : IEntityTypeConfiguration<OutfitPackageSummary>
+    public class OutfitPackageAgregationConfiguration : IEntityTypeConfiguration<OutfitPackageAgregation>
     {
-        public void Configure(EntityTypeBuilder<OutfitPackageSummary> builder)
+        public void Configure(EntityTypeBuilder<OutfitPackageAgregation> builder)
         {
             builder.HasNoKey();
             builder.ToView("vPackagesView");
