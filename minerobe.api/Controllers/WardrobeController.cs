@@ -38,10 +38,10 @@ namespace minerobe.api.Controllers
         [HttpPost("{wardrobeId}/studio/{id}")]
         public async Task<IActionResult> SetStudio(Guid id, Guid wardrobeId)
         {
-            var wardrobe = await _wardrobeService.Get(wardrobeId);
+            var wardrobe = await _wardrobeService.GetWardrobeId(wardrobeId);
             if (wardrobe == null)
                 return NotFound();
-            var res = await _wardrobeService.SetStudio(wardrobe.Id, id);
+            var res = await _wardrobeService.SetStudio(wardrobe.Value, id);
             if (res == false)
                 return NotFound();
             return Ok(res);
@@ -49,10 +49,9 @@ namespace minerobe.api.Controllers
         [HttpGet("{id}/studio")]
         public async Task<IActionResult> GetStudio(Guid id)
         {
-            var res = await _wardrobeService.Get(id);
-            if (res == null)
+            var studio = await _wardrobeService.GetStudio(id);
+            if (studio == null)
                 return NotFound();
-            var studio = res.Studio;
             return Ok(studio.ToResponseModel());
         }
         [HttpPost("{wardrobeId}/{id}")]
@@ -95,9 +94,9 @@ namespace minerobe.api.Controllers
         [HttpPost("{wardrobeId}/{id}/collection/byUser")]
         public async Task<IActionResult> AddToCollectionUser(Guid id, Guid wardrobeId)
         {
-            var wardrobe = await _wardrobeService.Get(wardrobeId);
+            var wardrobe = await _wardrobeService.GetWardrobeId(wardrobeId);
             if (wardrobe == null) return NotFound();
-            var res = await _wardrobeService.AddCollectionToWadrobe(wardrobe.Id, id);
+            var res = await _wardrobeService.AddCollectionToWadrobe(wardrobe.Value, id);
             if (res == null)
                 return NotFound();
             return Ok(res);
@@ -105,9 +104,9 @@ namespace minerobe.api.Controllers
         [HttpDelete("{wardrobeId}/{id}/collection/byUser")]
         public async Task<IActionResult> RemoveFromCollectionUser(Guid id, Guid wardrobeId)
         {
-            var wardrobe = await _wardrobeService.Get(wardrobeId);
+            var wardrobe = await _wardrobeService.GetWardrobeId(wardrobeId);
             if (wardrobe == null) return NotFound();
-            var res = await _wardrobeService.RemoveCollectionFromWardrobe(wardrobe.Id, id);
+            var res = await _wardrobeService.RemoveCollectionFromWardrobe(wardrobe.Value, id);
             if (res == null)
                 return NotFound();
             return Ok(res);
@@ -116,9 +115,9 @@ namespace minerobe.api.Controllers
         [HttpPost("{userId}/{id}/byUser")]
         public async Task<IActionResult> AddToWardrobeUser(Guid id, Guid userId)
         {     
-            var wardobe = await _wardrobeService.Get(userId);
-            if (wardobe == null) return NotFound();
-            var res = await _wardrobeService.AddToWadrobe(wardobe.Id, id);
+            var wardobeId = await _wardrobeService.GetWardrobeId(userId);
+            if (wardobeId == null) return NotFound();
+            var res = await _wardrobeService.AddToWadrobe(wardobeId.Value, id);
             if (res == null)
                 return NotFound();
             return Ok(res);
@@ -130,9 +129,9 @@ namespace minerobe.api.Controllers
             if (package.PublisherId == userId)
                 return BadRequest("You can't remove your own package from your wardrobe");
 
-            var wardobe = await _wardrobeService.Get(userId);
-            if (wardobe == null) return NotFound();
-            var res = await _wardrobeService.RemoveFromWardrobe(wardobe.Id, id);
+            var wardobeId = await _wardrobeService.GetWardrobeId(userId);
+            if (wardobeId == null) return NotFound();
+            var res = await _wardrobeService.RemoveFromWardrobe(wardobeId.Value, id);
             if (res == null)
                 return NotFound();
             return Ok(res);
@@ -140,10 +139,10 @@ namespace minerobe.api.Controllers
         [HttpPost("{userId}/items")]
         public async Task<IActionResult> GetItems (Guid userId, [FromBody] PagedOptions<OutfitFilter> options)
         {
-            var wardrobe = await _wardrobeService.Get(userId);
+            var wardrobe = await _wardrobeService.GetWardrobeId(userId);
             if (wardrobe == null)
                 return NotFound();
-            var res = await _wardrobeService.GetWardrobeOutfits(wardrobe.Id, options?.Filter);
+            var res = await _wardrobeService.GetWardrobeOutfits(wardrobe.Value, options?.Filter);
             var paged= res.ToPagedResponse(options.Page, options.PageSize);
 
             var items = await _outfitHelper.ToOutfitPackage(paged);
@@ -153,29 +152,29 @@ namespace minerobe.api.Controllers
         [HttpPost("{userId}/collections")]
         public async Task<IActionResult> GetCollections(Guid userId, [FromBody] PagedOptions<OutfitFilter> options)
         {
-            var wardrobe = await _wardrobeService.Get(userId);
+            var wardrobe = await _wardrobeService.GetWardrobeId(userId);
             if (wardrobe == null)
                 return NotFound();
-            var res = await _wardrobeService.GetWardrobeCollections(wardrobe.Id, options.Filter);
+            var res = await _wardrobeService.GetWardrobeCollections(wardrobe.Value, options.Filter);
             return Ok(res.ToListItemResponseModel().ToPagedResponse(options.Page, options.PageSize));
         }
         [HttpPost("{userId}/collections/{id}")]
         public async Task<IActionResult> GetCollectionsWithPackageContext(Guid userId,Guid id, [FromBody] PagedOptions<OutfitFilter> options)
         {
-            var wardrobe = await _wardrobeService.Get(userId);
+            var wardrobe = await _wardrobeService.GetWardrobeId(userId);
             if (wardrobe == null)
                 return NotFound();
-            var res = await _wardrobeService.GetWardrobeCollections(wardrobe.Id, options.Filter);
+            var res = await _wardrobeService.GetWardrobeCollections(wardrobe.Value, options.Filter);
             return Ok(res.ToPackageResponseModel(id,true).ToPagedResponse(options.Page, options.PageSize));
         }
 
         [HttpPost("{userId}/items/singleLayer")]
         public async Task<IActionResult> GetItemsSingleLayer(Guid userId, [FromBody] PagedOptions<OutfitFilter> options)
         {
-            var wardrobe = await _wardrobeService.Get(userId);
+            var wardrobe = await _wardrobeService.GetWardrobeId(userId);
             if (wardrobe == null)
                 return NotFound();
-            var res = await _wardrobeService.GetWardrobeOutfits(wardrobe.Id, options.Filter);
+            var res = await _wardrobeService.GetWardrobeOutfits(wardrobe.Value, options.Filter);
             var paged = res.ToPagedResponse(options.Page, options.PageSize);
 
             var items = await _outfitHelper.ToOutfitPackage(paged);
@@ -185,10 +184,10 @@ namespace minerobe.api.Controllers
         [HttpGet("{userId}/summary")]
         public async Task<IActionResult> GetSummary(Guid userId)
         {
-            var wardrobe = await _wardrobeService.Get(userId);
+            var wardrobe = await _wardrobeService.GetWardrobeId(userId);
             if (wardrobe == null)
                 return NotFound();
-            var res = await _wardrobeService.GetWadrobeSummary(wardrobe.Id);
+            var res = await _wardrobeService.GetWadrobeSummary(wardrobe.Value);
             return Ok(res);
         }
     }

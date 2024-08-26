@@ -88,6 +88,16 @@ namespace minerobe.api.Services
 
             return await SetStudio(wardrobeId, outfit);
         }
+       
+        public async Task<OutfitPackage> GetStudio(Guid wardrobeId)
+        {
+            var wardrobe = await _context.Wardrobes.Where(x => x.Id == wardrobeId).FirstOrDefaultAsync();
+            if (wardrobe == null)
+                return null;
+            if (wardrobe.StudioId == null)
+                return null;
+            return await _packageService.GetById(wardrobe.StudioId.Value);
+        }
         public async Task<SocialData> AddToWadrobe(Guid wardrobeId, Guid outfitId)
         {
             var wardrobe = await _context.Wardrobes.Where(x => x.Id == wardrobeId).FirstOrDefaultAsync();
@@ -262,6 +272,13 @@ namespace minerobe.api.Services
                 outfits = filter.Filter(outfits);
             }
             return outfits;
+        }
+        public async Task<Guid?> GetWardrobeId(Guid userId)
+        {
+            var wardrobe = await _context.Wardrobes.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
+            if (wardrobe == null)
+                return null;
+            return wardrobe.Id;
         }
     }
 }
