@@ -414,7 +414,7 @@
             currentSkinId={$userSettings?.currentTexturePackageId}
             loading={!loaded || !itemsLoaded}
             maxItemWidth="1fr"
-            minItemWidth="155px"
+            minItemWidth="185px"
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
             baseTexture={$userSettings?.baseTexture?.layers[0]}
@@ -440,7 +440,7 @@
             loading={!loaded || !itemsLoaded}
             currentSkinId={$userSettings?.currentTexturePackageId}
             maxItemWidth="1fr"
-            minItemWidth="155px"
+            minItemWidth="185px"
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
             baseTexture={$userSettings?.baseTexture?.layers[0]}
@@ -466,7 +466,7 @@
             dense={false}
             loading={!loaded || !itemsLoaded}
             maxItemWidth="1fr"
-            minItemWidth="155px"
+            minItemWidth="185px"
             fillMethod="auto-fill"
             renderer={$defaultRenderer}
             items={$localWardobeItems.items}
