@@ -51,6 +51,8 @@
 
   import DefaultAnimation from "$animation/default";
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
+  import HeartIcon from "$icons/heart.svg?raw";
+  import HeartFilledIcon from "$icons/heart-filled.svg?raw";
 
   import { ExportImageLayers } from "$src/helpers/data/dataTransferHelper.js";
   import { sortOutfitLayersByColor } from "$src/helpers/image/imageDataHelpers.js";
@@ -69,7 +71,8 @@
     RemovePackageFromCollection,
   } from "$src/api/collection.js";
   import { FetchSettings, SetCurrentTexture } from "$src/api/settings.js";
-  
+  import Button from "$lib/components/base/Button/Button.svelte";
+
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemModelType: Writable<string> = propertyStore(localPackage, "model");
@@ -307,9 +310,26 @@
           placeholder={!loaded}
         />
         <div id="item-title" class="title">
-          <Placeholder style="height:30px;" {loaded}>
+          <Placeholder
+            style="height:30px;flex:1;"
+            loadedStyle="flex:1;"
+            {loaded}
+          >
             {$localPackage.name}
           </Placeholder>
+          {#if $currentUser?.id != null && $localPackage.publisher.id != $currentUser?.id && loaded}
+            <div>
+              <Button
+                onlyIcon
+                type="tertiary"
+                size="large"
+                icon={$localPackage.isInWardrobe ? HeartFilledIcon : HeartIcon}
+                on:click={$localPackage.isInWardrobe
+                  ? removeFromWardrobe
+                  : addToWardrobe}
+              ></Button>
+            </div>
+          {/if}
         </div>
         <Placeholder style="height:26px;max-width:100px;" {loaded}>
           <div style="display: flex;gap:4px;height:24px">
@@ -382,7 +402,11 @@
       {/if}
       {#if isItemSet && integrationSettings != null}
         <SectionTitle label="Capes" placeholder={!loaded} />
-        <OutfitCapes capes={integrationSettings.capes} selectedCape={$itemRenderConfig.cape} on:select={setCape} />
+        <OutfitCapes
+          capes={integrationSettings.capes}
+          selectedCape={$itemRenderConfig.cape}
+          on:select={setCape}
+        />
         <br />
       {/if}
       {#if $localPackage.description != null && $localPackage.description.trim().length > 0}
@@ -414,7 +438,6 @@
           setMySkinAvailable={$currentUser?.id != null &&
             isItemSet &&
             integrationSettings?.id != null}
-          isPackageInWardrobe={$localPackage.isInWardrobe}
           outfitPackage={$localPackage}
           {isSkinSetting}
           loading={!loaded}

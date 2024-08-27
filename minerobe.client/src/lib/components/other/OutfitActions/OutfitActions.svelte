@@ -9,7 +9,6 @@
   import LoaderIcon from "$icons/loader.svg?raw";
   import CloudIcon from "$icons/cloud.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
-  import HearthIcon from "$icons/heart.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
   import type { OutfitPackage } from "$src/model/package";
 
@@ -17,7 +16,6 @@
 
   export let outfitPackage: OutfitPackage;
   export let loading: boolean = false;
-  export let isPackageInWardrobe: boolean = false;
   export let mobile: boolean = false;
   export let readonly: boolean = false;
   export let isSkinSetting: boolean = false;
@@ -33,12 +31,6 @@
   };
   export const collectionDialog = function () {
     dispatch("collectionDialog");
-  };
-  export const addToWardrobe = function () {
-    dispatch("addToWardrobe");
-  };
-  export const removeFromWardrobe = function () {
-    dispatch("removeFromWardrobe");
   };
   export const skinSet = function (e) {
     dispatch("skinSet", e.detail);
@@ -77,32 +69,6 @@
         type="tertiary"
       />
     </div>
-  {/if}
-  {#if outfitPackage.publisher?.id != $currentUser?.id && !$isUserGuest && readonly}
-    {#if isPackageInWardrobe == false || $isUserGuest}
-      <div>
-        <Button
-          on:click={addToWardrobe}
-          onlyIcon={!$isMobileView}
-          icon={HearthIcon}
-          disabled={loading || $isUserGuest}
-          size="large"
-          type="tertiary"
-          label="Add to wardrobe"
-        />
-      </div>
-    {:else}
-      <div>
-        <Button
-          on:click={removeFromWardrobe}
-          onlyIcon={!$isMobileView}
-          icon={HearthIcon}
-          disabled={loading || $isUserGuest}
-          size="large"
-          label="Remove from wardrobe"
-        />
-      </div>
-    {/if}
   {/if}
   {#if outfitPackage.publisher.id == $currentUser?.id && !readonly}
     {#if outfitPackage.social.isShared}
