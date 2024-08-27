@@ -17,8 +17,9 @@ import type { OutfitLayer, OutfitPackage } from "$src/model/package";
 
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =
-    GetPixelCountInArea(imageContext, 0, 0, 32, 16) +
-    GetPixelCountInArea(imageContext, 32, 0, 32, 16);
+    GetPixelCountInArea(imageContext, 0, 8, 64, 8) +
+    GetPixelCountInArea(imageContext, 8, 0, 16, 8)+ 
+    GetPixelCountInArea(imageContext, 40, 0, 16, 8);
 
   const bodyArea =
     GetPixelCountInArea(imageContext, 16, 16, 24, 16) +
