@@ -220,7 +220,7 @@
 
   const onItemSelect = async function (e) {
     const item = e.detail.item;
-    const variantId = e.detail.layer.id;
+    const variantId = e.detail.layer?.id;
 
     if (item.publisher.id != $currentUser?.id)
       navigateToOutfitPackage(item, variantId);
