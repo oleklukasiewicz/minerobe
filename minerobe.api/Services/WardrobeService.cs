@@ -182,10 +182,7 @@ namespace minerobe.api.Services
         }
         public async Task<bool> IsPackageInWardrobe(Guid wardrobeId, Guid outfitId)
         {
-            var user = await _userService.GetUserOfWardrobe(wardrobeId);
-            if (user == null)
-                return false;
-            var matching = await _context.WardrobeMatchings.Where(x => x.OutfitPackageId == outfitId && x.WardrobeId == user.Id).FirstOrDefaultAsync();
+            var matching = await _context.WardrobeMatchings.Where(x => x.OutfitPackageId == outfitId && x.WardrobeId == wardrobeId).FirstOrDefaultAsync();
             return matching != null;
         }
 

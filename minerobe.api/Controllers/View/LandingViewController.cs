@@ -33,7 +33,7 @@ namespace minerobe.api.Controllers.View
             var packages = await _landingViewService.GetMostRecent();
             var packagesPage = packages.Where(x => x.IsShared == true).ToPagedResponse(options.Page, options.PageSize);
 
-            var items = await _outfitPackageServiceHelper.AddUserContextToPage(packagesPage, user?.Id);
+            var items = await _outfitPackageServiceHelper.AddUserContextToPage(packagesPage, user);
 
             var mappedRespose = packagesPage.MapResponseOptions(items);
             return Ok(mappedRespose);
@@ -46,7 +46,7 @@ namespace minerobe.api.Controllers.View
             var packages = await _landingViewService.GetMostLiked();
             var packagesPage = packages.Where(x => x.IsShared == true).ToPagedResponse(options.Page, options.PageSize);
 
-            var items = await _outfitPackageServiceHelper.AddUserContextToPage(packagesPage, user?.Id);
+            var items = await _outfitPackageServiceHelper.AddUserContextToPage(packagesPage, user);
 
             var mappedRespose = packagesPage.MapResponseOptions(items);
             return Ok(mappedRespose);
@@ -59,7 +59,7 @@ namespace minerobe.api.Controllers.View
             var packages = await _landingViewService.GetMostDownloaded();
             var packagesPage = packages.Where(x => x.IsShared == true).ToPagedResponse(options.Page, options.PageSize);
 
-            var items = await _outfitPackageServiceHelper.AddUserContextToPage(packagesPage, user?.Id);
+            var items = await _outfitPackageServiceHelper.AddUserContextToPage(packagesPage, user);
 
             var mappedRespose = packagesPage.MapResponseOptions(items);
             return Ok(mappedRespose);

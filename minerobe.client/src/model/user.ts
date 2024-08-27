@@ -18,6 +18,10 @@ export class MinerobeUser {
     this.wardrobeId = wardrobeId;
   }
 }
+export class MinerobeUserSimple {
+  id: string;
+  name: string;
+}
 //settings
 export class MinerobeUserSettings {
   id: string;

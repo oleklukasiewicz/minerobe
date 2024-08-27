@@ -9,6 +9,7 @@
   import {
     navigateToCollection,
     navigateToHome,
+    navigateToOutfitPackage,
     navigateToOutfitPackageEdit,
   } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
@@ -219,8 +220,10 @@
 
   const onItemSelect = async function (e) {
     const item = e.detail.item;
+    const variantId = e.detail.layer.id;
+
     if (item.publisher.id != $currentUser?.id)
-    navigateToHome();
+      navigateToOutfitPackage(item, variantId);
     else navigateToOutfitPackageEdit(item.id);
   };
   const onCollectionSelect = async function (e) {

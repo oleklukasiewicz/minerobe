@@ -73,45 +73,6 @@ namespace minerobe.api.Controllers
                 return NotFound();
             return Ok(res);
         }
-        [HttpPost("{wardrobeId}/{id}/collection/byUser")]
-        public async Task<IActionResult> AddToCollectionUser(Guid id, Guid wardrobeId)
-        {
-            var res = await _wardrobeService.AddCollectionToWadrobe(wardrobeId, id);
-            if (res == null)
-                return NotFound();
-            return Ok(res);
-        }
-        [HttpDelete("{wardrobeId}/{id}/collection/byUser")]
-        public async Task<IActionResult> RemoveFromCollectionUser(Guid id, Guid wardrobeId)
-        {
-            var res = await _wardrobeService.RemoveCollectionFromWardrobe(wardrobeId, id);
-            if (res == null)
-                return NotFound();
-            return Ok(res);
-        }
-
-        [HttpPost("{userId}/{id}/byUser")]
-        public async Task<IActionResult> AddToWardrobeUser(Guid id, Guid userId)
-        {     
-            var user = await _userService.GetById(userId);
-            var res = await _wardrobeService.AddToWadrobe(user.WardrobeId, id);
-            if (res == null)
-                return NotFound();
-            return Ok(res);
-        }
-        [HttpDelete("{userId}/{id}/byUser")]
-        public async Task<IActionResult> RemoveFromWardrobeUser(Guid id, Guid userId)
-        {
-            var package = await _packageService.GetById(id);
-            if (package.PublisherId == userId)
-                return BadRequest("You can't remove your own package from your wardrobe");
-
-            var user = await _userService.GetById(userId);
-            var res = await _wardrobeService.RemoveFromWardrobe(user.WardrobeId, id);
-            if (res == null)
-                return NotFound();
-            return Ok(res);
-        }
         [HttpPost("{wardrobeId}/items")]
         public async Task<IActionResult> GetItems (Guid wardrobeId, [FromBody] PagedOptions<OutfitFilter> options)
         {

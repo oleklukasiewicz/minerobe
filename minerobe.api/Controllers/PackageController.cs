@@ -33,7 +33,7 @@ namespace minerobe.api.Controllers
             if (package == null)
                 return NotFound();
 
-            var isInWardrobe = await _wardrobeService.IsPackageInWardrobe(user.Id, id);
+            var isInWardrobe = await _wardrobeService.IsPackageInWardrobe(user.WardrobeId, id);
 
             return Ok(package.ToResponseModel(isInWardrobe));
         }

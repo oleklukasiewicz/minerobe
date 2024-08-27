@@ -1,12 +1,12 @@
 import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
-import type { MinerobeUser } from "./user";
+import type { MinerobeUserSimple } from "./user";
 
 export class OutfitPackage {
   name: string;
   model: string;
   type: string;
   layers: OutfitLayer[];
-  publisher: MinerobeUser;
+  publisher: MinerobeUserSimple;
   description: string;
   id: string;
   social: PackageSocialData;

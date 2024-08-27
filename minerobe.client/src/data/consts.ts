@@ -148,7 +148,6 @@ export const DEFAULT_PACKAGE = {
   publisher: {
     id: "dummy",
     name: "dummy",
-    avatar: "dummy",
   },
   description: "Default outfit",
   outfitType: OUTFIT_TYPE.DEFAULT,

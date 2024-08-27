@@ -146,6 +146,10 @@
 
       //load package
       $itemPackage = await GetPackage(data.id);
+      
+      //go back if publisher is not the same
+      if ($itemPackage.publisher.id != $currentUser?.id) navigateToWardrobe();
+
       isItemSet = $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET;
 
       //loading render
