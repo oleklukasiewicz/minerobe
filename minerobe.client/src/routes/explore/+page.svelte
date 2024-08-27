@@ -10,15 +10,12 @@
   import OutfitPresenter from "$lib/components/outfit/OutfitPresenter/OutfitPresenter.svelte";
 
   import { appState } from "$data/cache";
-  import { GetStudioPackage } from "$src/api/wardrobe";
   import { APP_STATE } from "$src/data/consts";
-  import { CAMERA_CONFIG_SIDE_IZO } from "$src/consts/render";
   let testpackage = null;
   let laoded = false;
   onMount(async () => {
     appState.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
-      testpackage = await GetStudioPackage();
       laoded = true;
     });
   });

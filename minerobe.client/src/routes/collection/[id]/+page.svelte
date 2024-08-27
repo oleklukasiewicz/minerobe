@@ -12,8 +12,8 @@
   import { appState, currentUser, defaultRenderer } from "$src/data/cache";
   import { APP_STATE } from "$src/data/consts";
   import {
-    navigateToDesign,
     navigateToOutfitPackage,
+    navigateToOutfitPackageEdit,
     navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper";
   import type { OutfitPackageCollection } from "$src/model/collection";
@@ -24,7 +24,6 @@
   import TrashIcon from "$icons/trash.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
-  import { SetStudioPackage } from "$src/api/wardrobe";
   import type { OutfitLayer, OutfitPackage } from "$src/model/package";
 
   export let data: any;
@@ -53,9 +52,7 @@
     const variant: OutfitLayer = e.detail.layer;
 
     if (!item.social.isShared && $currentUser.id == item.publisher.id) {
-      const resp = await SetStudioPackage(item.id);
-      if (resp == null) return;
-      navigateToDesign(item);
+      navigateToOutfitPackageEdit(item.id);
     } else navigateToOutfitPackage(item, variant.id);
   };
   const deleteCollection = async () => {

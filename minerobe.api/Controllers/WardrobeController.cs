@@ -35,28 +35,6 @@ namespace minerobe.api.Controllers
                 return NotFound();
             return Ok(wardrobe.ToResponseModel());
         }
-        [HttpPost("{wardrobeId}/studio/{id}")]
-        public async Task<IActionResult> SetStudio(Guid id, Guid wardrobeId)
-        {
-            var wardrobe = await _wardrobeService.GetWardrobeId(wardrobeId);
-            if (wardrobe == null)
-                return NotFound();
-            var res = await _wardrobeService.SetStudio(wardrobe.Value, id);
-            if (res == false)
-                return NotFound();
-            return Ok(res);
-        }
-        [HttpGet("{id}/studio")]
-        public async Task<IActionResult> GetStudio(Guid id)
-        {
-            var wardrobeId= await _wardrobeService.GetWardrobeId(id);
-            if (wardrobeId == null)
-                return NotFound();
-            var studio = await _wardrobeService.GetStudio(wardrobeId.Value);
-            if (studio == null)
-                return NotFound();
-            return Ok(studio.ToResponseModel());
-        }
         [HttpPost("{wardrobeId}/{id}")]
         public async Task<IActionResult> AddToWardrobe(Guid id, Guid wardrobeId)
         {
@@ -70,7 +48,8 @@ namespace minerobe.api.Controllers
         {
             var wardrobe = await _wardrobeService.Get(wardrobeId);
             var package = await _packageService.GetById(id);
-            if (package.PublisherId == wardrobe.OwnerId)
+            var user= await _userService.GetUserOfWardrobe(wardrobeId);
+            if (package.PublisherId == user.Id)
                 return BadRequest("You can't remove your own package from your wardrobe");
 
             var res = await _wardrobeService.RemoveFromWardrobe(wardrobeId, id);
@@ -97,9 +76,7 @@ namespace minerobe.api.Controllers
         [HttpPost("{wardrobeId}/{id}/collection/byUser")]
         public async Task<IActionResult> AddToCollectionUser(Guid id, Guid wardrobeId)
         {
-            var wardrobe = await _wardrobeService.GetWardrobeId(wardrobeId);
-            if (wardrobe == null) return NotFound();
-            var res = await _wardrobeService.AddCollectionToWadrobe(wardrobe.Value, id);
+            var res = await _wardrobeService.AddCollectionToWadrobe(wardrobeId, id);
             if (res == null)
                 return NotFound();
             return Ok(res);
@@ -107,9 +84,7 @@ namespace minerobe.api.Controllers
         [HttpDelete("{wardrobeId}/{id}/collection/byUser")]
         public async Task<IActionResult> RemoveFromCollectionUser(Guid id, Guid wardrobeId)
         {
-            var wardrobe = await _wardrobeService.GetWardrobeId(wardrobeId);
-            if (wardrobe == null) return NotFound();
-            var res = await _wardrobeService.RemoveCollectionFromWardrobe(wardrobe.Value, id);
+            var res = await _wardrobeService.RemoveCollectionFromWardrobe(wardrobeId, id);
             if (res == null)
                 return NotFound();
             return Ok(res);
@@ -118,9 +93,8 @@ namespace minerobe.api.Controllers
         [HttpPost("{userId}/{id}/byUser")]
         public async Task<IActionResult> AddToWardrobeUser(Guid id, Guid userId)
         {     
-            var wardobeId = await _wardrobeService.GetWardrobeId(userId);
-            if (wardobeId == null) return NotFound();
-            var res = await _wardrobeService.AddToWadrobe(wardobeId.Value, id);
+            var user = await _userService.GetById(userId);
+            var res = await _wardrobeService.AddToWadrobe(user.WardrobeId, id);
             if (res == null)
                 return NotFound();
             return Ok(res);
@@ -132,65 +106,49 @@ namespace minerobe.api.Controllers
             if (package.PublisherId == userId)
                 return BadRequest("You can't remove your own package from your wardrobe");
 
-            var wardobeId = await _wardrobeService.GetWardrobeId(userId);
-            if (wardobeId == null) return NotFound();
-            var res = await _wardrobeService.RemoveFromWardrobe(wardobeId.Value, id);
+            var user = await _userService.GetById(userId);
+            var res = await _wardrobeService.RemoveFromWardrobe(user.WardrobeId, id);
             if (res == null)
                 return NotFound();
             return Ok(res);
         }
-        [HttpPost("{userId}/items")]
-        public async Task<IActionResult> GetItems (Guid userId, [FromBody] PagedOptions<OutfitFilter> options)
+        [HttpPost("{wardrobeId}/items")]
+        public async Task<IActionResult> GetItems (Guid wardrobeId, [FromBody] PagedOptions<OutfitFilter> options)
         {
-            var wardrobe = await _wardrobeService.GetWardrobeId(userId);
-            if (wardrobe == null)
-                return NotFound();
-            var res = await _wardrobeService.GetWardrobeOutfits(wardrobe.Value, options?.Filter);
+            var res = await _wardrobeService.GetWardrobeOutfits(wardrobeId, options?.Filter);
             var paged= res.ToPagedResponse(options.Page, options.PageSize);
 
             var items = await _outfitHelper.ToOutfitPackage(paged);
 
             return Ok(paged.MapResponseOptions(items));
         }
-        [HttpPost("{userId}/collections")]
-        public async Task<IActionResult> GetCollections(Guid userId, [FromBody] PagedOptions<OutfitFilter> options)
+        [HttpPost("{wardrobeId}/collections")]
+        public async Task<IActionResult> GetCollections(Guid wardrobeId, [FromBody] PagedOptions<OutfitFilter> options)
         {
-            var wardrobe = await _wardrobeService.GetWardrobeId(userId);
-            if (wardrobe == null)
-                return NotFound();
-            var res = await _wardrobeService.GetWardrobeCollections(wardrobe.Value, options.Filter);
+            var res = await _wardrobeService.GetWardrobeCollections(wardrobeId, options.Filter);
             return Ok(res.ToListItemResponseModel().ToPagedResponse(options.Page, options.PageSize));
         }
-        [HttpPost("{userId}/collections/{id}")]
-        public async Task<IActionResult> GetCollectionsWithPackageContext(Guid userId,Guid id, [FromBody] PagedOptions<OutfitFilter> options)
+        [HttpPost("{wardrobeId}/collections/{id}")]
+        public async Task<IActionResult> GetCollectionsWithPackageContext(Guid wardrobeId,Guid id, [FromBody] PagedOptions<OutfitFilter> options)
         {
-            var wardrobe = await _wardrobeService.GetWardrobeId(userId);
-            if (wardrobe == null)
-                return NotFound();
-            var res = await _wardrobeService.GetWardrobeCollections(wardrobe.Value, options.Filter);
+            var res = await _wardrobeService.GetWardrobeCollections(wardrobeId, options.Filter);
             return Ok(res.ToPackageResponseModel(id,true).ToPagedResponse(options.Page, options.PageSize));
         }
 
-        [HttpPost("{userId}/items/singleLayer")]
-        public async Task<IActionResult> GetItemsSingleLayer(Guid userId, [FromBody] PagedOptions<OutfitFilter> options)
+        [HttpPost("{wardrobeId}/items/singleLayer")]
+        public async Task<IActionResult> GetItemsSingleLayer(Guid wardrobeId, [FromBody] PagedOptions<OutfitFilter> options)
         {
-            var wardrobe = await _wardrobeService.GetWardrobeId(userId);
-            if (wardrobe == null)
-                return NotFound();
-            var res = await _wardrobeService.GetWardrobeOutfits(wardrobe.Value, options.Filter);
+            var res = await _wardrobeService.GetWardrobeOutfits(wardrobeId, options.Filter);
             var paged = res.ToPagedResponse(options.Page, options.PageSize);
 
             var items = await _outfitHelper.ToOutfitPackage(paged);
 
             return Ok(paged.MapResponseOptions(items));
         }
-        [HttpGet("{userId}/summary")]
-        public async Task<IActionResult> GetSummary(Guid userId)
+        [HttpGet("{wardrobeId}/summary")]
+        public async Task<IActionResult> GetSummary(Guid wardrobeId)
         {
-            var wardrobe = await _wardrobeService.GetWardrobeId(userId);
-            if (wardrobe == null)
-                return NotFound();
-            var res = await _wardrobeService.GetWadrobeSummary(wardrobe.Value);
+            var res = await _wardrobeService.GetWadrobeSummary(wardrobeId);
             return Ok(res);
         }
     }

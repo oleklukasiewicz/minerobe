@@ -88,7 +88,7 @@ namespace minerobe.api.Controllers
                 return Unauthorized();
 
             var res = await _packageService.Delete(id);
-            if (res == null)
+            if (!res)
                 return NotFound();
             return Ok(res);
         }

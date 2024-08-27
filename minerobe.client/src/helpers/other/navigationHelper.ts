@@ -1,10 +1,10 @@
 import { goto } from "$app/navigation";
 import type { OutfitPackage } from "$src/model/package";
 
-export const navigateToDesign = function (packag: OutfitPackage) {
-  goto(`/design`);
-};
-export const navigateToWardrobe = function (page: string = "all",params?: string) {
+export const navigateToWardrobe = function (
+  page: string = "all",
+  params?: string
+) {
   goto(`/wardrobe/${page}/${params || ""}`);
 };
 export const navigateToOutfitPackage = function (
@@ -12,9 +12,10 @@ export const navigateToOutfitPackage = function (
   variantId?: string
 ) {
   const varaint = variantId ? variantId : packag.layers[0].id;
-  goto(
-    `/design/${packag.id}/${varaint || ""}`
-  );
+  goto(`/design/${packag.id}/${varaint || ""}`);
+};
+export const navigateToOutfitPackageEdit = function (id: string) {
+  goto(`/design/${id}/edit`);
 };
 export const navigate = function (path: string) {
   goto(path);

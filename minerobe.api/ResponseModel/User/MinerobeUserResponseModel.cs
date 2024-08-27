@@ -7,6 +7,7 @@ namespace minerobe.api.ResponseModel.User
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Avatar { get; set; }
+        public Guid WardrobeId { get; set; }
     }
     public static class MinerobeUserResponseModelExtensions
     {
@@ -16,7 +17,8 @@ namespace minerobe.api.ResponseModel.User
             {
                 Id = entity.Id,
                 Name = entity.Name,
-                Avatar = entity.Avatar
+                Avatar = entity.Avatar,
+                WardrobeId = entity.WardrobeId
             };
         }
     }

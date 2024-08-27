@@ -8,35 +8,21 @@ import { get } from "svelte/store";
 
 export const AddPackageToWardrobe = async function (packageId: string) {
   const resp = await PostRequest(
-    "/api/Wardrobe/" + get(currentUser)?.id + "/" + packageId + "/byUser",
+    "/api/Wardrobe/" + get(currentUser)?.wardrobeId + "/" + packageId + "/byUser",
     {}
   );
   return resp;
 };
 export const RemovePackageFromWardrobe = async function (packageId: string) {
   const resp = await DeleteRequest(
-    "/api/Wardrobe/" + get(currentUser)?.id + "/" + packageId + "/byUser"
+    "/api/Wardrobe/" + get(currentUser)?.wardrobeId + "/" + packageId + "/byUser"
   );
   return resp;
-};
-export const GetStudioPackage = async function () {
-  const req = await GetRequest(
-    "/api/Wardrobe/" + get(currentUser).id + "/studio"
-  );
-  const st = req as OutfitPackage;
-  return st;
 };
 export const GetUserWardrobe = async function () {
-  const req = await GetRequest("/api/Wardrobe/" + get(currentUser).id);
+  const req = await GetRequest("/api/Wardrobe/" + get(currentUser).wardrobeId);
   const st = req as WardrobePackage;
   return st;
-};
-export const SetStudioPackage = async function (packageId: string) {
-  const resp = await PostRequest(
-    "/api/Wardrobe/" + get(currentUser)?.id + "/studio/" + packageId,
-    {}
-  );
-  return resp;
 };
 export const GetWardrobePackages = async function (
   filter: OutfitFilter,
@@ -44,7 +30,7 @@ export const GetWardrobePackages = async function (
   pageSize: number = -1
 ) {
   const req = (await PostRequest(
-    "/api/Wardrobe/" + get(currentUser)?.id + "/items",
+    "/api/Wardrobe/" + get(currentUser)?.wardrobeId + "/items",
     {
       page,
       pageSize,
@@ -59,7 +45,7 @@ export const GetWadrobeCollections = async function (
   pageSize: number = -1
 ) {
   const req = (await PostRequest(
-    "/api/Wardrobe/" + get(currentUser)?.id + "/collections",
+    "/api/Wardrobe/" + get(currentUser)?.wardrobeId + "/collections",
     {
       page,
       pageSize,
@@ -77,7 +63,7 @@ export const GetWadrobeCollectionsWithPackageContext = async function (
   pageSize: number = -1
 ) {
   const req = (await PostRequest(
-    "/api/Wardrobe/" + get(currentUser)?.id + "/collections/" + packageId,
+    "/api/Wardrobe/" + get(currentUser)?.wardrobeId + "/collections/" + packageId,
     {
       page,
       pageSize,
@@ -91,7 +77,7 @@ export const GetWadrobeCollectionsWithPackageContext = async function (
 
 export const GetWadrobeSummary = async function () {
   const req = await GetRequest(
-    "/api/Wardrobe/" + get(currentUser).id + "/summary"
+    "/api/Wardrobe/" + get(currentUser).wardrobeId + "/summary"
   );
   return req;
 };
@@ -101,7 +87,7 @@ export const GetWadrobePackagesSingleLayer = async function (
   pageSize: number = -1
 ) {
   const req = (await PostRequest(
-    "/api/Wardrobe/" + get(currentUser)?.id + "/items/singleLayer",
+    "/api/Wardrobe/" + get(currentUser)?.wardrobeId + "/items/singleLayer",
     {
       page,
       pageSize,
@@ -113,7 +99,7 @@ export const GetWadrobePackagesSingleLayer = async function (
 export const AddCollectionToWardrobe = async function (collectionId: string) {
   const resp = await PostRequest(
     "/api/Wardrobe/" +
-      get(currentUser)?.id +
+      get(currentUser)?.wardrobeId +
       "/" +
       collectionId +
       "/collection/byUser",
@@ -126,7 +112,7 @@ export const RemoveCollectionFromWardrobe = async function (
 ) {
   const resp = await DeleteRequest(
     "/api/Wardrobe/" +
-      get(currentUser)?.id +
+      get(currentUser)?.wardrobeId +
       "/" +
       collectionId +
       "/collection/byUser"

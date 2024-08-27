@@ -8,10 +8,8 @@ namespace minerobe.api.ResponseModel.Wardrobe
     public class WardrobeResponseModel
     {
         public Guid Id { get; set; }
-        public Guid OwnerId { get; set; }
         public List<OutfitPackageListItemResponseModel> Outfits { get; set; }
         public List<OutfitPackageCollectionResponseModel> Collections { get; set; }
-        public OutfitPackageListItemResponseModel Studio { get; set; }
     }
     public static class WardrobeResponseModelExtensions
     {
@@ -23,10 +21,8 @@ namespace minerobe.api.ResponseModel.Wardrobe
             return new WardrobeResponseModel
             {
                 Id = entity.Id,
-                OwnerId = entity.OwnerId,
                 Outfits = outfits,
-                Collections = collections,
-                Studio = entity.Studio?.ToListItemResponseModel(2, true)
+                Collections = collections
             };
         }
     }

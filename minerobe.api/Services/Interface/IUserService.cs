@@ -13,6 +13,7 @@ namespace minerobe.api.Services.Interface
         Task<MinerobeUser> GetFromExternalId(string externalId);
         Task<MinerobeUser> GetFromExternalUser(ClaimsPrincipal externalUser);
 
+        Task<MinerobeUser> GetUserOfWardrobe(Guid wardrobeId);
         // alias
         Task<MinerobeUser> GetFromToken(ClaimsPrincipal externalUser);
     }

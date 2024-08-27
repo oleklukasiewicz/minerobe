@@ -72,6 +72,14 @@ namespace minerobe.api.Services
             
             return newUser;
         }
+
+        public async Task<MinerobeUser> GetUserOfWardrobe(Guid wardrobeId)
+        {
+            var user = await _context.MinerobeUsers.Where(x => x.WardrobeId == wardrobeId).FirstOrDefaultAsync();
+            return user;
+        }
+
+
         //alias
         public async Task<MinerobeUser> GetFromToken(ClaimsPrincipal externalUser)
         {
@@ -94,11 +102,14 @@ namespace minerobe.api.Services
                 }
             }
 
+            var wardrobeId = Guid.NewGuid();
+
             var newUser = new MinerobeUser
             {
                 Name = name,
                 Id = Guid.NewGuid(),
-                Avatar = avatar
+                Avatar = avatar,
+                WardrobeId = wardrobeId
             };
             await Add(newUser);
             var link = new MinerobeUserLink
@@ -111,10 +122,8 @@ namespace minerobe.api.Services
             //creating wardrobe
             var wardrobe = new Wardrobe
             {
-                Id = Guid.NewGuid(),
-                OwnerId = newUser.Id,
-                Outfits = new List<OutfitPackage>(),
-                StudioId = null
+                Id = wardrobeId,
+                Outfits = new List<OutfitPackage>()
             };
             _context.Wardrobes.Add(wardrobe);
             //creating settings

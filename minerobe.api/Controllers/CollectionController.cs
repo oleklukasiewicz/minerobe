@@ -73,7 +73,7 @@ namespace minerobe.api.Controllers
                 return Unauthorized();
 
             var result = await _service.AddPackageToCollection(id, packageId);
-            if (result == null)
+            if (!result)
                 return BadRequest();
             return Ok(result);
         }

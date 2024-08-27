@@ -8,8 +8,8 @@
   } from "$src/data/cache";
   import {
     navigateToCollection,
-    navigateToDesign,
-    navigateToOutfitPackage,
+    navigateToHome,
+    navigateToOutfitPackageEdit,
   } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
   import CheckBoxIcon from "$icons/checkbox.svg?raw";
@@ -41,7 +41,6 @@
     GetWadrobeCollections,
     GetWadrobeSummary,
     GetWardrobePackages,
-    SetStudioPackage,
   } from "$src/api/wardrobe";
   import { CreateNewOutfitPackage } from "$src/helpers/package/packageHelper";
   import { AddPackage } from "$src/api/pack";
@@ -179,12 +178,7 @@
       isCreatingNew = false;
       return;
     }
-    const setStudio = await SetStudioPackage(response.id);
-    if (setStudio == null) {
-      isCreatingNew = false;
-      return;
-    }
-    navigateToDesign(response);
+    navigateToOutfitPackageEdit(response.id);
   };
   const addNewOutfit = async function () {
     isCreatingNew = true;
@@ -203,12 +197,7 @@
       isCreatingNew = false;
       return;
     }
-    const setStudio = await SetStudioPackage(response.id);
-    if (setStudio == null) {
-      isCreatingNew = false;
-      return;
-    }
-    navigateToDesign(response);
+    navigateToOutfitPackageEdit(response.id);
   };
   const addNewCollection = async function () {
     isCreatingNew = true;
@@ -230,10 +219,9 @@
 
   const onItemSelect = async function (e) {
     const item = e.detail.item;
-    const resp = await SetStudioPackage(item.id);
-    if (resp == null) return;
-    if (item.publisher.id != $currentUser?.id) navigateToOutfitPackage(item);
-    else navigateToDesign(item);
+    if (item.publisher.id != $currentUser?.id)
+    navigateToHome();
+    else navigateToOutfitPackageEdit(item.id);
   };
   const onCollectionSelect = async function (e) {
     const item = e.detail;

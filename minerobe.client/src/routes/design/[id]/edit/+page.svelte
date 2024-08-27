@@ -68,6 +68,7 @@
   import {
     AddPackageLayer,
     AddRemoteLayerToPackage,
+    GetPackage,
     OrderPackageLayer,
     RemovePackage,
     RemovePackageLayer,
@@ -77,7 +78,6 @@
     UpdatePackageLayer,
   } from "$src/api/pack";
   import {
-    GetStudioPackage,
     GetWadrobeCollectionsWithPackageContext,
     GetWadrobePackagesSingleLayer,
     GetWadrobeSummary,
@@ -99,6 +99,8 @@
   import { OutfitPackageRenderConfig } from "$model/render";
   import { MinecraftIntegrationModel } from "$model/integration/minecraft";
   import { OutfitFilter } from "$model/filter";
+
+  export let data;
 
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
   const itemLayers: Writable<OutfitLayer[]> = propertyStore(
@@ -143,7 +145,7 @@
       defaultProvider = await CreateDefaultRenderProvider($defaultRenderer);
 
       //load package
-      $itemPackage = await GetStudioPackage();
+      $itemPackage = await GetPackage(data.id);
       isItemSet = $itemPackage.type == PACKAGE_TYPE.OUTFIT_SET;
 
       //loading render

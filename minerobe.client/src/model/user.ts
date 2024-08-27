@@ -10,10 +10,12 @@ export class MinerobeUser {
   id: string;
   name: string;
   avatar: string;
-  constructor(id: string, name: string, avatar: string) {
+  wardrobeId: string;
+  constructor(id: string, name: string, avatar: string,wardrobeId: string) {
     this.id = id;
     this.name = name;
     this.avatar = avatar;
+    this.wardrobeId = wardrobeId;
   }
 }
 //settings

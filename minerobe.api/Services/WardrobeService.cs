@@ -19,16 +19,18 @@ namespace minerobe.api.Services
         private readonly IPackageService _packageService;
         private readonly ISocialService _socialService;
         private readonly ICollectionService _collectionService;
-        public WardrobeService(BaseDbContext context, IPackageService packageService, ISocialService socialService, ICollectionService collectionService)
+        private readonly IUserService _userService;
+        public WardrobeService(BaseDbContext context, IPackageService packageService, ISocialService socialService, ICollectionService collectionService, IUserService userService)
         {
             _context = context;
             _packageService = packageService;
             _socialService = socialService;
             _collectionService = collectionService;
+            _userService = userService;
         }
         public async Task<Wardrobe> Get(Guid id)
         {
-            var wardrobe = await _context.Wardrobes.Where(x => x.OwnerId == id).FirstOrDefaultAsync();
+            var wardrobe = await _context.Wardrobes.Where(x => x.Id == id).FirstOrDefaultAsync();
             if (wardrobe == null)
                 return null;
             if (wardrobe.Outfits == null)
@@ -52,15 +54,6 @@ namespace minerobe.api.Services
                     wardrobe.Collections.Add(collection);
             }
 
-            //studio 
-            if (wardrobe.StudioId != null)
-            {
-                var studio = await _packageService.GetById(wardrobe.StudioId.Value);
-
-                if (studio != null)
-                    wardrobe.Studio = studio;
-            }
-
             return wardrobe;
         }
         public async Task<Wardrobe> Add(Wardrobe wardrobe)
@@ -69,34 +62,6 @@ namespace minerobe.api.Services
             await _context.Wardrobes.AddAsync(wardrobe);
             await _context.SaveChangesAsync();
             return await Get(wardrobe.Id);
-        }
-        public async Task<bool> SetStudio(Guid wardrobeId, OutfitPackage outfit)
-        {
-            var wardrobe = await _context.Wardrobes.Where(x => x.Id == wardrobeId).FirstOrDefaultAsync();
-            if (wardrobe == null)
-                return false;
-
-            wardrobe.StudioId = outfit.Id;
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        public async Task<bool> SetStudio(Guid wardrobeId, Guid outfitId)
-        {
-            var outfit = await _context.OutfitPackages.Where(x => x.Id == outfitId).FirstOrDefaultAsync();
-            if (outfit == null)
-                return false;
-
-            return await SetStudio(wardrobeId, outfit);
-        }
-       
-        public async Task<OutfitPackage> GetStudio(Guid wardrobeId)
-        {
-            var wardrobe = await _context.Wardrobes.Where(x => x.Id == wardrobeId).FirstOrDefaultAsync();
-            if (wardrobe == null)
-                return null;
-            if (wardrobe.StudioId == null)
-                return null;
-            return await _packageService.GetById(wardrobe.StudioId.Value);
         }
         public async Task<SocialData> AddToWadrobe(Guid wardrobeId, Guid outfitId)
         {
@@ -109,8 +74,10 @@ namespace minerobe.api.Services
                 return null;
             //getcsocialdata
             outfitref.Social = await _socialService.GetById(outfitref.SocialDataId);
+
+            var user= await _userService.GetUserOfWardrobe(wardrobeId);
             //credentials
-            if (outfitref.PublisherId != wardrobe.OwnerId && outfitref.Social.IsShared == false)
+            if (outfitref.PublisherId != user.Id && outfitref.Social.IsShared == false)
                 return null;
 
             //check if not already added
@@ -158,7 +125,9 @@ namespace minerobe.api.Services
             if (collection == null)
                 return null;
 
-            if (collection.PublisherId != wardrobe.OwnerId && collection.Social.IsShared == false)
+            var user = await _userService.GetUserOfWardrobe(wardrobeId);
+
+            if (collection.PublisherId != user.Id && collection.Social.IsShared == false)
                 return null;
 
             collection.Social = await _socialService.GetById(collection.SocialDataId);
@@ -221,9 +190,9 @@ namespace minerobe.api.Services
 
             return collections;
         }
-        public async Task<bool> IsPackageInWardrobe(Guid userId, Guid outfitId)
+        public async Task<bool> IsPackageInWardrobe(Guid wardrobeId, Guid outfitId)
         {
-            var wardrobe = await _context.Wardrobes.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
+            var wardrobe = await _context.Wardrobes.Where(x => x.Id == wardrobeId).FirstOrDefaultAsync();
             if (wardrobe == null)
                 return false;
             var matching = await _context.WardrobeMatchings.Where(x => x.OutfitPackageId == outfitId && x.WardrobeId == wardrobe.Id).FirstOrDefaultAsync();
@@ -259,21 +228,12 @@ namespace minerobe.api.Services
     
         public async Task<IQueryable<OutfitPackageAgregation>> GetWardrobeOutfits(Guid wardrobeId,OutfitFilter filter)
         {
-            var wardrobe = await _context.Wardrobes.Where(x => x.Id == wardrobeId).FirstOrDefaultAsync();
-            var userId = wardrobe.OwnerId;
-            var outfits = _context.Set<OutfitPackageAgregation>().FromSqlInterpolated($"SELECT * FROM fGetWardrobeOutfits({userId})");
+            var outfits = _context.Set<OutfitPackageAgregation>().FromSqlInterpolated($"SELECT * FROM fGetWardrobeOutfits({wardrobeId})");
             if (filter != null)
             {
                 outfits = filter.Filter(outfits);
             }
             return outfits;
-        }
-        public async Task<Guid?> GetWardrobeId(Guid userId)
-        {
-            var wardrobe = await _context.Wardrobes.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
-            if (wardrobe == null)
-                return null;
-            return wardrobe.Id;
         }
     }
 }
