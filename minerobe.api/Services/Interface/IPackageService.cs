@@ -12,6 +12,7 @@ namespace minerobe.api.Services.Interface
         Task<OutfitLayer> GetLayerById(Guid id);
         Task<bool> DeleteLayer(Guid id);
         Task<OutfitPackage?> GetById(Guid id);
+        Task<OutfitPackage?> GetById(Guid id, Guid layerId);
         Task<bool> RemoveLayerFromPackage(Guid layerId, Guid packageId);
         Task<OutfitPackage?> Update(OutfitPackage package);
         Task<OutfitLayer> UpdateLayer(OutfitLayer layer);

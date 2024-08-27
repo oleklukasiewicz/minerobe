@@ -222,5 +222,14 @@ namespace minerobe.api.Services
             }
             return outfits;
         }
+        public async Task<IQueryable<OutfitPackageAgregation>> GetWardrobeOutfitsSingleLayer(Guid wardrobeId, OutfitFilter filter)
+        {
+            var outfits = _context.Set<OutfitPackageAgregation>().FromSqlInterpolated($"SELECT * FROM fGetWardrobeOutfitsSingleLayer({wardrobeId})");
+            if (filter != null)
+            {
+                outfits = filter.Filter(outfits);
+            }
+            return outfits;
+        }
     }
 }

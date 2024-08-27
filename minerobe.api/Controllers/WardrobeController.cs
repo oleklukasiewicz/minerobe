@@ -99,10 +99,10 @@ namespace minerobe.api.Controllers
         [HttpPost("{wardrobeId}/items/singleLayer")]
         public async Task<IActionResult> GetItemsSingleLayer(Guid wardrobeId, [FromBody] PagedOptions<OutfitFilter> options)
         {
-            var res = await _wardrobeService.GetWardrobeOutfits(wardrobeId, options.Filter);
+            var res = await _wardrobeService.GetWardrobeOutfitsSingleLayer(wardrobeId, options.Filter);
             var paged = res.ToPagedResponse(options.Page, options.PageSize);
 
-            var items = await _outfitHelper.ToOutfitPackage(paged);
+            var items = await _outfitHelper.ToOutfitPackageSingleLayer(paged,true);
 
             return Ok(paged.MapResponseOptions(items));
         }

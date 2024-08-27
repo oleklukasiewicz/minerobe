@@ -59,6 +59,16 @@ namespace minerobe.api.ServicesHelpers
             }
             return items;
         }
+        public async Task<List<OutfitPackageListItemResponseModel>> ToOutfitPackageSingleLayer(PagedResponse<OutfitPackageAgregation> page, bool isInWardrobe=false)
+        {
+            var items = new List<OutfitPackageListItemResponseModel>();
+            foreach (var item in page.Items)
+            {
+                var package = await _packageService.GetById(item.PackageId,item.VariantId.Value);
+                items.Add(package.ToListItemResponseModel(1,isInWardrobe));
+            }
+            return items;
+        }
 
     }
 }

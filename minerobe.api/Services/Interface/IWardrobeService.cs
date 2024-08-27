@@ -20,5 +20,6 @@ namespace minerobe.api.Services.Interface
         Task<SocialData> AddCollectionToWadrobe(Guid wardrobeId, Guid collectionId);
         Task<SocialData> RemoveCollectionFromWardrobe(Guid wardrobeId, Guid collectionId);
         Task<List<OutfitPackageCollection>> GetWardrobeCollections(Guid wardrobeId, SimpleFilter filter);
+        Task<IQueryable<OutfitPackageAgregation>> GetWardrobeOutfitsSingleLayer(Guid wardrobeId, OutfitFilter filter);
     }
 }

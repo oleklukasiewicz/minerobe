@@ -26,7 +26,7 @@ namespace minerobe.api.Services
             var package = await _context.OutfitPackages.FindAsync(id);
             if (package == null)
                 return null;
-            
+
             package.Layers = await GetLayersOfPackage(id);
 
             //type
@@ -38,7 +38,37 @@ namespace minerobe.api.Services
             {
                 package.OutfitType = package.Layers[0].Steve.Type;
             }
-            
+
+            //publisher
+            var user = await _userService.GetById(package.PublisherId);
+            if (user != null)
+            {
+                package.Publisher = user;
+            }
+            //social
+            var social = await _socialService.GetById(package.SocialDataId);
+            package.Social = social;
+
+            return package;
+        }
+        public async Task<OutfitPackage?> GetById(Guid id, Guid layerId)
+        {
+            var package = await _context.OutfitPackages.FindAsync(id);
+            if (package == null)
+                return null;
+
+            package.Layers = new List<OutfitLayer>() { await GetLayerById(layerId) };
+
+            //type
+            if (package.Type == PackageType.Set)
+            {
+                package.OutfitType = OutfitType.Set;
+            }
+            if (package.Type == PackageType.Outfit && package.Layers.Count > 0)
+            {
+                package.OutfitType = package.Layers[0].Steve.Type;
+            }
+
             //publisher
             var user = await _userService.GetById(package.PublisherId);
             if (user != null)
@@ -67,10 +97,11 @@ namespace minerobe.api.Services
                     layer.Id = Guid.NewGuid();
                     layer.SourcePackageId = packageId;
                     await _context.OutfitLayers.AddAsync(layer);
-                }else
+                }
+                else
                 {
                     var layerInDb = await _context.OutfitLayers.FindAsync(layer.Id);
-                    if(layerInDb == null)
+                    if (layerInDb == null)
                     {
                         layer.Id = Guid.NewGuid();
                         layer.SourcePackageId = packageId;
@@ -150,7 +181,7 @@ namespace minerobe.api.Services
             await _context.SaveChangesAsync();
             return outfitPackage;
         }
-        public async Task<OutfitPackage?>UpdateData(OutfitPackage package)
+        public async Task<OutfitPackage?> UpdateData(OutfitPackage package)
         {
             OutfitPackage? outfitPackage = await GetById(package.Id);
 
@@ -298,7 +329,7 @@ namespace minerobe.api.Services
         public async Task<PackageAccessModel> GetPackageAccess(Guid packageId)
         {
             var package = await _context.OutfitPackages.FindAsync(packageId);
-            var social = await _context.SocialDatas.Where(x=> x.Id == package.SocialDataId).FirstOrDefaultAsync();
+            var social = await _context.SocialDatas.Where(x => x.Id == package.SocialDataId).FirstOrDefaultAsync();
 
             var res = new PackageAccessModel
             {
@@ -346,11 +377,11 @@ namespace minerobe.api.Services
 
         public async Task<OutfitLayer> SetGlobalLayer(OutfitLayer globalLayer)
         {
-            var matching = await _context.PackageLayerMatchings.FirstOrDefaultAsync(x => x.PackageId == globalLayer.SourcePackageId &&  x.IsGlobalLayer == true);
-            if(matching!=null)
+            var matching = await _context.PackageLayerMatchings.FirstOrDefaultAsync(x => x.PackageId == globalLayer.SourcePackageId && x.IsGlobalLayer == true);
+            if (matching != null)
             {
                 var layer = await _context.OutfitLayers.FindAsync(matching.LayerId);
-                if(layer != null)
+                if (layer != null)
                 {
                     layer.Alex = globalLayer.Alex;
                     layer.Steve = globalLayer.Steve;
@@ -359,7 +390,8 @@ namespace minerobe.api.Services
 
                     _context.OutfitLayers.Update(layer);
                 }
-            }else
+            }
+            else
             {
                 globalLayer.Id = Guid.NewGuid();
                 await _context.OutfitLayers.AddAsync(globalLayer);
@@ -388,7 +420,7 @@ namespace minerobe.api.Services
 
                 if (layer == null) continue;
                 layer.IsGlobal = matching.IsGlobalLayer;
-                
+
                 layers.Add(layer);
             }
             return layers;
