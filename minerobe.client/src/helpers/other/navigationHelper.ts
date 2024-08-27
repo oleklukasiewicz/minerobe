@@ -11,7 +11,7 @@ export const navigateToOutfitPackage = function (
   packag: OutfitPackage,
   variantId?: string
 ) {
-  const varaint = variantId ? variantId : packag.layers[0].id;
+  const varaint = variantId ? variantId : packag.layers[0]?.id;
   goto(`/design/${packag.id}/${varaint || ""}`);
 };
 export const navigateToOutfitPackageEdit = function (id: string) {
