@@ -17,7 +17,6 @@ namespace minerobe.api.Database
         public DbSet<OutfitLayer> OutfitLayers { get; set; }
         public DbSet<MinerobeUser> MinerobeUsers { get; set;}
         public DbSet<MinerobeUserLink> MinerobeUserLinks { get; set; }
-        public DbSet<Wardrobe> Wardrobes { get; set; }
         public DbSet<WardrobeMatching> WardrobeMatchings { get; set; }
         public DbSet<WadrobeCollectionMatching> WardrobeCollectionMatchings { get; set; }
         public DbSet<PackageLayerMatching> PackageLayerMatchings { get; set; }

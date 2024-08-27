@@ -3,6 +3,7 @@ using minerobe.api.Database;
 using minerobe.api.Entity.Package;
 using minerobe.api.Entity.User;
 using minerobe.api.Entity.Wardrobe;
+using minerobe.api.Helpers.Wardrobe;
 using minerobe.api.Model;
 using minerobe.api.Services.Interface;
 using System.Security.Claims;
@@ -102,14 +103,12 @@ namespace minerobe.api.Services
                 }
             }
 
-            var wardrobeId = Guid.NewGuid();
-
             var newUser = new MinerobeUser
             {
                 Name = name,
                 Id = Guid.NewGuid(),
                 Avatar = avatar,
-                WardrobeId = wardrobeId
+                WardrobeId = Guid.NewGuid()
             };
             await Add(newUser);
             var link = new MinerobeUserLink
@@ -119,13 +118,7 @@ namespace minerobe.api.Services
             };
 
             await _context.MinerobeUserLinks.AddAsync(link);
-            //creating wardrobe
-            var wardrobe = new Wardrobe
-            {
-                Id = wardrobeId,
-                Outfits = new List<OutfitPackage>()
-            };
-            _context.Wardrobes.Add(wardrobe);
+
             //creating settings
             var settings = new Entity.Settings.UserSettings
             {
