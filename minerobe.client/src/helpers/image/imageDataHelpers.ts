@@ -46,7 +46,7 @@ export const GetOutfitType = function (imageContext: any) {
   if (bodyPercentage > 0.3 && legsPercentage > 0.3 && shoesPercentage > 0.3) {
     return OUTFIT_TYPE.SUIT;
   }
-  if (hatPercentage > 0.05) {
+  if (hatPercentage > 0.01) {
     if (bodyPercentage > 0.3) {
       if (legsPercentage > 0.3) return OUTFIT_TYPE.SUIT;
       else return OUTFIT_TYPE.HOODIE;
