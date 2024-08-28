@@ -174,7 +174,7 @@
     </div>
   {/if}
   <div class="data">
-    <div class="render">
+    <div class="render" title={item.colorName}>
       <OutfitLayerRender {item} {renderProvider} {modelName} />
     </div>
     <span
