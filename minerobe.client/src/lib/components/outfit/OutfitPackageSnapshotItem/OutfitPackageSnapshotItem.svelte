@@ -117,10 +117,10 @@
         <div>
           {#each item.layers
             .slice(0, !isSet ? multiple : 2)
-            .filter((x) => x != null && x[item.model].color != null) as layer (layer.id)}
+            .filter((x) => x != null && x.colorName != null) as layer (layer.id)}
             <ColorBadge
-              colorName={layer[item.model].colorName}
-              color={ConvertToStringColor(COLORS[layer[item.model].colorName])}
+              colorName={layer.colorName}
+              color={ConvertToStringColor(COLORS[layer.colorName])}
               on:click={() => updateRender(layer)}
             ></ColorBadge>
           {/each}

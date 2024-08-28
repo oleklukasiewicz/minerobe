@@ -1,5 +1,6 @@
 ﻿using minerobe.api.Entity;
 using minerobe.api.Entity.Package;
+using minerobe.api.Helpers;
 
 namespace minerobe.api.Model.Package
 {
@@ -10,6 +11,8 @@ namespace minerobe.api.Model.Package
         public Guid? SourcePackageId { get; set; }
         public FileDataModel Steve { get; set; }
         public FileDataModel Alex { get; set; }
+        public string ColorName { get; set; }
+        public string OutfitType { get; set; }
     }
     public static class OutfitLayerExtensions
     {
@@ -20,7 +23,9 @@ namespace minerobe.api.Model.Package
                 Name = model.Name,
                 SourcePackageId = model.SourcePackageId,
                 Steve = model.Steve.ToEntity(),
-                Alex = model.Alex.ToEntity()
+                Alex = model.Alex.ToEntity(),
+                ColorName = model.ColorName,
+                OutfitType = Enum.Parse<OutfitType>(model.OutfitType.ToFirstCapitalLetter()),
             };
             if (model.Id.HasValue)
                 layer.Id = model.Id.Value;

@@ -32,7 +32,7 @@
         <OutfitTextureRender
           texture={layer?.alex.content}
           modelName={MODEL_TYPE.ALEX}
-          type={layer?.alex.type}
+          type={layer?.outfitType}
           renderProvider={providers?.alex}
         />
       </div>
@@ -44,7 +44,7 @@
         <OutfitTextureRender
           texture={layer?.steve.content}
           modelName={MODEL_TYPE.STEVE}
-          type={layer?.steve.type}
+          type={layer?.outfitType}
           renderProvider={providers?.steve}
         />
       </div>

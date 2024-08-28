@@ -354,7 +354,7 @@
               >
                 <ColorBadge
                   small
-                  colorName={item[itemText]}
+                  colorName={item}
                   color={ConvertToStringColor(item)}
                 />
                 <div

@@ -82,25 +82,25 @@ export const GetAnimationForPackageChange = function (
   }
   if (type == CHANGE_TYPE.LAYER_ADD) {
     return [
-      GetAnimationForType(itempackage.layers[index][itempackage.model].type),
+      GetAnimationForType(itempackage.layers[index].outfitType),
       DefaultAnimation,
     ];
   }
   if (type == CHANGE_TYPE.LAYER_DOWN) {
     return [
-      GetAnimationForType(itempackage.layers[index][itempackage.model].type),
+      GetAnimationForType(itempackage.layers[index].outfitType),
       DefaultAnimation,
     ];
   }
   if (type == CHANGE_TYPE.LAYER_UP) {
     return [
-      GetAnimationForType(itempackage.layers[index][itempackage.model].type),
+      GetAnimationForType(itempackage.layers[index].outfitType),
       DefaultAnimation,
     ];
   }
   if (type == CHANGE_TYPE.LAYER_REMOVE) {
     return [
-      GetAnimationForType(itempackage.layers[index][itempackage.model].type),
+      GetAnimationForType(itempackage.layers[index].outfitType),
       DefaultAnimation,
     ];
   }

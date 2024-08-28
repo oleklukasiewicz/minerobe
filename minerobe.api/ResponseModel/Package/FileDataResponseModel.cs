@@ -8,9 +8,6 @@ namespace minerobe.api.ResponseModel.Package
     {
         public string FileName { get; set; }
         public string Content { get; set; }
-        public string Type { get; set; }
-        public string Color { get; set; }
-        public string ColorName { get; set; }
     }
     public static class FileDataResponseModelExtensions
     {
@@ -23,9 +20,6 @@ namespace minerobe.api.ResponseModel.Package
             {
                 FileName = entity.FileName,
                 Content = content,
-                Type = entity.Type.ToString().ToLower(),
-                Color = entity.Color,
-                ColorName = entity.ColorName
             };
         }
     }

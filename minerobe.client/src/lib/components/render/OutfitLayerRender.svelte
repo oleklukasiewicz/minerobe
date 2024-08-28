@@ -33,7 +33,7 @@
   const updateSnapshot = async (model) => {
     snapshot.provider = renderProvider;
     snapshot.texture = item[modelName].content;
-    snapshot.cameraOptions = GetCameraConfigForType(item[modelName].type);
+    snapshot.cameraOptions = GetCameraConfigForType(item.outfitType);
     snapshot.provider.camera = new THREE.OrthographicCamera();
     if (snapshot.texture == null || snapshot.node == null) return;
     await RenderFromSnapshot(snapshot);

@@ -29,7 +29,7 @@ namespace minerobe.api.Helpers.Filter
                 {
                     return x.Layers.Any(y =>
                     {
-                        return this.Colors.Contains(y.Alex.ColorName) || this.Colors.Contains(y.Steve.ColorName);
+                        return this.Colors.Contains(y.ColorName);
                     });
                 }).ToList();
             }

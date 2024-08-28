@@ -12,6 +12,8 @@ namespace minerobe.api.ResponseModel.Package
         public FileDataResponseModel? Alex { get; set; }
         public string Type { get; set; }
         public bool IsSnapshot { get; set; }
+        public string ColorName { get; set; }
+        public string OutfitType { get; set; }
     }
     public static class OutfitLayerResponseModelExtensions
     {
@@ -29,7 +31,9 @@ namespace minerobe.api.ResponseModel.Package
                 Steve = entity.Steve.ToResponseModel(toSnapshot),
                 Alex = entity.Alex.ToResponseModel(toSnapshot),
                 Type = type.ToString().ToLower(),
-                IsSnapshot = toSnapshot
+                IsSnapshot = toSnapshot,
+                ColorName = entity.ColorName,
+                OutfitType= entity.OutfitType.ToString().ToLower()
             };
         }
         public static OutfitLayerResponseModel ToResponseModel(this OutfitLayer entity, Guid packageId, bool toSnapshot = true)
@@ -46,7 +50,9 @@ namespace minerobe.api.ResponseModel.Package
                 Steve = entity.Steve.ToResponseModel(toSnapshot),
                 Alex = entity.Alex.ToResponseModel(toSnapshot),
                 Type = type.ToString().ToLower(),
-                IsSnapshot = toSnapshot
+                IsSnapshot = toSnapshot,
+                ColorName = entity.ColorName,
+                OutfitType = entity.OutfitType.ToString().ToLower()
             };
         }
     }

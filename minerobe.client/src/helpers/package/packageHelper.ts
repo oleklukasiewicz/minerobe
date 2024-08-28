@@ -13,13 +13,13 @@ export const AddLayerSnapshot = async function (oldLayer: OutfitLayer) {
   const steveSnap = await RenderTextureInTemporyNode(
     steve.content,
     MODEL_TYPE.STEVE,
-    steve.type
+    layer.outfitType
   );
   const alex = layer.alex;
   const alexSnap = await RenderTextureInTemporyNode(
     alex.content,
     MODEL_TYPE.ALEX,
-    alex.type
+    layer.outfitType
   );
   const snapLayer = Object.assign({}, layer);
   snapLayer.steve.contentSnapshot = steveSnap;
@@ -32,25 +32,16 @@ export const GetGlobalLayer = async function (pack: OutfitPackage) {
   const colorClossest = await FindClosestColor(color, COLOR_TYPE.STRING_COLOR);
   const steveFileData = new FileData(
     pack.name,
-    steve,
-    OUTFIT_TYPE.OUTFIT_SET,
-    color,
-    colorClossest.name
+    steve
   );
   const alex = await MergePackageLayers(pack.layers, MODEL_TYPE.ALEX);
-  const colorAlex = await GetDominantColorFromImage(alex);
-  const colorAlexClosest = await FindClosestColor(
-    colorAlex,
-    COLOR_TYPE.STRING_COLOR
-  );
   const alexFileData = new FileData(
     pack.name,
-    alex,
-    OUTFIT_TYPE.OUTFIT_SET,
-    colorAlex,
-    colorAlexClosest.name
+    alex
   );
   const glob = new OutfitLayer(pack.name, steveFileData, alexFileData);
+  glob.colorName = colorClossest.name;
+  glob.outfitType = OUTFIT_TYPE.OUTFIT_SET;
   glob.sourcePackageId = pack.id;
   return glob;
 };

@@ -185,7 +185,7 @@
       />
       <br />
       <div style="display:flex; gap:4px;margin-top:4px;">
-        <Label variant="common">{item[modelName].type}</Label>
+        <Label variant="common">{item.outfitType}</Label>
         {#if showLabels}
           {#if item.type == LAYER_TYPE.REMOTE}
             <Label variant="rare">{$_("layerType.remote")}</Label>

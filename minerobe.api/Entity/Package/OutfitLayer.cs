@@ -18,6 +18,8 @@ namespace minerobe.api.Entity.Package
         public FileData Alex { get; set; }
         public LayerType Type { get; set; }
         public bool IsGlobal { get; set; }
+        public string ColorName { get; set; }
+        public OutfitType OutfitType { get; set; }
 
     }
     public class OutfitLayerConfig : IEntityTypeConfiguration<OutfitLayer>

@@ -36,7 +36,7 @@ namespace minerobe.api.Services
             }
             if (package.Type == PackageType.Outfit && package.Layers.Count > 0)
             {
-                package.OutfitType = package.Layers[0].Steve.Type;
+                package.OutfitType = package.Layers[0].OutfitType;
             }
 
             //publisher
@@ -66,7 +66,7 @@ namespace minerobe.api.Services
             }
             if (package.Type == PackageType.Outfit && package.Layers.Count > 0)
             {
-                package.OutfitType = package.Layers[0].Steve.Type;
+                package.OutfitType = package.Layers[0].OutfitType;
             }
 
             //publisher
@@ -387,6 +387,8 @@ namespace minerobe.api.Services
                     layer.Steve = globalLayer.Steve;
                     layer.Type = globalLayer.Type;
                     layer.Name = globalLayer.Name;
+                    layer.ColorName = globalLayer.ColorName;
+                    layer.OutfitType = globalLayer.OutfitType;
 
                     _context.OutfitLayers.Update(layer);
                 }

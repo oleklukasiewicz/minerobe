@@ -1,12 +1,7 @@
-import {
-  FindClosestColor,
-  GetDominantColorFromImageContext,
-} from "../image/colorHelper";
-import { GetContextFromBase64, GetOutfitType } from "../image/imageDataHelpers";
+import { GetContextFromBase64 } from "../image/imageDataHelpers";
 import { MergeFileDataToImage } from "../../data/imageMerger";
 import type { OutfitPackageRenderConfig } from "$model/render";
 import { FileData } from "$src/model/package";
-import { COLOR_TYPE } from "$src/data/consts";
 
 export const ExportImageLayers = async function (
   layers: FileData[],
@@ -88,15 +83,9 @@ export const ImportLayerFromFile = async function (file: File) {
     reader.onload = async (event) => {
       const base64Data: any = event.target.result;
       var context = await GetContextFromBase64(base64Data);
-      const outfitType = GetOutfitType(context);
-      const color = await GetDominantColorFromImageContext(context);
-      const colorName = await FindClosestColor(color, COLOR_TYPE.STRING_COLOR);
       var newLayer = new FileData(
         file.name.replace(/\.[^/.]+$/, ""),
-        base64Data,
-        outfitType,
-        color,
-        colorName.name
+        base64Data
       );
       resolve(newLayer);
     };

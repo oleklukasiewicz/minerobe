@@ -63,7 +63,10 @@
     AddLayerSnapshot,
     GetGlobalLayer,
   } from "$helpers/package/packageHelper";
-  import { FindClosestColor } from "$helpers/image/colorHelper";
+  import {
+    FindClosestColor,
+    GetDominantColorFromImageContext,
+  } from "$helpers/image/colorHelper";
 
   import {
     AddPackageLayer,
@@ -94,11 +97,15 @@
     CurrentTextureConfig,
     type MinerobeUserSettingsSimple,
   } from "$model/user";
-  import { OutfitLayer, type OutfitPackage } from "$model/package";
+  import { FileData, OutfitLayer, type OutfitPackage } from "$model/package";
   import type { PagedResponse } from "$model/base";
   import { OutfitPackageRenderConfig } from "$model/render";
   import { MinecraftIntegrationModel } from "$model/integration/minecraft";
   import { OutfitFilter } from "$model/filter";
+  import {
+    GetContextFromBase64,
+    GetOutfitType,
+  } from "$src/helpers/image/imageDataHelpers.js";
 
   export let data;
 
@@ -146,7 +153,7 @@
 
       //load package
       $itemPackage = await GetPackage(data.id);
-      
+
       //go back if publisher is not the same
       if ($itemPackage.publisher.id != $currentUser?.id) navigateToWardrobe();
 
@@ -256,11 +263,14 @@
   };
   const uploadImageForVariant = async function (e) {
     const modelName = e.detail.modelName;
-    const layer = newVariantLayer;
+    let layer = newVariantLayer;
     const index = $itemLayers.indexOf(layer);
     await ImportImage().then(async (layers) => {
       const newtexture = layers[0];
       layer[modelName] = newtexture;
+
+      layer = await loadLayerData(layer, newtexture);
+
       const reponse = await UpdatePackageLayer(await AddLayerSnapshot(layer));
       if (reponse == null) return;
       itemLayers.update((layers) => {
@@ -275,18 +285,9 @@
     });
   };
   const editLayer = async function (e) {
-    const layer = e.detail.texture as OutfitLayer;
+    let layer = e.detail.texture as OutfitLayer;
 
-    const colorStevename = await FindClosestColor(
-      layer.steve.color,
-      COLOR_TYPE.STRING_COLOR
-    );
-    const colorAlexname = await FindClosestColor(
-      layer.alex.color,
-      COLOR_TYPE.STRING_COLOR
-    );
-    layer.alex.colorName = colorAlexname.name;
-    layer.steve.colorName = colorStevename.name;
+    layer = await loadLayerData(layer, layer.steve);
 
     await UpdatePackageLayer(await AddLayerSnapshot(layer));
   };
@@ -317,12 +318,15 @@
     const responselayers = [];
     await Promise.all(
       newLayers.map(async (layer) => {
-        const newOutfitLayer = new OutfitLayer(
+        let newOutfitLayer = new OutfitLayer(
           layer.fileName,
           structuredClone(layer),
           structuredClone(layer),
           null
         );
+
+        newOutfitLayer = await loadLayerData(newOutfitLayer, layer);
+
         newOutfitLayer.sourcePackageId = $itemPackage.id;
         const response = await AddPackageLayer(
           await AddLayerSnapshot(newOutfitLayer)
@@ -345,6 +349,18 @@
       $itemPackage.name
     );
     applyAnimations($itemPackage, CHANGE_TYPE.DOWNLOAD, 0);
+  };
+  const loadLayerData = async function (
+    layer: OutfitLayer,
+    fileData: FileData
+  ) {
+    const context = await GetContextFromBase64(fileData.content);
+    const outfitType = GetOutfitType(context);
+    const color = await GetDominantColorFromImageContext(context);
+    const colorName = await FindClosestColor(color, COLOR_TYPE.STRING_COLOR);
+    layer.colorName = colorName.name;
+    layer.outfitType = outfitType;
+    return layer;
   };
 
   //sharing / wardrobe
@@ -412,13 +428,16 @@
       const newLayers = [];
       for (var i = 0; i < files.length; i++) {
         const newLayer = await ImportLayerFromFile(files[i]);
-        const newOutfitLayer = new OutfitLayer(
+        let newOutfitLayer = new OutfitLayer(
           newLayer.fileName,
           structuredClone(newLayer),
           structuredClone(newLayer),
           null
         );
+        newOutfitLayer = await loadLayerData(newOutfitLayer, newLayer);
+
         newOutfitLayer.sourcePackageId = $itemPackage.id;
+        console.log(newOutfitLayer);
         const response = await AddPackageLayer(
           await AddLayerSnapshot(newOutfitLayer)
         );
@@ -452,12 +471,14 @@
     );
   };
   const addNewDropVariant = async function (e) {
-    const layer = e.detail.texture;
+    let layer = e.detail.texture;
     const model = e.detail.model;
     const index = $itemLayers.indexOf(layer);
 
     const newLayer = await ImportLayerFromFile(e.detail.files[0]);
     layer[model] = newLayer;
+
+    layer = await loadLayerData(layer, newLayer);
 
     const response = await UpdatePackageLayer(await AddLayerSnapshot(layer));
     if (response == null) return;
@@ -528,6 +549,7 @@
     if (isItemSet) {
       //generate flatten layers
       const globalLayer = await GetGlobalLayer(pack);
+      console.log(globalLayer);
       await SetGlobalLayer(globalLayer);
     }
   });
