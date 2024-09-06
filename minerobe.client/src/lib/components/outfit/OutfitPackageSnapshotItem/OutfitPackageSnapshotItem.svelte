@@ -13,6 +13,8 @@
 
   import HeartIcon from "$icons/heart.svg?raw";
   import HeartFilledIcon from "$icons/heart-filled.svg?raw";
+  import { GetLayerSnapshot } from "$src/api/pack";
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
 
   export let item: OutfitPackage = null;
   export let dense = false;
@@ -28,13 +30,19 @@
   let snapshot: RenderSnapshot;
   let currentLayer: OutfitLayer;
   let isSet = false;
+  let isLoading = false;
 
   onMount(async () => {
     isSet = item.type == OUTFIT_TYPE.OUTFIT_SET;
     currentLayer = item.layers[0];
   });
-  const updateRender = async function (layer) {
+  const updateRender = async function (layer: OutfitLayer) {
     if (multiple > 1) {
+      if (layer.isLoaded == false) {
+        isLoading = true;
+        layer = await GetLayerSnapshot(layer.id);
+        isLoading = false;
+      }
       currentLayer = layer;
       if (snapshot) {
         snapshot.texture = layer[item.model].content;
@@ -82,13 +90,15 @@
       </div>
     {/if}
     {#if item.social.isShared && item.publisher.id == $currentUser?.id}
-    <div class="icon-small">{@html CloudIcon}</div>
-  {/if}
+      <div class="icon-small">{@html CloudIcon}</div>
+    {/if}
   </div>
   <div class="render-area">
     <!-- svelte-ignore a11y-missing-attribute -->
     {#if item.layers.length > 0}
-      {#if item.presentationConfig.isSnapshot == false}
+      {#if isLoading}
+        <Placeholder />
+      {:else if item.presentationConfig.isSnapshot == false}
         <OutfitPackageSnapshotRender bind:snapshot {item} {renderProvider} />
       {:else}
         <img

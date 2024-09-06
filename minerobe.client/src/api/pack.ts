@@ -73,6 +73,10 @@ export const GetLayer = async function (id: string) {
   const res = await GetRequest("/api/Layers/" + id);
   return res;
 };
+export const GetLayerSnapshot = async function (id: string) {
+  const res = await GetRequest("/api/Layers/" + id + "/snapshot");
+  return res;
+};
 export const RemoveRemoteLayerFromPackage = async function (
   layerId: string,
   packageId: string
@@ -81,4 +85,4 @@ export const RemoveRemoteLayerFromPackage = async function (
     "/api/Layers/remove/" + layerId + "/" + packageId
   );
   return res;
-}
+};

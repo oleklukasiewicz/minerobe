@@ -31,7 +31,7 @@ namespace minerobe.api.ServicesHelpers
                 var isInwadrobe = false;
                 if (userId != null)
                     isInwadrobe = await _wardrobeService.IsPackageInWardrobe(user.WardrobeId, item.PackageId);
-                items.Add(package.ToListItemResponseModel(2, isInwadrobe));
+                items.Add(package.ToListItemResponseModel(2,1, isInwadrobe));
             }
             return items;
         }
@@ -45,7 +45,7 @@ namespace minerobe.api.ServicesHelpers
                 var isInwadrobe = false;
                 if (user != null)
                     isInwadrobe = await _wardrobeService.IsPackageInWardrobe(user.WardrobeId, item.PackageId);
-                items.Add(package.ToListItemResponseModel(2, isInwadrobe));
+                items.Add(package.ToListItemResponseModel(2,1, isInwadrobe));
             }
             return items;
         }
@@ -55,7 +55,7 @@ namespace minerobe.api.ServicesHelpers
             foreach (var item in page.Items)
             {
                 var package = await _packageService.GetById(item.PackageId);
-                items.Add(package.ToListItemResponseModel(2, false));
+                items.Add(package.ToListItemResponseModel(2,1, false));
             }
             return items;
         }
@@ -65,7 +65,7 @@ namespace minerobe.api.ServicesHelpers
             foreach (var item in page.Items)
             {
                 var package = await _packageService.GetById(item.PackageId,item.VariantId.Value);
-                items.Add(package.ToListItemResponseModel(1,isInWardrobe));
+                items.Add(package.ToListItemResponseModel(2,1,isInWardrobe));
             }
             return items;
         }

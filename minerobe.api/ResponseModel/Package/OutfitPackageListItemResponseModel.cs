@@ -22,7 +22,7 @@ namespace minerobe.api.ResponseModel.Package
     }
     public static class OutfitPackageListItemResponseModelExtensions
     {
-        public static OutfitPackageListItemResponseModel ToListItemResponseModel(this OutfitPackage entity, int layersCount = 2, bool isInWardrobe = false)
+        public static OutfitPackageListItemResponseModel ToListItemResponseModel(this OutfitPackage entity, int layersCount = 2,int loadedCount=1, bool isInWardrobe = false)
         {
             var layers = new List<OutfitLayerResponseModel>();
             if (layersCount > entity.Layers.Count)
@@ -43,7 +43,7 @@ namespace minerobe.api.ResponseModel.Package
                 {
                     for (int i = 0; i < layersCount; i++)
                     {
-                        layers.Add(entity.Layers[i].ToResponseModel(entity, true));
+                        layers.Add(entity.Layers[i].ToResponseModel(entity, true,i<loadedCount));
                     }
                 }
             }
@@ -63,7 +63,7 @@ namespace minerobe.api.ResponseModel.Package
                 PresentationConfig = presentationMode
             };
         }
-        public static List<OutfitPackageListItemResponseModel> ToListItemResponseModel(this List<OutfitPackage> entity, int layersCount = 2)
+        public static List<OutfitPackageListItemResponseModel> ToListItemResponseModel(this List<OutfitPackage> entity, int layersCount = 2, int loadedCount = 1)
         {
             var mapped = entity.Select(x => x.ToListItemResponseModel(layersCount)).ToList();
             return mapped;

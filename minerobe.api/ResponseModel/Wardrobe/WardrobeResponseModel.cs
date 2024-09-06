@@ -16,7 +16,7 @@ namespace minerobe.api.ResponseModel.Wardrobe
     {
         public static WardrobeResponseModel ToResponseModel(this api.Helpers.Wardrobe.Wardrobe entity)
         {
-            var outfits = entity.Outfits?.Select(x => x?.ToListItemResponseModel(2, true)).ToList();
+            var outfits = entity.Outfits?.Select(x => x?.ToListItemResponseModel(2,1, true)).ToList();
             var collections = entity.Collections?.Select(x => x.ToResponseModel()).ToList();
 
             return new WardrobeResponseModel

@@ -54,6 +54,8 @@ export class OutfitLayer {
   type: string;
   colorName: string;
   outfitType: string;
+  isSnapshot: boolean;
+  isLoaded: boolean;
   constructor(
     name: string = "",
     steve: FileData = null,
