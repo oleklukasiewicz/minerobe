@@ -28,31 +28,17 @@ namespace minerobe.api.ResponseModel.Package
         public MinerobePackageUserResponseModel Publisher { get; set; }
         public bool IsInWardrobe { get; set; }
         public OutfitPackagePresentationConfigModel PresentationConfig { get; set; }
+        public Guid? PrimaryLayerId { get; set; }
     }
     public static class OutfitPackageResponseModelExtensions
     {
         public static OutfitPackageResponseModel ToResponseModel(this OutfitPackage entity)
         {
-            var layers = entity.Layers?.Where(x => x.IsGlobal == false).Select(x => x.ToResponseModel(entity, false)).ToList();
-            return new OutfitPackageResponseModel
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Model = entity.Model.ToString().ToLower(),
-                Type = entity.Type.ToString().ToLower(),
-                Description = entity.Description,
-                Social = entity.Social,
-                OutfitType = entity.OutfitType.ToString().ToLower(),
-                CreatedAt = entity.CreatedAt,
-                ModifiedAt = entity.ModifiedAt,
-                Layers = layers,
-                Publisher = entity.Publisher.ToPackageResponseModel(),
-                TotalLayersCount = entity.Layers != null ? entity.Layers.Count : 0
-            };
+            return ToResponseModel(entity, false);
         }
         public static OutfitPackageResponseModel ToResponseModel(this OutfitPackage entity, bool isInWardrobe)
         {
-            var layers = entity.Layers?.Where(x => x.IsGlobal == false).Select(x => x.ToResponseModel(entity, false)).ToList();
+            var layers = entity.Layers?.Where(x => x.IsMerged == false).Select(x => x.ToResponseModel(entity, false)).ToList();
             return new OutfitPackageResponseModel
             {
                 Id = entity.Id,

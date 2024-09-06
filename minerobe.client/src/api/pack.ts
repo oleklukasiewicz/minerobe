@@ -4,9 +4,7 @@ import {
   PostRequest,
   PutRequest,
 } from "$src/data/api";
-import { currentUser } from "$src/data/cache";
 import type { OutfitLayer, OutfitPackage } from "$src/model/package";
-import { get } from "svelte/store";
 //packages
 export const GetPackage = async function (id: string) {
   const res = await GetRequest("/api/Package/" + id);
@@ -30,8 +28,8 @@ export const AddPackageLayer = async function (layer: OutfitLayer) {
   const res = await PostRequest("/api/Layers/", layer);
   return res;
 };
-export const SetGlobalLayer = async function (layer: OutfitLayer) {
-  const res = await PostRequest("/api/Layers/Global", layer);
+export const SetMergedLayer = async function (layer: OutfitLayer) {
+  const res = await PostRequest("/api/Layers/Merged", layer);
   return res;
 };
 export const RemovePackageLayer = async function (layerId: string) {
@@ -51,7 +49,6 @@ export const OrderPackageLayer = async function (
 };
 export const AddPackage = async function (packageData: OutfitPackage) {
   const data = Object.assign({}, packageData) as any;
-  data.publisherId = get(currentUser).id;
   const res = await PostRequest("/api/Package/", data);
   return res;
 };

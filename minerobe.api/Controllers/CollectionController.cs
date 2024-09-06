@@ -38,14 +38,21 @@ namespace minerobe.api.Controllers
             var result = await _service.GetById(id);
             if (result == null)
                 return NotFound();
+
             return Ok(result.ToResponseModel());
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
+            var user = await _userService.GetFromExternalUser(User);
+            var canAccess = await _service.CanEdit(id, user.Id);
+            if (!canAccess)
+                return Unauthorized();
+
             var result = await _service.Delete(id);
             if (!result)
                 return NotFound();
+
             return Ok(result);
         }
         [HttpPut("{id}")]

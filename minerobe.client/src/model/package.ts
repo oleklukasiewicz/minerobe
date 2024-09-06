@@ -7,6 +7,7 @@ export class OutfitPackage {
   type: string;
   layers: OutfitLayer[];
   publisher: MinerobeUserSimple;
+  publisherId: string;
   description: string;
   id: string;
   social: PackageSocialData;

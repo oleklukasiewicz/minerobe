@@ -64,6 +64,7 @@ namespace minerobe.api.Controllers
 
             var entity = currentTexture.ToEntity();
             var settings = await _userSettingsService.UpdateCurrentTexture(user.Id, id, entity);
+
             //minecraft services integrations
             if (settings.ContainsIntegration("minecraft"))
             {

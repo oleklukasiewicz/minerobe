@@ -61,7 +61,7 @@
   import { GetAnimationForPackageChange } from "$helpers/render/animationHelper";
   import {
     AddLayerSnapshot,
-    GetGlobalLayer,
+    GetMergedLayer,
   } from "$helpers/package/packageHelper";
   import {
     FindClosestColor,
@@ -76,7 +76,7 @@
     RemovePackage,
     RemovePackageLayer,
     RemoveRemoteLayerFromPackage,
-    SetGlobalLayer,
+    SetMergedLayer,
     UpdatePackageData,
     UpdatePackageLayer,
   } from "$src/api/pack";
@@ -548,9 +548,9 @@
     await UpdatePackageData(pack);
     if (isItemSet) {
       //generate flatten layers
-      const globalLayer = await GetGlobalLayer(pack);
+      const globalLayer = await GetMergedLayer(pack);
       console.log(globalLayer);
-      await SetGlobalLayer(globalLayer);
+      await SetMergedLayer(globalLayer);
     }
   });
   itemRenderConfig.subscribe(async (layer) => {

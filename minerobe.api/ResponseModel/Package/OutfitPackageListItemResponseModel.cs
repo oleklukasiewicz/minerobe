@@ -27,13 +27,13 @@ namespace minerobe.api.ResponseModel.Package
             var layers = new List<OutfitLayerResponseModel>();
             if (layersCount > entity.Layers.Count)
                 layersCount = entity.Layers.Count;
-            var globalLayers = entity.Layers.Where(x => x.IsGlobal).FirstOrDefault();
+            var mergedLayers = entity.Layers.Where(x => x.IsMerged).FirstOrDefault();
             var presentationMode = new OutfitPackagePresentationConfigModel();
-            if (entity.Type == PackageType.Set && globalLayers != null)
+            if (entity.Type == PackageType.Set && mergedLayers != null)
             {
                 presentationMode.IsMerged = true;
                 presentationMode.IsSnapshot = false;
-                layers.Add(globalLayers.ToResponseModel(entity, false));
+                layers.Add(mergedLayers.ToResponseModel(entity, false));
             }
             else
             {

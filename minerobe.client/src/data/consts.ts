@@ -149,6 +149,7 @@ export const DEFAULT_PACKAGE = {
     id: "dummy",
     name: "dummy",
   },
+  publisherId: "dummy",
   description: "Default outfit",
   outfitType: OUTFIT_TYPE.DEFAULT,
   isShared: false,

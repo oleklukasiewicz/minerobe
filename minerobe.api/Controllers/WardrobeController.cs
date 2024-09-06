@@ -27,89 +27,107 @@ namespace minerobe.api.Controllers
             _packageService = packageService;
             _outfitHelper = outfitHelper;
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        [HttpGet("")]
+        public async Task<IActionResult> Get()
         {
-            var wardrobe = await _wardrobeService.Get(id);
+            var user = await _userService.GetFromExternalUser(User);
+
+            var wardrobe = await _wardrobeService.Get(user.WardrobeId);
             if (wardrobe == null)
                 return NotFound();
             return Ok(wardrobe.ToResponseModel());
         }
-        [HttpPost("{wardrobeId}/{id}")]
-        public async Task<IActionResult> AddToWardrobe(Guid id, Guid wardrobeId)
+        [HttpPost("{id}")]
+        public async Task<IActionResult> AddToWardrobe(Guid id)
         {
-            var res = await _wardrobeService.AddToWadrobe(wardrobeId, id);
+            var user = await _userService.GetFromExternalUser(User);
+
+            var res = await _wardrobeService.AddToWadrobe(user.WardrobeId, id);
             if (res == null)
                 return NotFound();
             return Ok(res);
         }
-        [HttpDelete("{wardrobeId}/{id}")]
-        public async Task<IActionResult> RemoveFromWardrobe(Guid id, Guid wardrobeId)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> RemoveFromWardrobe(Guid id)
         {
-            var wardrobe = await _wardrobeService.Get(wardrobeId);
+            var user = await _userService.GetFromExternalUser(User);
+
             var package = await _packageService.GetById(id);
-            var user= await _userService.GetUserOfWardrobe(wardrobeId);
             if (package.PublisherId == user.Id)
                 return BadRequest("You can't remove your own package from your wardrobe");
 
-            var res = await _wardrobeService.RemoveFromWardrobe(wardrobeId, id);
+            var res = await _wardrobeService.RemoveFromWardrobe(user.WardrobeId, id);
             if (res == null)
                 return NotFound();
             return Ok(res);
         }
-        [HttpPost("{wardrobeId}/{id}/collection")]
-        public async Task<IActionResult> AddToCollection(Guid id, Guid wardrobeId)
+        [HttpPost("{id}/collection")]
+        public async Task<IActionResult> AddToCollection(Guid id)
         {
-            var res = await _wardrobeService.AddCollectionToWadrobe(wardrobeId, id);
+            var user = await _userService.GetFromExternalUser(User);
+
+            var res = await _wardrobeService.AddCollectionToWadrobe(user.WardrobeId, id);
             if (res == null)
                 return NotFound();
             return Ok(res);
         }
-        [HttpDelete("{wardrobeId}/{id}/collection")]
-        public async Task<IActionResult> RemoveFromCollection(Guid id, Guid wardrobeId)
+        [HttpDelete("{id}/collection")]
+        public async Task<IActionResult> RemoveFromCollection(Guid id)
         {
-            var res = await _wardrobeService.RemoveCollectionFromWardrobe(wardrobeId, id);
+           var user = await _userService.GetFromExternalUser(User);
+
+            var res = await _wardrobeService.RemoveCollectionFromWardrobe(user.WardrobeId, id);
             if (res == null)
                 return NotFound();
             return Ok(res);
         }
-        [HttpPost("{wardrobeId}/items")]
-        public async Task<IActionResult> GetItems (Guid wardrobeId, [FromBody] PagedOptions<OutfitFilter> options)
+        [HttpPost("items")]
+        public async Task<IActionResult> GetItems ([FromBody] PagedOptions<OutfitFilter> options)
         {
-            var res = await _wardrobeService.GetWardrobeOutfits(wardrobeId, options?.Filter);
+            var user = await _userService.GetFromExternalUser(User);
+
+            var res = await _wardrobeService.GetWardrobeOutfits(user.WardrobeId, options?.Filter);
             var paged= res.ToPagedResponse(options.Page, options.PageSize);
 
             var items = await _outfitHelper.ToOutfitPackage(paged);
 
             return Ok(paged.MapResponseOptions(items));
         }
-        [HttpPost("{wardrobeId}/collections")]
-        public async Task<IActionResult> GetCollections(Guid wardrobeId, [FromBody] PagedOptions<OutfitFilter> options)
+        [HttpPost("collections")]
+        public async Task<IActionResult> GetCollections([FromBody] PagedOptions<OutfitFilter> options)
         {
-            var res = await _wardrobeService.GetWardrobeCollections(wardrobeId, options.Filter);
+            var user = await _userService.GetFromExternalUser(User);
+
+            var res = await _wardrobeService.GetWardrobeCollections(user.WardrobeId, options.Filter);
             return Ok(res.ToListItemResponseModel().ToPagedResponse(options.Page, options.PageSize));
         }
-        [HttpPost("{wardrobeId}/collections/{id}")]
-        public async Task<IActionResult> GetCollectionsWithPackageContext(Guid wardrobeId,Guid id, [FromBody] PagedOptions<OutfitFilter> options)
+        [HttpPost("collections/context/{id}")]
+        public async Task<IActionResult> GetCollectionsWithPackageContext(Guid id, [FromBody] PagedOptions<OutfitFilter> options)
         {
-            var res = await _wardrobeService.GetWardrobeCollections(wardrobeId, options.Filter);
+            var user = await _userService.GetFromExternalUser(User);
+
+            var res = await _wardrobeService.GetWardrobeCollections(user.WardrobeId, options.Filter);
             return Ok(res.ToPackageResponseModel(id,true).ToPagedResponse(options.Page, options.PageSize));
         }
 
-        [HttpPost("{wardrobeId}/items/singleLayer")]
-        public async Task<IActionResult> GetItemsSingleLayer(Guid wardrobeId, [FromBody] PagedOptions<OutfitFilter> options)
+        [HttpPost("items/singleLayer")]
+        public async Task<IActionResult> GetItemsSingleLayer([FromBody] PagedOptions<OutfitFilter> options)
         {
-            var res = await _wardrobeService.GetWardrobeOutfitsSingleLayer(wardrobeId, options.Filter);
+            var user = await _userService.GetFromExternalUser(User);
+
+            var res = await _wardrobeService.GetWardrobeOutfitsSingleLayer(user.WardrobeId, options.Filter);
             var paged = res.ToPagedResponse(options.Page, options.PageSize);
 
             var items = await _outfitHelper.ToOutfitPackageSingleLayer(paged,true);
 
             return Ok(paged.MapResponseOptions(items));
         }
-        [HttpGet("{wardrobeId}/summary")]
-        public async Task<IActionResult> GetSummary(Guid wardrobeId)
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetSummary()
         {
-            var res = await _wardrobeService.GetWadrobeSummary(wardrobeId);
+            var user = await _userService.GetFromExternalUser(User);
+
+            var res = await _wardrobeService.GetWadrobeSummary(user.WardrobeId);
             return Ok(res);
         }
     }

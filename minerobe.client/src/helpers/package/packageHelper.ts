@@ -1,11 +1,13 @@
 import { COLOR_TYPE, MODEL_TYPE, OUTFIT_TYPE } from "$src/data/consts";
 import { RenderTextureInTemporyNode } from "$src/data/render";
 import { FileData, OutfitLayer, OutfitPackage } from "$src/model/package";
+import { get } from "svelte/store";
 import {
   FindClosestColor,
   GetDominantColorFromImage,
 } from "../image/colorHelper";
 import { MergePackageLayers } from "../image/imageDataHelpers";
+import { currentUser } from "$src/data/cache";
 
 export const AddLayerSnapshot = async function (oldLayer: OutfitLayer) {
   const layer = Object.assign({}, oldLayer);
@@ -26,19 +28,13 @@ export const AddLayerSnapshot = async function (oldLayer: OutfitLayer) {
   snapLayer.alex.contentSnapshot = alexSnap;
   return snapLayer;
 };
-export const GetGlobalLayer = async function (pack: OutfitPackage) {
+export const GetMergedLayer = async function (pack: OutfitPackage) {
   const steve = await MergePackageLayers(pack.layers, MODEL_TYPE.STEVE);
   const color = await GetDominantColorFromImage(steve);
   const colorClossest = await FindClosestColor(color, COLOR_TYPE.STRING_COLOR);
-  const steveFileData = new FileData(
-    pack.name,
-    steve
-  );
+  const steveFileData = new FileData(pack.name, steve);
   const alex = await MergePackageLayers(pack.layers, MODEL_TYPE.ALEX);
-  const alexFileData = new FileData(
-    pack.name,
-    alex
-  );
+  const alexFileData = new FileData(pack.name, alex);
   const glob = new OutfitLayer(pack.name, steveFileData, alexFileData);
   glob.colorName = colorClossest.name;
   glob.outfitType = OUTFIT_TYPE.OUTFIT_SET;
@@ -51,5 +47,6 @@ export const CreateNewOutfitPackage = async function (
 ) {
   const pack = new OutfitPackage(name, MODEL_TYPE.STEVE, [], type);
   pack.description = "";
+  pack.publisherId = get(currentUser)?.id;
   return pack;
 };

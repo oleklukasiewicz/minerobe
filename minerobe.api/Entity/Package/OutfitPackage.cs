@@ -45,6 +45,7 @@ namespace minerobe.api.Entity.Package
         public DateTime? ModifiedAt { get; set; }
         public List<OutfitLayer> Layers { get; set; }
         public MinerobeUser Publisher { get; set; }
+        public Guid? PrimaryLayerId { get; set; }
     }
     public class OutfitPackageConfig : IEntityTypeConfiguration<OutfitPackage>
     {

@@ -9,7 +9,7 @@ namespace minerobe.api.Entity.Package
         public Guid PackageId { get; set; }
         public Guid LayerId { get; set; }
         public int Order { get; set; }
-        public bool IsGlobalLayer { get; set; }
+        public bool IsMergedLayer { get; set; }
     }
     public class PackageLayerMatchingConfig : IEntityTypeConfiguration<PackageLayerMatching>
     {
@@ -20,7 +20,7 @@ namespace minerobe.api.Entity.Package
             builder.Property(x => x.PackageId).IsRequired();
             builder.Property(x => x.LayerId).IsRequired();
             builder.Property(x => x.Order).IsRequired();
-            builder.Property(x => x.IsGlobalLayer).HasDefaultValue(false);
+            builder.Property(x => x.IsMergedLayer).HasDefaultValue(false);
             builder.ToTable("PackageLayerMatching");
         }
     }

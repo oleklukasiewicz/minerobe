@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using minerobe.api.Database;
 
@@ -11,9 +12,11 @@ using minerobe.api.Database;
 namespace minerobe.api.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240906184144_renamed-global-to-merged-layer")]
+    partial class renamedglobaltomergedlayer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,9 +160,6 @@ namespace minerobe.api.Migrations
 
                     b.Property<int>("OutfitType")
                         .HasColumnType("int");
-
-                    b.Property<Guid?>("PrimaryLayerId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("PublisherId")
                         .HasColumnType("uniqueidentifier");

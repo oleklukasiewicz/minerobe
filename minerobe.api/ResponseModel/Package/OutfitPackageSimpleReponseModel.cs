@@ -19,6 +19,7 @@ namespace minerobe.api.ResponseModel.Package
         public DateTime? ModifiedAt { get; set; }
         public MinerobePackageUserResponseModel Publisher { get; set; }
         public bool IsInWardrobe { get; set; }
+        public Guid? PrimaryLayerId { get; set; }
     }
     public static class OutfitPackageSimpleResponseModelExtensions
     {
@@ -36,7 +37,8 @@ namespace minerobe.api.ResponseModel.Package
                 CreatedAt = entity.CreatedAt,
                 ModifiedAt = entity.ModifiedAt,
                 Publisher = entity.Publisher.ToPackageResponseModel(),
-                IsInWardrobe = isInWardrobe
+                IsInWardrobe = isInWardrobe,
+                PrimaryLayerId = entity.PrimaryLayerId
             };
         }
     }

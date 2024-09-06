@@ -12,6 +12,7 @@ namespace minerobe.api.Model.Package
         public Guid PublisherId { get; set; }
         public string Description { get; set; }
         public string OutfitType { get; set; }
+        public Guid? PrimaryLayerId { get; set; }
     }
     public static class OutfitPackageSimpleModelExtensions
     {
@@ -24,7 +25,8 @@ namespace minerobe.api.Model.Package
                 Type = Enum.Parse<PackageType>(model.Type.ToFirstCapitalLetter()),
                 PublisherId = model.PublisherId,
                 Description = model.Description,
-                OutfitType = Enum.Parse<OutfitType>(model.OutfitType.ToFirstCapitalLetter())
+                OutfitType = Enum.Parse<OutfitType>(model.OutfitType.ToFirstCapitalLetter()),
+                PrimaryLayerId = model.PrimaryLayerId
             };
         }
     }
