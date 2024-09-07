@@ -307,7 +307,7 @@
                 </div>
               </Button>
             </Select>
-            {#if currentFilter.type == PACKAGE_TYPE.OUTFIT}
+            {#if currentFilter.type == PACKAGE_TYPE.OUTFIT || currentFilter.type == null}
               <Select
                 items={OUTFIT_TYPE_ARRAY}
                 placeholder="Outfit type"
