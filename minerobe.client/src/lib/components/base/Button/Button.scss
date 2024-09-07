@@ -38,6 +38,13 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  &.no-text-overflow {
+    span {
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: unset;
+    }
+  }
   &.primary {
     background-color: var(--color-accent);
     color: var(--color-accent-font);
@@ -79,9 +86,12 @@
       }
     }
     &.small {
-      padding: 1px 6px 6px;
+      padding: 1px 10px 6px 4px;
       & > span {
         transform: translateY(1px);
+      }
+      & > .icon {
+        transform: translateY(-1px);
       }
     }
   }
@@ -254,17 +264,13 @@
       flex: 1;
     }
   }
-  &.with-icon
-  {
-    & > span
-    {
+  &.with-icon {
+    & > span {
       max-width: calc(100% - 32px);
     }
   }
-  &.without-icon
-  {
-    & > span
-    {
+  &.without-icon {
+    & > span {
       max-width: 100%;
     }
   }

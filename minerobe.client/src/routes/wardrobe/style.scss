@@ -1,0 +1,69 @@
+.wardrobe-view {
+  flex: 1;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr;
+  min-height: 100%;
+  &.mobile {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    .content {
+      .header {
+        top: -36px;
+        padding: 6px 8px;
+        .lower-header {
+          grid-template-columns: 1fr;
+          gap: 6px;
+          .outfit-filters {
+            grid-template-columns: repeat(auto-fit, minmax(0px, 1fr))
+          }
+        }
+      }
+      .list {
+        margin: 8px;
+      }
+    }
+  }
+  .navigation {
+    height: 100%;
+    background-color: var(--color-theme-font);
+    & > div {
+      position: sticky;
+      top: 60px;
+      z-index: 5;
+    }
+  }
+  .content {
+    .header {
+      display: grid;
+      background-color: var(--color-theme);
+      position: sticky;
+      top: 20px;
+      z-index: 15;
+      grid-template-rows: auto auto;
+      gap: 12px;
+      box-sizing: border-box;
+      padding: 12px 16px;
+      .upper-header {
+        display: grid;
+        grid-template-columns: auto auto auto 1fr;
+        gap: 12px;
+      }
+      .lower-header {
+        display: grid;
+        grid-template-columns: 50% 20% 1fr;
+        gap: 12px;
+        .outfit-filters {
+          display: grid;
+          max-width: 550px;
+          grid-template-columns: 30% 40% 40%;
+          gap: 6px;
+        }
+      }
+    }
+    .list {
+      margin: 16px;
+    }
+  }
+}

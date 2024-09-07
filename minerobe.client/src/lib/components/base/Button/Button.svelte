@@ -18,6 +18,7 @@
   export let fab: "static" | "dynamic" | "expanded" | null = null;
   export let flat = false;
   export let dark = false;
+  export let noTextOverflow = false;
 
   let component = null;
   let componentLabel = null;
@@ -50,6 +51,7 @@
   {href}
   {target}
   class:dark
+  class:no-text-overflow={noTextOverflow}
   class:flat
   class:link={href != null}
   class:icon={onlyIcon && icon != null}
