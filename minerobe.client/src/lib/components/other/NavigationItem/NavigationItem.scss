@@ -11,8 +11,7 @@ a {
     transition: background-color var(--time), border-color var(--time),
         color var(--time);
     user-select: none;
-    border-top: 2px solid transparent;
-    border-bottom: 2px solid transparent;
+    border: 2px solid var(--color-theme-font);
     float: left;
     &.minimal {
         padding: 7px 9px;
@@ -30,22 +29,17 @@ a:active {
     color: var(--color-theme-D4);
 }
 a.selected,:global(a.selected) {
-    border-top: 2px solid var(--color-accent-L1);
     background-color: var(--color-accent);
-    border-bottom: 2px solid var(--color-accent-D1);
+    box-shadow: inset -2px -2px #0006, inset 2px 2px #fff7;
     color: var(--color-accent-font);
 }
 a.selected:hover {
     color: var(--color-accent-font);
     background-color: var(--color-hover);
-    border-top-color: var(--color-hover-L1);
-    border-bottom-color: var(--color-hover-D1);
 }
 a.selected:active {
     color: var(--color-accent-font);
     background-color: var(--color-active);
-    border-top-color: var(--color-active-L1);
-    border-bottom-color: var(--color-active-D1);
 }
 a img
 {

@@ -36,19 +36,13 @@
     background-color: var(--color-accent);
     color: var(--color-accent-font);
     font-family: minecraft-simple;
-    border-top: 2px solid var(--color-accent-L1);
-    border-bottom: 2px solid var(--color-accent-D1);
     &:hover {
       color: var(--color-accent-font);
       background-color: var(--color-hover);
-      border-top-color: var(--color-hover-L1);
-      border-bottom-color: var(--color-hover-D1);
     }
     &:active {
       color: var(--color-accent-font);
       background-color: var(--color-active);
-      border-top-color: var(--color-active-L1);
-      border-bottom-color: var(--color-active-D1);
     }
     &.medium {
       padding: 8px 12px 6px;
@@ -80,19 +74,13 @@
     color: var(--color-theme-font);
     font-family: minecraft-simple;
     background-color: var(--color-theme-D2);
-    border-top: 2px solid var(--color-theme-D1);
-    border-bottom: 2px solid var(--color-theme-D3);
     &:hover {
       color: var(--color-accent-font);
       background-color: var(--color-hover);
-      border-top-color: var(--color-hover-L1);
-      border-bottom-color: var(--color-hover-D1);
     }
     &:active {
       color: var(--color-accent-font);
       background-color: var(--color-active);
-      border-top-color: var(--color-active-L1);
-      border-bottom-color: var(--color-active-D1);
     }
     &.medium {
       padding: 8px 12px 6px;

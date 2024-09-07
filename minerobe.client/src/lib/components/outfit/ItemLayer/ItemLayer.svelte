@@ -215,7 +215,7 @@
       {#if multiVariant && item.type != LAYER_TYPE.REMOTE}
         <Button
           icon={UserPlusIcon}
-          altStyle={selected && selectable}
+          whiteText={selected && selectable}
           label={$_("newLayerVariant")}
           type="tertiary"
           on:click={addVariant}
@@ -231,7 +231,7 @@
           icon={UpIcon}
           label={$_("up")}
           type="quaternary"
-          altStyle={selected && selectable}
+          whiteText={selected && selectable}
           on:click={up}
           disabled={!canUp}
           onlyIcon
@@ -241,7 +241,7 @@
           icon={DownIcon}
           label={$_("down")}
           type="quaternary"
-          altStyle={selected && selectable}
+          whiteText={selected && selectable}
           on:click={down}
           disabled={!canDown}
           onlyIcon
@@ -251,7 +251,7 @@
       <div class="separator vertical" />
       <Button
         icon={DeleteIcon}
-        altStyle={selected && selectable}
+        whiteText={selected && selectable}
         label={$_("remove")}
         type="quaternary"
         on:click={remove}

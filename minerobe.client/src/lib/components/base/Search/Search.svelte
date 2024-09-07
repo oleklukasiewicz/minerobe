@@ -50,6 +50,7 @@
       size="auto"
       {dark}
       iconSize="small"
+      noBorder
       label="Clear"
       on:click={onClear}
     />
@@ -61,6 +62,7 @@
     iconSize="small"
     icon={SearchIcon}
     label="Search"
+    noBorder={dense}
   />
 </div>
 

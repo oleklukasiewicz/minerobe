@@ -158,6 +158,7 @@
         icon={CloseIcon}
         type="secondary"
         size="small"
+        noBorder
         on:click={clear}
       ></Button>
     {/if}
@@ -166,6 +167,7 @@
       icon={opened ? ChevronUpIcon : ChevronDownIcon}
       type="primary"
       size="small"
+      noBorder
       on:click={() => (opened = !opened)}
     ></Button>
   </div>

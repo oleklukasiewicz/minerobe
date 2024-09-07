@@ -5,11 +5,13 @@
   box-sizing: border-box;
   aspect-ratio: 8/5;
   transition: var(--time);
+  border: 2px solid transparent;
   background-color: var(--color-theme-D1);
   &:hover {
     background-color: var(--color-accent);
     color: var(--color-accent-font);
     cursor: pointer;
+    border-color: var(--color-theme-font);
   }
   &:active {
     background-color: var(--color-active);

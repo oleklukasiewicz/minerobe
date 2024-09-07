@@ -23,7 +23,7 @@
   {#each normalizedValues as v (v.value)}
     <RatioButton
       label={v.label}
-      size={size}
+      {size}
       icon={v.icon}
       selected={v.value.toLowerCase() === value.toLowerCase()}
       on:click={() => {
@@ -35,9 +35,11 @@
 
 <style lang="scss">
   .ratio-group {
-    flex:1;
+    flex: 1;
     text-align: center;
     display: flex;
+    border: 2px solid var(--color-theme-font);
+    box-sizing: border-box;
     flex-direction: row;
   }
 </style>

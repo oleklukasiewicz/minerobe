@@ -7,8 +7,23 @@
   box-sizing: border-box;
   user-select: none;
   cursor: pointer;
-  &.flat {
-    border: 0px solid transparent !important;
+  border: 2px solid var(--color-theme-font);
+  box-shadow: inset -2px -2px #0006, inset 2px 2px #fff7;
+  .icon {
+    display: inline-grid;
+  }
+  span {
+    display: inline-block;
+    vertical-align: top;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  &.without-border {
+    border: none;
+  }
+  &.white-text {
+    color: var(--color-accent-font) !important;
   }
   &.medium {
     height: 36px;
@@ -31,12 +46,11 @@
   &.text-center {
     text-align: center;
   }
-  span {
-    display: inline-block;
-    vertical-align: top;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  &.dark {
+    background-color: var(--color-theme-D5);
+    border-top: 2px solid var(--color-theme-D4);
+    border-bottom: 2px solid var(--color-theme-D6);
+    color: var(--color-accent-font);
   }
   &.no-text-overflow {
     span {
@@ -49,19 +63,13 @@
     background-color: var(--color-accent);
     color: var(--color-accent-font);
     font-family: minecraft;
-    border-top: 2px solid var(--color-accent-L1);
-    border-bottom: 2px solid var(--color-accent-D1);
     &:hover {
       color: var(--color-accent-font);
       background-color: var(--color-hover);
-      border-top-color: var(--color-hover-L1);
-      border-bottom-color: var(--color-hover-D1);
     }
     &:active {
       color: var(--color-accent-font);
       background-color: var(--color-active);
-      border-top-color: var(--color-active-L1);
-      border-bottom-color: var(--color-active-D1);
     }
     &.medium {
       padding: 7px 12px 8px;
@@ -100,26 +108,13 @@
     color: var(--color-theme-font);
     font-family: minecraft-simple;
     background-color: var(--color-theme-D2);
-    border-top: 2px solid var(--color-theme-D1);
-    border-bottom: 2px solid var(--color-theme-D3);
-    &.dark {
-      background-color: var(--color-theme-D5);
-      border-top: 2px solid var(--color-theme-D4);
-      border-bottom: 2px solid var(--color-theme-D6);
-      color: var(--color-accent-font);
-    }
-
     &:hover {
       color: var(--color-accent-font);
       background-color: var(--color-hover);
-      border-top-color: var(--color-hover-L1);
-      border-bottom-color: var(--color-hover-D1);
     }
     &:active {
       color: var(--color-accent-font);
       background-color: var(--color-active);
-      border-top-color: var(--color-active-L1);
-      border-bottom-color: var(--color-active-D1);
     }
     &.medium {
       padding: 8px 12px 6px;
@@ -149,23 +144,18 @@
   }
   &.tertiary {
     font-size: 12px;
+    border: none;
+    box-shadow: none;
     background-color: transparent;
     color: var(--color-accent);
     font-family: minecraft-simple;
-    &.alt-style {
-      color: var(--color-accent-font);
-    }
     &:hover {
       color: var(--color-accent-font);
       background-color: var(--color-hover);
-      border-top-color: var(--color-hover-L1);
-      border-bottom-color: var(--color-hover-D1);
     }
     &:active {
       color: var(--color-accent-font);
       background-color: var(--color-active);
-      border-top-color: var(--color-active-L1);
-      border-bottom-color: var(--color-active-D1);
     }
     &.medium {
       padding: 8px 12px 7px;
@@ -207,23 +197,18 @@
   }
   &.quaternary {
     font-size: 12px;
+    border: none;
+    box-shadow: none;
     background-color: transparent;
     color: var(--color-theme-font);
     font-family: minecraft-simple;
-    &.alt-style {
-      color: var(--color-accent-font);
-    }
     &:hover {
       color: var(--color-accent-font);
       background-color: var(--color-hover);
-      border-top-color: var(--color-hover-L1);
-      border-bottom-color: var(--color-hover-D1);
     }
     &:active {
       color: var(--color-accent-font);
       background-color: var(--color-active);
-      border-top-color: var(--color-active-L1);
-      border-bottom-color: var(--color-active-D1);
     }
     &.medium {
       padding: 8px 12px 7px;
@@ -250,9 +235,6 @@
         padding: 2px;
       }
     }
-  }
-  .icon {
-    display: inline-grid;
   }
   &.icon {
     padding: 0px !important;

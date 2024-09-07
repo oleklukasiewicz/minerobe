@@ -2,9 +2,7 @@
   border: 0;
   transition: background-color var(--time), border-color var(--time),
     color var(--time);
-  border-top: 2px solid transparent;
   background-color: transparent;
-  border-bottom: 2px solid transparent;
   color: var(--color-accent-font);
   font-family: minecraft-simple;
   box-sizing: border-box;
@@ -33,20 +31,14 @@
   &.selected {
     background-color: var(--color-accent);
     color: var(--color-accent-font);
-    border-top: 2px solid var(--color-accent-L1);
-    border-bottom: 2px solid var(--color-accent-D1);
   }
   &:hover {
     color: var(--color-accent-font);
     background-color: var(--color-hover);
-    border-top-color: var(--color-hover-L1);
-    border-bottom-color: var(--color-hover-D1);
   }
   &:active {
     color: var(--color-accent-font);
     background-color: var(--color-active);
-    border-top-color: var(--color-active-L1);
-    border-bottom-color: var(--color-active-D1);
   }
   &.minimal
   {
