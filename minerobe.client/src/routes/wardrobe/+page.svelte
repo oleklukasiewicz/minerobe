@@ -191,7 +191,7 @@
         top={$isMobileView}
         toggleable={!$isMobileView}
         items={defaultMenuItems}
-        label="Wardrobe"
+        label={!$isMobileView ? "Wardrobe" : null}
         bind:open={$userPreferences.isWardobeMenuOpen}
         on:select={onMenuItemClick}
         value={currentFilter}
