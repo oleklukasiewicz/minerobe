@@ -87,6 +87,9 @@
       loaded = true;
       await fetchItems();
     });
+    isMobileView.subscribe((value) => {
+      if (value) $userPreferences.isWardobeMenuOpen = false;
+    });
   });
 
   const onMenuItemClick = (item: any) => {
@@ -198,14 +201,20 @@
         value={currentFilter}
         {comparer}
       >
-        <Button
-          onlyIcon={!$userPreferences.isWardobeMenuOpen}
-          icon={PlusIcon}
-          label="Add collection"
-          style="margin:2px;"
-          on:click={addNewCollection}
-          disabled={isCreatingNew}
-        ></Button>
+        {#if !$isMobileView}
+          <div>
+            <Button
+              onlyIcon={!$userPreferences.isWardobeMenuOpen}
+              icon={PlusIcon}
+              label="Add collection"
+              style="margin:3px;"
+              iconSize="small"
+              size={!$userPreferences.isWardobeMenuOpen ? "auto" : "medium"}
+              on:click={addNewCollection}
+              disabled={isCreatingNew}
+            ></Button>
+          </div>
+        {/if}
       </Menu>
     </div>
   </div>
@@ -243,6 +252,18 @@
             noTextOverflow
             iconSize="small"
             on:click={addNewSet}
+          />
+        {/if}
+        {#if currentFilter.type == PACKAGE_TYPE.OUTFIT_COLLECTION}
+          <Button
+            icon={PlusIcon}
+            disabled={isCreatingNew}
+            size="small"
+            label="Add collection"
+            textAlign="left"
+            noTextOverflow
+            iconSize="small"
+            on:click={addNewCollection}
           />
         {/if}
       </div>
@@ -326,6 +347,7 @@
         >
           {#if $isMobileView}
             <Button
+              disabled={currentFilter.type == PACKAGE_TYPE.OUTFIT_COLLECTION}
               onlyIcon
               icon={Sliders2Icon}
               on:click={() => (isFiltersVisible = !isFiltersVisible)}

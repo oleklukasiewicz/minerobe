@@ -80,10 +80,7 @@
         padding: 6px;
       }
       & > .icon {
-        transform: translateY(0px);
-      }
-      & > span {
-        transform: translateY(2px);
+        transform: translateY(-2px);
       }
     }
     &.large {
