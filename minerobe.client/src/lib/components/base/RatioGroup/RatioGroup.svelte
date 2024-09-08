@@ -38,7 +38,6 @@
     flex: 1;
     text-align: center;
     display: flex;
-    border: 2px solid var(--color-theme-font);
     box-sizing: border-box;
     flex-direction: row;
   }

@@ -1,9 +1,11 @@
 .button {
   display: table;
-  flex:1;
-  transition: background-color var(--time), color var(--time), border-color var(--time);
+  flex: 1;
+  transition: background-color var(--time), color var(--time),
+    border-color var(--time);
   box-sizing: border-box;
   user-select: none;
+  border: 2px solid;
   cursor: pointer;
   &.medium {
     height: 36px;
@@ -33,6 +35,7 @@
   }
   &.selected {
     font-size: 12px;
+    border-color: var(--color-theme-font);
     background-color: var(--color-accent);
     color: var(--color-accent-font);
     font-family: minecraft-simple;
@@ -55,7 +58,7 @@
       &.with-label {
         .icon {
           margin-right: 12px;
-          transform: translate(-6px,4px);
+          transform: translate(-6px, 4px);
         }
       }
       &.icon {
@@ -71,16 +74,19 @@
   }
   &.unselected {
     font-size: 12px;
+    border-color: var(--color-theme-D2);
     color: var(--color-theme-font);
     font-family: minecraft-simple;
     background-color: var(--color-theme-D2);
     &:hover {
       color: var(--color-accent-font);
       background-color: var(--color-hover);
+      border-color: var(--color-hover);
     }
     &:active {
       color: var(--color-accent-font);
       background-color: var(--color-active);
+      border-color: var(--color-active);
     }
     &.medium {
       padding: 8px 12px 6px;
@@ -93,7 +99,7 @@
       &.with-label {
         .icon {
           margin-right: 12px;
-          transform: translate(-6px,4px);
+          transform: translate(-6px, 4px);
         }
       }
       &.icon {
