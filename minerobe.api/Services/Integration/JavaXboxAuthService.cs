@@ -124,7 +124,7 @@ namespace minerobe.api.Services.Integration
                 var content = await response.Content.ReadAsStringAsync();
                 var json = JObject.Parse(content);
 
-                if(json["id"] == null)
+                if (json["id"] == null)
                     return profile;
 
                 profile.UUID = json["id"].ToString();
@@ -177,15 +177,15 @@ namespace minerobe.api.Services.Integration
             }
             return profile;
         }
-        public async Task<JavaXboxProfile> GetProfile(MinerobeUser user,bool keepFresh =true)
+        public async Task<JavaXboxProfile> GetProfile(MinerobeUser user, bool keepFresh = true)
         {
             var integrationprofile = await _ctx.Set<IntegrationItem>().Where(x => x.OwnerId == user.Id && x.Type == "minecraft").FirstOrDefaultAsync();
             if (integrationprofile == null)
                 return null;
 
             var data = ((object)integrationprofile.Data).ToClass<JavaXboxProfile>();
-            
-            if(!keepFresh)
+
+            if (!keepFresh)
                 return data;
             try
             {
@@ -194,14 +194,15 @@ namespace minerobe.api.Services.Integration
                     return data;
                 var profile = await GetProfileData(token);
 
-                    data.Profile = profile;
-                    integrationprofile.Data = data;
+                data.Profile = profile;
+                integrationprofile.Data = data;
 
-                    _ctx.Set<IntegrationItem>().Update(integrationprofile);
-                    var settings = await _ctx.UserSettings.Where(x => x.OwnerId == user.Id).FirstOrDefaultAsync();
+                _ctx.Set<IntegrationItem>().Update(integrationprofile);
+                var settings = await _ctx.UserSettings.Where(x => x.OwnerId == user.Id).FirstOrDefaultAsync();
+                if (settings.CurrentTexture != null)
                     settings.CurrentTexture.CapeId = profile.CurrentCapeId;
-                    _ctx.UserSettings.Update(settings);
-                    await _ctx.SaveChangesAsync();
+                _ctx.UserSettings.Update(settings);
+                await _ctx.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -273,7 +274,7 @@ namespace minerobe.api.Services.Integration
         {
             public FlowStatus Status { get; set; }
             public dynamic Data { get; set; }
-            public FlowStep(FlowStatus status, dynamic data=null)
+            public FlowStep(FlowStatus status, dynamic data = null)
             {
 
                 Status = status;
@@ -313,9 +314,9 @@ namespace minerobe.api.Services.Integration
                 var msalTokenRequest = await pca.AcquireTokenWithDeviceCode(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" }, fallback =>
                 {
                     status.Status = JavaXboxAuthStatus.AwaitingUserInput;
-                    
+
                     var message = new { UserCode = fallback.UserCode, VerificationUrl = fallback.VerificationUrl };
-                    _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status,message).ToResponseModel());
+                    _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status, message).ToResponseModel());
 
                     return Task.FromResult(0);
                 }).ExecuteAsync();
@@ -330,7 +331,7 @@ namespace minerobe.api.Services.Integration
                 status.Status = JavaXboxAuthStatus.ConnectingToXbox;
                 await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
                 var xstsToken = await AuthorizeToXbox(msalToken);
-                if(xstsToken== null)
+                if (xstsToken == null)
                     throw new Exception("Failed to authorize to xbox");
 
                 var token = xstsToken.token.ToString();
