@@ -8,7 +8,7 @@
   user-select: none;
   cursor: pointer;
   border: 2px solid var(--color-theme-font);
-  box-shadow: inset -2px -2px #0006, inset 2px 2px #fff7;
+  box-shadow: var(--shadow-button);
   .icon {
     display: inline-grid;
   }

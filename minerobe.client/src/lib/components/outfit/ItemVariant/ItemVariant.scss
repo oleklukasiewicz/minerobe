@@ -21,7 +21,7 @@
   &.selected {
     border-color: var(--color-accent-L1);
     background-color: var(--color-accent);
-    box-shadow: inset -2px -2px #0006, inset 2px 2px #fff7;
+    box-shadow: var(--shadow-button);
     border: 2px solid var(--color-theme-font);
     &:hover {
       background-color: var(--color-accent-D1);

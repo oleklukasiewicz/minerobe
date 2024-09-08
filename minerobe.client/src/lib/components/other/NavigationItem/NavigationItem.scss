@@ -30,7 +30,7 @@ a:active {
 }
 a.selected,:global(a.selected) {
     background-color: var(--color-accent);
-    box-shadow: inset -2px -2px #0006, inset 2px 2px #fff7;
+    box-shadow: var(--shadow-button);
     color: var(--color-accent-font);
 }
 a.selected:hover {
