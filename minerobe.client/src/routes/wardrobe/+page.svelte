@@ -72,6 +72,7 @@
 
   let loaded = false;
   let itemsLoaded = false;
+  let isFiltersVisible = false;
   let isCreatingNew = false;
   let currentFilter: OutfitFilter =
     $userPreferences.wadrobeFilter || new OutfitFilter();
@@ -196,7 +197,16 @@
         on:select={onMenuItemClick}
         value={currentFilter}
         {comparer}
-      />
+      >
+        <Button
+          onlyIcon={!$userPreferences.isWardobeMenuOpen}
+          icon={PlusIcon}
+          label="Add collection"
+          style="margin:2px;"
+          on:click={addNewCollection}
+          disabled={isCreatingNew}
+        ></Button>
+      </Menu>
     </div>
   </div>
   <div class="content">
@@ -235,21 +245,9 @@
             on:click={addNewSet}
           />
         {/if}
-        {#if currentFilter.type == PACKAGE_TYPE.OUTFIT_COLLECTION}
-          <Button
-            icon={PlusIcon}
-            disabled={isCreatingNew}
-            size="small"
-            label="Add collection"
-            textAlign="left"
-            noTextOverflow
-            iconSize="small"
-            on:click={addNewCollection}
-          />
-        {/if}
       </div>
       <div class="lower-header">
-        {#if currentFilter.type != PACKAGE_TYPE.OUTFIT_COLLECTION}
+        {#if currentFilter.type != PACKAGE_TYPE.OUTFIT_COLLECTION && (!$isMobileView || ($isMobileView && isFiltersVisible))}
           <div class="outfit-filters">
             <Select
               placeholder="Shared"
@@ -323,7 +321,20 @@
           <div></div>
         {/if}
         <div></div>
-        <Search dense={true} bind:value={currentFilter.phrase} />
+        <div
+          style="display: grid; flex-direction:row;gap:8px; grid-template-columns:auto 1fr"
+        >
+          {#if $isMobileView}
+            <Button
+              onlyIcon
+              icon={Sliders2Icon}
+              on:click={() => (isFiltersVisible = !isFiltersVisible)}
+            />
+          {:else}
+            <div></div>
+          {/if}
+          <Search dense={true} bind:value={currentFilter.phrase} />
+        </div>
       </div>
     </div>
     <div class="list">

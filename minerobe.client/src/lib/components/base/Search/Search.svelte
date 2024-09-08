@@ -49,7 +49,6 @@
       type="secondary"
       size="auto"
       {dark}
-      iconSize="small"
       noBorder
       label="Clear"
       on:click={onClear}
@@ -59,7 +58,6 @@
     on:click={onSearch}
     onlyIcon
     size="auto"
-    iconSize="small"
     icon={SearchIcon}
     label="Search"
     noBorder={dense}

@@ -19,6 +19,7 @@
   export let noTextOverflow = false;
   export let noBorder = false;
   export let whiteText = false;
+  export let flat = false;
 
   let component = null;
   let componentLabel = null;
@@ -51,6 +52,7 @@
   {href}
   {target}
   class:dark
+  class:flat={flat}
   class:no-text-overflow={noTextOverflow}
   class:white-text={whiteText}
   class:link={href != null}

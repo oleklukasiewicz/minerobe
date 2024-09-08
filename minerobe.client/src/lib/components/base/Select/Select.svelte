@@ -91,8 +91,7 @@
       itemsContainer.style.maxWidth = null;
     } else {
       menuWidth = menu?.offsetWidth;
-      if (itemsContainer) 
-      {
+      if (itemsContainer) {
         itemsContainer.style.minWidth = `${menuWidth}px`;
         itemsContainer.style.maxWidth = `${menuWidth}px`;
       }
@@ -155,18 +154,20 @@
     {#if clearable && selectedItemValue != null && (multiple ? selectedItemValue.length > 0 : true)}
       <Button
         onlyIcon
+        style="height: 32px;"
         icon={CloseIcon}
         type="secondary"
-        size="small"
+        iconSize="auto"
         noBorder
         on:click={clear}
       ></Button>
     {/if}
     <Button
       onlyIcon
+      style="height: 32px;"
+      iconSize="auto"
       icon={opened ? ChevronUpIcon : ChevronDownIcon}
       type="primary"
-      size="small"
       noBorder
       on:click={() => (opened = !opened)}
     ></Button>
@@ -187,6 +188,8 @@
         <slot {item} {multiple} {itemText} {selectedItemValue}>
           <Button
             size="small"
+            flat
+            noBorder
             type={comparer(selectedItemValue, item, multiple)
               ? "primary"
               : "quaternary"}

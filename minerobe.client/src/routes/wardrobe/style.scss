@@ -10,14 +10,15 @@
     grid-template-rows: auto 1fr;
     .content {
       .header {
-        top: -36px;
+        top: -38px;
         z-index: 15;
         padding: 6px 8px;
         .lower-header {
           grid-template-columns: 1fr;
-          gap: 6px;
+          gap: 0px;
           .outfit-filters {
-            grid-template-columns: repeat(auto-fit, minmax(0px, 1fr))
+            grid-template-columns: repeat(auto-fit, minmax(0px, 1fr));
+            margin-bottom: 6px;
           }
         }
       }
