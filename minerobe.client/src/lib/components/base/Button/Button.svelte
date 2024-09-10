@@ -13,6 +13,7 @@
   export let onlyIcon: boolean = false;
   export let textAlign: "left" | "center" | "right" = "center";
   export let style = null;
+  export let iconStyle = null;
   export let target: "_blank" | "_self" = "_blank";
   export let fab: "static" | "dynamic" | "expanded" | null = null;
   export let dark = false;
@@ -81,6 +82,7 @@
   {#if icon != null}
     <div
       class="icon"
+      style={iconStyle}
       class:b-icon-small={iconSize === "small"}
       class:b-icon-medium={iconSize === "medium"}
       class:b-icon-large={iconSize === "large"}

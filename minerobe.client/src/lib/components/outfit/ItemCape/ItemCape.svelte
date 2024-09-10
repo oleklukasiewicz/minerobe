@@ -44,6 +44,7 @@
       box-shadow: inset 0 0 0 2px var(--color-theme-D4);
     }
     &.selected {
+      color:var(--color-accent-font);
       border-color: var(--color-accent-L1);
       background-color: var(--color-accent);
       box-shadow: var(--shadow-button);

@@ -64,6 +64,8 @@ namespace minerobe.api.ServicesHelpers
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
+                if (item.VariantId == null)
+                    continue;
                 var package = await _packageService.GetById(item.PackageId,item.VariantId.Value);
                 items.Add(package.ToListItemResponseModel(2,1,isInWardrobe));
             }

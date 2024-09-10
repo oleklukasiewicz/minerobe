@@ -14,7 +14,7 @@
   src: url(/font/minecraftSimple.ttf) format("truetype");
 }
 :root {
-  --shadow-button:inset -3px -3px #0006, inset 3px 3px #fff7;
+  --shadow-button:inset -2px -2px #0006, inset 2px 2px #fff7;
   --color-theme-font: #222222;
   --color-accent: #3b8526;
   --color-accent-L2: #8be468;

@@ -27,7 +27,7 @@
     display: inline-table;
     transition: var(--time);
     aspect-ratio: 1;
-    border: 2px solid var(--color-theme-D1);
+    border: 2px solid var(--color-theme-D2);
     &.noBorder {
       border: none;
     }

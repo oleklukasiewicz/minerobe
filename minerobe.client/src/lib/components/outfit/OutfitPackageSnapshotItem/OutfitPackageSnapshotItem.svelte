@@ -89,7 +89,7 @@
         {/if}
       </div>
     {/if}
-    {#if item.social.isShared && item.publisher.id == $currentUser?.id}
+    {#if item.social.isShared && item.publisher.id == $currentUser?.id && dense==false}
       <div class="icon-small">{@html CloudIcon}</div>
     {/if}
   </div>
@@ -110,7 +110,7 @@
   </div>
   <div class="data-area">
     <div class="title-row">
-      <b class="name">{item.name} </b>
+      <div class="name">{item.name} </div>
     </div>
     <div class="data-row">
       <div style="flex:1;">
@@ -124,7 +124,7 @@
         </div>
       </div>
       {#if multiple > 0}
-        <div>
+        <div class="colors">
           {#each item.layers
             .slice(0, !isSet ? multiple : 2)
             .filter((x) => x != null && x.colorName != null) as layer (layer.id)}

@@ -164,6 +164,7 @@
     {/if}
     <Button
       onlyIcon
+      iconStyle={"transform:translateY(1px);"}
       style="height: 32px;"
       iconSize="auto"
       icon={opened ? ChevronUpIcon : ChevronDownIcon}
