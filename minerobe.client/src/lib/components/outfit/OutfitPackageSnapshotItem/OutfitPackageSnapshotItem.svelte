@@ -119,7 +119,7 @@
         {/if} -->
         <div class="item-social-info">
           {#if item.social.isShared}
-            <SocialInfo data={item.social} dense />
+            <SocialInfo data={item.social} dense style={"margin-top:3px;"}/>
           {/if}
         </div>
       </div>

@@ -9,13 +9,11 @@
     box-shadow: none;
   }
 }
-.checkbox-container
-{
+.checkbox-container {
   display: flex;
   flex-direction: row;
   gap: 8px;
-  &>span
-  {
+  & > span {
     color: var(--color-theme-D6);
     font-size: var(--size-font-caption);
     padding: 3px 3px;

@@ -6,6 +6,7 @@
 
   export let data: PackageSocialData;
   export let dense = false;
+  export let style = "";
   export let showLikes = true;
   export let showDownloads = true;
 
@@ -24,7 +25,7 @@
   }
 </script>
 
-<div class="social-info" class:dense>
+<div class="social-info" class:dense {style}>
   {#if data?.likes > 0 && showLikes}
     <div class="icon-custom-small mc-font-simple data">
       {@html HeartSmallIcon}
@@ -48,12 +49,10 @@
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-top: 3px;
     &.dense {
       height: 22px;
     }
-    &>.data
-    {
+    & > .data {
       display: flex;
       gap: 3px;
       min-width: 35px;

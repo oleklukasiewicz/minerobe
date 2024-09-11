@@ -7,7 +7,6 @@
   import ItemVariant from "$component/outfit/ItemVariant/ItemVariant.svelte";
   import ItemLayer from "$component/outfit/ItemLayer/ItemLayer.svelte";
   import DynamicRender from "$component/render/DynamicRender.svelte";
-  import InfoLabel from "$component/base/InfoLabel/InfoLabel.svelte";
   import Label from "$component/base/Label/Label.svelte";
   import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
@@ -18,6 +17,7 @@
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
   import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
   import OutfitCapes from "$lib/components/other/OutfitCapes/OutfitCapes.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
 
   import { replaceState } from "$app/navigation";
 
@@ -28,6 +28,7 @@
     type MinerobeUserSettingsSimple,
   } from "$model/user";
   import type { OutfitPackage } from "$model/package";
+  import { OutfitPackageCollection } from "$src/model/collection.js";
 
   import { CreateDefaultRenderProvider } from "$data/render";
   import {
@@ -71,7 +72,6 @@
     RemovePackageFromCollection,
   } from "$src/api/collection.js";
   import { FetchSettings, SetCurrentTexture } from "$src/api/settings.js";
-  import Button from "$lib/components/base/Button/Button.svelte";
 
   export let data;
   const localPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
@@ -246,16 +246,16 @@
     isCollectionPickerLoading = false;
   };
   const addToCollection = async function (e) {
-    const collection = e.detail.collection;
+    const collection = e.detail.collection as OutfitPackageCollection;
     await AddPackageToCollection(collection.id, $localPackage.id);
     isCollectionDialogOpen = false;
-    showToast("Outfit added to collection");
+    showToast("Outfit added to " + collection.name);
   };
   const removeFromCollection = async function (e) {
-    const collection = e.detail.collection;
+    const collection = e.detail.collection as OutfitPackageCollection;
     await RemovePackageFromCollection(collection.id, $localPackage.id);
     isCollectionDialogOpen = false;
-    showToast("Outfit removed from collection");
+    showToast("Outfit removed from" + collection.name);
   };
 
   const setCape = function (cape) {
@@ -338,7 +338,7 @@
               <Label variant="ancient">Current skin</Label>
             {/if}
             &nbsp;
-            <SocialInfo data={$localPackage.social} />
+            <SocialInfo data={$localPackage.social} style={"margin-top:2px;"} />
           </div>
         </Placeholder>
       </div>
@@ -348,12 +348,6 @@
         placeholder={!loaded}
       />
       {#if loaded}
-        {#if $localPackage?.local?.warnings?.find((x) => x == "missingLayer")}
-          <InfoLabel
-            label={"Missing outfit"}
-            description={"Certain outfits were not loaded successfully."}
-          />
-        {/if}
         {#if isItemSet}
           {#each [...$localPackage.layers].reverse() as item (item.id + item.id)}
             <div class="item-layer">

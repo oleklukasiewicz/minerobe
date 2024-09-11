@@ -36,9 +36,6 @@
   }
   &.small {
     height: 28px;
-    & > span {
-      transform: translateY(2px);
-    }
   }
   &.text-left {
     text-align: left;
@@ -89,7 +86,7 @@
       &.with-label {
         .icon {
           margin-right: 12px;
-          transform: translate(-6px, 0px);
+          transform: translateY(0px);
         }
       }
       &.icon {
@@ -139,7 +136,7 @@
       &.with-label {
         .icon {
           margin-right: 12px;
-          transform: translate(-6px, 4px);
+          transform: translateY(4px);
         }
       }
       &.icon {
@@ -252,7 +249,7 @@
     margin: 0px;
     display: grid;
     place-items: center;
-    aspect-ratio: 1 !important;
+    aspect-ratio: 1;
     .icon {
       flex: 1;
     }

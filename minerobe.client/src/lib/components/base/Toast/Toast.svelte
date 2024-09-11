@@ -52,7 +52,7 @@
     {#if closeable}
       <Button
         type="quaternary"
-        altStyle
+        whiteText
         on:click={onClose}
         icon={CloseIcon}
         onlyIcon
