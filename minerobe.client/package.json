@@ -15,7 +15,7 @@
 		"@sveltejs/adapter-auto": "^3.2.4",
 		"@sveltejs/kit": "^2.5.26",
 		"svelte": "^4.2.19",
-		"svelte-check": "^4.0.1",
+		"svelte-check": "^4.0.2",
 		"tslib": "^2.7.0",
 		"typescript": "^5.5.4",
 		"vite": "^5.4.5"
