@@ -1,9 +1,9 @@
-export class PagedResponse {
+export class PagedResponse<Type> {
   page: number;
   pageSize: number;
   total: number;
-  items: any[];
-  constructor(page: number, pageSize: number, total: number, items: any[]) {
+  items: Type[];
+  constructor(page: number, pageSize: number, total: number, items: Type[]) {
     this.page = page;
     this.pageSize = pageSize;
     this.total = total;

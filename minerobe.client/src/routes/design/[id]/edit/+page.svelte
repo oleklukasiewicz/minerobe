@@ -131,7 +131,7 @@
   let loaded = false;
   let isDragging = false;
 
-  let pickerOutfits: PagedResponse | any = {};
+  let pickerOutfits: PagedResponse<OutfitPackage> | any = {};
   let pickerCategories = [];
   let isPickerLoading = true;
 

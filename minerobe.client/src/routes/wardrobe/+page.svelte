@@ -52,6 +52,8 @@
   import { AddPackage } from "$src/api/pack";
   import { OutfitPackageCollection } from "$src/model/collection";
   import { AddCollection } from "$src/api/collection";
+  import type { OutfitPackage } from "$src/model/package";
+  import OutfitPackageSnapshotPagedList from "$lib/components/outfit/OutfitPackageSnapshotPagedList/OutfitPackageSnapshotPagedList.svelte";
 
   const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
 
@@ -61,7 +63,7 @@
     page: 1,
     pageSize: 10,
   };
-  const localWardobeItems: Writable<PagedResponse> = writable(defaultList);
+  const localWardobeItems: Writable<PagedResponse<any>> = writable(defaultList);
 
   const defaultMenuItems: MenuItem[] = [
     new MenuItem("All", null, SubscriptionIcon),
@@ -101,7 +103,7 @@
     menu?.value?.toLowerCase() == filter?.type?.toLowerCase();
 
   const fetchItems = async () => {
-    let items: PagedResponse;
+    let items: PagedResponse<OutfitPackage>;
     itemsLoaded = false;
     if (currentFilter.type == PACKAGE_TYPE.OUTFIT_COLLECTION)
       items = await GetWadrobeCollections(currentFilter.phrase);
@@ -183,6 +185,9 @@
       return;
     }
     navigateToCollection(response.id);
+  };
+  const GetWardobeNextPage = async (itemsCount,page,filters) => {
+    
   };
 
   $: onFilterSet(currentFilter);
@@ -370,7 +375,7 @@
           on:select={onCollectionSelect}
         />
       {:else}
-        <OutfitPackageSnapshotList
+        <OutfitPackageSnapshotPagedList
           dense={false}
           currentSkinId={$userSettings?.currentTexturePackageId}
           loading={!loaded || !itemsLoaded}
@@ -380,7 +385,7 @@
           renderer={$defaultRenderer}
           baseTexture={$userSettings?.baseTexture?.layers[0]}
           withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
-          items={$localWardobeItems.items}
+          paged={$localWardobeItems}
           on:innerselect={onItemSelect}
         />
       {/if}

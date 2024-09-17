@@ -24,6 +24,7 @@
   export let isCurrentSkin = false;
   export let isLikeable = true;
   export let isLiked = false;
+  export let element = null;
 
   const dispatch = createEventDispatcher();
   let aboveLimit = 0;
@@ -66,6 +67,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
+  bind:this={element}
   {style}
   on:click={onClick}
   class="outfit-package-item"
@@ -89,7 +91,7 @@
         {/if}
       </div>
     {/if}
-    {#if item.social.isShared && item.publisher.id == $currentUser?.id && dense==false}
+    {#if item.social.isShared && item.publisher.id == $currentUser?.id && dense == false}
       <div class="icon-small">{@html CloudIcon}</div>
     {/if}
   </div>
@@ -110,7 +112,7 @@
   </div>
   <div class="data-area">
     <div class="title-row">
-      <div class="name">{item.name} </div>
+      <div class="name">{item.name}</div>
     </div>
     <div class="data-row">
       <div style="flex:1;">
@@ -119,7 +121,7 @@
         {/if} -->
         <div class="item-social-info">
           {#if item.social.isShared}
-            <SocialInfo data={item.social} dense style={"margin-top:3px;"}/>
+            <SocialInfo data={item.social} dense style={"margin-top:3px;"} />
           {/if}
         </div>
       </div>

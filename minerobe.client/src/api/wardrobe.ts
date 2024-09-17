@@ -1,6 +1,7 @@
 import { DeleteRequest, GetRequest, PostRequest } from "$src/data/api";
 import type { PagedResponse } from "$src/model/base";
 import type { OutfitFilter } from "$src/model/filter";
+import type { OutfitPackage } from "$src/model/package";
 import type { WardrobePackage } from "$src/model/wadrobe";
 
 export const AddPackageToWardrobe = async function (packageId: string) {
@@ -25,7 +26,7 @@ export const GetWardrobePackages = async function (
     page,
     pageSize,
     filter,
-  })) as PagedResponse;
+  })) as PagedResponse<OutfitPackage>;
   return req;
 };
 export const GetWadrobeCollections = async function (
@@ -39,7 +40,7 @@ export const GetWadrobeCollections = async function (
     filter: {
       phrase,
     },
-  })) as PagedResponse;
+  })) as PagedResponse<OutfitPackage>;
   return req;
 };
 export const GetWadrobeCollectionsWithPackageContext = async function (
@@ -57,7 +58,7 @@ export const GetWadrobeCollectionsWithPackageContext = async function (
         phrase,
       },
     }
-  )) as PagedResponse;
+  )) as PagedResponse<OutfitPackage>;
   return req;
 };
 
@@ -74,7 +75,7 @@ export const GetWadrobePackagesSingleLayer = async function (
     page,
     pageSize,
     filter,
-  })) as PagedResponse;
+  })) as PagedResponse<OutfitPackage>;
   return req;
 };
 export const AddCollectionToWardrobe = async function (collectionId: string) {
