@@ -8,15 +8,15 @@ namespace minerobe.api.Entity.Package
         public Guid Id { get; set; }
         public string ColorName { get; set; }
         public OutfitType OutfitType { get; set; }
-        public Guid? SourcePackageId { get; set; }
+        public Guid? PackageId { get; set; }
         public int Order { get; set; }
-        public bool IsMergedLayer { get; set; }
+        public bool IsMerged { get; set; }
     }
     public class OutfitLayerSimpleConfig : IEntityTypeConfiguration<OutfitLayerSimple>
     {
         public void Configure(EntityTypeBuilder<OutfitLayerSimple> builder)
         {
-            builder.ToView("dummy view");
+            builder.ToView("vPackageLayersSimpleView");
         }
     }
 
@@ -29,7 +29,7 @@ namespace minerobe.api.Entity.Package
                 Id = layer.Id,
                 ColorName = layer.ColorName,
                 OutfitType = layer.OutfitType,
-                SourcePackageId = layer.SourcePackageId
+                IsMerged = layer.IsMerged
             };
         }
     }

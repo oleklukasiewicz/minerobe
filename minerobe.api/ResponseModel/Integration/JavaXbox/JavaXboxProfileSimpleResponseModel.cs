@@ -1,4 +1,4 @@
-﻿using minerobe.api.Entity.Integration;
+﻿using minerobe.api.Helpers.Integration;
 
 namespace minerobe.api.ResponseModel.Integration.JavaXbox
 {

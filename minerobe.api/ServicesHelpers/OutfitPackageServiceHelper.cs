@@ -13,39 +13,23 @@ namespace minerobe.api.ServicesHelpers
         private readonly IWardrobeService _wardrobeService;
         private readonly IPackageService _packageService;
         private readonly IUserService _userService;
-        public OutfitPackageServiceHelper(IWardrobeService wardrobeService, IPackageService packageService,IUserService userService)
+        public OutfitPackageServiceHelper(IWardrobeService wardrobeService, IPackageService packageService, IUserService userService)
         {
             _wardrobeService = wardrobeService;
             _packageService = packageService;
             _userService = userService;
-        }
-        public async Task<List<OutfitPackageListItemResponseModel>> AddUserContextToPage(PagedResponse<OutfitPackageAgregation> page, Guid? userId=null)
-        {
-            var items = new List<OutfitPackageListItemResponseModel>();
-            var user = await _userService.GetById(userId.Value);
-
-            foreach (var item in page.Items)
-            {
-                var package = await _packageService.GetById(item.PackageId);
-
-                var isInwadrobe = false;
-                if (userId != null)
-                    isInwadrobe = await _wardrobeService.IsPackageInWardrobe(user.WardrobeId, item.PackageId);
-                items.Add(package.ToListItemResponseModel(2,1, isInwadrobe));
-            }
-            return items;
         }
         public async Task<List<OutfitPackageListItemResponseModel>> AddUserContextToPage(PagedResponse<OutfitPackageAgregation> page, MinerobeUser user = null)
         {
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
-                var package = await _packageService.GetPackageSnapshot(item.PackageId);
+                var package = await _packageService.GetById(item.PackageId, null, true);
 
                 var isInwadrobe = false;
                 if (user != null)
                     isInwadrobe = await _wardrobeService.IsPackageInWardrobe(user.WardrobeId, item.PackageId);
-                items.Add(package.ToListItemResponseModel(2,1, isInwadrobe));
+                items.Add(package.ToListItemResponseModel(2, 1, isInwadrobe));
             }
             return items;
         }
@@ -54,20 +38,20 @@ namespace minerobe.api.ServicesHelpers
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
-                var package = await _packageService.GetPackageSnapshot(item.PackageId);
-                items.Add(package.ToListItemResponseModel(2,1, false));
+                var package = await _packageService.GetById(item.PackageId, null, true);
+                items.Add(package.ToListItemResponseModel(2, 1, false));
             }
             return items;
         }
-        public async Task<List<OutfitPackageListItemResponseModel>> ToOutfitPackageSingleLayer(PagedResponse<OutfitPackageAgregation> page, bool isInWardrobe=false)
+        public async Task<List<OutfitPackageListItemResponseModel>> ToOutfitPackageSingleLayer(PagedResponse<OutfitPackageAgregation> page, bool isInWardrobe = false)
         {
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
                 if (item.VariantId == null)
                     continue;
-                var package = await _packageService.GetById(item.PackageId,item.VariantId.Value);
-                items.Add(package.ToListItemResponseModel(2,1,isInWardrobe));
+                var package = await _packageService.GetById(item.PackageId, item.VariantId.Value);
+                items.Add(package.ToListItemResponseModel(2, 1, isInWardrobe));
             }
             return items;
         }

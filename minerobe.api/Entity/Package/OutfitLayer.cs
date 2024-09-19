@@ -33,7 +33,7 @@ namespace minerobe.api.Entity.Package
             builder.Ignore(x => x.Type);
             builder.Property(x => x.Steve).StoreAsJSON();
             builder.Property(x => x.Alex).StoreAsJSON();
-            builder.Ignore(x => x.IsMerged);
+            builder.Property(x => x.IsMerged);
             builder.ToTable("Layers");
         }
     }

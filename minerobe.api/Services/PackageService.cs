@@ -21,43 +21,45 @@ namespace minerobe.api.Services
             _userService = userService;
             _socialService = socialService;
         }
-        public async Task<OutfitPackage?> GetById(Guid id)
+
+        public async Task<OutfitPackage?> GetById(Guid id, Guid? layerId = null, bool isSnapshot = false)
         {
             var package = await _context.OutfitPackages.FindAsync(id);
             if (package == null)
                 return null;
 
-            package.Layers = await GetLayersOfPackage(id);
-
-            //type
-            if (package.Type == PackageType.Set)
+            if (layerId != null)
             {
-                package.OutfitType = OutfitType.Set;
+                package.Layers = new List<OutfitLayer>() { await GetLayerById(layerId.Value) };
             }
-            if (package.Type == PackageType.Outfit && package.Layers.Count > 0)
+            else
             {
-                package.OutfitType = package.Layers[0].OutfitType;
+                if (isSnapshot == true)
+                {
+                    if (package.Type == PackageType.Set)
+                    {
+                        package.Layers = _context.Set<OutfitLayerSimple>()
+                           .Where(x => x.PackageId == id && x.IsMerged == true).Select(x => x.ToLayer()).ToList();
+                    }
+                    else
+                    {
+                        package.Layers = _context.Set<OutfitLayerSimple>()
+                            .Where(x => x.PackageId == id)
+                            .OrderBy(x => x.Order)
+                            .Select(x => x.ToLayer()).ToList();
+                    }
+
+                    //load first only
+                    if (package.Layers.Count > 0)
+                    {
+                        package.Layers[0] = await GetLayerById(package.Layers[0].Id);
+                    }
+                }
+                else
+                {
+                    package.Layers = await GetLayersOfPackage(id);
+                }
             }
-
-            //publisher
-            var user = await _userService.GetById(package.PublisherId);
-            if (user != null)
-            {
-                package.Publisher = user;
-            }
-            //social
-            var social = await _socialService.GetById(package.SocialDataId);
-            package.Social = social;
-
-            return package;
-        }
-        public async Task<OutfitPackage?> GetById(Guid id, Guid layerId)
-        {
-            var package = await _context.OutfitPackages.FindAsync(id);
-            if (package == null)
-                return null;
-
-            package.Layers = new List<OutfitLayer>() { await GetLayerById(layerId) };
 
             //type
             if (package.Type == PackageType.Set)
@@ -359,6 +361,7 @@ namespace minerobe.api.Services
                 return true;
             return false;
         }
+
         // update layers order
         public async Task<bool> UpdateLayerOrder(Guid packageId, List<Guid> layersInOrder)
         {
@@ -374,10 +377,12 @@ namespace minerobe.api.Services
             await _context.SaveChangesAsync();
             return true;
         }
-
         public async Task<OutfitLayer> SetMergedLayer(OutfitLayer mergedLayer)
         {
-            var matching = await _context.PackageLayerMatchings.FirstOrDefaultAsync(x => x.PackageId == mergedLayer.SourcePackageId && x.IsMergedLayer == true);
+            var matching = await _context.PackageLayerMatchings.FirstOrDefaultAsync(x => x.PackageId == mergedLayer.SourcePackageId && x.LayerId == mergedLayer.Id);
+
+            mergedLayer.IsMerged = true;
+
             if (matching != null)
             {
                 var layer = await _context.OutfitLayers.FindAsync(matching.LayerId);
@@ -403,7 +408,6 @@ namespace minerobe.api.Services
                     LayerId = mergedLayer.Id,
                     PackageId = mergedLayer.SourcePackageId.Value,
                     Order = 0,
-                    IsMergedLayer = true
                 };
                 await _context.PackageLayerMatchings.AddAsync(matching);
             }
@@ -421,7 +425,6 @@ namespace minerobe.api.Services
                 var layer = await _context.OutfitLayers.FindAsync(matching.LayerId);
 
                 if (layer == null) continue;
-                layer.IsMerged = matching.IsMergedLayer;
 
                 layers.Add(layer);
             }
@@ -447,54 +450,6 @@ namespace minerobe.api.Services
             }
             await _context.SaveChangesAsync();
             return true;
-        }
-
-        public async Task<OutfitPackage> GetPackageSnapshot(Guid id)
-        {
-            var package = await _context.OutfitPackages.FindAsync(id);
-            if (package == null)
-                return null;
-
-            if (package.Type == PackageType.Set)
-            {
-                package.Layers = await GetLayersOfPackage(id);
-            }
-            else
-            {
-
-                var layersSimple = _context.Set<OutfitLayerSimple>().FromSqlInterpolated($"SELECT * FROM fGetOutfitLayersSimple({id})").OrderBy(x => x.IsMergedLayer).OrderBy(x => x.Order);
-                package.Layers = new List<OutfitLayer>();
-                foreach (var layer in layersSimple)
-                {
-                    package.Layers.Add(layer.ToLayer());
-                }
-                //load first only
-                if (package.Layers.Count > 0)
-                {
-                    package.Layers[0] = await GetLayerById(package.Layers[0].Id);
-                }
-            }
-            //type
-            if (package.Type == PackageType.Set)
-            {
-                package.OutfitType = OutfitType.Set;
-            }
-            if (package.Type == PackageType.Outfit && package.Layers.Count > 0)
-            {
-                package.OutfitType = package.Layers[0].OutfitType;
-            }
-
-            //publisher
-            var user = await _userService.GetById(package.PublisherId);
-            if (user != null)
-            {
-                package.Publisher = user;
-            }
-            //social
-            var social = await _socialService.GetById(package.SocialDataId);
-            package.Social = social;
-
-            return package;
         }
     }
 }

@@ -11,8 +11,7 @@ namespace minerobe.api.Services.Interface
         Task<bool> Delete(Guid id);
         Task<OutfitLayer> GetLayerById(Guid id);
         Task<bool> DeleteLayer(Guid id);
-        Task<OutfitPackage?> GetById(Guid id);
-        Task<OutfitPackage?> GetById(Guid id, Guid layerId);
+        Task<OutfitPackage?> GetById(Guid id, Guid? layerId = null, bool isSnapshot = false);
         Task<bool> RemoveLayerFromPackage(Guid layerId, Guid packageId);
         Task<OutfitPackage?> Update(OutfitPackage package);
         Task<OutfitLayer> UpdateLayer(OutfitLayer layer);
@@ -22,6 +21,5 @@ namespace minerobe.api.Services.Interface
         Task<bool> UpdateLayerOrder(Guid packageId, List<Guid> layersInOrder);
         Task<OutfitPackage?>UpdateData(OutfitPackage package);
         Task<OutfitLayer> SetMergedLayer(OutfitLayer globalLayer);
-        Task<OutfitPackage> GetPackageSnapshot(Guid id);
     }
 }

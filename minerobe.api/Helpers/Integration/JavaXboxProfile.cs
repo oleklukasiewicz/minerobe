@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using minerobe.api.Extensions;
 
-namespace minerobe.api.Entity.Integration
+namespace minerobe.api.Helpers.Integration
 {
     public class JavaXboxProfile
     {

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using minerobe.api.Database;
 
@@ -11,9 +12,11 @@ using minerobe.api.Database;
 namespace minerobe.api.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240919171958_SimpleLayerView")]
+    partial class SimpleLayerView
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,9 +113,6 @@ namespace minerobe.api.Migrations
                     b.Property<string>("ColorName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsMerged")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -149,14 +149,14 @@ namespace minerobe.api.Migrations
                     b.Property<int>("OutfitType")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("PackageId")
+                    b.Property<Guid?>("SourcePackageId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.ToTable((string)null);
 
-                    b.ToView("vPackageLayersSimpleView", (string)null);
+                    b.ToView("dummy view", (string)null);
                 });
 
             modelBuilder.Entity("minerobe.api.Entity.Package.OutfitPackage", b =>
@@ -211,6 +211,11 @@ namespace minerobe.api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("newsequentialid()");
+
+                    b.Property<bool>("IsMergedLayer")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("LayerId")
                         .HasColumnType("uniqueidentifier");

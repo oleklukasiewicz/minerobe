@@ -12,8 +12,8 @@ using minerobe.api.Database;
 namespace minerobe.api.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    [Migration("20240919142219_SimpleOutfitLayerModel")]
-    partial class SimpleOutfitLayerModel
+    [Migration("20240919180903_MovedIsMergedToLayerlevel")]
+    partial class MovedIsMergedToLayerlevel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -113,6 +113,9 @@ namespace minerobe.api.Migrations
                     b.Property<string>("ColorName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsMerged")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -130,6 +133,33 @@ namespace minerobe.api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Layers", (string)null);
+                });
+
+            modelBuilder.Entity("minerobe.api.Entity.Package.OutfitLayerSimple", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ColorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsMergedLayer")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OutfitType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("PackageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vPackageLayersSimpleView", (string)null);
                 });
 
             modelBuilder.Entity("minerobe.api.Entity.Package.OutfitPackage", b =>
@@ -184,11 +214,6 @@ namespace minerobe.api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("newsequentialid()");
-
-                    b.Property<bool>("IsMergedLayer")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
 
                     b.Property<Guid>("LayerId")
                         .HasColumnType("uniqueidentifier");

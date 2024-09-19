@@ -90,7 +90,6 @@ namespace minerobe.api.Controllers
             var paged= res.ToPagedResponse(options.Page, options.PageSize);
 
             var items = await _outfitHelper.ToOutfitPackage(paged);
-
             return Ok(paged.MapResponseOptions(items));
         }
         [HttpPost("collections")]

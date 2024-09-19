@@ -1,6 +1,6 @@
-﻿using minerobe.api.Entity.Integration;
-using minerobe.api.Entity.Package;
+﻿using minerobe.api.Entity.Package;
 using minerobe.api.Entity.User;
+using minerobe.api.Helpers.Integration;
 using static minerobe.api.Services.Integration.JavaXboxAuthService;
 
 namespace minerobe.api.Services.Interface

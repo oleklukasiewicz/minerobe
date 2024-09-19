@@ -16,6 +16,7 @@ using minerobe.api.Entity.Settings;
 using Microsoft.Identity.Client.Extensions.Msal;
 using minerobe.api.Hubs;
 using Microsoft.AspNet.SignalR.Messaging;
+using minerobe.api.Helpers.Integration;
 namespace minerobe.api.Services.Integration
 {
     public enum JavaXboxAuthStatus
