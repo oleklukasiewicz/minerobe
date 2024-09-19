@@ -40,7 +40,7 @@ namespace minerobe.api.ServicesHelpers
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
-                var package = await _packageService.GetById(item.PackageId);
+                var package = await _packageService.GetPackageSnapshot(item.PackageId);
 
                 var isInwadrobe = false;
                 if (user != null)
@@ -54,7 +54,7 @@ namespace minerobe.api.ServicesHelpers
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
-                var package = await _packageService.GetById(item.PackageId);
+                var package = await _packageService.GetPackageSnapshot(item.PackageId);
                 items.Add(package.ToListItemResponseModel(2,1, false));
             }
             return items;

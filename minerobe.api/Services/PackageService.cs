@@ -448,5 +448,53 @@ namespace minerobe.api.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<OutfitPackage> GetPackageSnapshot(Guid id)
+        {
+            var package = await _context.OutfitPackages.FindAsync(id);
+            if (package == null)
+                return null;
+
+            if (package.Type == PackageType.Set)
+            {
+                package.Layers = await GetLayersOfPackage(id);
+            }
+            else
+            {
+
+                var layersSimple = _context.Set<OutfitLayerSimple>().FromSqlInterpolated($"SELECT * FROM fGetOutfitLayersSimple({id})").OrderBy(x => x.IsMergedLayer).OrderBy(x => x.Order);
+                package.Layers = new List<OutfitLayer>();
+                foreach (var layer in layersSimple)
+                {
+                    package.Layers.Add(layer.ToLayer());
+                }
+                //load first only
+                if (package.Layers.Count > 0)
+                {
+                    package.Layers[0] = await GetLayerById(package.Layers[0].Id);
+                }
+            }
+            //type
+            if (package.Type == PackageType.Set)
+            {
+                package.OutfitType = OutfitType.Set;
+            }
+            if (package.Type == PackageType.Outfit && package.Layers.Count > 0)
+            {
+                package.OutfitType = package.Layers[0].OutfitType;
+            }
+
+            //publisher
+            var user = await _userService.GetById(package.PublisherId);
+            if (user != null)
+            {
+                package.Publisher = user;
+            }
+            //social
+            var social = await _socialService.GetById(package.SocialDataId);
+            package.Social = social;
+
+            return package;
+        }
     }
 }
