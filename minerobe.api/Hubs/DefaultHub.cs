@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System.Diagnostics.Contracts;
 
 namespace minerobe.api.Hubs
 {
@@ -7,14 +6,6 @@ namespace minerobe.api.Hubs
     {
         private readonly Dictionary<T, HashSet<string>> _connections =
             new Dictionary<T, HashSet<string>>();
-
-        public int Count
-        {
-            get
-            {
-                return _connections.Count;
-            }
-        }
 
         public void Add(T key, string connectionId)
         {
@@ -80,12 +71,12 @@ namespace minerobe.api.Hubs
 
         public async Task SendMessage(Guid userId, string messageType, object message)
         {
-         IEnumerable<string> connections = _connections.GetConnections(userId.ToString());
+            IEnumerable<string> connections = _connections.GetConnections(userId.ToString());
 
-           foreach(var connection in connections)
-           {
-               await _context.Clients.Client(connection).SendAsync(messageType, message);
-           }
+            foreach (var connection in connections)
+            {
+                await _context.Clients.Client(connection).SendAsync(messageType, message);
+            }
         }
 
         public override Task OnConnectedAsync()

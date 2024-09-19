@@ -1,5 +1,4 @@
-﻿using minerobe.api.Entity;
-using minerobe.api.Entity.Package;
+﻿using minerobe.api.Entity.Package;
 using minerobe.api.Helpers;
 
 namespace minerobe.api.Model.Package

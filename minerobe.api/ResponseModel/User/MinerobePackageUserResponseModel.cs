@@ -1,5 +1,3 @@
-using minerobe.api.Entity.Package;
-using minerobe.api.Entity;
 using minerobe.api.Entity.User;
 
 namespace minerobe.api.ResponseModel.User

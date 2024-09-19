@@ -6,7 +6,7 @@
     }
     public class WadrobeSummaryOutfitType
     {
-      public string OutfitType { get; set; }
-      public int Count { get; set; }
+        public string OutfitType { get; set; }
+        public int Count { get; set; }
     }
 }

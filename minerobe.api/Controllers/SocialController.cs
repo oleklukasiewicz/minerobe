@@ -25,7 +25,7 @@ namespace minerobe.api.Controllers
         public async Task<IActionResult> Unshare(Guid id)
         {
             var res = await _socialService.Unshare(id);
-            if (res==null)
+            if (res == null)
                 return NotFound();
             return Ok(res);
         }

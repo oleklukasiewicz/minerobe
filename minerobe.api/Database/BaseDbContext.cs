@@ -10,12 +10,12 @@ using System.Reflection;
 
 namespace minerobe.api.Database
 {
-    public class BaseDbContext:DbContext
+    public class BaseDbContext : DbContext
     {
         public DbSet<OutfitPackage> OutfitPackages { get; set; }
         public DbSet<OutfitPackageAgregation> OutfitPackageAgregations { get; set; }
         public DbSet<OutfitLayer> OutfitLayers { get; set; }
-        public DbSet<MinerobeUser> MinerobeUsers { get; set;}
+        public DbSet<MinerobeUser> MinerobeUsers { get; set; }
         public DbSet<MinerobeUserLink> MinerobeUserLinks { get; set; }
         public DbSet<WardrobeMatching> WardrobeMatchings { get; set; }
         public DbSet<WadrobeCollectionMatching> WardrobeCollectionMatchings { get; set; }
@@ -24,13 +24,13 @@ namespace minerobe.api.Database
         public DbSet<OutfitPackageCollectionMatching> OutfitPackageCollectionMatchings { get; set; }
         public DbSet<SocialData> SocialDatas { get; set; }
         public DbSet<UserSettings> UserSettings { get; set; }
-        public BaseDbContext(DbContextOptions<BaseDbContext> options ):base(options)
+        public BaseDbContext(DbContextOptions<BaseDbContext> options) : base(options)
         {
-            
+
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }

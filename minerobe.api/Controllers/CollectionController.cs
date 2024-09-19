@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.Helpers;
 using minerobe.api.Model;
 using minerobe.api.ResponseModel.Collection;
 using minerobe.api.Services.Interface;
@@ -13,7 +12,7 @@ namespace minerobe.api.Controllers
     {
         private readonly ICollectionService _service;
         private readonly IUserService _userService;
-        public CollectionController(ICollectionService service,IUserService userService)
+        public CollectionController(ICollectionService service, IUserService userService)
         {
             _service = service;
             _userService = userService;
@@ -56,7 +55,7 @@ namespace minerobe.api.Controllers
             return Ok(result);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] OutfitPackageCollectionModel collection,Guid id)
+        public async Task<IActionResult> Update([FromBody] OutfitPackageCollectionModel collection, Guid id)
         {
             var ent = collection.ToEntity();
             ent.Id = id;
@@ -72,7 +71,7 @@ namespace minerobe.api.Controllers
             return Ok(result.ToResponseModel());
         }
         [HttpPost("add/{id}/{packageId}")]
-        public async Task<IActionResult> AddPackage(Guid id,Guid packageId)
+        public async Task<IActionResult> AddPackage(Guid id, Guid packageId)
         {
             var user = await _userService.GetFromExternalUser(User);
             var canEdit = await _service.CanEdit(id, user.Id);

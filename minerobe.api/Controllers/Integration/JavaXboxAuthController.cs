@@ -25,15 +25,15 @@ namespace minerobe.api.Controllers.Integration
             return Ok(profile.ToResponseModel());
         }
         [HttpGet("Profile")]
-        public async Task<IActionResult> GetProfile([FromQuery]bool keepFresh)
+        public async Task<IActionResult> GetProfile([FromQuery] bool keepFresh)
         {
             var user = await _userService.GetFromToken(User);
 
-            var profile = await _javaXboxAuthService.GetProfile(user,keepFresh);
+            var profile = await _javaXboxAuthService.GetProfile(user, keepFresh);
             return Ok(profile.ToSimpleResponseModel());
         }
         [HttpGet("FullProfile")]
-        public async Task<IActionResult> GetFullProfile([FromQuery]bool keepFresh)
+        public async Task<IActionResult> GetFullProfile([FromQuery] bool keepFresh)
         {
             var user = await _userService.GetFromToken(User);
 
@@ -44,7 +44,7 @@ namespace minerobe.api.Controllers.Integration
         public async Task<IActionResult> RefreshData()
         {
             var user = await _userService.GetFromToken(User);
-            var profile = await _javaXboxAuthService.GetProfile(user,true);
+            var profile = await _javaXboxAuthService.GetProfile(user, true);
             return Ok(true);
         }
         [HttpGet("Unlink")]

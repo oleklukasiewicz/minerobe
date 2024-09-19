@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
-using minerobe.api.Entity.Package;
 using minerobe.api.Entity.User;
-using minerobe.api.Entity.Wardrobe;
-using minerobe.api.Helpers.Wardrobe;
-using minerobe.api.Model;
 using minerobe.api.Services.Interface;
 using System.Security.Claims;
 
@@ -28,7 +24,7 @@ namespace minerobe.api.Services
         {
             return await _context.MinerobeUsers.Where(x => x.Name == name).FirstOrDefaultAsync();
         }
-        public async  Task<MinerobeUser> GetById(Guid id)
+        public async Task<MinerobeUser> GetById(Guid id)
         {
             return await _context.MinerobeUsers.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
@@ -46,7 +42,7 @@ namespace minerobe.api.Services
         }
         public async Task<MinerobeUser> GetFromExternalId(string externalId)
         {
-            var link= await _context.MinerobeUserLinks.Where(x => x.ExternalId == externalId).FirstOrDefaultAsync();
+            var link = await _context.MinerobeUserLinks.Where(x => x.ExternalId == externalId).FirstOrDefaultAsync();
             if (link == null)
                 return null;
             return await _context.MinerobeUsers.Where(x => x.Id == link.MinerobeUserId).FirstOrDefaultAsync();
@@ -66,11 +62,11 @@ namespace minerobe.api.Services
         {
             var externalId = externalUser.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = await GetFromExternalId(externalId);
-            if(user !=null )
+            if (user != null)
                 return user;
 
             var newUser = await CreateNewUser(externalUser);
-            
+
             return newUser;
         }
 

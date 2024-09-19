@@ -1,9 +1,6 @@
-﻿using minerobe.api.Entity.Package;
-using minerobe.api.Entity;
-using minerobe.api.Model;
+﻿using minerobe.api.Entity;
+using minerobe.api.Entity.Package;
 using minerobe.api.ResponseModel.User;
-using minerobe.api.Helpers;
-using minerobe.api.Helpers.Model;
 
 namespace minerobe.api.ResponseModel.Package
 {
@@ -66,7 +63,7 @@ namespace minerobe.api.ResponseModel.Package
             var layers = new List<OutfitPackageListItemResponseModel>();
             foreach (var layer in entity.Layers)
             {
-                var outfit = entity.ToListItemResponseModel(1,1, isInWardrobe);
+                var outfit = entity.ToListItemResponseModel(1, 1, isInWardrobe);
                 outfit.Layers = new List<OutfitLayerResponseModel> { layer.ToResponseModel(entity, true) };
                 layers.Add(outfit);
             }

@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
 using minerobe.api.Entity.Package;
 using minerobe.api.Helpers.Model;
-using minerobe.api.Model.Package;
 using minerobe.api.Services.Interface;
 
 namespace minerobe.api.Services
@@ -22,12 +18,14 @@ namespace minerobe.api.Services
             _socialService = socialService;
         }
 
+        //package
         public async Task<OutfitPackage?> GetById(Guid id, Guid? layerId = null, bool isSnapshot = false)
         {
             var package = await _context.OutfitPackages.FindAsync(id);
             if (package == null)
                 return null;
 
+            //layers - snapshot,single for set
             if (layerId != null)
             {
                 package.Layers = new List<OutfitLayer>() { await GetLayerById(layerId.Value) };
@@ -36,18 +34,14 @@ namespace minerobe.api.Services
             {
                 if (isSnapshot == true)
                 {
-                    if (package.Type == PackageType.Set)
-                    {
-                        package.Layers = _context.Set<OutfitLayerSimple>()
-                           .Where(x => x.PackageId == id && x.IsMerged == true).Select(x => x.ToLayer()).ToList();
-                    }
-                    else
-                    {
-                        package.Layers = _context.Set<OutfitLayerSimple>()
+                    var query = package.Type == PackageType.Set ?
+                        _context.Set<OutfitLayerSimple>()
+                           .Where(x => x.PackageId == id && x.IsMerged == true) :
+                        _context.Set<OutfitLayerSimple>()
                             .Where(x => x.PackageId == id)
-                            .OrderBy(x => x.Order)
-                            .Select(x => x.ToLayer()).ToList();
-                    }
+                            .OrderBy(x => x.Order);
+
+                    package.Layers = query.Select(x => x.ToLayer()).ToList();
 
                     //load first only
                     if (package.Layers.Count > 0)
@@ -62,10 +56,6 @@ namespace minerobe.api.Services
             }
 
             //type
-            if (package.Type == PackageType.Set)
-            {
-                package.OutfitType = OutfitType.Set;
-            }
             if (package.Type == PackageType.Outfit && package.Layers.Count > 0)
             {
                 package.OutfitType = package.Layers[0].OutfitType;
@@ -130,66 +120,6 @@ namespace minerobe.api.Services
             if (outfitPackage == null)
                 return null;
 
-            var oldLayers = outfitPackage.Layers;
-
-            //ignored fields
-            package.ModifiedAt = DateTime.Now;
-            package.CreatedAt = outfitPackage.CreatedAt;
-            package.Id = outfitPackage.Id;
-            package.PublisherId = outfitPackage.PublisherId;
-            package.SocialDataId = outfitPackage.SocialDataId;
-
-            Type type = typeof(OutfitPackage);
-            var properties = type.GetProperties();
-            foreach (var property in properties)
-            {
-                property.SetValue(outfitPackage, property.GetValue(package));
-            }
-
-            //layers
-
-            //addings
-            foreach (var layer in package.Layers)
-            {
-                if (layer.Id == Guid.Empty)
-                    await AddLayer(layer, package.Id);
-                else
-                    await AddLayerToPackage(layer.Id, package.Id);
-            }
-            //deleting
-            foreach (var layer in oldLayers)
-            {
-                var isExist = package.Layers.Where(x => x.Id == layer.Id).FirstOrDefault();
-                if (isExist == null && layer.Id != Guid.Empty)
-                {
-                    if (layer.SourcePackageId == package.Id)
-                        await DeleteLayer(layer.Id);
-                    else
-                        await RemoveLayerFromPackage(layer.Id, package.Id);
-                }
-            }
-            //update
-            foreach (var layer in package.Layers)
-            {
-                if (oldLayers.Contains(layer) && package.Id == layer.SourcePackageId) //only for layer owner
-                {
-                    var oldLayer = oldLayers.Where(x => x.Id == layer.Id).FirstOrDefault();
-                    if (oldLayer != null)
-                        await UpdateLayer(layer);
-                }
-            }
-
-            _context.OutfitPackages.Update(outfitPackage);
-            await _context.SaveChangesAsync();
-            return outfitPackage;
-        }
-        public async Task<OutfitPackage?> UpdateData(OutfitPackage package)
-        {
-            OutfitPackage? outfitPackage = await GetById(package.Id);
-
-            if (outfitPackage == null)
-                return null;
-
             //ignored fields
             package.ModifiedAt = DateTime.Now;
             package.CreatedAt = outfitPackage.CreatedAt;
@@ -230,6 +160,7 @@ namespace minerobe.api.Services
             return true;
         }
 
+        //layers
         public async Task<OutfitLayer> GetLayerById(Guid id)
         {
             var layer = await _context.OutfitLayers.Where(x => x.Id == id).FirstOrDefaultAsync();
@@ -291,6 +222,8 @@ namespace minerobe.api.Services
             await FillLayerOrder(layer.SourcePackageId.Value);
             return true;
         }
+
+        //layers - remote
         public async Task<OutfitLayer> AddLayerToPackage(Guid layerId, Guid packageId)
         {
             var layer = await _context.OutfitLayers.FindAsync(layerId);
@@ -328,6 +261,7 @@ namespace minerobe.api.Services
             return true;
         }
 
+        //access
         public async Task<PackageAccessModel> GetPackageAccess(Guid packageId)
         {
             var package = await _context.OutfitPackages.FindAsync(packageId);

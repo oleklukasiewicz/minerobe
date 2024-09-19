@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using minerobe.api.Services.Interface;
-using System.Diagnostics;
 
 namespace minerobe.api.Controllers
 {
@@ -11,7 +10,7 @@ namespace minerobe.api.Controllers
     {
         private readonly IJavaXboxAuthService _javaXboxAuthService;
         private readonly IPackageService _packageService;
-        public TestController(IJavaXboxAuthService javaXboxAuthService,IPackageService packageService)
+        public TestController(IJavaXboxAuthService javaXboxAuthService, IPackageService packageService)
         {
             _javaXboxAuthService = javaXboxAuthService;
             _packageService = packageService;
@@ -19,7 +18,7 @@ namespace minerobe.api.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-          
+
             return Ok();
         }
         [HttpGet("Refresh/{token}")]

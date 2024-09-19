@@ -5,9 +5,7 @@ using minerobe.api.Entity.Collection;
 using minerobe.api.Entity.Package;
 using minerobe.api.Entity.Summary;
 using minerobe.api.Entity.Wardrobe;
-using minerobe.api.Helpers;
 using minerobe.api.Helpers.Filter;
-using minerobe.api.Helpers.Model;
 using minerobe.api.Helpers.Wardrobe;
 using minerobe.api.Helpers.WardrobeHelpers;
 using minerobe.api.Services.Interface;
@@ -119,7 +117,7 @@ namespace minerobe.api.Services
             var collection = await _context.OutfitPackageCollections.Where(x => x.Id == collectionId).FirstOrDefaultAsync();
             if (collection == null)
                 return null;
-      
+
 
             if (collection.PublisherId != user.Id && collection.Social.IsShared == false)
                 return null;
@@ -190,7 +188,7 @@ namespace minerobe.api.Services
         {
             var matchings = await _context.WardrobeMatchings.Where(x => x.WardrobeId == wardrobeId).ToListAsync();
             var outfits = await GetWardrobeOutfits(wardrobeId, null);
-            
+
             var summary = new WadrobeSummary();
             summary.OutfitTypes = new List<WadrobeSummaryOutfitType>();
             foreach (var outfit in outfits)
@@ -212,8 +210,8 @@ namespace minerobe.api.Services
             }
             return summary;
         }
-    
-        public async Task<IQueryable<OutfitPackageAgregation>> GetWardrobeOutfits(Guid wardrobeId,OutfitFilter filter)
+
+        public async Task<IQueryable<OutfitPackageAgregation>> GetWardrobeOutfits(Guid wardrobeId, OutfitFilter filter)
         {
             var outfits = _context.Set<OutfitPackageAgregation>().FromSqlInterpolated($"SELECT * FROM fGetWardrobeOutfits({wardrobeId})");
             if (filter != null)

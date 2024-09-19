@@ -77,7 +77,7 @@
     RemovePackageLayer,
     RemoveRemoteLayerFromPackage,
     SetMergedLayer,
-    UpdatePackageData,
+    UpdatePackage,
     UpdatePackageLayer,
   } from "$src/api/pack";
   import {
@@ -545,7 +545,7 @@
     if (!loaded) return;
     $itemRenderConfig.item = pack;
     //update package
-    await UpdatePackageData(pack);
+    await UpdatePackage(pack);
     if (isItemSet) {
       //generate flatten layers
       const globalLayer = await GetMergedLayer(pack);

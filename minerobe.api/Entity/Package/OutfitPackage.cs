@@ -1,19 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using minerobe.api.Entity.User;
-using minerobe.api.Extensions;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace minerobe.api.Entity.Package
 {
     public enum PackageType
     {
-       Set,
-       Outfit
+        Set,
+        Outfit
     }
     public enum ModelType
-    { 
+    {
         Steve,
         Alex
     }
@@ -52,7 +49,7 @@ namespace minerobe.api.Entity.Package
         public void Configure(EntityTypeBuilder<OutfitPackage> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x=>x.Id).ValueGeneratedOnAdd().HasDefaultValueSql("newsequentialid()");
+            builder.Property(x => x.Id).ValueGeneratedOnAdd().HasDefaultValueSql("newsequentialid()");
             builder.Property(x => x.Name).IsRequired();
             builder.Property(x => x.Model).IsRequired();
             builder.Property(x => x.Type).IsRequired();

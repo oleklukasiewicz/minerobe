@@ -1,5 +1,4 @@
 ﻿using minerobe.api.Entity.Package;
-using minerobe.api.Entity;
 
 namespace minerobe.api.ResponseModel.Package
 {

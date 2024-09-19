@@ -29,7 +29,7 @@ namespace minerobe.api.Services
             await _context.OutfitPackageCollections.AddAsync(collection);
             await _context.SaveChangesAsync();
             return await GetById(collection.Id);
-            
+
         }
         public async Task<OutfitPackageCollection> GetById(Guid id)
         {
@@ -80,7 +80,7 @@ namespace minerobe.api.Services
             {
                 property.SetValue(oldCollection, property.GetValue(collection));
             }
-            collection.Items= collection.Items ?? new List<OutfitPackage>();
+            collection.Items = collection.Items ?? new List<OutfitPackage>();
 
             await _context.SaveChangesAsync();
             return await GetById(collection.Id);

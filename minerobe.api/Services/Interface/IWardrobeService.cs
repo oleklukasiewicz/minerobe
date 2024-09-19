@@ -1,8 +1,6 @@
 ﻿using minerobe.api.Entity;
 using minerobe.api.Entity.Collection;
-using minerobe.api.Entity.Package;
 using minerobe.api.Entity.Summary;
-using minerobe.api.Entity.Wardrobe;
 using minerobe.api.Helpers.Filter;
 using minerobe.api.Helpers.Wardrobe;
 using minerobe.api.Helpers.WardrobeHelpers;
@@ -10,7 +8,7 @@ using minerobe.api.Helpers.WardrobeHelpers;
 namespace minerobe.api.Services.Interface
 {
     public interface IWardrobeService
-    { 
+    {
         Task<SocialData> AddToWadrobe(Guid wardrobeId, Guid outfitId);
         Task<Wardrobe> Get(Guid id);
         Task<SocialData> RemoveFromWardrobe(Guid wardrobeId, Guid outfitId);

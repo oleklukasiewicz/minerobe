@@ -1,5 +1,5 @@
-using System.Text;
 using minerobe.api.Entity.Settings;
+using System.Text;
 
 namespace minerobe.api.ResponseModel.User
 {
@@ -15,7 +15,7 @@ namespace minerobe.api.ResponseModel.User
         {
             return new TextureRenderConfigResponseModel
             {
-                Texture = entity.Texture != null? Encoding.UTF8.GetString(entity.Texture): "",
+                Texture = entity.Texture != null ? Encoding.UTF8.GetString(entity.Texture) : "",
                 Model = entity.Model.ToString().ToLower(),
                 IsFlat = entity.IsFlat
             };

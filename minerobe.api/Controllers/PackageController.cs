@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.Helpers;
 using minerobe.api.Model.Package;
 using minerobe.api.ResponseModel.Package;
 using minerobe.api.Services.Interface;
@@ -44,7 +43,7 @@ namespace minerobe.api.Controllers
             return Ok(res.ToResponseModel());
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] OutfitPackageModel package, Guid id)
+        public async Task<IActionResult> Update([FromBody] OutfitPackageSimpleModel package, Guid id)
         {
             var ent = package.ToEntity();
             ent.Id = id;
@@ -56,23 +55,6 @@ namespace minerobe.api.Controllers
 
 
             var res = await _packageService.Update(ent);
-            if (res == null)
-                return NotFound();
-            return Ok(res.ToResponseModel());
-        }
-        [HttpPut("{id}/data")]
-        public async Task<IActionResult> UpdateData([FromBody] OutfitPackageSimpleModel package, Guid id)
-        {
-            var ent = package.ToEntity();
-            ent.Id = id;
-
-            var user = await _userService.GetFromExternalUser(User);
-            var canEdit = await _packageService.CanEditPackage(id, user.Id);
-            if (!canEdit)
-                return Unauthorized();
-
-
-            var res = await _packageService.UpdateData(ent);
             if (res == null)
                 return NotFound();
 

@@ -1,6 +1,5 @@
 ﻿using minerobe.api.Entity;
 using minerobe.api.Entity.Collection;
-using minerobe.api.Entity.Package;
 using minerobe.api.ResponseModel.User;
 
 namespace minerobe.api.ResponseModel.Collection

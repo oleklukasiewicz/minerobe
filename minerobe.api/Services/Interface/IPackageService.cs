@@ -19,7 +19,6 @@ namespace minerobe.api.Services.Interface
         Task<bool> CanEditPackage(Guid packageId, Guid userId);
         Task<bool> CanAccessPackage(Guid packageId, Guid userId);
         Task<bool> UpdateLayerOrder(Guid packageId, List<Guid> layersInOrder);
-        Task<OutfitPackage?>UpdateData(OutfitPackage package);
         Task<OutfitLayer> SetMergedLayer(OutfitLayer globalLayer);
     }
 }

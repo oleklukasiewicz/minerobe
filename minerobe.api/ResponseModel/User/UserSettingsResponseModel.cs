@@ -1,6 +1,4 @@
-﻿using minerobe.api.Entity.Package;
-using minerobe.api.Entity.Settings;
-using minerobe.api.ResponseModel.Integration.JavaXbox;
+﻿using minerobe.api.Entity.Settings;
 using minerobe.api.ResponseModel.Package;
 
 namespace minerobe.api.ResponseModel.User
@@ -28,11 +26,11 @@ namespace minerobe.api.ResponseModel.User
                 Theme = entity.Theme,
                 BaseTexture = entity.BaseTexture?.ToListItemResponseModel(),
                 CurrentTexturePackageId = entity.CurrentTexturePackageId,
-                CurrentTexture= entity.CurrentTexture?.ToResponseModel(),
+                CurrentTexture = entity.CurrentTexture?.ToResponseModel(),
                 CreatedAt = entity.CreatedAt,
                 ModifiedAt = entity.ModifiedAt,
-                Integrations = entity.Integrations?.Select(x=>x.Type).ToList(),
-                
+                Integrations = entity.Integrations?.Select(x => x.Type).ToList(),
+
             };
         }
     }

@@ -32,6 +32,8 @@ builder.Services.AddTransient<ILandingViewService, LandingViewService>();
 // services helpers
 builder.Services.AddTransient<IOutfitPackageServiceHelper, OutfitPackageServiceHelper>();
 
+//default http client
+builder.Services.AddHttpClient();
 
 //hubs
 builder.Services.AddTransient<IDefaultHub, DefaultHub>();

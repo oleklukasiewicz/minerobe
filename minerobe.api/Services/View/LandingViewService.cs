@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using minerobe.api.Database;
+﻿using minerobe.api.Database;
 using minerobe.api.Entity.Summary;
 using minerobe.api.Services.Interface;
 

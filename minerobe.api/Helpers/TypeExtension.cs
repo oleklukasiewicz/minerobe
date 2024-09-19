@@ -3,7 +3,7 @@
 namespace minerobe.api.Helpers
 {
     public static class TypeExtension
-    { 
+    {
         public static string ToFirstCapitalLetter(this string str)
         {
             if (string.IsNullOrEmpty(str))

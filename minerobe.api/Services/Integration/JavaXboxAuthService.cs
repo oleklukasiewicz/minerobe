@@ -1,22 +1,21 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
-using minerobe.api.Configuration;
-using minerobe.api.Entity.User;
-using minerobe.api.Services.Interface;
-using minerobe.api.Entity.Integration;
-using minerobe.api.Database;
-using Microsoft.EntityFrameworkCore;
-using System.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
-using System.Text;
-using minerobe.api.Entity.Package;
-using Newtonsoft.Json;
-using minerobe.api.Helpers;
-using minerobe.api.Entity.Settings;
 using Microsoft.Identity.Client.Extensions.Msal;
-using minerobe.api.Hubs;
-using Microsoft.AspNet.SignalR.Messaging;
+using minerobe.api.Configuration;
+using minerobe.api.Database;
+using minerobe.api.Entity.Integration;
+using minerobe.api.Entity.Package;
+using minerobe.api.Entity.Settings;
+using minerobe.api.Entity.User;
+using minerobe.api.Helpers;
 using minerobe.api.Helpers.Integration;
+using minerobe.api.Hubs;
+using minerobe.api.Services.Interface;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Net.Http.Headers;
+using System.Text;
 namespace minerobe.api.Services.Integration
 {
     public enum JavaXboxAuthStatus
@@ -35,13 +34,15 @@ namespace minerobe.api.Services.Integration
         private readonly IUserSettingsService _userSettingsService;
         private readonly BaseDbContext _ctx;
         private readonly IDefaultHub _defaultHub;
+        private readonly HttpClient _http;
         private const string authMessageHeader = "linkToMc";
-        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx, IUserSettingsService userSettingsService, IDefaultHub defaultHub)
+        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx, IUserSettingsService userSettingsService, IDefaultHub defaultHub, IHttpClientFactory httpClientFactory)
         {
             _config = options.Value;
             _ctx = ctx;
             _userSettingsService = userSettingsService;
             _defaultHub = defaultHub;
+            _http = httpClientFactory.CreateClient();
         }
         public async Task<JavaXboxProfile> LinkAccount(MinerobeUser user)
         {
@@ -119,9 +120,11 @@ namespace minerobe.api.Services.Integration
             try
             {
                 var url = "https://api.minecraftservices.com/minecraft/profile";
-                var client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var response = await client.GetAsync(url);
+
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var response = await _http.SendAsync(request);
                 var content = await response.Content.ReadAsStringAsync();
                 var json = JObject.Parse(content);
 
@@ -133,15 +136,17 @@ namespace minerobe.api.Services.Integration
                 profile.Skins = new List<JavaXboxSkin>();
                 profile.Capes = new List<JavaXboxCape>();
 
-                var dataClient = new HttpClient();
                 if (json["skins"] != null)
                 {
-                    foreach (var skin in json["skins"])
+                    for (var i = 0; i < json["skins"].Count(); i++)
                     {
+                        var skin = json["skins"][i];
                         var skinData = new JavaXboxSkin();
                         //get texture from url
                         var textureUrl = skin["url"].ToString();
-                        var textureResponse = await dataClient.GetAsync(textureUrl);
+                        var textureRequest = new HttpRequestMessage(HttpMethod.Get, textureUrl);
+
+                        var textureResponse = await _http.SendAsync(textureRequest);
                         var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
                         skinData.Texture = "data:image/png;base64," + Convert.ToBase64String(textureContent);
                         skinData.Id = Guid.Parse(skin["id"].ToString());
@@ -154,12 +159,13 @@ namespace minerobe.api.Services.Integration
                 }
                 if (json["capes"] != null)
                 {
-                    foreach (var cape in json["capes"])
+                    for (var i = 0; i < json["capes"].Count(); i++)
                     {
+                        var cape = json["capes"][i];
                         var capeData = new JavaXboxCape();
                         //get texture from url
                         var textureUrl = cape["url"].ToString();
-                        var textureResponse = await client.GetAsync(textureUrl);
+                        var textureResponse = await _http.GetAsync(textureUrl);
                         var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
                         capeData.Texture = "data:image/png;base64," + Convert.ToBase64String(textureContent);
                         capeData.Id = Guid.Parse(cape["id"].ToString());
@@ -229,9 +235,11 @@ namespace minerobe.api.Services.Integration
                 variant = model == ModelType.Steve ? "classic" : "slim",
                 url = _config.OriginUri + "/JavaXboxAuth/SkinTexture/" + userId
             };
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var response = await client.PostAsJsonAsync(url, body);
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+
+            var response = await _http.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
         public async Task<bool> SetUserCape(Guid userId, Guid capeId)
@@ -242,18 +250,20 @@ namespace minerobe.api.Services.Integration
             {
                 capeId = capeId
             };
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var response = await client.PutAsJsonAsync(url, body);
+            var request = new HttpRequestMessage(HttpMethod.Put, url);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+
+            var response = await _http.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
         public async Task<bool> HideUserCape(Guid userId)
         {
             var token = await GetTokenFromCacheByUserId(userId);
             var url = "https://api.minecraftservices.com/minecraft/profile/capes/active";
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var response = await client.DeleteAsync(url);
+            var request = new HttpRequestMessage(HttpMethod.Delete, url);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _http.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
 
@@ -372,8 +382,9 @@ namespace minerobe.api.Services.Integration
                     RpsTicket = "d=" + token
                 }
             };
-            var xstsClient = new HttpClient();
-            var xstsResponse = await xstsClient.PostAsync(xstsUrl, new StringContent(JsonConvert.SerializeObject(xtstBody), Encoding.UTF8, "application/json"));
+            var xstsRequest = new HttpRequestMessage(HttpMethod.Post, xstsUrl);
+            xstsRequest.Content = new StringContent(JsonConvert.SerializeObject(xtstBody), Encoding.UTF8, "application/json");
+            var xstsResponse = await _http.SendAsync(xstsRequest);
             var xstsContent = await xstsResponse.Content.ReadAsStringAsync();
             var xstsJson = JObject.Parse(xstsContent);
             var xstsToken = xstsJson["Token"].ToString();
@@ -390,8 +401,9 @@ namespace minerobe.api.Services.Integration
                     UserTokens = new string[] { xstsToken }
                 }
             };
-            var xstsTokenClient = new HttpClient();
-            var xstsTokenResponse = await xstsTokenClient.PostAsync(xstsAuthorizeUrl, new StringContent(JsonConvert.SerializeObject(xstsAuthorizeBody), Encoding.UTF8, "application/json"));
+            var xstsTokenRequest = new HttpRequestMessage(HttpMethod.Post, xstsAuthorizeUrl);
+            xstsTokenRequest.Content = new StringContent(JsonConvert.SerializeObject(xstsAuthorizeBody), Encoding.UTF8, "application/json");
+            var xstsTokenResponse = await _http.SendAsync(xstsTokenRequest);
             var xstsTokenContent = await xstsTokenResponse.Content.ReadAsStringAsync();
             var xstsTokenJson = JObject.Parse(xstsTokenContent);
 
@@ -410,8 +422,9 @@ namespace minerobe.api.Services.Integration
             {
                 identityToken = "XBL3.0 x=" + uhs + ";" + token
             };
-            var client = new HttpClient();
-            var response = await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json"));
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+            var response = await _http.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
             var json = JObject.Parse(content);
 

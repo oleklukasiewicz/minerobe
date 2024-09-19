@@ -1,6 +1,4 @@
-﻿using minerobe.api.Entity.Package;
-
-namespace minerobe.api.Entity
+﻿namespace minerobe.api.Entity
 {
     public class FileData
     {

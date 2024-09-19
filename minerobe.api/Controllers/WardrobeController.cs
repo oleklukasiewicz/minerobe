@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.Database;
 using minerobe.api.Helpers;
 using minerobe.api.Helpers.Filter;
 using minerobe.api.Helpers.Model;
@@ -20,7 +19,7 @@ namespace minerobe.api.Controllers
         private readonly IOutfitPackageServiceHelper _outfitHelper;
         private readonly IUserService _userService;
         private readonly IPackageService _packageService;
-        public WardrobeController(IWardrobeService wardrobeService, IUserService userService, IPackageService packageService,IOutfitPackageServiceHelper outfitHelper)
+        public WardrobeController(IWardrobeService wardrobeService, IUserService userService, IPackageService packageService, IOutfitPackageServiceHelper outfitHelper)
         {
             _wardrobeService = wardrobeService;
             _userService = userService;
@@ -74,7 +73,7 @@ namespace minerobe.api.Controllers
         [HttpDelete("{id}/collection")]
         public async Task<IActionResult> RemoveFromCollection(Guid id)
         {
-           var user = await _userService.GetFromExternalUser(User);
+            var user = await _userService.GetFromExternalUser(User);
 
             var res = await _wardrobeService.RemoveCollectionFromWardrobe(user.WardrobeId, id);
             if (res == null)
@@ -82,12 +81,12 @@ namespace minerobe.api.Controllers
             return Ok(res);
         }
         [HttpPost("items")]
-        public async Task<IActionResult> GetItems ([FromBody] PagedOptions<OutfitFilter> options)
+        public async Task<IActionResult> GetItems([FromBody] PagedOptions<OutfitFilter> options)
         {
             var user = await _userService.GetFromExternalUser(User);
 
             var res = await _wardrobeService.GetWardrobeOutfits(user.WardrobeId, options?.Filter);
-            var paged= res.ToPagedResponse(options.Page, options.PageSize);
+            var paged = res.ToPagedResponse(options.Page, options.PageSize);
 
             var items = await _outfitHelper.ToOutfitPackage(paged);
             return Ok(paged.MapResponseOptions(items));
@@ -106,7 +105,7 @@ namespace minerobe.api.Controllers
             var user = await _userService.GetFromExternalUser(User);
 
             var res = await _wardrobeService.GetWardrobeCollections(user.WardrobeId, options.Filter);
-            return Ok(res.ToPackageResponseModel(id,true).ToPagedResponse(options.Page, options.PageSize));
+            return Ok(res.ToPackageResponseModel(id, true).ToPagedResponse(options.Page, options.PageSize));
         }
 
         [HttpPost("items/singleLayer")]
@@ -117,7 +116,7 @@ namespace minerobe.api.Controllers
             var res = await _wardrobeService.GetWardrobeOutfitsSingleLayer(user.WardrobeId, options.Filter);
             var paged = res.ToPagedResponse(options.Page, options.PageSize);
 
-            var items = await _outfitHelper.ToOutfitPackageSingleLayer(paged,true);
+            var items = await _outfitHelper.ToOutfitPackageSingleLayer(paged, true);
 
             return Ok(paged.MapResponseOptions(items));
         }

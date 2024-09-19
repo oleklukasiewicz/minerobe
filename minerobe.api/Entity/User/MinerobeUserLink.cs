@@ -9,7 +9,7 @@ namespace minerobe.api.Entity.User
         public string ExternalId { get; set; }
         public Guid MinerobeUserId { get; set; }
     }
-    public class MinerobeUserLinkConfig: IEntityTypeConfiguration<MinerobeUserLink>
+    public class MinerobeUserLinkConfig : IEntityTypeConfiguration<MinerobeUserLink>
     {
         public void Configure(EntityTypeBuilder<MinerobeUserLink> builder)
         {

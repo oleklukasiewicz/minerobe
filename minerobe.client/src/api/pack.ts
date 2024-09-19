@@ -11,14 +11,10 @@ export const GetPackage = async function (id: string) {
   return res;
 };
 export const UpdatePackage = async function (packageData: OutfitPackage) {
-  const res = await PutRequest("/api/Package/" + packageData.id, packageData);
-  return res;
-};
-export const UpdatePackageData = async function (packageData: OutfitPackage) {
   const data = Object.assign({}, packageData);
   delete data.layers;
   const res = await PutRequest(
-    "/api/Package/" + packageData.id + "/data",
+    "/api/Package/" + packageData.id,
     data
   );
   return res;

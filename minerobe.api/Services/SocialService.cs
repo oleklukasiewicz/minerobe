@@ -88,7 +88,7 @@ namespace minerobe.api.Services
                 if (social != null)
                     socialDatas.Add(social);
             }
-            
+
             var summary = new SocialData();
             summary.Likes = socialDatas.Sum(x => x.Likes);
             summary.Downloads = socialDatas.Sum(x => x.Downloads);

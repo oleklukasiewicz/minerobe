@@ -1,7 +1,4 @@
-﻿using minerobe.api.Entity.Package;
-using minerobe.api.Entity.Wardrobe;
-using minerobe.api.Helpers.Wardrobe;
-using minerobe.api.ResponseModel.Collection;
+﻿using minerobe.api.ResponseModel.Collection;
 using minerobe.api.ResponseModel.Package;
 
 namespace minerobe.api.ResponseModel.Wardrobe
@@ -16,7 +13,7 @@ namespace minerobe.api.ResponseModel.Wardrobe
     {
         public static WardrobeResponseModel ToResponseModel(this api.Helpers.Wardrobe.Wardrobe entity)
         {
-            var outfits = entity.Outfits?.Select(x => x?.ToListItemResponseModel(2,1, true)).ToList();
+            var outfits = entity.Outfits?.Select(x => x?.ToListItemResponseModel(2, 1, true)).ToList();
             var collections = entity.Collections?.Select(x => x.ToResponseModel()).ToList();
 
             return new WardrobeResponseModel

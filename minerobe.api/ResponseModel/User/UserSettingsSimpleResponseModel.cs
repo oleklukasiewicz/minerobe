@@ -1,5 +1,4 @@
 ﻿using minerobe.api.Entity.Settings;
-using minerobe.api.ResponseModel.Integration.JavaXbox;
 using minerobe.api.ResponseModel.Package;
 
 namespace minerobe.api.ResponseModel.User
@@ -10,7 +9,7 @@ namespace minerobe.api.ResponseModel.User
         public Guid OwnerId { get; set; }
         public Guid? CurrentTexturePackageId { get; set; }
         public TextureConfigResponseModel CurrentTextureConfig { get; set; }
-        public Guid? CurrentCapeId {get;set;}
+        public Guid? CurrentCapeId { get; set; }
         public OutfitPackageListItemResponseModel? BaseTexture { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
@@ -27,8 +26,8 @@ namespace minerobe.api.ResponseModel.User
                 BaseTexture = entity.BaseTexture?.ToListItemResponseModel(),
                 CurrentTexturePackageId = entity.CurrentTexturePackageId,
                 CurrentTextureConfig = entity.CurrentTexture?.ToConfigResponse(),
-                CurrentCapeId= entity.CurrentTexture?.CapeId,
-                Integrations = entity.Integrations?.Select(x=>x.Type).ToList(),
+                CurrentCapeId = entity.CurrentTexture?.CapeId,
+                Integrations = entity.Integrations?.Select(x => x.Type).ToList(),
                 CreatedAt = entity.CreatedAt,
                 ModifiedAt = entity.ModifiedAt
             };

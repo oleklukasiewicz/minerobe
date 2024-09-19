@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using minerobe.api.Extensions;
-
-namespace minerobe.api.Helpers.Integration
+﻿namespace minerobe.api.Helpers.Integration
 {
     public class JavaXboxProfile
     {

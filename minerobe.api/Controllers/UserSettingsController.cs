@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.Entity.Package;
 using minerobe.api.Entity.Settings;
-using minerobe.api.Helpers;
 using minerobe.api.Model;
 using minerobe.api.Model.Package;
 using minerobe.api.ResponseModel.User;

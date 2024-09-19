@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using minerobe.api.Entity.Package;
 using minerobe.api.Extensions;
-using minerobe.api.ResponseModel.Integration.JavaXbox;
 
 namespace minerobe.api.Entity.Settings
 {
@@ -19,12 +17,12 @@ namespace minerobe.api.Entity.Settings
         public DateTime? ModifiedAt { get; set; }
         public List<IntegrationMatching> Integrations { get; set; }
     }
-    public class TextureRenderConfig 
+    public class TextureRenderConfig
     {
         public byte[] Texture { get; set; }
         public ModelType Model { get; set; }
         public bool IsFlat { get; set; }
-        public Guid? CapeId {get;set;}
+        public Guid? CapeId { get; set; }
     }
     public class IntegrationMatching
     {
@@ -39,9 +37,9 @@ namespace minerobe.api.Entity.Settings
             builder.HasKey(x => x.Id);
             builder.Property(x => x.BaseTexture).StoreAsJSON();
             builder.Property(x => x.OwnerId).IsRequired();
-            builder.Property(x=> x.CreatedAt).HasDefaultValueSql("getdate()");
-            builder.Property(x=>x.CurrentTexture).StoreAsJSON();
-            builder.Property(x=>x.Integrations).StoreAsJSON();
+            builder.Property(x => x.CreatedAt).HasDefaultValueSql("getdate()");
+            builder.Property(x => x.CurrentTexture).StoreAsJSON();
+            builder.Property(x => x.Integrations).StoreAsJSON();
         }
     }
     public static class UserSettingsExtension

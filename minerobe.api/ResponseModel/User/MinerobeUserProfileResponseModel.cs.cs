@@ -1,7 +1,6 @@
 ﻿using minerobe.api.Entity;
 using minerobe.api.Entity.Settings;
 using minerobe.api.Entity.User;
-using minerobe.api.Helpers;
 
 namespace minerobe.api.ResponseModel.User
 {

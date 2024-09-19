@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.Entity;
-using minerobe.api.Helpers;
 using minerobe.api.Model;
 using minerobe.api.ResponseModel.User;
 using minerobe.api.Services.Interface;
-using System.Runtime.CompilerServices;
 
 namespace minerobe.api.Controllers
 {
@@ -16,7 +13,7 @@ namespace minerobe.api.Controllers
         private readonly IUserService _userService;
         private readonly IUserSettingsService _userSettingsService;
         private readonly ISocialService _socialService;
-        public UserController(IUserService userService, IUserSettingsService userSettingsService,ISocialService socialService)
+        public UserController(IUserService userService, IUserSettingsService userSettingsService, ISocialService socialService)
         {
             _userService = userService;
             _userSettingsService = userSettingsService;
@@ -43,7 +40,7 @@ namespace minerobe.api.Controllers
         {
             var ent = user.ToEntity();
             ent.Id = id;
-          
+
             var updated = await _userService.Update(ent);
             if (updated == null)
                 return NotFound();
@@ -61,11 +58,11 @@ namespace minerobe.api.Controllers
         public async Task<IActionResult> GetProfile(Guid id)
         {
             var user = await _userService.GetById(id);
-            var settings= await _userSettingsService.GetSettings(id);
+            var settings = await _userSettingsService.GetSettings(id);
             var social = await _socialService.GetUserSummary(id);
             if (user == null)
                 return NotFound();
-            return Ok(user.ToProfileResponseModel(settings,social));
+            return Ok(user.ToProfileResponseModel(settings, social));
         }
 
     }
