@@ -27,7 +27,7 @@
 		"axios": "^1.7.7",
 		"color-diff": "^1.4.0",
 		"dotenv": "^16.4.5",
-		"firebase": "^10.13.1",
+		"firebase": "^10.13.2",
 		"gltf-loader": "^1.0.0",
 		"path": "^0.12.7",
 		"pixelmatch": "^6.0.0",
