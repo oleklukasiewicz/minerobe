@@ -85,7 +85,7 @@
 <style lang="scss">
   #nav {
     backdrop-filter: blur(60px) saturate(150%);
-    background-color: rgba(226,226,226,0.4);
+    background-color: rgba(226,226,226,0.8);
     color: var(--color-theme);
     font-family: minecraft;
     height: 60px;
