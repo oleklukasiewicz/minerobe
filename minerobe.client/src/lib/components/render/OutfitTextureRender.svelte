@@ -10,14 +10,15 @@
 
   let item;
   $: {
+    console.log(type);
     item = {
       steve: {
         content: texture,
-        type: type,
+        outfitType: type,
       },
       alex: {
         content: texture,
-        type: type,
+        outfitType: type,
       },
     };
   }

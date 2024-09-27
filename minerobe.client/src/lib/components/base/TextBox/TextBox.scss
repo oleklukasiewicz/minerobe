@@ -1,0 +1,11 @@
+.text-box {
+    display: flex;
+    border: 2px solid var(--color-theme-D6);
+    background-color: var(--color-theme-D1);
+  input {
+    border: none;
+    padding: 4px 12px;
+    box-sizing: border-box;
+    
+  }
+}

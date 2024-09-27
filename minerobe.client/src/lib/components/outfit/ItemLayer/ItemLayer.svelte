@@ -171,7 +171,7 @@
         size="large"
       />
     {/if}
-    {#if multiVariant && item.type != LAYER_TYPE.REMOTE}
+    {#if multiVariant && item.type != LAYER_TYPE.REMOTE && !readonly}
       <Button
         icon={EditIcon}
         whiteText={selected}
@@ -181,9 +181,9 @@
         onlyIcon
         size="large"
       />
-    {/if}
-    {#if controls && multiVariant && item.type != LAYER_TYPE.REMOTE}
-      <div class="separator vertical" />
+      {#if controls}
+        <div class="separator vertical" />
+      {/if}
     {/if}
     {#if controls && !readonly}
       <Button
@@ -208,16 +208,16 @@
       />
     {/if}
     {#if !readonly}
-    <div class="separator vertical" />
-    <Button
-      icon={DeleteIcon}
-      whiteText={selected}
-      label={$_("remove")}
-      type="quaternary"
-      on:click={remove}
-      onlyIcon
-      size="large"
-    />
+      <div class="separator vertical" />
+      <Button
+        icon={DeleteIcon}
+        whiteText={selected}
+        label={$_("remove")}
+        type="quaternary"
+        on:click={remove}
+        onlyIcon
+        size="large"
+      />
     {/if}
   </div>
 </div>

@@ -285,11 +285,14 @@
     });
   };
   const editLayer = async function (e) {
-    let layer = e.detail.texture as OutfitLayer;
-
-    layer = await loadLayerData(layer, layer.steve);
+    let layer = e.detail.layer as OutfitLayer;
 
     await UpdatePackageLayer(await AddLayerSnapshot(layer));
+    itemLayers.update((layers) => {
+      let index = layers.findIndex((x) => x.id == layer.id);
+      layers[index] = layer;
+      return layers;
+    });
   };
   const addNewRemoteLayer = async function (outfit: OutfitPackage) {
     const layerId = outfit.layers[0].id;
@@ -675,7 +678,8 @@
                 on:dropvariant={addNewDropVariant}
                 canUp={index != 0}
                 canDown={index != $itemLayers.length - 1}
-                selected={item?.id == $itemRenderConfig.selectedLayer?.id}
+                selected={item?.id == $itemRenderConfig.selectedLayer?.id &&
+                  !isItemSet}
                 on:click={() => ($itemRenderConfig.selectedLayer = item)}
               />
             </div>
@@ -816,7 +820,8 @@
   </Dialog>
   <Dialog bind:open={isAddVariantDialogOpen} label="Edit layer">
     <EditLayerDialog
-      bind:layer={newVariantLayer}
+      on:edit={editLayer}
+      layer={newVariantLayer}
       on:uploadVariant={uploadImageForVariant}
     />
   </Dialog>

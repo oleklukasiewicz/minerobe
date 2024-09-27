@@ -41,7 +41,6 @@
     GetWadrobeCollections,
     GetWardrobePackages,
   } from "$src/api/wardrobe";
-  import OutfitPackageSnapshotList from "$lib/components/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
   import {
     navigateToCollection,
     navigateToOutfitPackage,
@@ -306,6 +305,8 @@
               <Button
                 textAlign="left"
                 size="small"
+                noBorder
+                flat
                 icon={selectedItemValue?.includes(item)
                   ? CheckBoxIcon
                   : CheckBoxOffIcon}

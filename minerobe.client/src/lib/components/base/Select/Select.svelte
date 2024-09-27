@@ -20,6 +20,7 @@
   export let itemText = null;
   export let itemValue = null;
   export let clearable = false;
+  export let dropDownStyle = null;
   // export let autocomplete = false;
 
   export let sorter = function (a, b) {
@@ -178,6 +179,7 @@
   <div class="select-mobile-bg" on:click={() => (opened = false)}></div>
   <div
     class="items"
+    style={dropDownStyle}
     class:opened
     class:hidden={!opened}
     bind:this={itemsContainer}
