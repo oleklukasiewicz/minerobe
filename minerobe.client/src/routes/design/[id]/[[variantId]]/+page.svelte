@@ -357,7 +357,6 @@
                   ? defaultRenderProvider.steve
                   : defaultRenderProvider.alex}
                 showLabels={false}
-                selectable={!isItemSet}
                 controls={isItemSet}
                 modelName={$localPackage.model}
                 link={item.type == LAYER_TYPE.REMOTE

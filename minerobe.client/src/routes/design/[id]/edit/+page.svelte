@@ -13,7 +13,7 @@
   import OutfitPicker from "$component/outfit/OutfitPicker/OutfitPicker.svelte";
   import Label from "$component/base/Label/Label.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import AddVariantDialog from "$lib/components/dialog/AddVariantDialog.svelte";
+  import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
   import SocialInfoDialog from "$lib/components/dialog/SocialInfoDialog.svelte";
   import CollectionPicker from "$lib/components/outfit/CollectionPicker/CollectionPicker.svelte";
   import OutfitActions from "$lib/components/other/OutfitActions/OutfitActions.svelte";
@@ -663,18 +663,16 @@
                 renderProvider={$itemModelType == MODEL_TYPE.STEVE
                   ? defaultProvider.steve
                   : defaultProvider.alex}
-                selectable={!isItemSet}
                 controls={isItemSet}
                 readonly={$itemPackage?.publisher.id != $currentUser?.id}
                 modelName={$itemPackage.model}
                 {item}
                 bind:label={item.name}
-                on:addvariant={addImageVariant}
+                on:edit={addImageVariant}
                 on:down={downLayer}
                 on:up={upLayer}
                 on:remove={removeLayer}
                 on:dropvariant={addNewDropVariant}
-                on:edit={editLayer}
                 canUp={index != 0}
                 canDown={index != $itemLayers.length - 1}
                 selected={item?.id == $itemRenderConfig.selectedLayer?.id}
@@ -816,8 +814,8 @@
       on:itempage={goToItemPage}
     />
   </Dialog>
-  <Dialog bind:open={isAddVariantDialogOpen} label="Add layer variant">
-    <AddVariantDialog
+  <Dialog bind:open={isAddVariantDialogOpen} label="Edit layer">
+    <EditLayerDialog
       bind:layer={newVariantLayer}
       on:uploadVariant={uploadImageForVariant}
     />

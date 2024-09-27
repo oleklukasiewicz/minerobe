@@ -6,7 +6,7 @@
   import UpIcon from "$src/icons/chevron-up.svg?raw";
   import DownIcon from "$src/icons/chevron-down.svg?raw";
   import DeleteIcon from "$src/icons/close.svg?raw";
-  import UserPlusIcon from "$src/icons/user-plus.svg?raw";
+  import EditIcon from "$src/icons/edit.svg?raw";
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
   import { LAYER_TYPE, MODEL_TYPE } from "$src/data/consts";
   import OutfitLayerRender from "$component/render/OutfitLayerRender.svelte";
@@ -23,7 +23,6 @@
   export let readonly = false;
   export let controls = true;
   export let selected = false;
-  export let selectable = false;
   export let multiVariant = true;
   export let showLabels = true;
   export let link = null;
@@ -37,11 +36,6 @@
 
   let up = function () {
     dispatch("up", {
-      texture: item,
-    });
-  };
-  let addVariant = function () {
-    dispatch("addvariant", {
       texture: item,
     });
   };
@@ -112,20 +106,6 @@
       texture: item,
     });
   };
-  function fadeInScale(node, { duration }) {
-    return {
-      duration,
-      easing: cubicOut,
-      css: (t) => `opacity: ${t}; transform: scale(${0.9 + t * 0.1})`,
-    };
-  }
-  function fadeIn(node, { duration }) {
-    return {
-      duration,
-      easing: cubicOut,
-      css: (t) => `opacity: ${t}`,
-    };
-  }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -133,24 +113,17 @@
 <div
   class="item-layer"
   class:selected
-  class:selectable
   class:drop-hover={isDragging &&
     multiVariant &&
     item.type != LAYER_TYPE.REMOTE}
   on:click
-  in:fadeInScale={{ duration: 300 }}
-  out:fadeInScale={{ duration: 300 }}
   on:dragleave={handleRenderDragEnd}
   on:dragover={handleRenderDragOver}
   on:dragenter={handleDragEnter}
   on:dragend={handleRenderDragEnd}
 >
   {#if isDragging && multiVariant && item.type != LAYER_TYPE.REMOTE}
-    <div
-      class="model-selection"
-      in:fadeIn={{ duration: 300 }}
-      out:fadeIn={{ duration: 300 }}
-    >
+    <div class="model-selection">
       <div
         class:drop-hover={isAlexDragging}
         on:dragleave={handleRenderAlexDragEnd}
@@ -173,93 +146,80 @@
       </div>
     </div>
   {/if}
-  <div class="data">
-    <div class="render" title={item.colorName}>
-      <OutfitLayerRender {item} {renderProvider} {modelName} />
-    </div>
-    <span
-      ><input
-        bind:value={label}
-        on:input={edit}
-        class:disabled={item.type == LAYER_TYPE.REMOTE || readonly}
-      />
-      <br />
-      <div style="display:flex; gap:4px;margin-top:4px;">
-        <Label variant="common">{item.outfitType}</Label>
-        {#if showLabels}
-          {#if item.type == LAYER_TYPE.REMOTE}
-            <Label variant="rare">{$_("layerType.remote")}</Label>
-          {/if}
-          <!-- {#if item.type == LAYER_TYPE.REMOTE && !item.}
-            <Label variant="ancient">Unshared</Label>
-          {/if} -->
-        {/if}
-      </div>
-    </span>
-    {#if link}
-      <div>
-        <Button
-          icon={ExternalLinkIcon}
-          label={"Go to outfit page"}
-          type="tertiary"
-          href={link}
-          onlyIcon
-          size="large"
-          style="margin:10px;"
-        />
-      </div>
-    {/if}
+  <div class="render" title={item.colorName}>
+    <OutfitLayerRender {item} {renderProvider} {modelName} />
   </div>
-  {#if !readonly}
-    <div class="actions">
-      {#if multiVariant && item.type != LAYER_TYPE.REMOTE}
-        <Button
-          icon={UserPlusIcon}
-          whiteText={selected && selectable}
-          label={$_("newLayerVariant")}
-          type="tertiary"
-          on:click={addVariant}
-          onlyIcon
-          size="large"
-        />
+  <div class="data">
+    <div class="data-title">{label}</div>
+    <div>
+      <Label variant="common">{item.outfitType}</Label>
+      {#if showLabels}
+        {#if item.type == LAYER_TYPE.REMOTE}
+          <Label variant="rare">{$_("layerType.remote")}</Label>
+        {/if}
       {/if}
-      {#if controls && multiVariant && item.type != LAYER_TYPE.REMOTE}
-        <div class="separator vertical" />
-      {/if}
-      {#if controls}
-        <Button
-          icon={UpIcon}
-          label={$_("up")}
-          type="quaternary"
-          whiteText={selected && selectable}
-          on:click={up}
-          disabled={!canUp}
-          onlyIcon
-          size="large"
-        />
-        <Button
-          icon={DownIcon}
-          label={$_("down")}
-          type="quaternary"
-          whiteText={selected && selectable}
-          on:click={down}
-          disabled={!canDown}
-          onlyIcon
-          size="large"
-        />
-      {/if}
-      <div class="separator vertical" />
+    </div>
+  </div>
+  <div class="actions">
+    {#if link}
       <Button
-        icon={DeleteIcon}
-        whiteText={selected && selectable}
-        label={$_("remove")}
-        type="quaternary"
-        on:click={remove}
+        icon={ExternalLinkIcon}
+        label={"Go to outfit page"}
+        type="tertiary"
+        href={link}
         onlyIcon
         size="large"
       />
-    </div>
-  {/if}
+    {/if}
+    {#if multiVariant && item.type != LAYER_TYPE.REMOTE}
+      <Button
+        icon={EditIcon}
+        whiteText={selected}
+        label={$_("newLayerVariant")}
+        type="quaternary"
+        on:click={edit}
+        onlyIcon
+        size="large"
+      />
+    {/if}
+    {#if controls && multiVariant && item.type != LAYER_TYPE.REMOTE}
+      <div class="separator vertical" />
+    {/if}
+    {#if controls && !readonly}
+      <Button
+        icon={UpIcon}
+        label={$_("up")}
+        type="quaternary"
+        whiteText={selected}
+        on:click={up}
+        disabled={!canUp}
+        onlyIcon
+        size="large"
+      />
+      <Button
+        icon={DownIcon}
+        label={$_("down")}
+        type="quaternary"
+        whiteText={selected}
+        on:click={down}
+        disabled={!canDown}
+        onlyIcon
+        size="large"
+      />
+    {/if}
+    {#if !readonly}
+    <div class="separator vertical" />
+    <Button
+      icon={DeleteIcon}
+      whiteText={selected}
+      label={$_("remove")}
+      type="quaternary"
+      on:click={remove}
+      onlyIcon
+      size="large"
+    />
+    {/if}
+  </div>
 </div>
 
 <style lang="scss">
