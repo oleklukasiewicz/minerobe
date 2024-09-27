@@ -36,9 +36,8 @@
       </a>
       <div style="flex:1;text-align:center">
         <Search
-          dense={false}
-          dark
-          style="width:100%;max-width:400px;"
+          dense={true}
+          style="width:100%;max-width:400px;margin-top:2px;"
           placeholder={"Search outfits, sets and collections"}
           on:search={()=>navigate("/explore")}
         />
@@ -85,7 +84,8 @@
 
 <style lang="scss">
   #nav {
-    background-color: var(--color-theme-font);
+    backdrop-filter: blur(60px) saturate(150%);
+    background-color: rgba(226,226,226,0.4);
     color: var(--color-theme);
     font-family: minecraft;
     height: 60px;
@@ -109,7 +109,6 @@
     .items {
       flex: 1;
       transition: var(--time) cubic-bezier(0.1, 0.9, 0.2, 1);
-      background-color: var(--color-theme-font);
       display: grid;
       grid-template-columns: 23% 1fr 23%;
       gap: 16px;

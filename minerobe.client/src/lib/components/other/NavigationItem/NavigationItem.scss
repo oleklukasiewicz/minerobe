@@ -1,20 +1,21 @@
 a {
     font-family: minecraft;
     text-decoration: none;
-    color: var(--color-theme);
+    color: var(--color-theme-font);
     box-sizing: border-box;
-    padding: 7px 16px;
+    padding: 6px 14px;
     gap: 8px;
+    aspect-ratio: 1;
     display: inline-flex;
     flex-direction: row;
     cursor: pointer;
     transition: background-color var(--time), border-color var(--time),
         color var(--time);
     user-select: none;
-    border: 2px solid var(--color-theme-font);
+    border: 2px solid transparent;
     float: left;
     &.minimal {
-        padding: 7px 9px;
+        padding: 7px;
     }
     &>.item-label
     {
@@ -23,14 +24,15 @@ a {
     }
 }
 a:hover {
-    color: var(--color-theme-D2);
+    color: var(--color-theme-font);
+    background-color: var(--color-theme-D2);
 }
 a:active {
-    color: var(--color-theme-D4);
+    color: var(--color-theme);
+    background-color: var(--color-theme-font);
 }
 a.selected,:global(a.selected) {
     background-color: var(--color-accent);
-    box-shadow: var(--shadow-button);
     color: var(--color-accent-font);
 }
 a.selected:hover {

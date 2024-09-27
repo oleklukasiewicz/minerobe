@@ -1,6 +1,7 @@
 .item-page {
   display: flex;
-  margin: 30px;
+  margin: 30px auto;
+  max-width: 180vh;
   flex: 1;
   .render-data {
     overflow: hidden;
@@ -8,8 +9,10 @@
     display: block;
     min-height: 100px;
     min-width: 100px;
+    margin-left: 30px;
     max-height: calc(100vh - 120px);
     position: sticky;
+    aspect-ratio: 1/1;
     top: 90px;
     @media (max-width: 768px) {
       max-height: 100vw;
@@ -71,6 +74,7 @@
     flex-direction: column;
     .render-data {
       position: static;
+      margin: 0px;
       .render {
         margin: 0px;
       }
