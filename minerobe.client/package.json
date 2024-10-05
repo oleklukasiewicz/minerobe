@@ -36,6 +36,6 @@
 		"svelte-intersection-observer": "^1.0.0",
 		"svelte-persisted-store": "^0.11.0",
 		"svelte-writable-derived": "^3.1.1",
-		"three": "^0.168.0"
+		"three": "^0.169.0"
 	}
 }
