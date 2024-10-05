@@ -21,17 +21,6 @@
   import OutfitCapes from "$lib/components/other/OutfitCapes/OutfitCapes.svelte";
 
   import {
-    CHANGE_TYPE,
-    DEFAULT_PACKAGE,
-    MODEL_TYPE,
-    PACKAGE_TYPE,
-    STEVE_MODEL,
-    ALEX_MODEL,
-    APP_STATE,
-    OUTFIT_TYPE,
-    COLOR_TYPE,
-  } from "$data/consts";
-  import {
     currentUser,
     defaultRenderer,
     isMobileView,
@@ -106,6 +95,10 @@
     GetContextFromBase64,
     GetOutfitType,
   } from "$src/helpers/image/imageDataHelpers.js";
+  import { DEFAULT_PACKAGE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts/data.js";
+  import { APP_STATE, CHANGE_TYPE } from "$src/data/consts/app.js";
+  import { ALEX_MODEL, MODEL_TYPE, STEVE_MODEL } from "$src/data/consts/model.js";
+  import { COLOR_TYPE } from "$src/data/consts/color.js";
 
   export let data;
 

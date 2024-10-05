@@ -1,4 +1,4 @@
-import { OUTFIT_TYPE } from "$src/data/consts";
+import { OUTFIT_TYPE } from "$src/data/consts/data";
 import { CameraConfig } from "$src/data/render";
 import * as THREE from "three";
 

@@ -8,7 +8,7 @@
   } from "$src/data/render";
   import type { OutfitPackage } from "$src/model/package";
   import { onMount } from "svelte";
-  import { CAMERA_CONFIG_FRONT } from "$src/consts/render";
+  import { CAMERA_CONFIG_FRONT } from "$src/data/consts/render";
   import { GetCameraYCoordsForType } from "$src/helpers/render/renderHelper";
   import PlusIcon from "$icons/plus.svg?raw";
 

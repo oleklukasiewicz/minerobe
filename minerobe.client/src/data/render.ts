@@ -1,11 +1,12 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import type { RenderAnimation } from "./animation";
+import { RenderAnimation } from "./animation";
 import { defaultRenderer, snapshotTemporaryNode } from "./cache";
 import { get } from "svelte/store";
-import { MODEL_TYPE, STEVE_MODEL, ALEX_MODEL } from "./consts";
 import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
+import { ALEX_MODEL, MODEL_TYPE, STEVE_MODEL } from "./consts/model";
+import { DEFAULT_RENDERER } from "./static";
 export class CameraConfig {
   rotation: THREE.Vector3;
   position: THREE.Vector3;
@@ -513,7 +514,10 @@ export const CreateDefaultRenderProvider = async function (
   let alexListProvider = new RenderProvider();
   steveListProvider.renderer = renderer;
   steveListProvider.textureLoader = new THREE.TextureLoader();
-  let steveScene = await PrepareSceneForRender(STEVE_MODEL.model,disableDefaultModelRotation);
+  let steveScene = await PrepareSceneForRender(
+    STEVE_MODEL.model,
+    disableDefaultModelRotation
+  );
   steveListProvider.scene = steveScene.scene;
 
   steveListProvider.camera = steveScene.camera;
@@ -521,7 +525,10 @@ export const CreateDefaultRenderProvider = async function (
 
   alexListProvider.renderer = renderer;
   alexListProvider.textureLoader = new THREE.TextureLoader();
-  let alexScene = await PrepareSceneForRender(ALEX_MODEL.model,disableDefaultModelRotation);
+  let alexScene = await PrepareSceneForRender(
+    ALEX_MODEL.model,
+    disableDefaultModelRotation
+  );
   alexListProvider.scene = alexScene.scene;
   alexListProvider.camera = alexScene.camera;
   alexListProvider.name = "alex";
@@ -544,3 +551,298 @@ export const RenderTextureInTemporyNode = async function (
   snapshot.node = get(snapshotTemporaryNode);
   return await RenderFromSnapshot(snapshot, 150, 150);
 };
+
+export class OutfitPackageRender {
+  private renderer: any;
+  private model: any;
+  private texture: string;
+  private node: any;
+  private cameraOptions: any;
+  private modelScene: ModelScene;
+  private textureLoader: any;
+  private loadedTexture: any;
+  private animations: RenderAnimation[] = [];
+  private animationQueueLimit: number = 2;
+  private renderingActive: boolean = false;
+  private shadowsEnabled: boolean = false;
+
+  //for dynamic render
+  private clock = null;
+  private orbitalControls: any = null;
+  private animationData: any = null;
+  private animationPrepared: boolean = false;
+  private animationIsQuiting: boolean = false;
+
+  private _loadTexture = async function () {
+    return new Promise((resolve) => {
+      this.textureLoader.load(this.texture, (texture) => {
+        resolve(texture);
+      });
+    });
+  };
+  private _applyTextureToModel = async function () {
+    this.modelScene.renderScene.traverse((child: any) => {
+      if (child.isMesh && this.loadedTexture != null) {
+        if (this.shadowsEnabled) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+        this.loadedTexture.magFilter = THREE.NearestFilter;
+        this.loadedTexture.minFilter = THREE.LinearMipmapLinearFilter;
+        this.loadedTexture.wrapS = THREE.RepeatWrapping;
+        this.loadedTexture.wrapT = THREE.RepeatWrapping;
+
+        const mat = child.material as THREE.MeshStandardMaterial;
+        mat.map = this.loadedTexture;
+        mat.roughness = 1;
+      }
+    });
+  };
+  private _loadCameraOptions = function () {
+    const options = this.cameraOptions || new CameraConfig();
+    this.modelScene.camera.position.x = options.position.x;
+    this.modelScene.camera.position.y = options.position.y;
+    this.modelScene.camera.position.z = options.position.z;
+    this.modelScene.camera.rotation.x = options.rotation.x;
+    this.modelScene.camera.rotation.y = options.rotation.y;
+    this.modelScene.camera.rotation.z = options.rotation.z;
+    this.modelScene.camera.lookAt(options.lookAt);
+    this.modelScene.camera.fov = options.fov;
+  };
+  private _render = function (_self = this) {
+    if (!_self.renderingActive) return;
+    //frame rendering
+    const _clockActualDelta = this.clock.getDelta();
+    const _clockDelta = _clockActualDelta > 1 ? 1 : _clockActualDelta;
+    const _clockElapsedTime = this.clock.getElapsedTime();
+
+    //animations
+    //console.log(this.animations);
+    const currentAnimation: RenderAnimation = this.animations[0];
+    if (currentAnimation != null) {
+      if (!_self.animationPrepared)
+        _self._prepareAnimation(currentAnimation, false);
+      if (_self.animations.length > 1) _self.animationIsQuiting = true;
+      if (_self.animationIsQuiting) {
+        const isCurrentAnimationFinishedQueting = currentAnimation.stop(
+          _self.animationData,
+          _self.modelScene.renderScene,
+          _clockDelta,
+          _self.modelScene.model,
+          _clockElapsedTime
+        );
+        if (isCurrentAnimationFinishedQueting) {
+          _self.animationIsQuiting = false;
+          _self.animationPrepared = false;
+          _self.animationData = null;
+          _self.animations.shift();
+        }
+      } else
+        currentAnimation.render(
+          _self.animationData,
+          _self.modelScene.renderScene,
+          _clockDelta,
+          _self.modelScene.model,
+          _clockElapsedTime
+        );
+    }
+
+    this.renderer.render(this.modelScene.scene, this.modelScene.camera);
+    this.node.appendChild(this.renderer.domElement);
+    requestAnimationFrame(() => this._render(this));
+  };
+  private _prepareAnimation(animation: RenderAnimation, keepData: boolean) {
+    if (this.animationPrepared) return;
+    const animationData = animation.prepare(
+      this.modelScene.renderScene,
+      keepData
+    );
+    this.animationData = Object.assign(this.animationData || {}, animationData);
+    this.animationPrepared = true;
+  }
+  private _updateRenderSize = function () {
+    const canvas = this.node;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const fov = 1;
+
+    this.modelScene.camera.aspect = width / height;
+    this.modelScene.camera.updateProjectionMatrix();
+    this.renderer.setSize(width * fov, height * fov);
+  };
+  private _loadCanvasSize = function () {
+    const canvas = this.node;
+    const width = canvas.clientWidth != 0 ? canvas.clientWidth : 300;
+    const height = canvas.clientHeight != 0 ? canvas.clientHeight : 300;
+    const canvasSizeMultiplier = 1;
+    const fov = 1;
+
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setSize(
+      width * fov * canvasSizeMultiplier,
+      height * fov * canvasSizeMultiplier
+    );
+  };
+
+  constructor(renderer: any = DEFAULT_RENDERER) {
+    this.renderer = renderer;
+    this.textureLoader = new THREE.TextureLoader();
+  }
+  SetModelScene = function (modelScene: ModelScene): OutfitPackageRender {
+    this.modelScene = modelScene;
+    return this;
+  };
+  SetTexture = async function (texture: string): Promise<OutfitPackageRender> {
+    this.texture = texture;
+    this.loadedTexture = await this._loadTexture();
+    return this;
+  };
+  SetRenderer = function (renderer: any): OutfitPackageRender {
+    this.renderer = renderer;
+    return this;
+  };
+  SetNode = function (node: any): OutfitPackageRender {
+    this.node = node;
+    return this;
+  };
+  SetCameraOptions = function (cameraOptions: any): OutfitPackageRender {
+    this.cameraOptions = cameraOptions;
+    return this;
+  };
+  RenderStatic = function (): OutfitPackageRender {
+    this._loadCanvasSize();
+    this._loadCameraOptions();
+    this._applyTextureToModel();
+
+    this.node.appendChild(this.renderer.domElement);
+    this.renderer.render(this.modelScene.scene, this.modelScene.camera);
+    const dataUrl = this.renderer.domElement.toDataURL();
+    this.node.children[0].remove();
+    this.node.src = dataUrl;
+    return this;
+  };
+  AddAnimation = function (animation: RenderAnimation): OutfitPackageRender {
+    if (this.animations.length >= this.animationQueueLimit) return this;
+    this.animations.push(animation);
+    return this;
+  };
+  SetAnimationsLimit = function (limit: number): OutfitPackageRender {
+    this.animationQueueLimit = limit;
+    return this;
+  };
+  RenderDynamic = function (): OutfitPackageRender {
+    this.StopRendering();
+    //initial configuration
+    this.renderingActive = true;
+
+    this.clock = new THREE.Clock();
+    this.orbitalControls = new OrbitControls(
+      this.modelScene.camera,
+      this.renderer.domElement
+    );
+    this.orbitalControls.enablePan = false;
+    this.orbitalControls.maxDistance = 3.0;
+    this.orbitalControls.minDistance = -3.5;
+
+    this._loadCameraOptions();
+    this._applyTextureToModel();
+
+    this._updateRenderSize();
+    this._render();
+    return this;
+  };
+  StopRendering = function (): OutfitPackageRender {
+    this.renderingActive = false;
+    this.clock = null;
+    return this;
+  };
+  AddShadow = function (): OutfitPackageRender {
+    this.shadowsEnabled = true;
+
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
+
+    const pointLight = new THREE.DirectionalLight(0xffffff, 0.78);
+
+    pointLight.castShadow = true;
+    pointLight.shadow.camera.left = -0.8;
+    pointLight.shadow.camera.right = 0.8;
+    pointLight.shadow.camera.top = 0.8;
+    pointLight.shadow.camera.bottom = -0.8;
+    pointLight.shadow.bias = -0.0001;
+    pointLight.shadow.radius = 1;
+    pointLight.shadow.mapSize.width = 1024;
+    pointLight.shadow.mapSize.height = 1024;
+
+    pointLight.target.position.set(0, 1, 0);
+    pointLight.position.set(0, 10, -10);
+    pointLight.shadowCameraVisible = true;
+    this.modelScene.scene.add(pointLight);
+
+    return this;
+  };
+  AddFloor = function (texture: string): OutfitPackageRender {
+    const floorTexture = new THREE.TextureLoader().load(texture);
+    const floorGeometry = new THREE.PlaneGeometry(3, 3, 3, 3);
+    const floorMaterial = new THREE.MeshStandardMaterial({
+      map: floorTexture,
+      side: THREE.DoubleSide,
+      roughness: 1,
+    });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = Math.PI / 2;
+    floor.position.y = 0;
+    floor.receiveShadow = true;
+    this.modelScene.scene.add(floor);
+    return this;
+  };
+  SetBackground = function (color: THREE.Color): OutfitPackageRender {
+    this.renderer.setClearColor(color, 1);
+    return this;
+  }
+}
+export class ModelScene {
+  model: string;
+  camera: any;
+  scene: any;
+  renderScene: any;
+  constructor(model: string) {
+    this.model = model;
+  }
+  async Create() {
+    //prepare scene
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+
+    const modelLoader = new GLTFLoader();
+
+    //set default values
+    this.scene.position.y = -1;
+    const brightness = 1.2;
+    const light = new THREE.AmbientLight(0xffffff, brightness * 1.8, 10);
+
+    //configure light
+    this.scene.add(light);
+    const pointLight = new THREE.DirectionalLight(
+      0xffffff,
+      brightness * 0.65,
+      10
+    );
+    pointLight.position.set(0, 50, -50);
+    this.scene.add(pointLight);
+
+    //load model
+    this.renderScene = await new Promise((resolve) => {
+      modelLoader.load(this.model, (gltf) => {
+        this.scene.add(gltf.scene);
+        resolve(gltf.scene);
+      });
+    });
+    return this;
+  }
+}

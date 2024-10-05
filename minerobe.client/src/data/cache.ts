@@ -7,14 +7,14 @@ import {
   readonly,
   derived,
 } from "svelte/store";
-import { APP_STATE } from "$data/consts";
-import planksTextureRaw from "$src/texture/base_skin.png?url";
+import planksTextureRaw from "$src/texture/default_planks.png?url";
 import * as THREE from "three";
 import { UserPreferences, type MinerobeUser } from "$src/model/user";
 import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 import { FetchSettings } from "$src/api/settings";
 import { RefreshAccount } from "$src/api/integration/minecraft";
 import { persisted } from "svelte-persisted-store";
+import { APP_STATE } from "./consts/app";
 
 const isMobileViewWritable: Writable<boolean> = writable(false);
 export const isMobileView: Readable<boolean> = readonly(isMobileViewWritable);

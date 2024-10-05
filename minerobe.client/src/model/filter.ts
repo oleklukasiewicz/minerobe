@@ -1,4 +1,4 @@
-import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+import { PACKAGE_TYPE } from "$src/data/consts/data";
 
 export class OutfitFilter
 {
