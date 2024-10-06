@@ -7,6 +7,7 @@ import { get } from "svelte/store";
 import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
 import { ALEX_MODEL, MODEL_TYPE, STEVE_MODEL } from "./consts/model";
 import { DEFAULT_RENDERER } from "./static";
+import type { OutfitLayer, OutfitPackage } from "$src/model/package";
 export class CameraConfig {
   rotation: THREE.Vector3;
   position: THREE.Vector3;
@@ -552,7 +553,7 @@ export const RenderTextureInTemporyNode = async function (
   return await RenderFromSnapshot(snapshot, 150, 150);
 };
 
-export class OutfitPackageRender {
+export class TextureRender {
   private renderer: any;
   private model: any;
   private texture: string;
@@ -688,28 +689,28 @@ export class OutfitPackageRender {
     this.renderer = renderer;
     this.textureLoader = new THREE.TextureLoader();
   }
-  SetModelScene = function (modelScene: ModelScene): OutfitPackageRender {
+  SetModelScene = function (modelScene: ModelScene): TextureRender {
     this.modelScene = modelScene;
     return this;
   };
-  SetTexture = async function (texture: string): Promise<OutfitPackageRender> {
+  SetTexture = async function (texture: string): Promise<TextureRender> {
     this.texture = texture;
     this.loadedTexture = await this._loadTexture();
     return this;
   };
-  SetRenderer = function (renderer: any): OutfitPackageRender {
+  SetRenderer = function (renderer: any): TextureRender {
     this.renderer = renderer;
     return this;
   };
-  SetNode = function (node: any): OutfitPackageRender {
+  SetNode = function (node: any): TextureRender {
     this.node = node;
     return this;
   };
-  SetCameraOptions = function (cameraOptions: any): OutfitPackageRender {
+  SetCameraOptions = function (cameraOptions: any): TextureRender {
     this.cameraOptions = cameraOptions;
     return this;
   };
-  RenderStatic = function (): OutfitPackageRender {
+  RenderStatic = function (): TextureRender {
     this._loadCanvasSize();
     this._loadCameraOptions();
     this._applyTextureToModel();
@@ -721,16 +722,16 @@ export class OutfitPackageRender {
     this.node.src = dataUrl;
     return this;
   };
-  AddAnimation = function (animation: RenderAnimation): OutfitPackageRender {
+  AddAnimation = function (animation: RenderAnimation): TextureRender {
     if (this.animations.length >= this.animationQueueLimit) return this;
     this.animations.push(animation);
     return this;
   };
-  SetAnimationsLimit = function (limit: number): OutfitPackageRender {
+  SetAnimationsLimit = function (limit: number): TextureRender {
     this.animationQueueLimit = limit;
     return this;
   };
-  RenderDynamic = function (): OutfitPackageRender {
+  RenderDynamic = function (): TextureRender {
     this.StopRendering();
     //initial configuration
     this.renderingActive = true;
@@ -751,12 +752,12 @@ export class OutfitPackageRender {
     this._render();
     return this;
   };
-  StopRendering = function (): OutfitPackageRender {
+  StopRendering = function (): TextureRender {
     this.renderingActive = false;
     this.clock = null;
     return this;
   };
-  AddShadow = function (): OutfitPackageRender {
+  AddShadow = function (): TextureRender {
     this.shadowsEnabled = true;
 
     this.renderer.shadowMap.enabled = true;
@@ -781,7 +782,7 @@ export class OutfitPackageRender {
 
     return this;
   };
-  AddFloor = function (texture: string): OutfitPackageRender {
+  AddFloor = function (texture: string): TextureRender {
     const floorTexture = new THREE.TextureLoader().load(texture);
     const floorGeometry = new THREE.PlaneGeometry(3, 3, 3, 3);
     const floorMaterial = new THREE.MeshStandardMaterial({
@@ -796,10 +797,10 @@ export class OutfitPackageRender {
     this.modelScene.scene.add(floor);
     return this;
   };
-  SetBackground = function (color: THREE.Color): OutfitPackageRender {
+  SetBackground = function (color: THREE.Color): TextureRender {
     this.renderer.setClearColor(color, 1);
     return this;
-  }
+  };
 }
 export class ModelScene {
   model: string;
@@ -846,3 +847,162 @@ export class ModelScene {
     return this;
   }
 }
+export class OutfitPackageTextureConfig {
+  layerId: string;
+  model: "steve" | "alex";
+  isFlatten: boolean;
+  excludedPartsFromFlat: string[];
+  constructor() {
+    this.excludedPartsFromFlat = ["head"];
+  }
+}
+export class OutfitPackageToTextureConverter {
+  private outfitPackage: OutfitPackage;
+  private options: OutfitPackageTextureConfig;
+  private texture: string;
+
+  constructor(outfitPackage: OutfitPackage) {
+    this.outfitPackage = outfitPackage;
+  }
+  SetOutfitPackage = function (
+    outfitPackage: OutfitPackage
+  ): OutfitPackageToTextureConverter {
+    this.outfitPackage = outfitPackage;
+    return this;
+  };
+  SetOptions = function (
+    options: OutfitPackageTextureConfig
+  ): OutfitPackageToTextureConverter {
+    this.options = options;
+    return this;
+  };
+  Convert = async function () {
+    //set modelMap
+    let modelMap;
+    if (this.options.model == MODEL_TYPE.STEVE) modelMap = STEVE_MODEL;
+    else modelMap = ALEX_MODEL;
+    //load target layers
+    const layers: string[] = [];
+    if (this.options.layerId != null && this.options.layerId != "") {
+      //load all layers
+      this.outfitPackage.layers.forEach((layer: OutfitLayer) => {
+        if (this.options.model == MODEL_TYPE.STEVE)
+          layers.push(layer.steve.content);
+        else layers.push(layer.alex.content);
+      });
+    } else {
+      //load single
+      const layer: OutfitLayer = this.outfitPackage.layers.find(
+        (x) => x.id == this.options.layerId
+      );
+      if (this.options.model == MODEL_TYPE.STEVE)
+        layers.push(layer.steve.content);
+      else layers.push(layer.alex.content);
+    }
+
+    let texture = layers[0];
+    if (this.options.layerId == null || this.options.layerId == "") {
+      //merge all layers
+      texture = await mergeTextures(layers, modelMap);
+    }
+    if (this.options.isFlatten) {
+      //flatten layers
+    }
+    this.texture = texture;
+    return this;
+  };
+}
+const mergeTextures = async function (textures: string[], modelMap) {
+  const canvas = document.createElement("canvas");
+  const windowImage = window.Image;
+
+  //load textures to canvas
+  var layerPromises = textures.map(async (texture) => {
+    return new Promise((resolve) => {
+      const img = new windowImage();
+      img.src = texture;
+      img.onload = () => {
+        return resolve(Object.assign({}, texture, { img: img }));
+      };
+      img.src = texture;
+    });
+  });
+
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  const tempCanvas = document.createElement("canvas");
+  const tempCtx = tempCanvas.getContext("2d", { willReadFrequently: true });
+
+  const images = await Promise.all(layerPromises);
+
+  //get canvas size
+  const getSize = function (dim) {
+    return Math.max.apply(
+      Math,
+      images.map(function (image: any) {
+        if (image?.img == null) return 0;
+        return image.img[dim];
+      })
+    );
+  };
+
+  canvas.width = getSize("width");
+  canvas.height = getSize("height");
+
+  //draw images
+  images.forEach(function (image: any) {
+    ctx.globalAlpha = 1;
+    tempCtx.drawImage(image.img, 0, 0);
+    //replace lower parts based on modelMap
+    const modelMapKeys = Object.keys(modelMap);
+    for (let i = 0; i < modelMapKeys.length; i++) {
+      let part = modelMap[modelMapKeys[i]];
+      if (part.outerTextureArea != null && part.textureArea != null)
+        replaceLowerLayerPart(tempCtx, ctx, part);
+    }
+
+    tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+    ctx.drawImage(image.img, 0, 0);
+  });
+
+  return canvas.toDataURL();
+};
+const replaceLowerLayerPart = function (imgContext, lowerLayerContext, part) {
+  const imageData = imgContext.getImageData(
+    part.textureArea.x,
+    part.textureArea.y,
+    part.textureArea.width,
+    part.textureArea.height,
+    {
+      willReadFrequently: true,
+    }
+  );
+  const sourcePixels = imageData.data;
+  const destData = lowerLayerContext.getImageData(
+    part.outerTextureArea.x,
+    part.outerTextureArea.y,
+    part.outerTextureArea.width,
+    part.outerTextureArea.height,
+    {
+      willReadFrequently: true,
+    }
+  );
+  const destPixels = destData.data;
+  for (let i = 0; i < sourcePixels.length; i += 4) {
+    const r = sourcePixels[i];
+    const g = sourcePixels[i + 1];
+    const b = sourcePixels[i + 2];
+    //detect if is not empty
+    if (r != 0 || g != 0 || b != 0) {
+      destPixels[i] = 0;
+      destPixels[i + 1] = 0;
+      destPixels[i + 2] = 0;
+      destPixels[i + 3] = 0;
+    }
+  }
+  lowerLayerContext.putImageData(
+    destData,
+    part.outerTextureArea.x,
+    part.outerTextureArea.y
+  );
+};

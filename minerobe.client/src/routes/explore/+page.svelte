@@ -18,11 +18,7 @@
     OUTFIT_TYPE,
     STEVE_MODEL,
   } from "$src/data/consts";
-  import {
-    CameraConfig,
-    ModelScene,
-    OutfitPackageRender,
-  } from "$src/data/render";
+  import { CameraConfig, ModelScene, TextureRender } from "$src/data/render";
   import {
     CAMERA_CONFIG_BACK,
     CAMERA_CONFIG_FRONT,
@@ -41,7 +37,7 @@
 
       const modelScene = await new ModelScene(STEVE_MODEL.model).Create();
       const modelScene2 = await new ModelScene(ALEX_MODEL.model).Create();
-      const render = new OutfitPackageRender($defaultRenderer)
+      const render = new TextureRender($defaultRenderer)
         .SetCameraOptions(GetCameraConfigForType(OUTFIT_TYPE.DEFAULT))
         .SetModelScene(modelScene);
 
