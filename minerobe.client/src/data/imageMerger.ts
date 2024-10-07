@@ -160,51 +160,7 @@ const replaceLowerPart = function (imgContext, lowerLayerContext, part) {
     part.outerTextureArea.y
   );
 };
-const flatPart = function (imgContext, part) {
-  const imageData = imgContext.getImageData(
-    part.textureArea.x,
-    part.textureArea.y,
-    part.textureArea.width,
-    part.textureArea.height,
-    {
-      willReadFrequently: true,
-    }
-  );
-  const outerImageData = imgContext.getImageData(
-    part.outerTextureArea.x,
-    part.outerTextureArea.y,
-    part.outerTextureArea.width,
-    part.outerTextureArea.height,
-    {
-      willReadFrequently: true,
-    }
-  );
-  const sourcePixels = outerImageData.data;
-  const destPixels = imageData.data;
-  for (let i = 0; i < sourcePixels.length; i += 4) {
-    const r = sourcePixels[i];
-    const g = sourcePixels[i + 1];
-    const b = sourcePixels[i + 2];
-    //detect if is not empty
-    if (r != 0 || g != 0 || b != 0) {
-      destPixels[i] = r;
-      destPixels[i + 1] = g;
-      destPixels[i + 2] = b;
-      destPixels[i + 3] = 255;
-      //clear outer
-      sourcePixels[i] = 0;
-      sourcePixels[i + 1] = 0;
-      sourcePixels[i + 2] = 0;
-      sourcePixels[i + 3] = 0;
-    }
-  }
-  imgContext.putImageData(
-    outerImageData,
-    part.outerTextureArea.x,
-    part.outerTextureArea.y
-  );
-  imgContext.putImageData(imageData, part.textureArea.x, part.textureArea.y);
-};
+
 export const MergeLayersToImage = async function (
   layers: OutfitLayer[],
   config: OutfitPackageRenderConfig

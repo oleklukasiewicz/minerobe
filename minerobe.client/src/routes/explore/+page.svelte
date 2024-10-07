@@ -15,10 +15,16 @@
   import {
     ALEX_MODEL,
     APP_STATE,
+    MODEL_TYPE,
     OUTFIT_TYPE,
     STEVE_MODEL,
   } from "$src/data/consts";
-  import { CameraConfig, ModelScene, TextureRender } from "$src/data/render";
+  import {
+    CameraConfig,
+    ModelScene,
+    OutfitPackageToTextureConverter,
+    TextureRender,
+  } from "$src/data/render";
   import {
     CAMERA_CONFIG_BACK,
     CAMERA_CONFIG_FRONT,
@@ -28,42 +34,52 @@
   import ClapAnimation from "$src/animation/clap";
   import DefaultAnimation from "$src/animation/default";
   import WavingAnimation from "$src/animation/waving";
+  import { GetPackage } from "$src/api/pack";
   let laoded = false;
   let renderNode: any;
   let renderNode2: any;
+  let test: any;
   onMount(async () => {
     appState.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
 
-      const modelScene = await new ModelScene(STEVE_MODEL.model).Create();
-      const modelScene2 = await new ModelScene(ALEX_MODEL.model).Create();
       const render = new TextureRender($defaultRenderer)
-        .SetCameraOptions(GetCameraConfigForType(OUTFIT_TYPE.DEFAULT))
-        .SetModelScene(modelScene);
-
-      await render
-        .SetNode(renderNode)
-        .SetTexture($BASE_TEXTURE)
-        .then((x) => x.RenderStatic());
-      await render
-        .SetModelScene(modelScene2)
         .SetCameraOptions(new CameraConfig())
         .SetNode(renderNode2)
-        .AddAnimation(WavingAnimation)
+        //.AddAnimation(WavingAnimation)
         .AddAnimation(DefaultAnimation)
+        .SetBackground(0x202020);
+
+      var pack = await GetPackage("7f1f0171-7768-4018-a35e-25937ed40ad4");
+
+      var merger = new OutfitPackageToTextureConverter(pack);
+      test = await merger
+        .SetBaseTexture($planksTexture)
+        .SetModel(MODEL_TYPE.STEVE)
+        .ConvertAsync()
+        .then(async (x) => await x.AsNotFlatten());
+
+      const modelScene2 = await new ModelScene(
+        merger.GetModelMap().model
+      ).Create();
+      await render
+        .SetModelScene(modelScene2)
         .AddShadow()
         .AddFloor(floorTexture)
-        .SetBackground(0x202020)
-        .SetTexture($planksTexture)
-        .then((x) => x.RenderDynamic());
+        .RenderDynamic()
+        .SetTextureAsync(test);
 
+      setTimeout(async () => {
+        const modelScene3 = await new ModelScene(ALEX_MODEL.model).Create();
+        test = (await merger.SetModel("alex").ConvertAsync()).GetTexture();
+        await render.SetModelScene(modelScene3).SetTextureAsync(test);
+      }, 2000);
       laoded = true;
     });
   });
 </script>
 
 <div class="layout">
-  <img bind:this={renderNode} style="width: 300px;height:300px" />
   <div bind:this={renderNode2} style="width: 600px;height:600px" />
 </div>
 
