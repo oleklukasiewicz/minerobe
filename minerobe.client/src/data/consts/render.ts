@@ -1,5 +1,6 @@
-import { CameraConfig } from "$src/data/render";
+import { CameraConfig, ModelScene } from "$src/data/render";
 import * as THREE from "three";
+import { ALEX_MODEL, STEVE_MODEL } from "../consts";
 
 export const CAMERA_CONFIG_FRONT = new CameraConfig(
   1.5,

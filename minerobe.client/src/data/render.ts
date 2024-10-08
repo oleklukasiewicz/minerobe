@@ -567,7 +567,7 @@ export class TextureRender {
   private renderingActive: boolean = false;
   private shadowsEnabled: boolean = false;
   private shadowScene: any = null;
-  private floorScene: boolean = false;
+  private floorScene: boolean = null;
 
   //for dynamic render
   private clock = null;
@@ -774,6 +774,7 @@ export class TextureRender {
     return this;
   };
   AddShadow = function (): TextureRender {
+    if (this.shadowScene != null) return this;
     this.shadowsEnabled = true;
 
     this.renderer.shadowMap.enabled = true;
@@ -803,9 +804,11 @@ export class TextureRender {
     this.shadowsEnabled = false;
     if (this.shadowScene != null)
       this.modelScene.scene.remove(this.shadowScene);
+    this.shadowScene = null;
     return this;
   };
   AddFloor = function (texture: string): TextureRender {
+    if (this.floorScene != null) return this;
     const floorTexture = new THREE.TextureLoader().load(texture);
     const floorGeometry = new THREE.PlaneGeometry(3, 3, 3, 3);
     const floorMaterial = new THREE.MeshStandardMaterial({
@@ -823,6 +826,7 @@ export class TextureRender {
   };
   RemoveFloor = function (): TextureRender {
     if (this.floorScene != null) this.modelScene.scene.remove(this.floorScene);
+    this.floorScene = null;
     return this;
   };
   SetBackground = function (color: THREE.Color): TextureRender {
@@ -895,9 +899,7 @@ export class OutfitPackageToTextureConverter {
   private basetexture: string;
   private excludedPartsFromFlat: string[] = ["head"];
 
-  constructor(outfitPackage: OutfitPackage) {
-    this.outfitPackage = outfitPackage;
-  }
+  constructor() {}
   SetOutfitPackage = function (
     outfitPackage: OutfitPackage
   ): OutfitPackageToTextureConverter {
@@ -935,6 +937,14 @@ export class OutfitPackageToTextureConverter {
   };
   SetLayerId = function (layerId: string): OutfitPackageToTextureConverter {
     this.layerId = layerId;
+    return this;
+  };
+  SetAsFlatten = function (): OutfitPackageToTextureConverter {
+    this.isFlatten = true;
+    return this;
+  };
+  SetAsNotFlatten = function (): OutfitPackageToTextureConverter {
+    this.isFlatten = false;
     return this;
   };
   AsFlattenAsync = async function (): Promise<string> {
@@ -1008,6 +1018,12 @@ export class OutfitPackageToTextureConverter {
     }
     this.texture = texture;
     return this;
+  };
+  ConvertAsyncWithFlattenSettings = async function (): Promise<string> {
+    await this.ConvertAsync();
+    if (this.isFlatten) await this.AsFlattenAsync();
+    else await this.AsNotFlatten();
+    return this.texture;
   };
   ConvertFromOptionsAsync = async function (
     options: OutfitPackageTextureConfig

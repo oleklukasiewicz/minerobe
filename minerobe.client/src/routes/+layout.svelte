@@ -14,6 +14,7 @@
   import { getCurrentUser } from "$src/api/auth";
   import ToastController from "$lib/components/other/ToastController/ToastController.svelte";
   import Navigation from "$lib/components/other/Navigation/Navigation.svelte";
+  import { Initialize } from "$src/data/static";
 
   export const load = async () => {
     if (browser) {
@@ -24,6 +25,7 @@
   onMount(async () => {
     await preSetup();
     await getCurrentUser();
+    await Initialize();
     setup();
   });
 </script>

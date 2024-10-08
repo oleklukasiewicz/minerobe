@@ -10,6 +10,20 @@ import {
 } from "svelte/store";
 import type { MinerobeUser } from "$src/model/user";
 import { APP_STATE } from "./consts/app";
+import { ModelScene } from "./render";
+import { ALEX_MODEL } from "./consts/model";
+import { STEVE_MODEL } from "./consts";
+
+//steve modelscene
+const steveModelSceneWritable: Writable<ModelScene> = writable(null);
+export const STEVE_MODELSCENE: Readable<ModelScene> = readonly(
+  steveModelSceneWritable
+);
+//alex modelscene
+const alexModelSceneWritable: Writable<ModelScene> = writable(null);
+export const ALEX_MODELSCENE: Readable<ModelScene> = readonly(
+  alexModelSceneWritable
+);
 
 //base model texture
 export const BASE_TEXTURE: Readable<string> = readable(baseModelTextureRaw);
@@ -46,13 +60,15 @@ export const WS_CONNECTION: Readable<any> = readonly(
 );
 
 //initialize static data
-export const Initialize = function () {
+export const Initialize = async function () {
   //setup mobile view
   const matcher = window.matchMedia("(max-width: 768px)");
   isMobileViewWritable.set(matcher.matches);
   matcher.addEventListener("change", (e) => {
     isMobileViewWritable.set(e.matches);
   });
+  alexModelSceneWritable.set(await new ModelScene(ALEX_MODEL.model).Create());
+  steveModelSceneWritable.set(await new ModelScene(STEVE_MODEL.model).Create());
 
   //setup default renderer
   defaultRendererWritable.update((renderer: any) => {
