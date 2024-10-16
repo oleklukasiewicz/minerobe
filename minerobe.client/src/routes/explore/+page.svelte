@@ -7,20 +7,27 @@
     defaultRenderer,
     planksTexture,
   } from "$data/cache";
-  import { ALEX_MODEL, APP_STATE } from "$src/data/consts";
+  import { ALEX_MODEL, APP_STATE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
   import { GetPackage } from "$src/api/pack";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+  import { GetWardrobePackages } from "$src/api/wardrobe";
+  import { OutfitFilter } from "$src/model/filter";
   let laoded = false;
   let loadedPackage: any;
   let model = "alex";
   let isflat = false;
   let laterId = null;
+  var packages = [];
   onMount(async () => {
     appState.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
 
-      loadedPackage = await GetPackage("7f1f0171-7768-4018-a35e-25937ed40ad4");
+      var filter= new OutfitFilter();
+      filter.type=PACKAGE_TYPE.OUTFIT_SET;
 
+      var packagesits = await GetWardrobePackages(filter);
+      packages = packagesits.items;
+      
       setTimeout(async () => {
         model = "steve";
         //isflat = true;
@@ -34,14 +41,16 @@
 <div class="layout">
   <div style="width: 600px;height:600px">
     {#if laoded}
-      <OutfitPackageRender
-        source={loadedPackage}
-        isDynamic={true}
-        layerId={laterId}
-        isFlatten={isflat}
-        baseTexture={$baseTexture}
-        {model}
-      />
+      {#each packages as item}
+        <OutfitPackageRender
+          source={item}
+          isDynamic={false}
+          layerId={laterId}
+          isFlatten={isflat}
+          baseTexture={$baseTexture}
+          model={item.model}
+        />
+      {/each}
     {/if}
   </div>
 </div>

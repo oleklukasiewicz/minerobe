@@ -11,7 +11,7 @@
   } from "$src/data/static";
   import type { OutfitPackage } from "$src/model/package";
   import floorTexture from "$texture/floor.png?url";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
 
   export let source: string | OutfitPackage;
   export let model: "alex" | "steve" = "alex";
@@ -22,6 +22,7 @@
   export let renderer = $DEFAULT_RENDERER;
   export let baseTexture = "";
 
+  let renderReady = false;
   let cachedtexture: string = null;
   let renderNode: any;
   let merger: OutfitPackageToTextureConverter =
@@ -33,6 +34,9 @@
   onMount(async () => {
     textureRenderer.SetNode(renderNode);
     await setRenderMode(isDynamic);
+  });
+  onDestroy(() => {
+    textureRenderer.StopRendering();
   });
   const setRenderMode = async (v) => {
     if (isDynamic) {
@@ -60,6 +64,8 @@
         .ConvertAsyncWithFlattenSettings();
     }
     await textureRenderer.SetTextureAsync(cachedtexture);
+    if (!isDynamic) textureRenderer.RenderStatic();
+    renderReady = true;
   };
   const setModel = async (v) => {
     if (model === "alex") {
@@ -107,7 +113,7 @@
 <div>
   {#if !isDynamic}
     <!-- svelte-ignore a11y-missing-attribute -->
-    <img bind:this={renderNode} />
+      <img bind:this={renderNode} class:renderReady/>
   {:else}
     <div bind:this={renderNode} />
   {/if}
@@ -121,5 +127,9 @@
   img {
     width: 100%;
     height: 100%;
+    opacity: 0;
+    &.renderReady {
+      opacity: 1;
+    }
   }
 </style>

@@ -568,6 +568,7 @@ export class TextureRender {
   private shadowsEnabled: boolean = false;
   private shadowScene: any = null;
   private floorScene: boolean = null;
+  private temporaryRenderNode: any = null;
 
   //for dynamic render
   private clock = null;
@@ -722,6 +723,14 @@ export class TextureRender {
     this.node = node;
     return this;
   };
+  SetTemporaryRenderNode = function (node: any): TextureRender {
+    this.temporaryRenderNode = node;
+    return this;
+  };
+  RemoveTemporaryRenderNode = function (): TextureRender {
+    this.temporaryRenderNode = null;
+    return this;
+  };
   SetCameraOptions = function (cameraOptions: any): TextureRender {
     this.cameraOptions = cameraOptions;
     return this;
@@ -731,10 +740,15 @@ export class TextureRender {
     this._loadCameraOptions();
     this._applyTextureToModel();
 
-    this.node.appendChild(this.renderer.domElement);
+    if (this.temporaryRenderNode != null)
+      this.temporaryRenderNode.appendChild(this.renderer.domElement);
+    else this.node.appendChild(this.renderer.domElement);
+
     this.renderer.render(this.modelScene.scene, this.modelScene.camera);
     const dataUrl = this.renderer.domElement.toDataURL();
-    this.node.children[0].remove();
+
+    if (this.temporaryRenderNode == null) this.node.children[0].remove();
+
     this.node.src = dataUrl;
     return this;
   };
