@@ -603,6 +603,8 @@ export class TextureRender {
     });
   };
   private _loadCameraOptions = function () {
+    if (this.modelScene == null) return;
+
     const options = this.cameraOptions || new CameraConfig();
     this.modelScene.camera.position.x = options.position.x;
     this.modelScene.camera.position.y = options.position.y;
@@ -670,49 +672,45 @@ export class TextureRender {
   }
   private _updateRenderSize = function () {
     const canvas = this.node;
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
-    const fov = 1;
-
-    this.modelScene.camera.aspect = width / height;
-    this.modelScene.camera.updateProjectionMatrix();
-    this.renderer.setSize(width * fov, height * fov);
-  };
-  private _loadCanvasSize = function () {
-    const canvas = this.node;
     const width = canvas.clientWidth != 0 ? canvas.clientWidth : 300;
     const height = canvas.clientHeight != 0 ? canvas.clientHeight : 300;
     const canvasSizeMultiplier = 1;
     const fov = 1;
+
+    if (this.renderer == null) return;
 
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(
       width * fov * canvasSizeMultiplier,
       height * fov * canvasSizeMultiplier
     );
+    this.modelScene.camera.aspect = width / height;
+    this.modelScene.camera.updateProjectionMatrix();
   };
 
   constructor(renderer: any = DEFAULT_RENDERER) {
     this.renderer = renderer;
     this.textureLoader = new THREE.TextureLoader();
   }
-  SetModelScene = function (modelScene: ModelScene): TextureRender {
-    if (this.modelScene == null) this.modelScene = modelScene;
+  SetModelScene = async function (
+    modelScene: ModelScene
+  ): Promise<TextureRender> {
+    if (this.modelScene == null)
+      this.modelScene = Object.assign({}, modelScene);
     else {
       this.modelScene.scene.remove(this.modelScene.renderScene);
       this.modelScene.scene.add(modelScene.renderScene);
       this.modelScene.renderScene = modelScene.renderScene;
     }
-    if (this.renderingActive) this._applyTextureToModel();
+    if (this.renderingActive) await this._applyTextureToModel();
     if (this.animations.length > 0 && this.renderingActive)
       this._prepareAnimation(this.animations[0], true, true);
-
     return this;
   };
   SetTextureAsync = async function (texture: string): Promise<TextureRender> {
     this.texture = texture;
     this.loadedTexture = await this._loadTexture();
-    if (this.renderingActive) this._applyTextureToModel();
+    if (this.renderingActive) await this._applyTextureToModel();
     return this;
   };
   SetRenderer = function (renderer: any): TextureRender {
@@ -735,23 +733,6 @@ export class TextureRender {
     this.cameraOptions = cameraOptions;
     return this;
   };
-  RenderStatic = function (): TextureRender {
-    this._loadCanvasSize();
-    this._loadCameraOptions();
-    this._applyTextureToModel();
-
-    if (this.temporaryRenderNode != null)
-      this.temporaryRenderNode.appendChild(this.renderer.domElement);
-    else this.node.appendChild(this.renderer.domElement);
-
-    this.renderer.render(this.modelScene.scene, this.modelScene.camera);
-    const dataUrl = this.renderer.domElement.toDataURL();
-
-    if (this.temporaryRenderNode == null) this.node.children[0].remove();
-
-    this.node.src = dataUrl;
-    return this;
-  };
   AddAnimation = function (animation: RenderAnimation): TextureRender {
     if (this.animations.length >= this.animationQueueLimit) return this;
     this.animations.push(animation);
@@ -761,9 +742,31 @@ export class TextureRender {
     this.animationQueueLimit = limit;
     return this;
   };
-  RenderDynamic = function (): TextureRender {
+  RenderStatic = async function (): Promise<TextureRender> {
+    if (this.renderer == null) return this;
+
+    this._loadCameraOptions();
+    this._updateRenderSize();
+    await this._applyTextureToModel();
+
+    if (this.temporaryRenderNode != null)
+      this.temporaryRenderNode.appendChild(this.renderer.domElement);
+    else this.node.appendChild(this.renderer.domElement);
+
+    this.renderer.render(this.modelScene.scene, this.modelScene.camera);
+    const dataUrl = this.renderer.domElement.toDataURL();
+    this.node.src = dataUrl;
+
+    if (this.temporaryRenderNode == null) this.node.children[0].remove();
+    return this;
+  };
+  RenderDynamic = async function (): Promise<TextureRender> {
     this.StopRendering();
     //initial configuration
+    this._loadCameraOptions();
+    this._updateRenderSize();
+    await this._applyTextureToModel();
+
     this.renderingActive = true;
 
     this.clock = new THREE.Clock();
@@ -775,10 +778,6 @@ export class TextureRender {
     this.orbitalControls.maxDistance = 3.0;
     this.orbitalControls.minDistance = -3.5;
 
-    this._loadCameraOptions();
-    this._applyTextureToModel();
-
-    this._updateRenderSize();
     this._render();
     return this;
   };
@@ -844,17 +843,20 @@ export class TextureRender {
     return this;
   };
   SetBackground = function (color: THREE.Color): TextureRender {
+    if (this.renderer == null) return this;
     this.renderer.setClearColor(color, 1);
     return this;
   };
 }
 export class ModelScene {
   model: string;
+  name: string;
   camera: any;
   scene: any;
   renderScene: any;
-  constructor(model: string) {
+  constructor(model: string, name: string) {
     this.model = model;
+    this.name = name;
   }
   async Create() {
     //prepare scene

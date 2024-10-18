@@ -67,8 +67,8 @@ export const Initialize = async function () {
   matcher.addEventListener("change", (e) => {
     isMobileViewWritable.set(e.matches);
   });
-  alexModelSceneWritable.set(await new ModelScene(ALEX_MODEL.model).Create());
-  steveModelSceneWritable.set(await new ModelScene(STEVE_MODEL.model).Create());
+  alexModelSceneWritable.set(await new ModelScene(ALEX_MODEL.model,ALEX_MODEL.name).Create());
+  steveModelSceneWritable.set(await new ModelScene(STEVE_MODEL.model,STEVE_MODEL.name).Create());
 
   //setup default renderer
   defaultRendererWritable.update((renderer: any) => {
