@@ -35,31 +35,29 @@
 
   onMount(async () => {
     textureRenderer.SetNode(renderNode);
+    await loadInitialParams();
     await setRenderMode(isDynamic);
+    initialized = true;
+    renderReady = true;
   });
   onDestroy(() => {
     textureRenderer.StopRendering();
   });
   const setRenderMode = async (v) => {
-    await loadInitialParams();
     if (isDynamic) {
       textureRenderer
         .AddFloor(floorTexture)
         .AddShadow()
-        .SetBackground(0x202020)
-      
-        await textureRenderer.RenderDynamic();
+        .SetBackground(0x202020);
+      await textureRenderer.RenderDynamic();
     } else {
       textureRenderer
         .RemoveFloor()
         .RemoveShadow()
         .SetBackground(0xffffff)
-        .StopRendering()
-        
-        await textureRenderer.RenderStatic();
+        .StopRendering();
+      await textureRenderer.RenderStatic();
     }
-    initialized = true;
-    renderReady = true;
   };
   const loadInitialParams = async function () {
     if (source == null || source == "") return;
