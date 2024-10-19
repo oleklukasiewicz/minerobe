@@ -32,3 +32,12 @@ export const CAMERA_CONFIG_SIDE_IZO2 = new CameraConfig(
   new THREE.Vector3(0, 0.2, 0),
   true
 );
+
+export const CAMERA_CONFIG = {
+  set: new CameraConfig(
+    100,
+    new THREE.Vector3(-1, 0.6, -1),
+    new THREE.Vector3(0, 0.042, 0),
+    true,undefined,0.91
+  ),
+};

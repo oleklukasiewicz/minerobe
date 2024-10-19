@@ -61,37 +61,28 @@
   };
   const loadInitialParams = async function () {
     if (source == null || source == "") return;
+    if (model == "source" && typeof source === "string") {
+      console.error("Model is source but source is string");
+      return;
+    }
+
     if (typeof source !== "string") {
       merger.SetOutfitPackage(source);
       if (layerId != null && layerId != "") merger.SetLayerId(layerId);
       if (baseTexture != null && baseTexture.length > 0)
         merger.SetBaseTexture(baseTexture);
     }
-    if (model == "source" && typeof source === "string") {
-      console.error("Model is source but source is string");
-      return;
-    }
 
     let targetModel = model as string;
-    if (model == "source" && typeof source !== "string") {
+    if (model == "source" && typeof source !== "string")
       targetModel = source.model;
-    }
-    merger.SetModel(
-      targetModel === MODEL_TYPE.ALEX ? MODEL_TYPE.ALEX : MODEL_TYPE.STEVE
-    );
-    await textureRenderer.SetModelScene(
-      targetModel === MODEL_TYPE.ALEX ? $ALEX_MODELSCENE : $STEVE_MODELSCENE
-    );
+    await syncModel(targetModel);
 
-    if (isFlatten) {
-      merger.SetAsFlatten();
-    }
-    cachedtexture = null;
+    if (isFlatten) merger.SetAsFlatten();
     cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
 
-    if (cachedtexture != null) {
+    if (cachedtexture != null)
       await textureRenderer.SetTextureAsync(cachedtexture);
-    }
   };
   const setSource = async (v) => {
     if (!initialized) return;
@@ -101,10 +92,7 @@
     if (typeof source !== "string") {
       if (model == "source") {
         const sourceModel = source.model;
-        await textureRenderer.SetModelScene(
-          sourceModel === MODEL_TYPE.ALEX ? $ALEX_MODELSCENE : $STEVE_MODELSCENE
-        );
-        merger.SetModel(sourceModel);
+        await syncModel(sourceModel);
       }
       cachedtexture = await merger
         .SetOutfitPackage(source)
@@ -117,24 +105,21 @@
   const setModel = async (v) => {
     if (!initialized) return;
 
-    await textureRenderer.SetModelScene(
-      model === MODEL_TYPE.ALEX ? $ALEX_MODELSCENE : $STEVE_MODELSCENE
-    );
-    merger.SetModel(model);
+    await syncModel(model);
     await setSource(source);
   };
   const setFlatten = async (v) => {
     if (!initialized) return;
 
-    if (source != null && cachedtexture != null) {
-      if (isFlatten) {
-        cachedtexture = await merger.AsFlattenAsync();
-      } else {
-        cachedtexture = await merger.AsNotFlatten();
-      }
-      if (cachedtexture != null)
-        await textureRenderer.SetTextureAsync(cachedtexture);
-    }
+    if (source == null && source == "") return;
+    if (isFlatten) merger.SetAsFlatten();
+    else merger.SetAsNotFlatten();
+
+    cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
+
+    if (cachedtexture != null)
+      await textureRenderer.SetTextureAsync(cachedtexture);
+    if (!isDynamic) await textureRenderer.RenderStatic();
   };
   const setLayerId = async (v) => {
     if (!initialized) return;
@@ -150,6 +135,7 @@
     if (!initialized) return;
 
     textureRenderer.SetCameraOptions(cameraOptions);
+    if (!isDynamic) await textureRenderer.RenderStatic();
   };
   const setBaseTexture = async (v) => {
     if (!initialized) return;
@@ -158,6 +144,16 @@
       merger.SetBaseTexture(baseTexture);
     await setSource(source);
   };
+
+  const syncModel = async (modelToSync) => {
+    merger.SetModel(
+      modelToSync == MODEL_TYPE.ALEX ? MODEL_TYPE.ALEX : MODEL_TYPE.STEVE
+    );
+    await textureRenderer.SetModelScene(
+      modelToSync === MODEL_TYPE.ALEX ? $ALEX_MODELSCENE : $STEVE_MODELSCENE
+    );
+  };
+
   $: setModel(model);
   $: setSource(source);
   $: setBaseTexture(baseTexture);

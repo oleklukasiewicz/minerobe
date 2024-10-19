@@ -14,18 +14,21 @@ export class CameraConfig {
   lookAt: THREE.Vector3;
   lookAtEnabled: boolean;
   fov: number;
+  zoom: number;
   constructor(
     fov = 75,
     position: THREE.Vector3 = new THREE.Vector3(0, 0.05, 1),
     lookAt: THREE.Vector3 = new THREE.Vector3(0, 0, 0),
     lookAtEnabled: boolean = true,
-    rotation: THREE.Vector3 = new THREE.Vector3(0, 0, 0)
+    rotation: THREE.Vector3 = new THREE.Vector3(0, 0, 0),
+    zoom: number = 1
   ) {
     this.fov = fov;
     this.position = position;
     this.lookAt = lookAt;
     this.lookAtEnabled = lookAtEnabled;
     this.rotation = rotation;
+    this.zoom = zoom;
   }
 }
 
@@ -585,8 +588,9 @@ export class TextureRender {
     });
   };
   private _applyTextureToModel = async function () {
+    if (this.loadedTexture == null) return;
     this.modelScene.renderScene.traverse((child: any) => {
-      if (child.isMesh && this.loadedTexture != null) {
+      if (child.isMesh) {
         if (this.shadowsEnabled) {
           child.castShadow = true;
           child.receiveShadow = true;
@@ -614,6 +618,7 @@ export class TextureRender {
     this.modelScene.camera.rotation.z = options.rotation.z;
     this.modelScene.camera.lookAt(options.lookAt);
     this.modelScene.camera.fov = options.fov;
+    this.modelScene.camera.zoom = options.zoom;
   };
   private _render = function (_self = this) {
     if (!_self.renderingActive) return;
@@ -763,6 +768,8 @@ export class TextureRender {
   RenderDynamic = async function (): Promise<TextureRender> {
     this.StopRendering();
     //initial configuration
+    this.sceneModel.camera = new THREE.PerspectiveCamera();
+
     this._loadCameraOptions();
     this._updateRenderSize();
     await this._applyTextureToModel();
@@ -861,12 +868,7 @@ export class ModelScene {
   async Create() {
     //prepare scene
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
+    this.camera = new THREE.OrthographicCamera();
 
     const modelLoader = new GLTFLoader();
 
@@ -892,6 +894,15 @@ export class ModelScene {
         resolve(gltf.scene);
       });
     });
+    return this;
+  }
+  ResetPosition() {
+    const renderScene: any = this.renderScene;
+    renderScene.getObjectByName("RightArm").rotation.set(0, 0, 0);
+    renderScene.getObjectByName("LeftArm").rotation.set(0, 0, 0);
+    renderScene.getObjectByName("RightLeg").rotation.set(0, 0, 0);
+    renderScene.getObjectByName("LeftLeg").rotation.set(0, 0, 0);
+    renderScene.getObjectByName("Head").rotation.set(0, 0, 0);
     return this;
   }
 }

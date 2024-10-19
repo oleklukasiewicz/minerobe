@@ -17,6 +17,7 @@
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import { GetWardrobePackages } from "$src/api/wardrobe";
   import { OutfitFilter } from "$src/model/filter";
+  import { CAMERA_CONFIG } from "$src/data/consts/render";
   let laoded = false;
   let loadedPackage: any;
   let model = "alex";
@@ -34,10 +35,10 @@
       packages = packagesits.items;
 
       setTimeout(async () => {
-        packages = packages.map((x) => {
-          x.model = x.model == "steve" ? "alex" : "steve";
-          return x;
-        });
+        // packages = packages.map((x) => {
+        //   x.model = x.model == "steve" ? "alex" : "steve";
+        //   return x;
+        // });
         isflat = true;
       }, 3000);
       laoded = true;
@@ -53,6 +54,7 @@
           source={item}
           isDynamic={false}
           isFlatten={isflat}
+          cameraOptions={CAMERA_CONFIG.set}
           baseTexture={$baseTexture}
         />
       {/each}
