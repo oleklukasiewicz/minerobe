@@ -32,14 +32,23 @@
       filter.type = PACKAGE_TYPE.OUTFIT_SET;
 
       var packagesits = await GetWardrobePackages(filter);
+      var outfit = await GetPackage("198fc000-5982-4d63-beb2-fcf28a23a9a0");
+      var outfit2= await GetPackage("44fc8e9b-bced-4204-a8d0-86cf7d268a5b");
+      var outfit3= await GetPackage("b4a96641-ee20-487f-a2c2-4f5ad882af95");
+      var outfit4= await GetPackage("96ba5d80-c9a1-4c3d-8494-c71fa8c69b65");
       packages = packagesits.items;
+      packages.push(outfit);
+      packages.push(outfit2);
+      packages.push(outfit3);
+      packages.push(outfit4);
+
 
       setTimeout(async () => {
-        // packages = packages.map((x) => {
-        //   x.model = x.model == "steve" ? "alex" : "steve";
-        //   return x;
-        // });
-        isflat = true;
+        packages = packages.map((x) => {
+          x.model = x.model == "steve" ? "alex" : "steve";
+          return x;
+        });
+        //isflat = true;
       }, 3000);
       laoded = true;
     });
@@ -54,8 +63,10 @@
           source={item}
           isDynamic={false}
           isFlatten={isflat}
-          cameraOptions={CAMERA_CONFIG.set}
-          baseTexture={$baseTexture}
+          cameraOptions={CAMERA_CONFIG.hoodie}
+          baseTexture={item.type == PACKAGE_TYPE.OUTFIT_SET
+            ? $baseTexture
+            : null}
         />
       {/each}
     {/if}

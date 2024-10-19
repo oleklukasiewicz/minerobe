@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { MODEL_TYPE } from "$src/data/consts";
+  import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
   import {
     CameraConfig,
     OutfitPackageToTextureConverter,
@@ -7,8 +7,10 @@
   } from "$src/data/render";
   import {
     ALEX_MODELSCENE,
+    ALEX_MODELSCENE_BASE,
     DEFAULT_RENDERER,
     STEVE_MODELSCENE,
+    STEVE_MODELSCENE_BASE,
   } from "$src/data/static";
   import type { OutfitPackage } from "$src/model/package";
   import floorTexture from "$texture/floor.png?url";
@@ -149,9 +151,19 @@
     merger.SetModel(
       modelToSync == MODEL_TYPE.ALEX ? MODEL_TYPE.ALEX : MODEL_TYPE.STEVE
     );
-    await textureRenderer.SetModelScene(
-      modelToSync === MODEL_TYPE.ALEX ? $ALEX_MODELSCENE : $STEVE_MODELSCENE
-    );
+
+    let modelScene = null;
+    if (typeof source !== "string" && source.type === PACKAGE_TYPE.OUTFIT_SET) {
+      modelScene =
+        modelToSync === MODEL_TYPE.ALEX ? $ALEX_MODELSCENE : $STEVE_MODELSCENE;
+    } else {
+      modelScene =
+        modelToSync === MODEL_TYPE.ALEX
+          ? $ALEX_MODELSCENE_BASE
+          : $STEVE_MODELSCENE_BASE;
+    }
+
+    await textureRenderer.SetModelScene(modelScene);
   };
 
   $: setModel(model);

@@ -16,12 +16,12 @@ export class CameraConfig {
   fov: number;
   zoom: number;
   constructor(
-    fov = 75,
-    position: THREE.Vector3 = new THREE.Vector3(0, 0.05, 1),
+    position: THREE.Vector3 = new THREE.Vector3(0, 0, 0),
     lookAt: THREE.Vector3 = new THREE.Vector3(0, 0, 0),
-    lookAtEnabled: boolean = true,
-    rotation: THREE.Vector3 = new THREE.Vector3(0, 0, 0),
-    zoom: number = 1
+    zoom: number = 1,
+    fov: number = 1,
+    lookAtEnabled: boolean = false,
+    rotation: THREE.Vector3 = new THREE.Vector3(0, 0, 0)
   ) {
     this.fov = fov;
     this.position = position;

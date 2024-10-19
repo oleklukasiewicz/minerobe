@@ -25,6 +25,15 @@ export const ALEX_MODELSCENE: Readable<ModelScene> = readonly(
   alexModelSceneWritable
 );
 
+const steveModelSceneBaseWritable: Writable<any> = writable(null);
+export const STEVE_MODELSCENE_BASE: Readable<any> = readonly(
+  steveModelSceneBaseWritable
+);
+const alexModelSceneBaseWritable: Writable<any> = writable(null);
+export const ALEX_MODELSCENE_BASE: Readable<any> = readonly(
+  alexModelSceneBaseWritable
+);
+
 //base model texture
 export const BASE_TEXTURE: Readable<string> = readable(baseModelTextureRaw);
 
@@ -68,14 +77,20 @@ export const Initialize = async function () {
     isMobileViewWritable.set(e.matches);
   });
   alexModelSceneWritable.set(
-    await new ModelScene(ALEX_MODEL.model, ALEX_MODEL.name)
-      .Create()
-      .then((modelScene) => modelScene.ResetPosition())
+    await new ModelScene(ALEX_MODEL.model, ALEX_MODEL.name).Create()
   );
   steveModelSceneWritable.set(
+    await new ModelScene(STEVE_MODEL.model, STEVE_MODEL.name).Create()
+  );
+  alexModelSceneBaseWritable.set(
+    await new ModelScene(ALEX_MODEL.model, ALEX_MODEL.name)
+      .Create()
+      .then((x) => x.ResetPosition())
+  );
+  steveModelSceneBaseWritable.set(
     await new ModelScene(STEVE_MODEL.model, STEVE_MODEL.name)
       .Create()
-      .then((modelScene) => modelScene.ResetPosition())
+      .then((x) => x.ResetPosition())
   );
 
   //setup default renderer
