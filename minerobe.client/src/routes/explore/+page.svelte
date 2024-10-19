@@ -33,15 +33,18 @@
 
       var packagesits = await GetWardrobePackages(filter);
       var outfit = await GetPackage("198fc000-5982-4d63-beb2-fcf28a23a9a0");
-      var outfit2= await GetPackage("44fc8e9b-bced-4204-a8d0-86cf7d268a5b");
-      var outfit3= await GetPackage("b4a96641-ee20-487f-a2c2-4f5ad882af95");
-      var outfit4= await GetPackage("96ba5d80-c9a1-4c3d-8494-c71fa8c69b65");
+      var outfit2 = await GetPackage("44fc8e9b-bced-4204-a8d0-86cf7d268a5b");
+      var outfit3 = await GetPackage("b4a96641-ee20-487f-a2c2-4f5ad882af95");
+      var outfit4 = await GetPackage("96ba5d80-c9a1-4c3d-8494-c71fa8c69b65");
+      var outfit5 = await GetPackage("1e80b42d-d9df-4d0d-8b4a-0248de9464c3");
+      var outfit6 = await GetPackage("2755a66a-5dc9-4657-8dfb-a071410e3dcf");
       packages = packagesits.items;
       packages.push(outfit);
       packages.push(outfit2);
       packages.push(outfit3);
       packages.push(outfit4);
-
+      packages.push(outfit5);
+      packages.push(outfit6);
 
       setTimeout(async () => {
         packages = packages.map((x) => {
@@ -58,12 +61,12 @@
 <div class="layout">
   <div class="test">
     {#if laoded}
-      {#each packages as item}
+      {#each packages as item (item.id)}
         <OutfitPackageRender
           source={item}
+          layerId={item.type == PACKAGE_TYPE.OUTFIT ? item.layers[0].id : null}
           isDynamic={false}
           isFlatten={isflat}
-          cameraOptions={CAMERA_CONFIG.hoodie}
           baseTexture={item.type == PACKAGE_TYPE.OUTFIT_SET
             ? $baseTexture
             : null}

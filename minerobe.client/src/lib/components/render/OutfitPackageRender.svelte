@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+  import { MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+  import { CAMERA_CONFIG } from "$src/data/consts/render";
   import {
     CameraConfig,
     OutfitPackageToTextureConverter,
@@ -21,7 +22,7 @@
   export let isDynamic: boolean = false;
   export let isFlatten: boolean = false;
   export let layerId: string = "";
-  export let cameraOptions: CameraConfig = new CameraConfig();
+  export let cameraOptions: CameraConfig | "auto" = "auto";
   export let renderer = $DEFAULT_RENDERER;
   export let baseTexture = "";
 
@@ -83,6 +84,12 @@
     if (isFlatten) merger.SetAsFlatten();
     cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
 
+    if (cameraOptions == "auto" && typeof source !== "string") {
+      textureRenderer.SetCameraOptions(
+        CAMERA_CONFIG.getForOutfit(source.outfitType)
+      );
+    }
+
     if (cachedtexture != null)
       await textureRenderer.SetTextureAsync(cachedtexture);
   };
@@ -95,6 +102,11 @@
       if (model == "source") {
         const sourceModel = source.model;
         await syncModel(sourceModel);
+      }
+      if (cameraOptions == "auto") {
+        textureRenderer.SetCameraOptions(
+          CAMERA_CONFIG.getForOutfit(source.outfitType)
+        );
       }
       cachedtexture = await merger
         .SetOutfitPackage(source)
@@ -136,7 +148,12 @@
   const setCameraOptions = async (v) => {
     if (!initialized) return;
 
-    textureRenderer.SetCameraOptions(cameraOptions);
+    let targetCameraOptions = cameraOptions;
+    if (cameraOptions == "auto" && typeof source !== "string") {
+      targetCameraOptions = CAMERA_CONFIG.getForOutfit(source.outfitType);
+    }
+    textureRenderer.SetCameraOptions(targetCameraOptions);
+
     if (!isDynamic) await textureRenderer.RenderStatic();
   };
   const setBaseTexture = async (v) => {
@@ -146,6 +163,7 @@
       merger.SetBaseTexture(baseTexture);
     await setSource(source);
   };
+  const baseModelTypesList = [OUTFIT_TYPE.OUTFIT_SET,OUTFIT_TYPE.SHOES,OUTFIT_TYPE.BOTTOM];
 
   const syncModel = async (modelToSync) => {
     merger.SetModel(
@@ -153,7 +171,10 @@
     );
 
     let modelScene = null;
-    if (typeof source !== "string" && source.type === PACKAGE_TYPE.OUTFIT_SET) {
+    if (
+      typeof source !== "string" &&
+      baseModelTypesList.includes(source.outfitType)
+    ) {
       modelScene =
         modelToSync === MODEL_TYPE.ALEX ? $ALEX_MODELSCENE : $STEVE_MODELSCENE;
     } else {
