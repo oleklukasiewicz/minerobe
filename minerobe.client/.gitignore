@@ -11,3 +11,5 @@ vite.config.ts.timestamp-*
 
 .vercel
 /cache/*
+
+vite.config.ts
