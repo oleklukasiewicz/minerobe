@@ -18,6 +18,7 @@
   import { GetWardrobePackages } from "$src/api/wardrobe";
   import { OutfitFilter } from "$src/model/filter";
   import { CAMERA_CONFIG } from "$src/data/consts/render";
+  import OutfitPackageListItem from "$lib/components/outfit/OutfitPackageListItem/OutfitPackageListItem.svelte";
   let laoded = false;
   let loadedPackage: any;
   let model = "alex";
@@ -37,7 +38,7 @@
       var outfit3 = await GetPackage("b4a96641-ee20-487f-a2c2-4f5ad882af95");
       var outfit4 = await GetPackage("96ba5d80-c9a1-4c3d-8494-c71fa8c69b65");
       var outfit5 = await GetPackage("1e80b42d-d9df-4d0d-8b4a-0248de9464c3");
-      var outfit6 = await GetPackage("2755a66a-5dc9-4657-8dfb-a071410e3dcf");
+      var outfit6 = await GetPackage("0cd1da07-1b5e-4339-9c21-2c73c7fcb153");
       packages = packagesits.items;
       packages.push(outfit);
       packages.push(outfit2);
@@ -47,10 +48,10 @@
       packages.push(outfit6);
 
       setTimeout(async () => {
-        packages = packages.map((x) => {
-          x.model = x.model == "steve" ? "alex" : "steve";
-          return x;
-        });
+        // packages = packages.map((x) => {
+        //   x.model = x.model == "steve" ? "alex" : "steve";
+        //   return x;
+        // });
         //isflat = true;
       }, 3000);
       laoded = true;
@@ -60,6 +61,14 @@
 
 <div class="layout">
   <div class="test">
+    {#if laoded}
+      <OutfitPackageListItem
+        item={packages[11]}
+        baseTexture={$planksTexture}
+      />
+    {/if}
+  </div>
+  <!-- <div class="test">
     {#if laoded}
       {#each packages as item (item.id)}
         <OutfitPackageRender
@@ -73,7 +82,7 @@
         />
       {/each}
     {/if}
-  </div>
+  </div> -->
 </div>
 
 <style lang="scss">

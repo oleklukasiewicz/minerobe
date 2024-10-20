@@ -10,9 +10,9 @@ export const CAMERA_CONFIG = {
     return cameraConfig;
   },
   set: new CameraConfig(
-    new THREE.Vector3(-1, 0.042 + angle, -1),
-    new THREE.Vector3(0, 0.042, 0),
-    0.91
+    new THREE.Vector3(-1, 0 + angle, -1),
+    new THREE.Vector3(0, 0, 0),
+    0.905
   ),
   top: new CameraConfig(
     new THREE.Vector3(-1, 0.1 + angle, -1),

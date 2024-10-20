@@ -1,41 +1,45 @@
 <script lang="ts">
-  export let colorName: string;
+  import { COLORS } from "$src/data/consts";
+
   export let color: string;
-  export let small = false;
-  export let noBorder = false;
-  export let style = "";
+  export let style: string = "";
+
+  let normalizedColor;
+  const normalizeColor = function () {
+    const colorFromArray = COLORS[color];
+    if (colorFromArray)
+      normalizedColor =
+        "rgb(" +
+        colorFromArray.r +
+        "," +
+        colorFromArray.g +
+        "," +
+        colorFromArray.b +
+        ")";
+    else normalizedColor = color;
+  };
+  $: normalizeColor();
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <span
-  class:small
-  class:noBorder
-  on:click|stopPropagation
-  class="color-view"
-  title={colorName}
-  style={style + `background-color: ${color};`}
+  on:click
+  class="color-badge"
+  title={color}
+  style={`background-color: ${normalizedColor} ` + style}
 ></span>
 
 <style lang="scss">
-  .color-view {
-    min-width: 16px;
-    min-height: 16px;
-    margin: 3px 2px;
-    vertical-align: middle;
-    display: inline-table;
-    transition: var(--time);
+  .color-badge {
+    width: 16px;
+    height: 16px;
+    display: table;
     aspect-ratio: 1;
     border: 2px solid var(--color-theme-D2);
-    &.noBorder {
-      border: none;
-    }
-    &.small {
-      min-width: 10px;
-      min-height: 10px;
-      margin: 3px 2px;
-      vertical-align: top;
+    &:hover {
+      border-color: var(--color-accent-L2);
     }
   }
 </style>

@@ -854,6 +854,11 @@ export class TextureRender {
     this.renderer.setClearColor(color, 1);
     return this;
   };
+  RemoveBackground = function (): TextureRender {
+    if (this.renderer == null) return this;
+    this.renderer.setClearColor(new THREE.Color(0x000000), 0);
+    return this;
+  };
 }
 export class ModelScene {
   model: string;

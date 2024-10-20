@@ -57,7 +57,7 @@
       textureRenderer
         .RemoveFloor()
         .RemoveShadow()
-        .SetBackground(0xffffff)
+        .RemoveBackground()
         .StopRendering();
       await textureRenderer.RenderStatic();
     }
@@ -143,6 +143,7 @@
         .SetLayerId(layerId)
         .ConvertAsyncWithFlattenSettings();
       await textureRenderer.SetTextureAsync(cachedtexture);
+      if (!isDynamic) await textureRenderer.RenderStatic();
     }
   };
   const setCameraOptions = async (v) => {
@@ -163,7 +164,11 @@
       merger.SetBaseTexture(baseTexture);
     await setSource(source);
   };
-  const baseModelTypesList = [OUTFIT_TYPE.OUTFIT_SET,OUTFIT_TYPE.SHOES,OUTFIT_TYPE.BOTTOM];
+  const baseModelTypesList = [
+    OUTFIT_TYPE.OUTFIT_SET,
+    OUTFIT_TYPE.SHOES,
+    OUTFIT_TYPE.BOTTOM,
+  ];
 
   const syncModel = async (modelToSync) => {
     merger.SetModel(
@@ -208,6 +213,9 @@
 <style lang="scss">
   .outfit-render {
     aspect-ratio: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
     div {
       width: 100%;
       height: 100%;

@@ -1,0 +1,41 @@
+.outfit-package-list-item {
+  aspect-ratio: 8/5;
+  border: 2px solid transparent;
+  color: var(--color-theme-font);
+  display: flex;
+  flex-direction: column;
+  .render {
+    background-color: var(--color-theme-L1);
+    aspect-ratio: 1;
+    width: 100%;
+    position: relative;
+    .colors {
+      display: none;
+      flex-direction: row;
+      gap: 4px;
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+    }
+  }
+  .data {
+    padding: 10px;
+    box-sizing: border-box;
+    .title {
+      color: inherit;
+      font-family: minecraft;
+      font-size: var(--size-font-base);
+    }
+  }
+  &:hover {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent-D2);
+    color: var(--color-accent-font);
+    .render {
+      background-color: var(--color-accent-D1);
+      .colors {
+        display: flex;
+      }
+    }
+  }
+}
