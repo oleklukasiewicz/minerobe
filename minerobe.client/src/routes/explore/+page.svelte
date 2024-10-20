@@ -30,22 +30,10 @@
       if (state != APP_STATE.READY) return;
 
       var filter = new OutfitFilter();
-      filter.type = PACKAGE_TYPE.OUTFIT_SET;
+      filter.type = PACKAGE_TYPE.OUTFIT;
 
       var packagesits = await GetWardrobePackages(filter);
-      var outfit = await GetPackage("198fc000-5982-4d63-beb2-fcf28a23a9a0");
-      var outfit2 = await GetPackage("44fc8e9b-bced-4204-a8d0-86cf7d268a5b");
-      var outfit3 = await GetPackage("b4a96641-ee20-487f-a2c2-4f5ad882af95");
-      var outfit4 = await GetPackage("96ba5d80-c9a1-4c3d-8494-c71fa8c69b65");
-      var outfit5 = await GetPackage("1e80b42d-d9df-4d0d-8b4a-0248de9464c3");
-      var outfit6 = await GetPackage("0cd1da07-1b5e-4339-9c21-2c73c7fcb153");
       packages = packagesits.items;
-      packages.push(outfit);
-      packages.push(outfit2);
-      packages.push(outfit3);
-      packages.push(outfit4);
-      packages.push(outfit5);
-      packages.push(outfit6);
 
       setTimeout(async () => {
         // packages = packages.map((x) => {
@@ -62,10 +50,7 @@
 <div class="layout">
   <div class="test">
     {#if laoded}
-      <OutfitPackageListItem
-        item={packages[11]}
-        baseTexture={$planksTexture}
-      />
+      <OutfitPackageListItem item={packages[0]} baseTexture={$planksTexture} />
     {/if}
   </div>
   <!-- <div class="test">
