@@ -66,6 +66,9 @@
           on:click={async () => await updateLayerId(layer.id)}
         />
       {/each}
+      {#if item.totalLayersCount > layerCount && item.type == PACKAGE_TYPE.OUTFIT}
+        <span class="more">+{item.totalLayersCount - layerCount}</span>
+      {/if}
     </div>
   </div>
   <div class="data">

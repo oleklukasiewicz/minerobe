@@ -30,7 +30,7 @@
       if (state != APP_STATE.READY) return;
 
       var filter = new OutfitFilter();
-      filter.type = PACKAGE_TYPE.OUTFIT;
+      filter.type = null;
 
       var packagesits = await GetWardrobePackages(filter);
       packages = packagesits.items;
@@ -50,7 +50,9 @@
 <div class="layout">
   <div class="test">
     {#if laoded}
-      <OutfitPackageListItem item={packages[0]} baseTexture={$planksTexture} />
+      {#each packages as item (item.id)}
+        <OutfitPackageListItem {item} baseTexture={$planksTexture} />
+      {/each}
     {/if}
   </div>
   <!-- <div class="test">
