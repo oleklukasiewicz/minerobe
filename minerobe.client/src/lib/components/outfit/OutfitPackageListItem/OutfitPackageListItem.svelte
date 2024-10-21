@@ -1,4 +1,7 @@
 <script lang="ts">
+  import HeartSmallIcon from "$icons/small/heart-micro.svg?raw";
+  import DownloadSmallIcon from "$icons/small/download-micro.svg?raw";
+  import { normalizeNumber } from "$src/helpers/data/dataHelper";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import { GetLayerSnapshot } from "$src/api/pack";
@@ -73,6 +76,20 @@
   </div>
   <div class="data">
     <span class="title">{item.name}</span>
+    <div class="social">
+      {#if item.social?.likes > 0}
+        <div class="icon">
+          {@html HeartSmallIcon}
+          {normalizeNumber(item.social.likes)}
+        </div>
+      {/if}
+      {#if item.social?.downloads > 0}
+        <div class="icon">
+          {@html DownloadSmallIcon}
+          {normalizeNumber(item.social.downloads)}
+        </div>
+      {/if}
+    </div>
   </div>
 </a>
 

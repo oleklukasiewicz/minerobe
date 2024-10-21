@@ -23,8 +23,7 @@
       position: absolute;
       right: 4px;
       bottom: 4px;
-      .more
-      {
+      .more {
         font-family: minecraft;
         color: inherit;
       }
@@ -37,6 +36,20 @@
       color: inherit;
       font-family: minecraft;
       font-size: var(--size-font-base);
+    }
+    .social {
+      display: flex;
+      margin-top: 4px;
+      flex-direction: row;
+      gap: 8px;
+      div {
+        font-size: var(--size-font-caption);
+        font-family: minecraft-simple;
+        line-height: 10px;
+        display: flex;
+        gap: 2px;
+        align-items: center;
+      }
     }
   }
   &:hover {
