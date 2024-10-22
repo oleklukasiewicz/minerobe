@@ -18,7 +18,7 @@ namespace minerobe.api.ServicesHelpers
             _packageService = packageService;
             _userService = userService;
         }
-        public async Task<List<OutfitPackageListItemResponseModel>> AddUserContextToPage(PagedResponse<OutfitPackageAgregation> page, MinerobeUser user = null)
+        public async Task<List<OutfitPackageListItemResponseModel>> AddUserContextToPage(PagedResponse<OutfitPackageAgregation> page, MinerobeUser user = null, int maxLayersCount = 2)
         {
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
@@ -28,17 +28,17 @@ namespace minerobe.api.ServicesHelpers
                 var isInwadrobe = false;
                 if (user != null)
                     isInwadrobe = await _wardrobeService.IsPackageInWardrobe(user.WardrobeId, item.PackageId);
-                items.Add(package.ToListItemResponseModel(2, 1, isInwadrobe));
+                items.Add(package.ToListItemResponseModel(maxLayersCount, 1, isInwadrobe));
             }
             return items;
         }
-        public async Task<List<OutfitPackageListItemResponseModel>> ToOutfitPackage(PagedResponse<OutfitPackageAgregation> page)
+        public async Task<List<OutfitPackageListItemResponseModel>> ToOutfitPackage(PagedResponse<OutfitPackageAgregation> page, int maxLayerCount = 2)
         {
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
                 var package = await _packageService.GetById(item.PackageId, null, true);
-                items.Add(package.ToListItemResponseModel(2, 1, false));
+                items.Add(package.ToListItemResponseModel(maxLayerCount, 1, false));
             }
             return items;
         }
@@ -50,7 +50,7 @@ namespace minerobe.api.ServicesHelpers
                 if (item.VariantId == null)
                     continue;
                 var package = await _packageService.GetById(item.PackageId, item.VariantId.Value);
-                items.Add(package.ToListItemResponseModel(2, 1, isInWardrobe));
+                items.Add(package.ToListItemResponseModel(1, 1, isInWardrobe));
             }
             return items;
         }

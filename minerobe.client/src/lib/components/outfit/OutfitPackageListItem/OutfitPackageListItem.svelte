@@ -78,14 +78,18 @@
     <span class="title">{item.name}</span>
     <div class="social">
       {#if item.social?.likes > 0}
-        <div class="icon">
-          {@html HeartSmallIcon}
+        <div>
+          <span class="icon">
+            {@html HeartSmallIcon}
+          </span>
           {normalizeNumber(item.social.likes)}
         </div>
       {/if}
       {#if item.social?.downloads > 0}
-        <div class="icon">
-          {@html DownloadSmallIcon}
+        <div>
+          <span class="icon">
+            {@html DownloadSmallIcon}
+          </span>
           {normalizeNumber(item.social.downloads)}
         </div>
       {/if}

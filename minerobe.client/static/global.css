@@ -13,6 +13,13 @@
   font-display: swap;
   src: url(/font/minecraftSimple.ttf) format("truetype");
 }
+@font-face {
+  font-family: minecraft-micro;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/font/minecraft-micro.ttf) format("truetype");
+}
 :root {
   --shadow-button:inset -2px -2px #0006, inset 2px 2px #fff7;
   --color-theme-font: #222222;

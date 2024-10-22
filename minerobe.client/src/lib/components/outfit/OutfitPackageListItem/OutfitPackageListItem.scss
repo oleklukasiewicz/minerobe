@@ -30,24 +30,33 @@
     }
   }
   .data {
-    padding: 10px;
+    padding: 10px 0px 6px;
     box-sizing: border-box;
     .title {
+      padding: 0px 10px;
+      box-sizing: border-box;
       color: inherit;
       font-family: minecraft;
+      width: 100%;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       font-size: var(--size-font-base);
     }
     .social {
+      padding: 0px 6px;
+      box-sizing: border-box;
       display: flex;
       margin-top: 4px;
       flex-direction: row;
       gap: 8px;
       div {
-        font-size: var(--size-font-caption);
-        font-family: minecraft-simple;
+        font-size: var(--size-font-subcaption);
+        font-family: minecraft-micro;
         line-height: 10px;
         display: flex;
-        gap: 2px;
+        gap: 1px;
         align-items: center;
       }
     }
