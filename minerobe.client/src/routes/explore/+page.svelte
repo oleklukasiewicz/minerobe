@@ -50,8 +50,14 @@
 <div class="layout">
   <div class="test">
     {#if laoded}
-      {#each packages as item (item.id)}
-        <OutfitPackageListItem {item} baseTexture={$planksTexture} />
+      {#each packages as item, index (item.id)}
+        <OutfitPackageListItem
+          {item}
+          on:click={() => console.log(item.name)}
+          currentItem={index == 3}
+          moreLayersIndicator={item.type == PACKAGE_TYPE.OUTFIT}
+          baseTexture={$planksTexture}
+        />
       {/each}
     {/if}
   </div>

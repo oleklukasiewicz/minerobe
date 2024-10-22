@@ -2,6 +2,7 @@
   import { COLORS } from "$src/data/consts";
 
   export let color: string;
+  export let selected: boolean = false;
   export let style: string = "";
 
   let normalizedColor;
@@ -25,9 +26,10 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <span
-  on:click
+  on:click|stopPropagation
   class="color-badge"
   title={color}
+  class:selected
   style={`background-color: ${normalizedColor} ` + style}
 ></span>
 
@@ -39,6 +41,9 @@
     aspect-ratio: 1;
     border: 2px solid var(--color-theme-D2);
     &:hover {
+      border-color: var(--color-accent-L1);
+    }
+    &.selected {
       border-color: var(--color-accent-L2);
     }
   }

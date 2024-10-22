@@ -28,6 +28,15 @@
         color: inherit;
       }
     }
+    .current-item
+    {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      font-family: minecraft;
+      color: var(--color-accent-font);
+      background-color: var(--color-ancient-A1);
+    }
   }
   .data {
     padding: 10px 0px 6px;

@@ -1,12 +1,15 @@
 <script lang="ts">
-  import HeartSmallIcon from "$icons/small/heart-micro.svg?raw";
-  import DownloadSmallIcon from "$icons/small/download-micro.svg?raw";
-  import { normalizeNumber } from "$src/helpers/data/dataHelper";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+
+  import HeartSmallIcon from "$icons/small/heart-micro.svg?raw";
+  import DownloadSmallIcon from "$icons/small/download-micro.svg?raw";
+  import LoaderIcon from "$icons/loader.svg?raw";
+
   import { GetLayerSnapshot } from "$src/api/pack";
-  import { PACKAGE_TYPE } from "$src/data/consts";
   import type { OutfitLayer, OutfitPackage } from "$src/model/package";
+  import { normalizeNumber } from "$src/helpers/data/dataHelper";
+
   import { onMount } from "svelte";
 
   export let item: OutfitPackage;
@@ -14,6 +17,8 @@
   export let baseTexture: string = null;
   export let layerCount = 2;
   export let style = "";
+  export let currentItem = false;
+  export let moreLayersIndicator = true;
 
   let initialized = false;
   let currentLayer: OutfitLayer;
@@ -44,9 +49,15 @@
 </script>
 
 <!-- svelte-ignore a11y-missing-attribute -->
-<a {style} class="outfit-package-list-item">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<a {style} class="outfit-package-list-item" on:click>
   <div class="render">
-    <div class="render-flags"></div>
+    <div class="render-flags">
+      {#if currentItem}
+        <span class="current-item icon">{@html LoaderIcon}</span>
+      {/if}
+    </div>
     {#if initialized}
       {#if currentLayer.isSnapshot}
         <img src={currentLayer[item.model]?.content} />
@@ -56,20 +67,19 @@
           layerId={currentLayer?.id}
           isDynamic={false}
           isFlatten={true}
-          baseTexture={item.type == PACKAGE_TYPE.OUTFIT_SET
-            ? baseTexture
-            : null}
+          {baseTexture}
         />
       {/if}
     {/if}
     <div class="colors">
       {#each item.layers.slice(0, layerCount) as layer}
         <ColorBadge
+          selected={currentLayer?.id == layer.id}
           color={layer.colorName}
           on:click={async () => await updateLayerId(layer.id)}
         />
       {/each}
-      {#if item.totalLayersCount > layerCount && item.type == PACKAGE_TYPE.OUTFIT}
+      {#if item.totalLayersCount > layerCount && moreLayersIndicator}
         <span class="more">+{item.totalLayersCount - layerCount}</span>
       {/if}
     </div>
