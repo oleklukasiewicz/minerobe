@@ -15,5 +15,5 @@
 </div>
 
 <style lang="scss">
-  @import "Placeholder.scss";
+  @use "Placeholder.scss";
 </style>

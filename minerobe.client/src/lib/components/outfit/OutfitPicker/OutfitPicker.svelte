@@ -122,5 +122,5 @@
 </div>
 
 <style lang="scss">
-  @import "OutfitPicker.scss";
+  @use "OutfitPicker.scss";
 </style>

@@ -52,5 +52,5 @@
 </div>
 
 <style lang="scss">
-  @import "Expander.scss";
+  @use "Expander.scss";
 </style>

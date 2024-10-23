@@ -65,5 +65,5 @@
 </div>
 
 <style lang="scss">
-  @import "Search.scss";
+  @use "Search.scss";
 </style>

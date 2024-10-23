@@ -17,5 +17,5 @@
 </div>
 
 <style lang="scss">
-  @import "ItemVariant.scss";
+  @use "ItemVariant.scss";
 </style>

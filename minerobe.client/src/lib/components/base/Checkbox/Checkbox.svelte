@@ -26,5 +26,5 @@
 </div>
 
 <style lang="scss">
-  @import "./Checkbox.scss";
+  @use "./Checkbox.scss";
 </style>

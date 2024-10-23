@@ -43,5 +43,5 @@
 ></div>
 
 <style lang="scss">
-  @import "layout_style.scss";
+  @use "layout_style.scss";
 </style>

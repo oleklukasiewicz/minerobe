@@ -24,5 +24,5 @@
 </div>
 
 <style lang="scss">
-  @import "OutfitPackageCollectionItem.scss";
+  @use "OutfitPackageCollectionItem.scss";
 </style>

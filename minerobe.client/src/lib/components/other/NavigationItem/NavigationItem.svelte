@@ -32,5 +32,5 @@
 </a>
 
 <style lang="scss">
-  @import "NavigationItem.scss";
+  @use "NavigationItem.scss";
 </style>

@@ -211,5 +211,5 @@
 </div>
 
 <style lang="scss">
-  @import "Select.scss";
+  @use "Select.scss";
 </style>

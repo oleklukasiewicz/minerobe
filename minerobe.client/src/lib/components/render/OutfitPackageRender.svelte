@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { MODEL_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+  import { MODEL_TYPE, OUTFIT_TYPE } from "$src/data/consts";
   import { CAMERA_CONFIG } from "$src/data/consts/render";
   import {
     CameraConfig,

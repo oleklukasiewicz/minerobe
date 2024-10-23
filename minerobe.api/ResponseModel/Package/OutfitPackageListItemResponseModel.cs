@@ -43,7 +43,7 @@ namespace minerobe.api.ResponseModel.Package
                 {
                     for (int i = 0; i < layersCount; i++)
                     {
-                        layers.Add(entity.Layers[i].ToResponseModel(entity, true, i < loadedCount));
+                        layers.Add(entity.Layers[i].ToResponseModel(entity, false, i < loadedCount));
                     }
                 }
             }

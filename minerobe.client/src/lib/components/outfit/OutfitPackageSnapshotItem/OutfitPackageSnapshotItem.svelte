@@ -148,5 +148,5 @@
 </div>
 
 <style lang="scss">
-  @import "OutfitPackageSnapshotItem.scss";
+  @use "OutfitPackageSnapshotItem.scss";
 </style>

@@ -44,5 +44,5 @@
 </div>
 
 <style lang="scss">
-  @import "Dialog.scss";
+  @use "Dialog.scss";
 </style>

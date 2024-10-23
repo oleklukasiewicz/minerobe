@@ -26,5 +26,5 @@
 </a>
 
 <style lang="scss">
-  @import "MenuItem.scss";
+  @use "MenuItem.scss";
 </style>

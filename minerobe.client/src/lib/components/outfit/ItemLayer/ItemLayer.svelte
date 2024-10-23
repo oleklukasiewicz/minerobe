@@ -223,5 +223,5 @@
 </div>
 
 <style lang="scss">
-  @import "ItemLayer.scss";
+  @use "ItemLayer.scss";
 </style>

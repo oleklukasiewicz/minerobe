@@ -84,5 +84,5 @@
 </div>
 
 <style lang="scss">
-  @import "OutfitPresenter.scss";
+  @use "OutfitPresenter.scss";
 </style>

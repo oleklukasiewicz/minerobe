@@ -41,5 +41,5 @@ on:contextmenu
 </a>
 
 <style lang="scss">
-  @import "RatioButton.scss";
+  @use "RatioButton.scss";
 </style>

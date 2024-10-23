@@ -62,5 +62,5 @@
 </div>
 
 <style lang="scss">
-  @import "Toast.scss";
+  @use "Toast.scss";
 </style>

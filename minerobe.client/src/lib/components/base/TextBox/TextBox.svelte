@@ -34,5 +34,5 @@
 </div>
 
 <style lang="scss">
-  @import "TextBox.scss";
+  @use "TextBox.scss";
 </style>

@@ -2,6 +2,7 @@
   import { COLORS } from "$src/data/consts";
 
   export let color: string;
+  export let colorName: string;
   export let selected: boolean = false;
   export let style: string = "";
 
@@ -28,7 +29,7 @@
 <span
   on:click|stopPropagation
   class="color-badge"
-  title={color}
+  title={colorName || color}
   class:selected
   style={`background-color: ${normalizedColor} ` + style}
 ></span>

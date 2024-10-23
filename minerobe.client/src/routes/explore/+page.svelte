@@ -13,7 +13,7 @@
     OUTFIT_TYPE,
     PACKAGE_TYPE,
   } from "$src/data/consts";
-  import { GetPackage } from "$src/api/pack";
+  import { GetLayer, GetLayerSnapshot, GetPackage } from "$src/api/pack";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import { GetWardrobePackages } from "$src/api/wardrobe";
   import { OutfitFilter } from "$src/model/filter";
@@ -25,6 +25,11 @@
   let isflat = false;
   let laterId = null;
   var packages = [];
+
+  const getLayer = async (id, item) => {
+    return await GetLayer(id);
+  };
+
   onMount(async () => {
     appState.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
@@ -53,10 +58,11 @@
       {#each packages as item, index (item.id)}
         <OutfitPackageListItem
           {item}
+          fetchLayer={getLayer}
           on:click={() => console.log(item.name)}
           currentItem={index == 3}
           moreLayersIndicator={item.type == PACKAGE_TYPE.OUTFIT}
-          baseTexture={$planksTexture}
+          baseTexture={item.type == PACKAGE_TYPE.OUTFIT ? null : $planksTexture}
         />
       {/each}
     {/if}
@@ -79,5 +85,5 @@
 </div>
 
 <style lang="scss">
-  @import "style.scss";
+  @use "style.scss";
 </style>

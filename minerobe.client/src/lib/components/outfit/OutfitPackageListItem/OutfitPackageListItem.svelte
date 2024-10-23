@@ -6,7 +6,6 @@
   import DownloadSmallIcon from "$icons/small/download-micro.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
 
-  import { GetLayerSnapshot } from "$src/api/pack";
   import type { OutfitLayer, OutfitPackage } from "$src/model/package";
   import { normalizeNumber } from "$src/helpers/data/dataHelper";
 
@@ -20,6 +19,10 @@
   export let currentItem = false;
   export let moreLayersIndicator = true;
 
+  export let fetchLayer = async function (id, item): Promise<OutfitLayer> {
+    return null;
+  };
+
   let initialized = false;
   let currentLayer: OutfitLayer;
 
@@ -27,7 +30,7 @@
     const targetId = layerId || item.layers[0].id;
     let targetLayer = item.layers.find((x) => x.id == targetId);
     if (targetLayer?.isLoaded == false) {
-      targetLayer = await GetLayerSnapshot(targetId);
+      targetLayer = await fetchLayer(targetId, item);
       //update in item
       item.layers = item.layers.map((x) =>
         x.id == targetId ? targetLayer : x
@@ -108,5 +111,5 @@
 </a>
 
 <style lang="scss">
-  @import "OutfitPackageListItem.scss";
+  @use "OutfitPackageListItem.scss";
 </style>
