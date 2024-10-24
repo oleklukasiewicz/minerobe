@@ -19,6 +19,7 @@
 
   export let source: string | OutfitPackage;
   export let model: "alex" | "steve" | "source" = "source";
+  export let outfitType: string = null;
   export let isDynamic: boolean = false;
   export let isFlatten: boolean = false;
   export let layerId: string = "";
@@ -82,7 +83,12 @@
     await syncModel(targetModel);
 
     if (isFlatten) merger.SetAsFlatten();
-    cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
+    if (typeof source !== "string")
+      cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
+    else cachedtexture = source as string;
+
+    if (outfitType != null) {
+    }
 
     if (cameraOptions == "auto" && typeof source !== "string") {
       textureRenderer.SetCameraOptions(
@@ -111,6 +117,9 @@
       cachedtexture = await merger
         .SetOutfitPackage(source)
         .ConvertAsyncWithFlattenSettings();
+    } else {
+      await syncModel(model);
+      cachedtexture = source;
     }
     await textureRenderer.SetTextureAsync(cachedtexture);
     if (!isDynamic) await textureRenderer.RenderStatic();
@@ -121,6 +130,11 @@
 
     await syncModel(model);
     await setSource(source);
+  };
+  const setOutfitType = async (v) => {
+    if (!initialized) return;
+
+    await syncModel(source);
   };
   const setFlatten = async (v) => {
     if (!initialized) return;
@@ -177,8 +191,9 @@
 
     let modelScene = null;
     if (
-      typeof source !== "string" &&
-      baseModelTypesList.includes(source.outfitType)
+      (typeof source !== "string" &&
+        baseModelTypesList.includes(source.outfitType)) ||
+      (typeof source === "string" && baseModelTypesList.includes(outfitType))
     ) {
       modelScene =
         modelToSync === MODEL_TYPE.ALEX ? $ALEX_MODELSCENE : $STEVE_MODELSCENE;
@@ -195,6 +210,7 @@
   $: setModel(model);
   $: setSource(source);
   $: setBaseTexture(baseTexture);
+  $: setOutfitType(outfitType);
 
   $: setFlatten(isFlatten);
   $: setLayerId(layerId);

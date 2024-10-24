@@ -6,8 +6,8 @@
   }
 }
 .test {
-  display: grid;
-  width: 100vw;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 150px)); // Repeat columns with a minimum width of 100px and a flexible width
-  grid-gap: 4px; // Optional: Add some gap between the grid items
+  display: flex;
+  flex-direction: column;
+  width: 420px;
+  gap: 8px;
 }

@@ -19,6 +19,7 @@
   import { OutfitFilter } from "$src/model/filter";
   import { CAMERA_CONFIG } from "$src/data/consts/render";
   import OutfitPackageListItem from "$lib/components/outfit/OutfitPackageListItem/OutfitPackageListItem.svelte";
+  import OutfitLayerListItem from "$lib/components/outfit/OutfitLayerListItem/OutfitLayerListItem.svelte";
   let laoded = false;
   let loadedPackage: any;
   let model = "alex";
@@ -56,13 +57,10 @@
   <div class="test">
     {#if laoded}
       {#each packages as item, index (item.id)}
-        <OutfitPackageListItem
-          {item}
-          fetchLayer={getLayer}
-          on:click={() => console.log(item.name)}
-          currentItem={index == 3}
-          moreLayersIndicator={item.type == PACKAGE_TYPE.OUTFIT}
-          baseTexture={item.type == PACKAGE_TYPE.OUTFIT ? null : $planksTexture}
+        <OutfitLayerListItem
+          item={item.layers[0]}
+          model={item.model}
+          outfitType={item.outfitType}
         />
       {/each}
     {/if}
