@@ -1,26 +1,81 @@
 .outfit-layer-list-item {
   background-color: var(--color-theme-D1);
+  border: 2px solid var(--color-theme-D1);
   max-height: 64px;
   min-height: 64px;
   flex: 1;
   display: flex;
   gap: 4px;
   .render {
+    margin: 2px;
     aspect-ratio: 1;
     background-color: var(--color-theme-D2);
   }
   .data {
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
     margin: 8px;
     flex: 2;
     .name {
       width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       margin-bottom: 6px;
       display: block;
       font-size: var(--size-font-caption);
       font-family: minecraft-simple;
+    }
+  }
+  .actions {
+    margin: 9px;
+    display: flex;
+    gap: 10px;
+  }
+  &.selected {
+    background-color: var(--color-accent);
+    border-color: var(--color-theme-font);
+    box-shadow: var(--shadow-button);
+    .actions {
+      .separator {
+        border-color: var(--color-accent-L1);
+      }
+    }
+    .render {
+      background-color: var(--color-accent-L1);
+    }
+    &:hover {
+      background-color: var(--color-accent-D1);
+      border-color: var(--color-theme-font);
+      .render {
+        background-color: var(--color-accent);
+      }
+      .actions {
+        .separator {
+          border-color: var(--color-accent);
+        }
+      }
+    }
+  }
+  &.readonly {
+    pointer-events: none;
+  }
+  &:hover {
+    background-color: var(--color-theme-D2);
+    border-color: var(--color-theme-D2);
+    .render {
+      background-color: var(--color-theme-D3);
+    }
+    .actions {
+      .separator {
+        border-color: var(--color-theme-D3);
+      }
+    }
+  }
+  &:active {
+    background-color: var(--color-theme-D3);
+    border-color: var(--color-theme-D3);
+    .render {
+      background-color: var(--color-theme-D4);
     }
   }
 }
