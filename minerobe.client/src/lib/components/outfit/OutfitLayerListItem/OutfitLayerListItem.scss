@@ -77,5 +77,10 @@
     .render {
       background-color: var(--color-theme-D4);
     }
+    .actions {
+      .separator {
+        border-color: var(--color-theme-D4);
+      }
+    }
   }
 }

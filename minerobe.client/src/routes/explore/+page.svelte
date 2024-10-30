@@ -21,16 +21,37 @@
   import OutfitPackageListItem from "$lib/components/outfit/OutfitPackageListItem/OutfitPackageListItem.svelte";
   import OutfitLayerListItem from "$lib/components/outfit/OutfitLayerListItem/OutfitLayerListItem.svelte";
   import OutfitLayerList from "$lib/components/outfit/OutfitLayerList/OutfitLayerList.svelte";
+  import { writable } from "svelte/store";
   let laoded = false;
   let loadedPackage: any;
   let model = "alex";
   let isflat = false;
   let selectedLayerId = null;
   var packages = [];
-  var singlePackage = null;
+  var singlePackage = writable(null);
 
   const getLayer = async (id, item) => {
     return await GetLayer(id);
+  };
+  const goUp = async (ev) => {
+    const layer = ev.detail.item;
+    singlePackage.update((x) => {
+      const index = x.layers.findIndex((x) => x.id == layer.id);
+      const temp = x.layers[index - 1];
+      x.layers[index - 1] = layer;
+      x.layers[index] = temp;
+      return x;
+    });
+  };
+  const goDown = async (ev) => {
+    const layer = ev.detail.item;
+    singlePackage.update((x) => {
+      const index = x.layers.findIndex((x) => x.id == layer.id);
+      const temp = x.layers[index + 1];
+      x.layers[index + 1] = layer;
+      x.layers[index] = temp;
+      return x;
+    });
   };
 
   onMount(async () => {
@@ -43,7 +64,7 @@
       var packagesits = await GetWardrobePackages(filter);
       packages = packagesits.items;
 
-      singlePackage = await GetPackage("7f1f0171-7768-4018-a35e-25937ed40ad4");
+      $singlePackage = await GetPackage("7f1f0171-7768-4018-a35e-25937ed40ad4");
 
       setTimeout(async () => {
         // packages = packages.map((x) => {
@@ -61,12 +82,14 @@
   <div class="test">
     {#if laoded}
       <OutfitLayerList
-      selectable={true}
+        on:moveDown={goDown}
+        on:moveUp={goUp}
+        selectable={true}
         on:select={(ev) => {
-          selectedLayerId = ev.detail.id;
+          selectedLayerId = ev.detail.item.id;
         }}
-        items={singlePackage.layers}
-        model={singlePackage.model}
+        items={$singlePackage.layers}
+        model={$singlePackage.model}
         {selectedLayerId}
       />
     {/if}

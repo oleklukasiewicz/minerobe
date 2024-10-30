@@ -9,10 +9,27 @@
   export let model: "alex" | "steve";
   export let selectedLayerId: string = "";
   export let selectable: boolean = true;
+  export let movable: boolean = true;
+  export let editable: boolean = true;
+  export let removable: boolean = true;
 
   const onSelect = function (layer: OutfitLayer) {
     if (!selectable) return;
-    dispatch("select", layer);
+    dispatch("select", { item: layer });
+  };
+  const onMoveUp = function (layer: OutfitLayer) {
+    if (!movable) return;
+    dispatch("moveUp", { item: layer });
+  };
+  const onMoveDown = function (layer: OutfitLayer) {
+    if (!movable) return;
+    dispatch("moveDown", { item: layer });
+  };
+  const onEdit = function (layer: OutfitLayer) {
+    dispatch("edit", { item: layer });
+  };
+  const onDelete = function (layer: OutfitLayer) {
+    dispatch("delete", { item: layer });
   };
 </script>
 
@@ -21,10 +38,17 @@
     <OutfitLayerListItem
       on:click={() => onSelect(item)}
       {item}
-      readonly={!selectable}
       selected={item.id == selectedLayerId}
       {model}
       outfitType={item.outfitType}
+      {removable}
+      {editable}
+      canUp={index > 0}
+      canDown={index < items.length - 1}
+      on:moveDown={() => onMoveDown(item)}
+      on:moveUp={() => onMoveUp(item)}
+      on:edit={() => onEdit(item)}
+      on:delete={() => onDelete(item)}
     />
   {/each}
 </div>

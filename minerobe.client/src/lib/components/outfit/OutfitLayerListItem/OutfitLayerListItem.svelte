@@ -10,6 +10,9 @@
   import DeleteIcon from "$src/icons/close.svg?raw";
   import EditIcon from "$src/icons/edit.svg?raw";
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
+  import { createEventDispatcher } from "svelte";
+
+  const dispatch = createEventDispatcher();
 
   export let item: OutfitLayer;
   export let model: "alex" | "steve";
@@ -22,11 +25,27 @@
   export let removable = false;
   export let link = null;
   export let selected = false;
+
+  const onMoveUp = function () {
+    dispatch("moveUp", { item: item });
+  };
+  const onMoveDown = function () {
+    dispatch("moveDown", { item: item });
+  };
+  const onEdit = function () {
+    dispatch("edit", { item: item });
+  };
+  const onDelete = function () {
+    dispatch("delete", { item: item });
+  };
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-missing-attribute -->
 <a class="outfit-layer-list-item" class:selected class:readonly on:click>
   <div class="render">
     <OutfitPackageRender
@@ -51,6 +70,7 @@
           type="quaternary"
           disabled={!canUp}
           whiteText={selected}
+          on:click={onMoveUp}
         />
         <Button
           onlyIcon
@@ -59,6 +79,7 @@
           type="quaternary"
           disabled={!canDown}
           whiteText={selected}
+          on:click={onMoveDown}
         />
       {/if}
       {#if movable && (editable || removable || link)}
@@ -71,6 +92,7 @@
           whiteText={selected}
           size="large"
           type="quaternary"
+          on:click={onEdit}
         />
       {/if}
       {#if editable && (removable || link)}
@@ -83,6 +105,7 @@
           whiteText={selected}
           size="large"
           type="quaternary"
+          on:click={onDelete}
         />
       {/if}
       {#if removable && link}
