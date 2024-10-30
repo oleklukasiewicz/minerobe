@@ -26,6 +26,10 @@
   export let cameraOptions: CameraConfig | "auto" = "auto";
   export let renderer = $DEFAULT_RENDERER;
   export let baseTexture = "";
+  export const addAnimation = function (animation) {
+    if (textureRenderer == null) return;
+    textureRenderer.AddAnimation(animation);
+  };
 
   let renderReady = false;
   let cachedtexture: string = null;
@@ -203,7 +207,6 @@
           ? $ALEX_MODELSCENE_BASE
           : $STEVE_MODELSCENE_BASE;
     }
-
     await textureRenderer.SetModelScene(modelScene);
   };
 

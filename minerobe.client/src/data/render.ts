@@ -455,8 +455,6 @@ export const CreateDynamicRender = async function (
         if (child.isMesh && texture != null) {
           if (lightConfig.enableShadows) child.castShadow = true;
           if (lightConfig.enableModelShadows) child.receiveShadow = true;
-          //child.receiveShadow = true;
-          // Set texture filtering and wrap mode to improve sharpness
           texture.magFilter = THREE.NearestFilter;
           texture.minFilter = THREE.LinearMipmapLinearFilter;
           texture.wrapS = THREE.RepeatWrapping;
@@ -608,8 +606,17 @@ export class TextureRender {
   };
   private _loadCameraOptions = function () {
     if (this.modelScene == null) return;
-
-    const options = this.cameraOptions || new CameraConfig();
+    let options = new CameraConfig();
+    if (!this.renderingActive) {
+      options = this.cameraOptions || new CameraConfig();
+    } else {
+      options = new CameraConfig(
+        new THREE.Vector3(0, 0, -2),
+        undefined,
+        undefined,
+        75
+      );
+    }
     this.modelScene.camera.position.x = options.position.x;
     this.modelScene.camera.position.y = options.position.y;
     this.modelScene.camera.position.z = options.position.z;
@@ -768,13 +775,13 @@ export class TextureRender {
   RenderDynamic = async function (): Promise<TextureRender> {
     this.StopRendering();
     //initial configuration
-    this.sceneModel.camera = new THREE.PerspectiveCamera();
+    this.modelScene.camera = new THREE.PerspectiveCamera();
+
+    this.renderingActive = true;
 
     this._loadCameraOptions();
     this._updateRenderSize();
     await this._applyTextureToModel();
-
-    this.renderingActive = true;
 
     this.clock = new THREE.Clock();
     this.orbitalControls = new OrbitControls(
@@ -783,7 +790,7 @@ export class TextureRender {
     );
     this.orbitalControls.enablePan = false;
     this.orbitalControls.maxDistance = 3.0;
-    this.orbitalControls.minDistance = -3.5;
+    this.orbitalControls.minDistance = 0.75;
 
     this._render();
     return this;
@@ -803,14 +810,17 @@ export class TextureRender {
     const pointLight = new THREE.DirectionalLight(0xffffff, 0.78);
 
     pointLight.castShadow = true;
+    pointLight.shadow.camera.near = 0.5;
+    pointLight.shadow.camera.far = 500;
     pointLight.shadow.camera.left = -0.8;
     pointLight.shadow.camera.right = 0.8;
     pointLight.shadow.camera.top = 0.8;
     pointLight.shadow.camera.bottom = -0.8;
-    pointLight.shadow.bias = -0.0001;
+    pointLight.shadow.bias = -0.00001;
     pointLight.shadow.radius = 1;
-    pointLight.shadow.mapSize.width = 1024;
-    pointLight.shadow.mapSize.height = 1024;
+    const mapSize = 1024;
+    pointLight.shadow.mapSize.width = mapSize;
+    pointLight.shadow.mapSize.height = mapSize;
 
     pointLight.target.position.set(0, 1, 0);
     pointLight.position.set(0, 10, -10);

@@ -22,13 +22,19 @@
   import OutfitLayerListItem from "$lib/components/outfit/OutfitLayerListItem/OutfitLayerListItem.svelte";
   import OutfitLayerList from "$lib/components/outfit/OutfitLayerList/OutfitLayerList.svelte";
   import { writable } from "svelte/store";
+  import DefaultAnimation from "$src/animation/default";
+  import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
   let laoded = false;
   let loadedPackage: any;
   let model = "alex";
   let isflat = false;
   let selectedLayerId = null;
   var packages = [];
+  var rendererNode;
   var singlePackage = writable(null);
+  let addAnimationF = (animation) => {
+    console.log("Adding animation front");
+  };
 
   const getLayer = async (id, item) => {
     return await GetLayer(id);
@@ -65,20 +71,32 @@
       packages = packagesits.items;
 
       $singlePackage = await GetPackage("7f1f0171-7768-4018-a35e-25937ed40ad4");
-
+      laoded = true;
       setTimeout(async () => {
         // packages = packages.map((x) => {
         //   x.model = x.model == "steve" ? "alex" : "steve";
         //   return x;
         // });
         //isflat = true;
-      }, 3000);
-      laoded = true;
+        addAnimationF(DefaultAnimation);
+      }, 0);
     });
   });
 </script>
 
 <div class="layout">
+  <div style="margin:4px;">
+    {#if laoded}
+      <DragAndDrop on:drop={(e)=>console.log(e.detail.items[0])}>
+        <OutfitPackageRender
+          source={$singlePackage}
+          isDynamic={true}
+          baseTexture={$baseTexture}
+          bind:addAnimation={addAnimationF}
+        /></DragAndDrop
+      >
+    {/if}
+  </div>
   <div class="test">
     {#if laoded}
       <OutfitLayerList
