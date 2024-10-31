@@ -101,6 +101,8 @@
   <div class="test">
     {#if laoded}
       <OutfitLayerList
+        dropable
+        on:drop={(e) => console.log(e.detail)}
         on:moveDown={goDown}
         on:moveUp={goUp}
         selectable={true}
@@ -116,7 +118,7 @@
     <div>
       {#if laoded}
         <MultiDragAndDrop
-        on:drop={(e) => console.log(e.detail.option)}
+          on:drop={(e) => console.log(e.detail.option)}
           options={[
             { label: "Option 1", value: 1 },
             { label: "Option 2", value: 2 },
