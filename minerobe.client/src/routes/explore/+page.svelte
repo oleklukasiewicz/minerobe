@@ -114,19 +114,6 @@
         {selectedLayerId}
       />
     {/if}
-    <br />
-    <div>
-      {#if laoded}
-        <MultiDragAndDrop
-          on:drop={(e) => console.log(e.detail.option)}
-          options={[
-            { label: "Option 1", value: 1 },
-            { label: "Option 2", value: 2 },
-            { label: "Option 3", value: 3 },
-          ]}><div style="height:100px">test</div></MultiDragAndDrop
-        >
-      {/if}
-    </div>
   </div>
 </div>
 

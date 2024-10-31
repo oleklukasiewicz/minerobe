@@ -72,7 +72,7 @@
     display: inherit;
     position: relative;
     &.dragging {
-      outline: 2px solid var(--color-accent);
+      outline: 3px solid var(--color-accent);
     }
     .option-selection {
       position: absolute;
