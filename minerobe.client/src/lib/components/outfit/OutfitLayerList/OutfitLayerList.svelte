@@ -43,7 +43,7 @@
   {#each items as item, index (item.id)}
     <MultiDragAndDrop
       on:drop={(e) => onDrop(item, e.detail.option)}
-      disabled={!dropable}
+      disabled={!dropable || !editable}
       options={[
         { label: "Classic", value: MODEL_TYPE.STEVE },
         { label: "Slim", value: MODEL_TYPE.ALEX },
