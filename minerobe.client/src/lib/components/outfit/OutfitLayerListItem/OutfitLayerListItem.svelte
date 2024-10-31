@@ -16,7 +16,6 @@
 
   export let item: OutfitLayer;
   export let model: "alex" | "steve";
-  export let outfitType: string;
   export let readonly = false;
   export let movable = true;
   export let canUp = true;
@@ -51,8 +50,8 @@
     <OutfitPackageRender
       source={item[model].content}
       {model}
-      {outfitType}
-      cameraOptions={CAMERA_CONFIG.getForOutfit(outfitType)}
+      outfitType={item.outfitType}
+      cameraOptions={CAMERA_CONFIG.getForOutfit(item.outfitType)}
     />
   </div>
   <div class="data">

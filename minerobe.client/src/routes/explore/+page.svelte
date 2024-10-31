@@ -25,6 +25,7 @@
   import DefaultAnimation from "$src/animation/default";
   import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
   import MultiDragAndDrop from "$lib/components/draganddrop/MultiDragAndDrop/MultiDragAndDrop.svelte";
+  import OutfitLayerVariantList from "$lib/components/outfit/OutfitLayerVariantList/OutfitLayerVariantList.svelte";
   let laoded = false;
   let loadedPackage: any;
   let model = "alex";
@@ -106,6 +107,16 @@
         on:moveDown={goDown}
         on:moveUp={goUp}
         selectable={true}
+        on:select={(ev) => {
+          selectedLayerId = ev.detail.item.id;
+        }}
+        items={$singlePackage.layers}
+        model={$singlePackage.model}
+        {selectedLayerId}
+      />
+    {/if}
+    {#if laoded}
+      <OutfitLayerVariantList
         on:select={(ev) => {
           selectedLayerId = ev.detail.item.id;
         }}

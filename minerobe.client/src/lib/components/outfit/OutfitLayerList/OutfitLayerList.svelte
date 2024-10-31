@@ -54,7 +54,6 @@
         {item}
         selected={item.id == selectedLayerId}
         {model}
-        outfitType={item.outfitType}
         {removable}
         {editable}
         canUp={index > 0}

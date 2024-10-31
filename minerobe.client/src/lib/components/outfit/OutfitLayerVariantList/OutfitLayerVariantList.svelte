@@ -1,0 +1,37 @@
+<script lang="ts">
+  import type { OutfitLayer } from "$src/model/package";
+  import { createEventDispatcher } from "svelte";
+  import OutfitLayerVariantListItem from "../OutfitLayerVariantListItem/OutfitLayerVariantListItem.svelte";
+
+  const dispatch = createEventDispatcher();
+
+  export let items: OutfitLayer[];
+  export let model: "alex" | "steve";
+  export let selectedLayerId: string = "";
+  export let selectable: boolean = true;
+
+  const onSelect = function (layer: OutfitLayer) {
+    if (!selectable) return;
+    dispatch("select", { item: layer });
+  };
+</script>
+
+<div class="outfit-layer-variant-list">
+  {#each items as item (item.id)}
+    <OutfitLayerVariantListItem
+      on:click={() => onSelect(item)}
+      {item}
+      {model}
+      selected={item.id == selectedLayerId}
+    />
+  {/each}
+</div>
+
+<style lang="scss">
+  .outfit-layer-variant-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap:8px;
+  }
+</style>
