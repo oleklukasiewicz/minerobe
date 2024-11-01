@@ -1,0 +1,35 @@
+.radio-button {
+  flex: 1;
+  padding: 8px 2px 10px;
+  box-sizing: border-box;
+  background-color: var(--color-theme-D1);
+  color: var(--color-theme-font);
+  font-size: var(--size-font-caption);
+  border: 2px solid transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: minecraft-simple;
+  &:hover {
+    background-color: var(--color-theme-font);
+    color: var(--color-accent-font);
+  }
+  &:active {
+    background-color: var(--color-theme-D6);
+    color: var(--color-accent-font);
+  }
+  &.selected {
+    background-color: var(--color-accent);
+    color: var(--color-accent-font);
+    box-shadow: var(--shadow-button);
+    border-color: var(--color-theme-font);
+    &:hover {
+      background-color: var(--color-accent-D1);
+      color: var(--color-accent-font);
+    }
+    &:active {
+      background-color: var(--color-accent-D2);
+      color: var(--color-accent-font);
+    }
+  }
+}

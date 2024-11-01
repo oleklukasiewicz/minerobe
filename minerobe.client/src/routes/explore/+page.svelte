@@ -26,6 +26,8 @@
   import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
   import MultiDragAndDrop from "$lib/components/draganddrop/MultiDragAndDrop/MultiDragAndDrop.svelte";
   import OutfitLayerVariantList from "$lib/components/outfit/OutfitLayerVariantList/OutfitLayerVariantList.svelte";
+  import RadioButton from "$lib/components/base/RadioButton/RadioButton.svelte";
+  import RadioGroup from "$lib/components/base/RadioGroup/RadioGroup.svelte";
   let laoded = false;
   let loadedPackage: any;
   let model = "alex";
@@ -125,6 +127,12 @@
         {selectedLayerId}
       />
     {/if}
+    <RadioGroup
+      values={[
+        { value: "alex", label: "Alex" },
+        { value: "steve", label: "Steve" },
+      ]}
+    />
   </div>
 </div>
 
