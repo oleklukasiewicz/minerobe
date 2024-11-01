@@ -10,6 +10,7 @@
   justify-content: center;
   align-items: center;
   font-family: minecraft-simple;
+  cursor: pointer ;
   &:hover {
     background-color: var(--color-theme-font);
     color: var(--color-accent-font);

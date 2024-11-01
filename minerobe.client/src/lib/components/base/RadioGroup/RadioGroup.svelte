@@ -1,8 +1,9 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import RadioButton from "../RadioButton/RadioButton.svelte";
+  import type { ValueData } from "$src/model/base";
 
-  export let values: any[] = [];
+  export let options: ValueData[] = [];
   let selectedValue = null;
   const dispatch = createEventDispatcher();
 
@@ -14,7 +15,7 @@
 </script>
 
 <div class="radio-group">
-  {#each values as value}
+  {#each options as value}
     <RadioButton
       value={value.value}
       label={value.label}

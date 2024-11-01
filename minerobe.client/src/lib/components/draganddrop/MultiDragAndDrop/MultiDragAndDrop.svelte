@@ -1,7 +1,8 @@
 <script lang="ts">
+  import type { ValueData } from "$src/model/base";
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
-  export let options: any[];
+  export let options: ValueData[];
   export let disabled: boolean = false;
 
   let isDragging = false;

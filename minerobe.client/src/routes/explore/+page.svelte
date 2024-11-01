@@ -128,7 +128,7 @@
       />
     {/if}
     <RadioGroup
-      values={[
+      options={[
         { value: "alex", label: "Alex" },
         { value: "steve", label: "Steve" },
       ]}

@@ -1,7 +1,8 @@
 <script lang="ts">
+  import type { ValueData } from "$src/model/base";
   import { createEventDispatcher } from "svelte";
 
-  export let value: any = null;
+  export let value: ValueData = null;
   export let label: string = null;
   export let selected: boolean = false;
 
