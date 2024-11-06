@@ -1032,6 +1032,9 @@ export class OutfitPackageToTextureConverter {
   GetModelMap = function (): any {
     return this.modelMap;
   };
+  GetModel = function (): string {
+    return this.model;
+  };
   ConvertAsync = async function (): Promise<OutfitPackageToTextureConverter> {
     //set modelMap
     const modelMap = this.modelMap;

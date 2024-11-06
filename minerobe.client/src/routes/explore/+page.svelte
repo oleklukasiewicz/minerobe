@@ -28,6 +28,7 @@
   import OutfitLayerVariantList from "$lib/components/outfit/OutfitLayerVariantList/OutfitLayerVariantList.svelte";
   import RadioButton from "$lib/components/base/RadioButton/RadioButton.svelte";
   import RadioGroup from "$lib/components/base/RadioGroup/RadioGroup.svelte";
+  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
   let laoded = false;
   let loadedPackage: any;
   let model = "alex";
@@ -91,48 +92,8 @@
 <div class="layout">
   <div style="margin:4px;">
     {#if laoded}
-      <DragAndDrop on:drop={(e) => console.log(e.detail.items[0])}>
-        <OutfitPackageRender
-          source={$singlePackage}
-          isDynamic={true}
-          baseTexture={$baseTexture}
-          bind:addAnimation={addAnimationF}
-        /></DragAndDrop
-      >
+      <OutfitPackageList items={packages} />
     {/if}
-  </div>
-  <div class="test">
-    {#if laoded}
-      <OutfitLayerList
-        dropable
-        on:drop={(e) => console.log(e.detail)}
-        on:moveDown={goDown}
-        on:moveUp={goUp}
-        selectable={true}
-        on:select={(ev) => {
-          selectedLayerId = ev.detail.item.id;
-        }}
-        items={$singlePackage.layers}
-        model={$singlePackage.model}
-        {selectedLayerId}
-      />
-    {/if}
-    {#if laoded}
-      <OutfitLayerVariantList
-        on:select={(ev) => {
-          selectedLayerId = ev.detail.item.id;
-        }}
-        items={$singlePackage.layers}
-        model={$singlePackage.model}
-        {selectedLayerId}
-      />
-    {/if}
-    <RadioGroup
-      options={[
-        { value: "alex", label: "Alex" },
-        { value: "steve", label: "Steve" },
-      ]}
-    />
   </div>
 </div>
 

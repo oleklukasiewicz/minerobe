@@ -13,7 +13,7 @@
 
   export let item: OutfitPackage;
   export let layerId: string = null;
-  export let baseTexture: string = null;
+  export let baseTexture: OutfitLayer | string = null;
   export let layerCount = 2;
   export let style = "";
   export let currentItem = false;
@@ -79,6 +79,7 @@
         <ColorBadge
           selected={currentLayer?.id == layer.id}
           color={layer.colorName}
+          colorName={layer.colorName}
           on:click={async () => await updateLayerId(layer.id)}
         />
       {/each}

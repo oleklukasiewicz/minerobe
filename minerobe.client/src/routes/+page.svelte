@@ -1,12 +1,12 @@
 <script lang="ts">
-  import OutfitPackageSnapshotList from "$component/outfit/OutfitPackageSnapshotList/OutfitPackageSnapshotList.svelte";
+  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
   import { FetchSettings } from "$src/api/settings";
   import {
     GetMostLiked,
     GetMostRecent,
     GetMostDownloaded,
   } from "$src/api/view/landing";
-  import { appState, defaultRenderer, isMobileView } from "$src/data/cache";
+  import { appState, isMobileView } from "$src/data/cache";
   import { APP_STATE } from "$src/data/consts";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
   import type { OutfitLayer } from "$src/model/package";
@@ -58,40 +58,22 @@
     </p>
   </div>
   <h2 class="list-title">Most Recent</h2>
-  <OutfitPackageSnapshotList
+  <OutfitPackageList
     items={mostRecent}
-    isLikeable={true}
-    loading={!landingLoaded}
-    renderer={$defaultRenderer}
-    dense={false}
+    on:select={goToItemPage}
     baseTexture={$userSettings?.baseTexture?.layers[0]}
-    withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
-    currentSkinId={$userSettings?.currentTexturePackageId}
-    on:innerselect={goToItemPage}
   />
   <h2 class="list-title">Most Liked</h2>
-  <OutfitPackageSnapshotList
+  <OutfitPackageList
     items={mostLiked}
-    isLikeable={true}
-    loading={!landingLoaded}
-    renderer={$defaultRenderer}
+    on:select={goToItemPage}
     baseTexture={$userSettings?.baseTexture?.layers[0]}
-    withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
-    currentSkinId={$userSettings?.currentTexturePackageId}
-    dense={false}
-    on:innerselect={goToItemPage}
   />
   <h2 class="list-title">Most Downloaded</h2>
-  <OutfitPackageSnapshotList
+  <OutfitPackageList
     items={mostDownloaded}
-    isLikeable={true}
-    loading={!landingLoaded}
-    renderer={$defaultRenderer}
-    dense={false}
+    on:select={goToItemPage}
     baseTexture={$userSettings?.baseTexture?.layers[0]}
-    withBaseTexture={$userSettings?.baseTexture?.layers.length > 0}
-    currentSkinId={$userSettings?.currentTexturePackageId}
-    on:innerselect={goToItemPage}
   />
 </div>
 

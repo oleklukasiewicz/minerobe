@@ -13,7 +13,7 @@
     STEVE_MODELSCENE,
     STEVE_MODELSCENE_BASE,
   } from "$src/data/static";
-  import type { OutfitPackage } from "$src/model/package";
+  import type { OutfitLayer, OutfitPackage } from "$src/model/package";
   import floorTexture from "$texture/floor.png?url";
   import { onDestroy, onMount } from "svelte";
 
@@ -25,7 +25,7 @@
   export let layerId: string = "";
   export let cameraOptions: CameraConfig | "auto" = "auto";
   export let renderer = $DEFAULT_RENDERER;
-  export let baseTexture = "";
+  export let baseTexture: OutfitLayer | string = null;
   export const addAnimation = function (animation) {
     if (textureRenderer == null) return;
     textureRenderer.AddAnimation(animation);
@@ -77,8 +77,6 @@
     if (typeof source !== "string") {
       merger.SetOutfitPackage(source);
       if (layerId != null && layerId != "") merger.SetLayerId(layerId);
-      if (baseTexture != null && baseTexture.length > 0)
-        merger.SetBaseTexture(baseTexture);
     }
 
     let targetModel = model as string;
@@ -86,13 +84,15 @@
       targetModel = source.model;
     await syncModel(targetModel);
 
+    if (baseTexture != null) {
+      if (typeof baseTexture === "string") merger.SetBaseTexture(baseTexture);
+      else merger.SetBaseTexture(baseTexture[targetModel].content);
+    }
+
     if (isFlatten) merger.SetAsFlatten();
     if (typeof source !== "string")
       cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
     else cachedtexture = source as string;
-
-    if (outfitType != null) {
-    }
 
     if (cameraOptions == "auto" && typeof source !== "string") {
       textureRenderer.SetCameraOptions(
@@ -178,8 +178,10 @@
   const setBaseTexture = async (v) => {
     if (!initialized) return;
 
-    if (baseTexture != null && baseTexture.length > 0 && merger != null)
-      merger.SetBaseTexture(baseTexture);
+    if (baseTexture != null) {
+      if (typeof baseTexture === "string") merger.SetBaseTexture(baseTexture);
+      else merger.SetBaseTexture(baseTexture[merger.GetModel()].content);
+    }
     await setSource(source);
   };
   const baseModelTypesList = [
