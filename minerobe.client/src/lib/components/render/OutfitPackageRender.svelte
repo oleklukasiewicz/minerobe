@@ -16,6 +16,7 @@
   import type { OutfitLayer, OutfitPackage } from "$src/model/package";
   import floorTexture from "$texture/floor.png?url";
   import { onDestroy, onMount } from "svelte";
+  import Resize from "../other/Resize/Resize.svelte";
 
   export let source: string | OutfitPackage;
   export let model: "alex" | "steve" | "source" = "source";
@@ -220,12 +221,18 @@
   $: setFlatten(isFlatten);
   $: setLayerId(layerId);
   $: setCameraOptions(cameraOptions);
+
+  const onResize = async function () {
+    if (!isDynamic) await textureRenderer.RenderStatic();
+    renderReady = true;
+  };
 </script>
 
 <div class="outfit-render">
   {#if !isDynamic}
     <!-- svelte-ignore a11y-missing-attribute -->
     <img bind:this={renderNode} class:renderReady />
+    <Resize on:resize={onResize} debounce={300}></Resize>
   {:else}
     <div bind:this={renderNode} />
   {/if}
