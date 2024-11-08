@@ -31,7 +31,11 @@
     if (textureRenderer == null) return;
     textureRenderer.AddAnimation(animation);
   };
-  export let resizable = true;
+  export const resize = function () {
+    if (textureRenderer == null) return;
+    textureRenderer.Resize();
+  };
+  export let resizable = false;
   export let resizeDebounce = 300;
 
   let renderReady = false;
@@ -95,10 +99,16 @@
       cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
     else cachedtexture = source as string;
 
-    if (cameraOptions == "auto" && typeof source !== "string") {
-      textureRenderer.SetCameraOptions(
-        CAMERA_CONFIG.getForOutfit(source.outfitType)
-      );
+    if (cameraOptions == "auto") {
+      if (typeof source !== "string") {
+        textureRenderer.SetCameraOptions(
+          CAMERA_CONFIG.getForOutfit(source.outfitType)
+        );
+      } else {
+        textureRenderer.SetCameraOptions(
+          CAMERA_CONFIG.getForOutfit(outfitType)
+        );
+      }
     }
 
     if (cachedtexture != null)
@@ -106,7 +116,6 @@
   };
   const setSource = async (v) => {
     if (!initialized) return;
-
     if (source == null || source == "") return;
     cachedtexture = source as string;
     if (typeof source !== "string") {
@@ -210,7 +219,7 @@
           ? $ALEX_MODELSCENE_BASE
           : $STEVE_MODELSCENE_BASE;
     }
-    await textureRenderer.SetModelScene(modelScene);
+    await textureRenderer.SetModelScene(Object.assign({}, { ...modelScene }));
   };
 
   $: setModel(model);
@@ -224,8 +233,7 @@
 
   const onResize = async function () {
     if (!initialized) return;
-    if (!isDynamic) await textureRenderer.RenderStatic();
-    else textureRenderer.Resize();
+    textureRenderer.Resize();
     renderReady = true;
   };
 </script>

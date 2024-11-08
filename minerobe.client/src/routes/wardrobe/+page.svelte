@@ -53,6 +53,7 @@
   import { AddCollection } from "$src/api/collection";
   import type { OutfitPackage } from "$src/model/package";
   import OutfitPackageSnapshotPagedList from "$lib/components/outfit/OutfitPackageSnapshotPagedList/OutfitPackageSnapshotPagedList.svelte";
+  import { CURRENT_APP_STATE, CURRENT_USER } from "$src/data/static";
 
   const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
 
@@ -79,7 +80,7 @@
     $userPreferences.wadrobeFilter || new OutfitFilter();
 
   onMount(() => {
-    appState.subscribe(async (state) => {
+    CURRENT_APP_STATE.subscribe(async (state) => {
       if (!(state == APP_STATE.READY)) return;
       if (loaded) return;
 
@@ -120,7 +121,7 @@
     const item = e.detail.item;
     const variantId = e.detail.layer?.id;
 
-    if (item.publisher.id != $currentUser?.id)
+    if (item.publisher.id != $CURRENT_USER?.id)
       navigateToOutfitPackage(item, variantId);
     else navigateToOutfitPackageEdit(item.id);
   };

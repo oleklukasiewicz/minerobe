@@ -699,20 +699,36 @@ export class TextureRender {
     this.modelScene.camera.aspect = width / height;
     this.modelScene.camera.updateProjectionMatrix();
   };
+  private _renderInNode = function () {
+    if (this.temporaryRenderNode != null)
+      this.temporaryRenderNode.appendChild(this.renderer.domElement);
+    else this.node.appendChild(this.renderer.domElement);
+
+    this.renderer.render(this.modelScene.scene, this.modelScene.camera);
+    const dataUrl = this.renderer.domElement.toDataURL();
+    this.node.src = dataUrl;
+
+    if (this.temporaryRenderNode == null) this.node.children[0].remove();
+  };
 
   constructor(renderer: any = DEFAULT_RENDERER) {
     this.renderer = renderer;
     this.textureLoader = new THREE.TextureLoader();
   }
   SetModelScene = async function (
-    modelScene: ModelScene
+    newModelScene: ModelScene
   ): Promise<TextureRender> {
-    if (this.modelScene == null)
-      this.modelScene = Object.assign({}, modelScene);
-    else {
+    const targetSceneModel = Object.assign({}, newModelScene);
+    const newScene = targetSceneModel.scene.clone(true);
+    const newRenderScene = newScene.children.find((x) => x.name == "model");
+    if (this.modelScene == null) {
+      this.modelScene = targetSceneModel;
+      this.modelScene.scene = newScene;
+      this.modelScene.renderScene = newRenderScene;
+    } else {
       this.modelScene.scene.remove(this.modelScene.renderScene);
-      this.modelScene.scene.add(modelScene.renderScene);
-      this.modelScene.renderScene = modelScene.renderScene;
+      this.modelScene.scene.add(newRenderScene);
+      this.modelScene.renderScene = newRenderScene;
     }
     if (this.renderingActive) await this._applyTextureToModel();
     if (this.animations.length > 0 && this.renderingActive)
@@ -761,15 +777,7 @@ export class TextureRender {
     this._updateRenderSize();
     await this._applyTextureToModel();
 
-    if (this.temporaryRenderNode != null)
-      this.temporaryRenderNode.appendChild(this.renderer.domElement);
-    else this.node.appendChild(this.renderer.domElement);
-
-    this.renderer.render(this.modelScene.scene, this.modelScene.camera);
-    const dataUrl = this.renderer.domElement.toDataURL();
-    this.node.src = dataUrl;
-
-    if (this.temporaryRenderNode == null) this.node.children[0].remove();
+    this._renderInNode();
     return this;
   };
   RenderDynamic = async function (): Promise<TextureRender> {
@@ -871,6 +879,7 @@ export class TextureRender {
   };
   Resize() {
     this._updateRenderSize();
+    if (!this.renderingActive) this._renderInNode();
     return this;
   }
 }
@@ -909,6 +918,7 @@ export class ModelScene {
     //load model
     this.renderScene = await new Promise((resolve) => {
       modelLoader.load(this.model, (gltf) => {
+        gltf.scene.name = "model";
         this.scene.add(gltf.scene);
         resolve(gltf.scene);
       });

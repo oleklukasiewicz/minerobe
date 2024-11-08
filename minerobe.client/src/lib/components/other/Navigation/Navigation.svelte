@@ -9,6 +9,7 @@
   import Search from "$lib/components/base/Search/Search.svelte";
   import { navigate, navigateToProfile } from "$src/helpers/other/navigationHelper";
   import { loginUser } from "$src/api/auth";
+  import { CURRENT_USER } from "$src/data/static";
 
   const profileAction = async () => {
     if ($currentUser) {
@@ -48,7 +49,7 @@
           icon={SubscriptionIcon}
           minimal
           viewId="wardrobe"
-          disabled={$currentUser?.id == null}
+          disabled={$CURRENT_USER?.id == null}
         />
         <NavigationItem
           on:click={profileAction}
@@ -68,7 +69,7 @@
         icon={SubscriptionIcon}
         minimal
         viewId="wardrobe"
-        disabled={$currentUser?.id == null}
+        disabled={$CURRENT_USER?.id == null}
       />
       <NavigationItem
         on:click={profileAction}

@@ -4,12 +4,12 @@
   import type { ValueData } from "$src/model/base";
 
   export let options: ValueData[] = [];
-  let selectedValue = null;
+  export let selectedValue = null;
   const dispatch = createEventDispatcher();
 
   const onSelect = (item) => {
-    if (selectedValue === item) return;
-    selectedValue = item;
+    if (selectedValue.value === item.value) return;
+    selectedValue = item.value;
     dispatch("select", { value: item });
   };
 </script>
@@ -19,7 +19,7 @@
     <RadioButton
       value={value.value}
       label={value.label}
-      selected={value === selectedValue}
+      selected={value.value === selectedValue}
       on:select={() => onSelect(value)}
     />
   {/each}

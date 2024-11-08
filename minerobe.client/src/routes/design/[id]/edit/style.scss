@@ -6,29 +6,44 @@
   flex-direction: row;
   margin: 0px auto;
   #item-render {
-    flex: 2;
     min-width: 300px;
-    max-width: 100%;
+    max-width: 50vw;
+    flex: 2;
     #render {
       display: block;
       overflow: hidden;
       aspect-ratio: 1;
       max-height: calc(100vh - 120px);
-      max-width: calc(100% - 60px);
-      margin: 30px;
+      max-width: calc(100% - 70px);
+      margin: 35px;
     }
   }
   #item-data {
     flex: 1;
-    min-width: 300px;
+    min-width: 200px;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    margin: 90px 60px 0px;
+    gap: 4px;
+    #item-data-title {
+      max-width: 95%;
+    }
+    #item-data-layers {
+      margin-top: 8px;
+    }
   }
   &.mobile {
     #item-render {
+      max-width: 100%;
       #render {
         max-height: calc(100vh - 60px);
         max-width: 100%;
         margin: 0px;
       }
+    }
+    #item-data {
+      margin: 10px;
     }
   }
 }

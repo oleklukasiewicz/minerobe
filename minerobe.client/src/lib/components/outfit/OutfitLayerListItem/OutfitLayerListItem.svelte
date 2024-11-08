@@ -2,7 +2,6 @@
   import Button from "$lib/components/base/Button/Button.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import { CAMERA_CONFIG } from "$src/data/consts/render";
   import type { OutfitLayer } from "$src/model/package";
 
   import UpIcon from "$src/icons/chevron-up.svg?raw";
@@ -51,7 +50,6 @@
       source={item[model].content}
       {model}
       outfitType={item.outfitType}
-      cameraOptions={CAMERA_CONFIG.getForOutfit(item.outfitType)}
     />
   </div>
   <div class="data">

@@ -1,19 +1,21 @@
 .outfit-layer-list-item {
   background-color: var(--color-theme-D1);
   border: 2px solid var(--color-theme-D1);
-  max-height: 64px;
   min-height: 64px;
   flex: 1;
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
   cursor: pointer;
   .render {
     margin: 2px;
     aspect-ratio: 1;
+    width: 58px;
     background-color: var(--color-theme-D2);
   }
   .data {
     overflow: hidden;
+    min-width: 100px;
     margin: 8px;
     flex: 2;
     .name {
