@@ -102,6 +102,6 @@ export const Initialize = async function () {
     return renderer;
   });
   CURRENT_USER.subscribe(async (user) => {
-    appStateWritable.set(user ? APP_STATE.USER_READY : APP_STATE.GUEST_READY);
+    appStateWritable.set(user ? APP_STATE.READY : APP_STATE.GUEST_READY);
   });
 };

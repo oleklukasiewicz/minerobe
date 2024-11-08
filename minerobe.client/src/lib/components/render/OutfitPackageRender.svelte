@@ -31,15 +31,15 @@
     if (textureRenderer == null) return;
     textureRenderer.AddAnimation(animation);
   };
+  export let resizable = true;
+  export let resizeDebounce = 300;
 
   let renderReady = false;
   let cachedtexture: string = null;
   let renderNode: any;
   let merger: OutfitPackageToTextureConverter =
     new OutfitPackageToTextureConverter();
-  const textureRenderer = new TextureRender(renderer).SetCameraOptions(
-    cameraOptions
-  );
+  const textureRenderer = new TextureRender(renderer);
   let initialized = false;
 
   onMount(async () => {
@@ -223,7 +223,9 @@
   $: setCameraOptions(cameraOptions);
 
   const onResize = async function () {
+    if (!initialized) return;
     if (!isDynamic) await textureRenderer.RenderStatic();
+    else textureRenderer.Resize();
     renderReady = true;
   };
 </script>
@@ -232,9 +234,11 @@
   {#if !isDynamic}
     <!-- svelte-ignore a11y-missing-attribute -->
     <img bind:this={renderNode} class:renderReady />
-    <Resize on:resize={onResize} debounce={300}></Resize>
   {:else}
-    <div bind:this={renderNode} />
+    <div bind:this={renderNode}></div>
+  {/if}
+  {#if resizable}
+    <Resize on:resize={onResize} debounce={resizeDebounce}></Resize>
   {/if}
 </div>
 

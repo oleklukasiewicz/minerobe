@@ -869,6 +869,10 @@ export class TextureRender {
     this.renderer.setClearColor(new THREE.Color(0x000000), 0);
     return this;
   };
+  Resize() {
+    this._updateRenderSize();
+    return this;
+  }
 }
 export class ModelScene {
   model: string;

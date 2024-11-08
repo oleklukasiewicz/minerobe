@@ -1,91 +1,33 @@
-.item-page {
+#item-page {
+  max-width: 100%;
+  width: 1800px;
   display: flex;
-  margin: 30px auto;
-  max-width: 180vh;
-  flex: 1;
-  .render-data {
-    overflow: hidden;
-    flex: 1;
-    display: block;
-    min-height: 100px;
-    min-width: 100px;
-    margin-left: 30px;
-    max-height: calc(100vh - 120px);
-    position: sticky;
-    aspect-ratio: 1/1;
-    top: 90px;
-    @media (max-width: 768px) {
-      max-height: 100vw;
-    }
-    .render {
-      max-width: 100%;
-      margin: 5px;
-      transition: box-shadow var(--time);
-      aspect-ratio: 1/1;
-      box-sizing: border-box;
-      &.drop-hover {
-        box-shadow: 0px 0px 0px 5px var(--color-accent);
-      }
+  flex-wrap: wrap;
+  flex-direction: row;
+  margin: 0px auto;
+  #item-render {
+    flex: 2;
+    min-width: 300px;
+    max-width: 100%;
+    #render {
+      display: block;
+      overflow: hidden;
+      aspect-ratio: 1;
+      max-height: calc(100vh - 120px);
+      max-width: calc(100% - 60px);
+      margin: 30px;
     }
   }
-  .item-data {
+  #item-data {
     flex: 1;
-    display: block;
-    margin: 40px auto;
-    padding: 24px;
-    box-sizing: border-box;
-    max-width: 75vw;
-    .data {
-      max-width: 600px;
-      margin: auto;
-    }
-    .item-name {
-      #item-title {
-        margin: 4px 8px 10px 0px;
-      }
-    }
-    .item-layers {
-      display: flex;
-      flex-direction: column;
-    }
-    #item-description {
-      width: 100%;
-      min-height: 60px;
-      max-height: 400px;
-      text-align: justify;
-      color: var(--color-theme-D6);
-      font-size: var(--size-font-subtitlealt);
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
-      box-sizing: border-box;
-      letter-spacing: 0.1px;
-    }
+    min-width: 300px;
   }
-}
-.outfit-picker-dialog {
-  min-width: 60vw;
-  margin: 16px;
-}
-
-@media only screen and (max-width: 700px) {
-  .item-page {
-    margin: 0px;
-    min-width: none;
-    flex-direction: column;
-    .render-data {
-      position: static;
-      margin: 0px;
-      .render {
-        margin: 0px;
-      }
-    }
-    .item-data {
-      max-width: 100vw;
-      margin: 12px 0px;
-      width: 100%;
-      padding: 0px 12px;
-      .data {
+  &.mobile {
+    #item-render {
+      #render {
+        max-height: calc(100vh - 60px);
         max-width: 100%;
+        margin: 0px;
       }
     }
   }

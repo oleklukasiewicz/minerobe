@@ -10,6 +10,7 @@
   import { normalizeNumber } from "$src/helpers/data/dataHelper";
 
   import { onMount } from "svelte";
+  import { PACKAGE_TYPE } from "$src/data/consts";
 
   export let item: OutfitPackage;
   export let layerId: string = null;
@@ -27,7 +28,7 @@
   let currentLayer: OutfitLayer;
 
   const setCurrentLayer = async function (v) {
-    const targetId = layerId || item.layers[0].id;
+    const targetId = layerId || item?.layers[0]?.id;
     let targetLayer = item.layers.find((x) => x.id == targetId);
     if (targetLayer?.isLoaded == false) {
       targetLayer = await fetchLayer(targetId, item);
@@ -62,17 +63,13 @@
       {/if}
     </div>
     {#if initialized}
-      {#if currentLayer.isSnapshot}
-        <img src={currentLayer[item.model]?.content} />
-      {:else}
-        <OutfitPackageRender
-          source={item}
-          layerId={currentLayer?.id}
-          isDynamic={false}
-          isFlatten={true}
-          {baseTexture}
-        />
-      {/if}
+      <OutfitPackageRender
+        source={item}
+        layerId={currentLayer?.id}
+        isDynamic={false}
+        isFlatten={true}
+        {baseTexture}
+      />
     {/if}
     <div class="colors">
       {#each item.layers.slice(0, layerCount) as layer}
@@ -83,7 +80,7 @@
           on:click={async () => await updateLayerId(layer.id)}
         />
       {/each}
-      {#if item.totalLayersCount > layerCount && moreLayersIndicator}
+      {#if item.totalLayersCount > layerCount && moreLayersIndicator && item.type != PACKAGE_TYPE.OUTFIT_SET}
         <span class="more">+{item.totalLayersCount - layerCount}</span>
       {/if}
     </div>
