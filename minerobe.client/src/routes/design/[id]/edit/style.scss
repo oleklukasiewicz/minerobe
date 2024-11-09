@@ -10,12 +10,17 @@
     max-width: 50vw;
     flex: 2;
     #render {
+      position: sticky;
+      top: 90px;
       display: block;
       overflow: hidden;
       aspect-ratio: 1;
       max-height: calc(100vh - 120px);
       max-width: calc(100% - 70px);
-      margin: 35px;
+      margin: 30px;
+      & #render-node {
+        margin: 5px;
+      }
     }
   }
   #item-data {
@@ -32,6 +37,12 @@
     #item-data-layers {
       margin-top: 8px;
     }
+    #item-data-description {
+      margin-bottom: 16px;
+      #description-input {
+        width: 100%;
+      }
+    }
   }
   &.mobile {
     #item-render {
@@ -40,6 +51,9 @@
         max-height: calc(100vh - 60px);
         max-width: 100%;
         margin: 0px;
+        & #render-node {
+          margin: 0px;
+        }
       }
     }
     #item-data {

@@ -20,12 +20,16 @@
   import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
   import OutfitLayerList from "$lib/components/outfit/OutfitLayerList/OutfitLayerList.svelte";
-  import RadioGroup from "$lib/components/base/RadioGroup/RadioGroup.svelte";
-  import { ValueData } from "$src/model/base";
+  import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
+  import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
+  import { OutfitPackageRenderConfig } from "$src/model/render";
 
   export let data;
 
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
+  const renderConfiguration: Writable<OutfitPackageRenderConfig> = writable(
+    new OutfitPackageRenderConfig()
+  );
   let loaded = false;
   let isOutfitSet = false;
   let renderer: any = null;
@@ -46,6 +50,15 @@
       setTimeout(() => {
         addAnimation(DefaultAnimation);
       }, 0);
+      itemPackage.subscribe((item) => {
+        renderConfiguration.update((config) => {
+          config.model = item.model === MODEL_TYPE.ALEX ? "alex" : "steve";
+          config.item = item;
+          config.baseTexture = isOutfitSet ? $BASE_TEXTURE : $BASE_TEXTURE;
+          config.selectedLayerId = null;
+          return config;
+        });
+      });
     });
   });
 </script>
@@ -54,15 +67,22 @@
   <div id="item-render">
     <div id="render">
       <Placeholder {loaded}>
-        <OutfitPackageRender
-          bind:addAnimation
-          source={$itemPackage}
-          isDynamic
-          resizable
-          {renderer}
-          resizeDebounce={0}
-          baseTexture={isOutfitSet ? $BASE_TEXTURE : $BASE_TEXTURE}
-        />
+        <div id="render-node">
+          <DragAndDrop>
+            <OutfitPackageRender
+              bind:addAnimation
+              source={$renderConfiguration.item}
+              model={$renderConfiguration.model}
+              isDynamic
+              layerId={$renderConfiguration.selectedLayerId}
+              isFlatten={$renderConfiguration.isFlatten}
+              resizable
+              {renderer}
+              resizeDebounce={0}
+              baseTexture={$renderConfiguration.baseTexture}
+            />
+          </DragAndDrop>
+        </div>
       </Placeholder>
     </div>
   </div>
@@ -89,17 +109,20 @@
       {/if}
     </div>
     <div id="item-data-integration"></div>
+    <div id="item-data-description">
+      <SectionTitle label="Description" placeholder={!loaded} />
+      <Placeholder height="40px" {loaded}>
+        <textarea
+          id="description-input"
+          bind:value={$itemPackage.description}
+        />
+      </Placeholder>
+    </div>
     <div id="item-data-model">
       <SectionTitle label="Model" placeholder={!loaded} />
       <Placeholder height="40px" {loaded}>
-        <RadioGroup
-          bind:selectedValue={$itemPackage.model}
-          options={[
-            new ValueData(MODEL_TYPE.STEVE, "Classic"),
-            new ValueData(MODEL_TYPE.ALEX, "Slim"),
-          ]}
-        /></Placeholder
-      >
+        <ModelRadioGroup bind:selectedValue={$itemPackage.model} />
+      </Placeholder>
     </div>
   </div>
 </div>

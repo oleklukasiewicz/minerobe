@@ -36,6 +36,7 @@
 <style lang="scss">
   .drag-and-drop {
     outline: 3px solid transparent;
+    outline-offset: 2px;
     &.isDragging {
       outline-color: var(--color-accent);
     }
