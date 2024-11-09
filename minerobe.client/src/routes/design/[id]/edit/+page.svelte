@@ -23,6 +23,11 @@
   import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
   import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
   import { OutfitPackageRenderConfig } from "$src/model/render";
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import TrashIcon from "$icons/trash.svg?raw";
+  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
+  import ImportPackageIcon from "$icons/upload.svg?raw";
+  import AddIcon from "$icons/plus.svg?raw";
 
   export let data;
 
@@ -72,7 +77,6 @@
             <OutfitPackageRender
               bind:addAnimation
               source={$renderConfiguration.item}
-              model={$renderConfiguration.model}
               isDynamic
               layerId={$renderConfiguration.selectedLayerId}
               isFlatten={$renderConfiguration.isFlatten}
@@ -88,11 +92,12 @@
   </div>
   <div id="item-data">
     <SectionTitle label="Name" placeholder={!loaded} />
-    <div id="item-data-title">
-      <Placeholder {loaded} height="40px">
+    <Placeholder {loaded} height="40px">
+      <div id="item-data-title">
         <input class="title-input" bind:value={$itemPackage.name} />
-      </Placeholder>
-    </div>
+        <Button onlyIcon icon={TrashIcon} label={"Delete"} type={"tertiary"} />
+      </div>
+    </Placeholder>
     <Placeholder {loaded} height="24px" width="120px">
       <Label>{isOutfitSet ? "Outfit set" : "Outfit"}</Label>
     </Placeholder>
@@ -107,15 +112,29 @@
           model={$itemPackage.model === MODEL_TYPE.ALEX ? "alex" : "steve"}
         ></OutfitLayerList>
       {/if}
+      <div id="item-data-layers-options">
+        <Placeholder {loaded} height="40px">
+          {#if isOutfitSet}
+            <Button label={"Add outfit"} icon={AddIcon} type={"tertiary"} />
+          {:else}
+            <Button label={"Add variant"} icon={AddIcon} type={"tertiary"} />
+          {/if}
+        </Placeholder>
+        <Placeholder {loaded} height="40px">
+          <Button
+            label={"Import image"}
+            icon={ImportPackageIcon}
+            type={"tertiary"}
+          />
+        </Placeholder>
+      </div>
     </div>
     <div id="item-data-integration"></div>
     <div id="item-data-description">
       <SectionTitle label="Description" placeholder={!loaded} />
       <Placeholder height="40px" {loaded}>
-        <textarea
-          id="description-input"
-          bind:value={$itemPackage.description}
-        />
+        <textarea id="description-input" bind:value={$itemPackage.description}
+        ></textarea>
       </Placeholder>
     </div>
     <div id="item-data-model">
@@ -124,6 +143,15 @@
         <ModelRadioGroup bind:selectedValue={$itemPackage.model} />
       </Placeholder>
     </div>
+    <div id="item-data-minimal">
+      <Placeholder width="150px" height="30px" {loaded}>
+        <Checkbox
+          label="Minimal format"
+          bind:value={$renderConfiguration.isFlatten}
+        />
+      </Placeholder>
+    </div>
+    <div id="item-data-action"></div>
   </div>
 </div>
 

@@ -14,7 +14,7 @@
   export let resizeDebounce = 300;
 
   const selectOutfit = function (item) {
-    dispatch("select", item);
+    dispatch("select", { item: item });
   };
   const fetchLayer = async function (id, item): Promise<OutfitLayer> {
     return await GetLayer(id);

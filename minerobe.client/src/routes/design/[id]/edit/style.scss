@@ -29,19 +29,29 @@
     max-width: 600px;
     display: flex;
     flex-direction: column;
-    margin: 90px 60px 0px;
+    margin: 90px 30px 0px;
     gap: 4px;
     #item-data-title {
-      max-width: 95%;
+      display: flex;
+      gap: 8px;
     }
     #item-data-layers {
       margin-top: 8px;
+      #item-data-layers-options {
+        display: flex;
+        margin-top: 8px;
+        flex-direction: row;
+        gap: 8px;
+      }
     }
     #item-data-description {
       margin-bottom: 16px;
       #description-input {
         width: 100%;
       }
+    }
+    #item-data-minimal {
+      margin: 8px;
     }
   }
   &.mobile {
