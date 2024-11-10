@@ -242,8 +242,7 @@
       &.icon {
         padding: 2px;
       }
-      span
-      {
+      span {
         transform: translateY(2px);
       }
     }
@@ -253,6 +252,7 @@
     margin: 0px;
     display: grid;
     place-items: center;
+    flex: none;
     aspect-ratio: 1;
     .icon {
       flex: 1;

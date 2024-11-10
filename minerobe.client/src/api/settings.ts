@@ -6,7 +6,7 @@ import type {
   MinerobeUserSettingsSimple,
 } from "$src/model/user";
 
-export const FetchSettings = async function () {
+export const FetchSettings = async function ():Promise<MinerobeUserSettingsSimple> {
   const res = await GetRequest("/api/UserSettings/Simple");
   return res;
 };

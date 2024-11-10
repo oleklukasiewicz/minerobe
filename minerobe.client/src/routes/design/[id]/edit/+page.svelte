@@ -28,6 +28,13 @@
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
+  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
+  import DownloadIcon from "$icons/download.svg?raw";
+  import CloudIcon from "$icons/cloud.svg?raw";
+  import ListIcon from "$icons/list.svg?raw";
+  import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
+  import { FetchSettings } from "$src/api/settings";
+  import { MinerobeUserSettingsSimple } from "$src/model/user";
 
   export let data;
 
@@ -37,6 +44,8 @@
   );
   let loaded = false;
   let isOutfitSet = false;
+  let userSettings: MinerobeUserSettingsSimple = null;
+  let isMinecraftIntegrated = false;
   let renderer: any = null;
 
   let addAnimation = function (animation: RenderAnimation) {};
@@ -51,15 +60,21 @@
 
       $itemPackage = await GetPackage(data.id);
       isOutfitSet = $itemPackage.type === PACKAGE_TYPE.OUTFIT_SET;
+
+      userSettings = await FetchSettings();
+      isMinecraftIntegrated = userSettings?.integrations.includes("minecraft");
+
       loaded = true;
       setTimeout(() => {
         addAnimation(DefaultAnimation);
       }, 0);
       itemPackage.subscribe((item) => {
         renderConfiguration.update((config) => {
-          config.model = item.model === MODEL_TYPE.ALEX ? "alex" : "steve";
           config.item = item;
-          config.baseTexture = isOutfitSet ? $BASE_TEXTURE : $BASE_TEXTURE;
+          config.baseTexture =
+            isOutfitSet && userSettings.baseTexture
+              ? userSettings.baseTexture.layers[0]
+              : $BASE_TEXTURE;
           config.selectedLayerId = null;
           return config;
         });
@@ -151,7 +166,52 @@
         />
       </Placeholder>
     </div>
-    <div id="item-data-action"></div>
+    <div id="item-data-action">
+      {#if loaded}
+        {#if isMinecraftIntegrated}
+          <Button
+            label="Set my skin"
+            type="primary"
+            icon={HumanHandsUpIcon}
+            size="large"
+          />
+        {/if}
+        <Button
+          label="Download"
+          type="primary"
+          size="large"
+          onlyIcon={isMinecraftIntegrated && !$IS_MOBILE_VIEW}
+          icon={DownloadIcon}
+        />
+        <Button
+          label="Manage collections"
+          type="tertiary"
+          size="large"
+          onlyIcon={!$IS_MOBILE_VIEW}
+          icon={ListIcon}
+        />
+        {#if $itemPackage?.social?.isShared}
+          <Button
+            label="Share"
+            icon={CloudIcon}
+            onlyIcon={!$IS_MOBILE_VIEW}
+            size={"large"}
+            type={"tertiary"}
+          />
+        {:else}
+          <Button
+            label="Social summary"
+            icon={MoreHorizontalIcon}
+            onlyIcon
+            size={"large"}
+            type={"tertiary"}
+          />
+        {/if}
+      {:else}
+        <Placeholder height="46px" />
+        <Placeholder height="46px" />
+      {/if}
+    </div>
   </div>
 </div>
 

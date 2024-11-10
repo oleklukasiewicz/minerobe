@@ -32,7 +32,6 @@ export class ModelMap {
 export class OutfitPackageRenderConfig {
   public constructor(
     public item: OutfitPackage = null,
-    public model: "alex" | "steve" = null,
     public baseTexture: OutfitLayer | string = null,
     public isFlatten: boolean = false,
     public selectedLayerId: string = null
