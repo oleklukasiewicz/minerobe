@@ -1,17 +1,16 @@
 <script lang="ts">
-    import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
-    export let label: string;
-    export let placeholder:boolean = false;
+  import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
+  export let label: string;
+  export let placeholder: boolean = false;
 </script>
 
 <span class="section-title">
-{#if placeholder}
-  <!-- svelte-ignore missing-declaration -->
-  <Placeholder style="height:14px;width:64px;" />
-{:else}
-  {label}
-{/if}   
-
+  {#if placeholder}
+    <!-- svelte-ignore missing-declaration -->
+    <Placeholder height="14px" width="64px" />
+  {:else}
+    {label}
+  {/if}
 </span>
 
 <style lang="scss">

@@ -44,8 +44,9 @@
   );
   let loaded = false;
   let isOutfitSet = false;
-  let userSettings: MinerobeUserSettingsSimple = null;
   let isMinecraftIntegrated = false;
+  let userSettings: MinerobeUserSettingsSimple = null;
+
   let renderer: any = null;
 
   let addAnimation = function (animation: RenderAnimation) {};
@@ -60,6 +61,8 @@
 
       $itemPackage = await GetPackage(data.id);
       isOutfitSet = $itemPackage.type === PACKAGE_TYPE.OUTFIT_SET;
+      if (!isOutfitSet)
+        $renderConfiguration.selectedLayerId = $itemPackage.layers[0].id;
 
       userSettings = await FetchSettings();
       isMinecraftIntegrated = userSettings?.integrations.includes("minecraft");
@@ -75,12 +78,46 @@
             isOutfitSet && userSettings.baseTexture
               ? userSettings.baseTexture.layers[0]
               : $BASE_TEXTURE;
-          config.selectedLayerId = null;
           return config;
         });
       });
     });
   });
+
+  //layers
+  const setSelectedLayer = (e) => {
+    const layerId = e.detail.item.id;
+    renderConfiguration.update((config) => {
+      config.selectedLayerId = layerId;
+      return config;
+    });
+  };
+  const moveLayerUp = (e) => {
+    const layerId = e.detail.item.id;
+    const index = $itemPackage.layers.findIndex(
+      (layer) => layer.id === layerId
+    );
+    if (index === 0) return;
+    const layer = $itemPackage.layers[index];
+    itemPackage.update((item) => {
+      item.layers.splice(index, 1);
+      item.layers.splice(index - 1, 0, layer);
+      return item;
+    });
+  };
+  const moveLayerDown = (e) => {
+    const layerId = e.detail.item.id;
+    const index = $itemPackage.layers.findIndex(
+      (layer) => layer.id === layerId
+    );
+    if (index === $itemPackage.layers.length - 1) return;
+    const layer = $itemPackage.layers[index];
+    itemPackage.update((item) => {
+      item.layers.splice(index, 1);
+      item.layers.splice(index + 1, 0, layer);
+      return item;
+    });
+  };
 </script>
 
 <div id="item-page" class:mobile={$IS_MOBILE_VIEW}>
@@ -113,9 +150,16 @@
         <Button onlyIcon icon={TrashIcon} label={"Delete"} type={"tertiary"} />
       </div>
     </Placeholder>
-    <Placeholder {loaded} height="24px" width="120px">
-      <Label>{isOutfitSet ? "Outfit set" : "Outfit"}</Label>
-    </Placeholder>
+    <div id="item-data-type">
+      <Placeholder {loaded} height="24px" width="120px">
+        <Label>{isOutfitSet ? "Outfit set" : "Outfit"}</Label>
+      </Placeholder>
+      <Placeholder {loaded} height="24px" width="120px">
+        {#if $itemPackage?.social?.isShared}
+          <Label variant="rare">Shared</Label>
+        {/if}
+      </Placeholder>
+    </div>
     <div id="item-data-layers">
       <SectionTitle
         label={isOutfitSet ? "Outfits" : "Variants"}
@@ -124,18 +168,24 @@
       {#if loaded}
         <OutfitLayerList
           items={$itemPackage.layers}
+          selectable={!isOutfitSet}
+          selectedLayerId={$renderConfiguration.selectedLayerId}
+          movable={isOutfitSet}
+          on:moveUp={moveLayerUp}
+          on:moveDown={moveLayerDown}
+          on:select={setSelectedLayer}
           model={$itemPackage.model === MODEL_TYPE.ALEX ? "alex" : "steve"}
         ></OutfitLayerList>
       {/if}
       <div id="item-data-layers-options">
-        <Placeholder {loaded} height="40px">
+        <Placeholder {loaded} height="40px" loadedStyle={"flex:1"}>
           {#if isOutfitSet}
             <Button label={"Add outfit"} icon={AddIcon} type={"tertiary"} />
           {:else}
             <Button label={"Add variant"} icon={AddIcon} type={"tertiary"} />
           {/if}
         </Placeholder>
-        <Placeholder {loaded} height="40px">
+        <Placeholder {loaded} height="40px" loadedStyle={"flex:1"}>
           <Button
             label={"Import image"}
             icon={ImportPackageIcon}
@@ -168,7 +218,7 @@
     </div>
     <div id="item-data-action">
       {#if loaded}
-        {#if isMinecraftIntegrated}
+        {#if isMinecraftIntegrated && isOutfitSet}
           <Button
             label="Set my skin"
             type="primary"
@@ -180,7 +230,7 @@
           label="Download"
           type="primary"
           size="large"
-          onlyIcon={isMinecraftIntegrated && !$IS_MOBILE_VIEW}
+          onlyIcon={isMinecraftIntegrated && !$IS_MOBILE_VIEW && isOutfitSet}
           icon={DownloadIcon}
         />
         <Button
@@ -190,7 +240,7 @@
           onlyIcon={!$IS_MOBILE_VIEW}
           icon={ListIcon}
         />
-        {#if $itemPackage?.social?.isShared}
+        {#if !$itemPackage?.social?.isShared}
           <Button
             label="Share"
             icon={CloudIcon}
@@ -200,9 +250,9 @@
           />
         {:else}
           <Button
-            label="Social summary"
+            label="Social data"
             icon={MoreHorizontalIcon}
-            onlyIcon
+            onlyIcon={!$IS_MOBILE_VIEW}
             size={"large"}
             type={"tertiary"}
           />

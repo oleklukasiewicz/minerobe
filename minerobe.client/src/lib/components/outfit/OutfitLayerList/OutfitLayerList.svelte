@@ -61,6 +61,7 @@
           {item}
           selected={item.id == selectedLayerId}
           {model}
+          {movable}
           {removable}
           {editable}
           canUp={index > 0}
@@ -82,7 +83,7 @@
   .outfit-layer-list {
     display: flex;
     .outfit-layer-list-items {
-      flex:1;
+      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 4px;

@@ -55,6 +55,9 @@
   <div class="data">
     <span class="name">{item.name}</span>
     <Label variant="common">{item.outfitType}</Label>
+    {#if item.type == "local"}
+      <Label variant={"rare"}>Image</Label>
+    {/if}
   </div>
 
   <div class="actions">

@@ -30,9 +30,14 @@
     display: flex;
     flex-direction: column;
     margin: 90px 30px 30px;
-    gap: 4px;
     #item-data-title {
       display: flex;
+      gap: 8px;
+    }
+    #item-data-type {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: row;
       gap: 8px;
     }
     #item-data-layers {

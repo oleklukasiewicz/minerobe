@@ -9,7 +9,7 @@
 <div
   class="placeholder"
   class:unloaded={!loaded}
-  style={`width: ${width}; height: ${height}; ${loaded ? loadedStyle : style}`}
+  style={`${loaded ? loadedStyle : style + `width: ${width}; height: ${height};`}`}
 >
   {#if loaded}
     <slot />

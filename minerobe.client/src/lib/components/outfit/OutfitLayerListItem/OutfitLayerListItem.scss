@@ -16,7 +16,8 @@
   .data {
     overflow: hidden;
     min-width: 100px;
-    margin: 8px;
+    padding: 8px;
+    box-sizing: border-box;
     flex: 2;
     .name {
       width: 100%;
