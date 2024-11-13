@@ -35,6 +35,8 @@
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
   import { FetchSettings } from "$src/api/settings";
   import { MinerobeUserSettingsSimple } from "$src/model/user";
+  import { ImportImages, ImportImagesFromFiles } from "$src/helpers/import.js";
+  import { ExportImage } from "$src/helpers/export.js";
 
   export let data;
 
@@ -50,6 +52,9 @@
   let renderer: any = null;
 
   let addAnimation = function (animation: RenderAnimation) {};
+  let getCurrentTexture = function (): string {
+    return "";
+  };
 
   onMount(async () => {
     CURRENT_APP_STATE.subscribe(async (state) => {
@@ -92,31 +97,50 @@
       return config;
     });
   };
-  const moveLayerUp = (e) => {
-    const layerId = e.detail.item.id;
-    const index = $itemPackage.layers.findIndex(
-      (layer) => layer.id === layerId
-    );
-    if (index === 0) return;
-    const layer = $itemPackage.layers[index];
+  const moveLayerDown = (e) => {
+    const layer = e.detail.item;
+    const index = e.detail.index;
     itemPackage.update((item) => {
       item.layers.splice(index, 1);
       item.layers.splice(index - 1, 0, layer);
       return item;
     });
   };
-  const moveLayerDown = (e) => {
-    const layerId = e.detail.item.id;
-    const index = $itemPackage.layers.findIndex(
-      (layer) => layer.id === layerId
-    );
-    if (index === $itemPackage.layers.length - 1) return;
-    const layer = $itemPackage.layers[index];
+  const moveLayerUp = (e) => {
+    const layer = e.detail.item;
+    const index = e.detail.index;
     itemPackage.update((item) => {
       item.layers.splice(index, 1);
       item.layers.splice(index + 1, 0, layer);
       return item;
     });
+  };
+  const removeLayer = (e) => {
+    const layer = e.detail.item;
+    itemPackage.update((item) => {
+      item.layers = item.layers.filter((l) => l.id !== layer.id);
+      return item;
+    });
+  };
+  //imports
+  const importImage = async () => {
+    const layers = await ImportImages();
+    itemPackage.update((item) => {
+      item.layers.push(...layers);
+      return item;
+    });
+  };
+  const importLayerFromDrop = async (e) => {
+    const files = e.detail.items;
+    const layers = await ImportImagesFromFiles(files);
+    itemPackage.update((item) => {
+      item.layers.push(...layers);
+      return item;
+    });
+  };
+  //export
+  const exportPackage = async () => {
+    await ExportImage(getCurrentTexture(), $itemPackage.name);
   };
 </script>
 
@@ -125,8 +149,9 @@
     <div id="render">
       <Placeholder {loaded}>
         <div id="render-node">
-          <DragAndDrop>
+          <DragAndDrop on:drop={importLayerFromDrop}>
             <OutfitPackageRender
+              bind:getCurrentTexture
               bind:addAnimation
               source={$renderConfiguration.item}
               isDynamic
@@ -174,6 +199,7 @@
           on:moveUp={moveLayerUp}
           on:moveDown={moveLayerDown}
           on:select={setSelectedLayer}
+          on:delete={removeLayer}
           model={$itemPackage.model === MODEL_TYPE.ALEX ? "alex" : "steve"}
         ></OutfitLayerList>
       {/if}
@@ -190,6 +216,7 @@
             label={"Import image"}
             icon={ImportPackageIcon}
             type={"tertiary"}
+            on:click={importImage}
           />
         </Placeholder>
       </div>
@@ -227,6 +254,7 @@
           />
         {/if}
         <Button
+          on:click={exportPackage}
           label="Download"
           type="primary"
           size="large"

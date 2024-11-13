@@ -218,6 +218,9 @@ export class TextureRender {
     if (this.renderingActive) await this._applyTextureToModel();
     return this;
   };
+  GetTexture = function (): string {
+    return this.texture;
+  };
   SetRenderer = function (renderer: any): TextureRender {
     this.renderer = renderer;
     return this;

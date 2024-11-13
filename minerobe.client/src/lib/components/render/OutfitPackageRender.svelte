@@ -35,6 +35,9 @@
     if (textureRenderer == null) return;
     textureRenderer.Resize();
   };
+  export const getCurrentTexture=function(){
+    return textureRenderer.GetTexture();
+  }
   export let resizable = false;
   export let resizeDebounce = 300;
 

@@ -23,19 +23,19 @@
     if (!selectable) return;
     dispatch("select", { item: layer });
   };
-  const onMoveUp = function (layer: OutfitLayer) {
+  const onMoveUp = function (layer: OutfitLayer, index: number) {
     if (!movable) return;
-    dispatch("moveUp", { item: layer });
+    dispatch("moveUp", { item: layer, index: index });
   };
-  const onMoveDown = function (layer: OutfitLayer) {
+  const onMoveDown = function (layer: OutfitLayer, index: number) {
     if (!movable) return;
-    dispatch("moveDown", { item: layer });
+    dispatch("moveDown", { item: layer, index: index });
   };
-  const onEdit = function (layer: OutfitLayer) {
-    dispatch("edit", { item: layer });
+  const onEdit = function (layer: OutfitLayer, index: number) {
+    dispatch("edit", { item: layer, index: index });
   };
-  const onDelete = function (layer: OutfitLayer) {
-    dispatch("delete", { item: layer });
+  const onDelete = function (layer: OutfitLayer, index: number) {
+    dispatch("delete", { item: layer, index: index });
   };
   const onDrop = function (layer: OutfitLayer, option: any) {
     dispatch("drop", { item: layer, option: option });
@@ -47,7 +47,7 @@
 
 <div class="outfit-layer-list">
   <div class="outfit-layer-list-items">
-    {#each items as item, index (item.id)}
+    {#each [...items].reverse() as item, index (item.id)}
       <MultiDragAndDrop
         on:drop={(e) => onDrop(item, e.detail.option)}
         disabled={!dropable || !editable}
@@ -66,10 +66,10 @@
           {editable}
           canUp={index > 0}
           canDown={index < items.length - 1}
-          on:moveDown={() => onMoveDown(item)}
-          on:moveUp={() => onMoveUp(item)}
-          on:edit={() => onEdit(item)}
-          on:delete={() => onDelete(item)}
+          on:moveDown={() => onMoveDown(item, items.length - index - 1)}
+          on:moveUp={() => onMoveUp(item, items.length - index - 1)}
+          on:edit={() => onEdit(item, items.length - index - 1)}
+          on:delete={() => onDelete(item, items.length - index - 1)}
         />
       </MultiDragAndDrop>
     {/each}

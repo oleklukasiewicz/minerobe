@@ -16,7 +16,10 @@
   };
   const handleDrop = function (e) {
     e.preventDefault();
-    const items = e.dataTransfer.items;
+    const items = (Array.from(e.dataTransfer.items) as any[])
+      .filter((item) => item.kind === "file")
+      .map((item) => item.getAsFile());
+
     dispatch("drop", { items: items });
   };
 </script>
