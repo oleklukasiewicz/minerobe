@@ -41,7 +41,7 @@ export class TextureRender {
   private textureLoader: any;
   private loadedTexture: any;
   private animations: RenderAnimation[] = [];
-  private animationQueueLimit: number = 2;
+  private animationQueueLimit: number = 3;
   private renderingActive: boolean = false;
   private shadowsEnabled: boolean = false;
   private shadowScene: any = null;
@@ -241,8 +241,14 @@ export class TextureRender {
     this.cameraOptions = cameraOptions;
     return this;
   };
-  AddAnimation = function (animation: RenderAnimation): TextureRender {
-    if (this.animations.length >= this.animationQueueLimit) return this;
+  AddAnimation = function (
+    animation: RenderAnimation,
+    force: boolean
+  ): TextureRender {
+    if (this.animations.length >= this.animationQueueLimit) {
+      if (!force) return this;
+      this.animations.splice(this.animations.length - 1, 1, animation);
+    }
     this.animations.push(animation);
     return this;
   };

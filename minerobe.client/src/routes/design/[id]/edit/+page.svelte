@@ -37,6 +37,13 @@
   import { MinerobeUserSettingsSimple } from "$src/model/user";
   import { ImportImages, ImportImagesFromFiles } from "$src/helpers/import.js";
   import { ExportImage } from "$src/helpers/export.js";
+  import HandsUpAnimation from "$src/animation/handsup";
+  import NewOutfitBottomAnimation from "$src/animation/bottom.js";
+  import NewOutfitBottomAltAnimation from "$src/animation/bottomAlt.js";
+  import { GetAccount } from "$src/api/integration/minecraft.js";
+  import type { MinecraftIntegrationSettings } from "$src/model/integration/minecraft";
+  import CapeListItem from "$lib/components/outfit/CapeListItem/CapeListItem.svelte";
+  import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
 
   export let data;
 
@@ -48,10 +55,14 @@
   let isOutfitSet = false;
   let isMinecraftIntegrated = false;
   let userSettings: MinerobeUserSettingsSimple = null;
+  let integrationSettings: MinecraftIntegrationSettings = null;
 
   let renderer: any = null;
 
-  let addAnimation = function (animation: RenderAnimation) {};
+  let __addAnimation = function (
+    animation: RenderAnimation,
+    force: boolean = false
+  ) {};
   let getCurrentTexture = function (): string {
     return "";
   };
@@ -71,11 +82,12 @@
 
       userSettings = await FetchSettings();
       isMinecraftIntegrated = userSettings?.integrations.includes("minecraft");
+      if (isMinecraftIntegrated) {
+        integrationSettings = await GetAccount();
+        $renderConfiguration.capeId = integrationSettings.currentCapeId;
+      }
 
       loaded = true;
-      setTimeout(() => {
-        addAnimation(DefaultAnimation);
-      }, 0);
       itemPackage.subscribe((item) => {
         renderConfiguration.update((config) => {
           config.item = item;
@@ -86,6 +98,7 @@
           return config;
         });
       });
+      setTimeout(() => addAnimation(null), 0);
     });
   });
 
@@ -105,6 +118,7 @@
       item.layers.splice(index - 1, 0, layer);
       return item;
     });
+    addAnimation(NewOutfitBottomAltAnimation);
   };
   const moveLayerUp = (e) => {
     const layer = e.detail.item;
@@ -114,6 +128,7 @@
       item.layers.splice(index + 1, 0, layer);
       return item;
     });
+    addAnimation(NewOutfitBottomAnimation);
   };
   const removeLayer = (e) => {
     const layer = e.detail.item;
@@ -141,6 +156,13 @@
   //export
   const exportPackage = async () => {
     await ExportImage(getCurrentTexture(), $itemPackage.name);
+    addAnimation(HandsUpAnimation);
+  };
+  //animations
+  const addAnimation = (animation: RenderAnimation) => {
+    if (!isOutfitSet) return;
+    if (animation) __addAnimation(animation, false);
+    __addAnimation(DefaultAnimation, true);
   };
 </script>
 
@@ -152,7 +174,7 @@
           <DragAndDrop on:drop={importLayerFromDrop}>
             <OutfitPackageRender
               bind:getCurrentTexture
-              bind:addAnimation
+              bind:addAnimation={__addAnimation}
               source={$renderConfiguration.item}
               isDynamic
               layerId={$renderConfiguration.selectedLayerId}
@@ -211,17 +233,27 @@
             <Button label={"Add variant"} icon={AddIcon} type={"tertiary"} />
           {/if}
         </Placeholder>
-        <Placeholder {loaded} height="40px" loadedStyle={"flex:1"}>
-          <Button
-            label={"Import image"}
-            icon={ImportPackageIcon}
-            type={"tertiary"}
-            on:click={importImage}
-          />
-        </Placeholder>
+        {#if isOutfitSet}
+          <Placeholder {loaded} height="40px" loadedStyle={"flex:1"}>
+            <Button
+              label={"Import image"}
+              icon={ImportPackageIcon}
+              type={"tertiary"}
+              on:click={importImage}
+            />
+          </Placeholder>
+        {/if}
       </div>
     </div>
-    <div id="item-data-integration"></div>
+    {#if isMinecraftIntegrated && loaded && isOutfitSet}
+      <div id="item-data-integration">
+        <SectionTitle label="Capes" />
+        <CapeList
+          items={integrationSettings.capes}
+          bind:selectedCapeId={$renderConfiguration.capeId}
+        />
+      </div>
+    {/if}
     <div id="item-data-description">
       <SectionTitle label="Description" placeholder={!loaded} />
       <Placeholder height="40px" {loaded}>

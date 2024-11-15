@@ -21,7 +21,7 @@
 
   import { replaceState } from "$app/navigation";
 
-  import { MinecraftIntegrationModel } from "$model/integration/minecraft";
+  import { MinecraftIntegrationSettings } from "$model/integration/minecraft";
   import { OutfitPackageRenderConfig } from "$model/render";
   import {
     CurrentTextureConfig,
@@ -80,7 +80,7 @@
     new OutfitPackageRenderConfig()
   );
 
-  let integrationSettings: MinecraftIntegrationModel = null;
+  let integrationSettings: MinecraftIntegrationSettings = null;
   let userSettings: MinerobeUserSettingsSimple = null;
 
   let isItemSet = false;

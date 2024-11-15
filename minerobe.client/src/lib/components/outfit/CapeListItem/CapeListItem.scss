@@ -1,0 +1,36 @@
+.cape-list-item {
+  aspect-ratio: 1;
+  display: inline-block;
+  background-color: var(--color-theme-D1);
+  border: 2px solid transparent;
+  padding: 6px;
+  max-height: 64px;
+  box-sizing: border-box;
+  img {
+    height: 48px;
+    width: 48px;
+    image-rendering: pixelated;
+  }
+  div {
+    margin: 12px;
+  }
+  &:hover {
+    background-color: var(--color-theme-font);
+    color: var(--color-accent-font);
+  }
+  &:active {
+    background-color: var(--color-theme-D6);
+  }
+  &.selected {
+    color: var(--color-accent-font);
+    box-shadow: var(--shadow-button);
+    background-color: var(--color-accent);
+    border-color: var(--color-theme-font);
+    &:hover {
+      background-color: var(--color-theme-D6);
+    }
+    &:active {
+      background-color: var(--color-theme-D5);
+    }
+  }
+}

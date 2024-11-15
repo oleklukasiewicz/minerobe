@@ -1,6 +1,6 @@
 import { FileData, OutfitLayer, type OutfitPackage } from "$src/model/package";
 import { MergeStringToImage } from "$data/imageMerger";
-import type { CapeModel } from "./integration/minecraft";
+import type { Cape } from "./integration/minecraft";
 
 export class ModelTextureArea {
   public constructor(
@@ -34,6 +34,7 @@ export class OutfitPackageRenderConfig {
     public item: OutfitPackage = null,
     public baseTexture: OutfitLayer | string = null,
     public isFlatten: boolean = false,
-    public selectedLayerId: string = null
+    public selectedLayerId: string = null,
+    public capeId: string = null
   ) {}
 }

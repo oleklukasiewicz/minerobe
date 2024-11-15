@@ -2,13 +2,13 @@
   import CloseBoxIcon from "$icons/close-box.svg?raw";
   import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
   import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
-  import type { CapeModel } from "$src/model/integration/minecraft";
+  import type { Cape } from "$src/model/integration/minecraft";
 
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
 
-  export let capes: CapeModel[] = [];
-  export let selectedCape: CapeModel = null;
+  export let capes: Cape[] = [];
+  export let selectedCape: Cape = null;
 
   const onSelect = (cape) => {
     selectedCape = cape;

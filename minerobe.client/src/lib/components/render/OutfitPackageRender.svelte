@@ -27,17 +27,17 @@
   export let cameraOptions: CameraConfig | "auto" = "auto";
   export let renderer = $DEFAULT_RENDERER;
   export let baseTexture: OutfitLayer | string = null;
-  export const addAnimation = function (animation) {
+  export const addAnimation = function (animation, force = false) {
     if (textureRenderer == null) return;
-    textureRenderer.AddAnimation(animation);
+    textureRenderer.AddAnimation(animation, force);
   };
   export const resize = function () {
     if (textureRenderer == null) return;
     textureRenderer.Resize();
   };
-  export const getCurrentTexture=function(){
+  export const getCurrentTexture = function () {
     return textureRenderer.GetTexture();
-  }
+  };
   export let resizable = false;
   export let resizeDebounce = 300;
 
