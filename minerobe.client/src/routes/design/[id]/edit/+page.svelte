@@ -4,11 +4,11 @@
   import { onMount } from "svelte";
   import * as THREE from "three";
   import { GetPackage } from "$src/api/pack";
-  import { type OutfitPackage } from "$model/package";
+  import { OutfitLayer, type OutfitPackage } from "$model/package";
   import { DEFAULT_PACKAGE } from "$src/data/consts/data.js";
   import { APP_STATE } from "$src/data/consts/app.js";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import { MODEL_TYPE, PACKAGE_TYPE } from "$src/data/consts.js";
+  import { PACKAGE_TYPE } from "$src/data/consts.js";
   import {
     BASE_TEXTURE,
     CURRENT_APP_STATE,
@@ -42,12 +42,17 @@
   import NewOutfitBottomAltAnimation from "$src/animation/bottomAlt.js";
   import { GetAccount } from "$src/api/integration/minecraft.js";
   import type { MinecraftIntegrationSettings } from "$src/model/integration/minecraft";
-  import CapeListItem from "$lib/components/outfit/CapeListItem/CapeListItem.svelte";
   import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
+  import { propertyStore } from "svelte-writable-derived";
+  import { MODEL_TYPE } from "$src/data/consts/model.js";
 
   export let data;
 
   const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
+  const itemPackageLayers: Writable<OutfitLayer[]> = propertyStore(
+    itemPackage,
+    "layers"
+  );
   const renderConfiguration: Writable<OutfitPackageRenderConfig> = writable(
     new OutfitPackageRenderConfig()
   );
@@ -56,7 +61,6 @@
   let isMinecraftIntegrated = false;
   let userSettings: MinerobeUserSettingsSimple = null;
   let integrationSettings: MinecraftIntegrationSettings = null;
-
   let renderer: any = null;
 
   let __addAnimation = function (
@@ -77,10 +81,16 @@
 
       $itemPackage = await GetPackage(data.id);
       isOutfitSet = $itemPackage.type === PACKAGE_TYPE.OUTFIT_SET;
+      $renderConfiguration.modelName = $itemPackage.model as MODEL_TYPE;
+      $renderConfiguration.item = $itemPackage;
       if (!isOutfitSet)
         $renderConfiguration.selectedLayerId = $itemPackage.layers[0].id;
 
       userSettings = await FetchSettings();
+      if (isOutfitSet)
+        $renderConfiguration.baseTexture = userSettings.baseTexture.layers[0];
+      else $renderConfiguration.baseTexture = $BASE_TEXTURE;
+
       isMinecraftIntegrated = userSettings?.integrations.includes("minecraft");
       if (isMinecraftIntegrated) {
         integrationSettings = await GetAccount();
@@ -88,16 +98,6 @@
       }
 
       loaded = true;
-      itemPackage.subscribe((item) => {
-        renderConfiguration.update((config) => {
-          config.item = item;
-          config.baseTexture =
-            isOutfitSet && userSettings.baseTexture
-              ? userSettings.baseTexture.layers[0]
-              : $BASE_TEXTURE;
-          return config;
-        });
-      });
       setTimeout(() => addAnimation(null), 0);
     });
   });
@@ -160,7 +160,6 @@
   };
   //animations
   const addAnimation = (animation: RenderAnimation) => {
-    if (!isOutfitSet) return;
     if (animation) __addAnimation(animation, false);
     __addAnimation(DefaultAnimation, true);
   };
@@ -176,6 +175,7 @@
               bind:getCurrentTexture
               bind:addAnimation={__addAnimation}
               source={$renderConfiguration.item}
+              model={$renderConfiguration.modelName}
               isDynamic
               layerId={$renderConfiguration.selectedLayerId}
               isFlatten={$renderConfiguration.isFlatten}
@@ -233,15 +233,13 @@
             <Button label={"Add variant"} icon={AddIcon} type={"tertiary"} />
           {/if}
         </Placeholder>
-        {#if isOutfitSet}
-          <Placeholder {loaded} height="40px" loadedStyle={"flex:1"}>
-            <Button
-              label={"Import image"}
-              icon={ImportPackageIcon}
-              type={"tertiary"}
-              on:click={importImage}
-            />
-          </Placeholder>
+        {#if isOutfitSet && loaded}
+          <Button
+            label={"Import image"}
+            icon={ImportPackageIcon}
+            type={"tertiary"}
+            on:click={importImage}
+          />
         {/if}
       </div>
     </div>
@@ -264,7 +262,7 @@
     <div id="item-data-model">
       <SectionTitle label="Model" placeholder={!loaded} />
       <Placeholder height="40px" {loaded}>
-        <ModelRadioGroup bind:selectedValue={$itemPackage.model} />
+        <ModelRadioGroup bind:selectedValue={$renderConfiguration.modelName} />
       </Placeholder>
     </div>
     <div id="item-data-minimal">

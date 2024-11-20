@@ -1,5 +1,5 @@
 import { RenderAnimation,lerpOutCubic,isPoseReady } from "$data/animation";
-import { MODEL_TYPE } from "$data/consts";
+import { MODEL_TYPE } from "$src/data/consts/model";
 const FrendshipAnimation = new RenderAnimation(
     function (scene, keepData = false, modelName) {
       let data: any = {

@@ -1,5 +1,6 @@
 import alexModelData from "$src/playerModel/alex.gltf?raw";
 import steveModelData from "$src/playerModel/steve.gltf?raw";
+import { MODEL_TYPE } from "./consts/model";
 
 export const COLORS = {
   WHITE: { r: 255, g: 255, b: 255 },
@@ -97,10 +98,6 @@ export const OUTFIT_TYPE_ARRAY = Object.keys(OUTFIT_TYPE).map((key) => {
   return { name: OUTFIT_TYPE[key], normalizedName: key.replace(/_/g, " ") };
 });
 
-export const MODEL_TYPE = {
-  ALEX: "alex",
-  STEVE: "steve",
-};
 export const PACKAGE_TYPE = {
   OUTFIT: "outfit",
   OUTFIT_SET: "set",

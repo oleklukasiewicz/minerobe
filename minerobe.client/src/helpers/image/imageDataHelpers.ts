@@ -1,7 +1,6 @@
 import {
   ALEX_MODEL,
   COLOR_TYPE,
-  MODEL_TYPE,
   OUTFIT_TYPE,
   STEVE_MODEL,
 } from "$data/consts";
@@ -14,6 +13,7 @@ import { ConvertColor, GetColorFromFileData } from "./colorHelper";
 import { MergeLayersToImage } from "$src/data/imageMerger";
 import { OutfitPackageRenderConfig } from "$model/render";
 import type { OutfitLayer, OutfitPackage } from "$src/model/package";
+import { MODEL_TYPE } from "$src/data/consts/model";
 
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =

@@ -1,10 +1,10 @@
 import alexModelData from "$src/playerModel/alex.gltf?raw";
 import steveModelData from "$src/playerModel/steve.gltf?raw";
 
-export const MODEL_TYPE = {
-    ALEX: "alex",
-    STEVE: "steve",
-  };
+export enum MODEL_TYPE {
+  ALEX = "alex",
+  STEVE = "steve",
+}
 export const STEVE_MODEL = {
   name: MODEL_TYPE.STEVE,
   model: "data:model/gltf+json;base64," + btoa(steveModelData),

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { MODEL_TYPE, OUTFIT_TYPE } from "$src/data/consts";
+  import { OUTFIT_TYPE } from "$src/data/consts";
   import { CAMERA_CONFIG } from "$src/data/consts/render";
   import {
     CameraConfig,
@@ -17,9 +17,10 @@
   import floorTexture from "$texture/floor.png?url";
   import { onDestroy, onMount } from "svelte";
   import Resize from "../other/Resize/Resize.svelte";
+  import { MODEL_TYPE } from "$src/data/consts/model";
 
   export let source: string | OutfitPackage;
-  export let model: "alex" | "steve" | "source" = "source";
+  export let model: MODEL_TYPE | "source" = "source";
   export let outfitType: string = null;
   export let isDynamic: boolean = false;
   export let isFlatten: boolean = false;

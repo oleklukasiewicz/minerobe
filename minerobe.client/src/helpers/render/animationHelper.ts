@@ -11,7 +11,8 @@ import {
   lerpOutCubic,
   type RenderAnimation,
 } from "$src/data/animation";
-import { CHANGE_TYPE, MODEL_TYPE, OUTFIT_TYPE } from "$src/data/consts";
+import { CHANGE_TYPE, OUTFIT_TYPE } from "$src/data/consts";
+import { MODEL_TYPE } from "$src/data/consts/model";
 import type { OutfitPackage } from "$src/model/package";
 import * as THREE from "three";
 const CreatePropertyStep = function (

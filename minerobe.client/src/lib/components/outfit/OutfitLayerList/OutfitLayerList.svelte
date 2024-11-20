@@ -3,8 +3,8 @@
   import { createEventDispatcher } from "svelte";
   import OutfitLayerListItem from "../OutfitLayerListItem/OutfitLayerListItem.svelte";
   import MultiDragAndDrop from "$lib/components/draganddrop/MultiDragAndDrop/MultiDragAndDrop.svelte";
-  import { MODEL_TYPE } from "$src/data/consts";
   import Resize from "$lib/components/other/Resize/Resize.svelte";
+  import { MODEL_TYPE } from "$src/data/consts/model";
 
   const dispatch = createEventDispatcher();
 
