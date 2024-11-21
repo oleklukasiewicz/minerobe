@@ -10,11 +10,12 @@
   import EditIcon from "$src/icons/edit.svg?raw";
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
   import { createEventDispatcher } from "svelte";
+  import type { MODEL_TYPE } from "$src/data/consts/model";
 
   const dispatch = createEventDispatcher();
 
   export let item: OutfitLayer;
-  export let model: "alex" | "steve";
+  export let model: MODEL_TYPE;
   export let readonly = false;
   export let movable = true;
   export let canUp = true;

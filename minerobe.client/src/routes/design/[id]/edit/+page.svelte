@@ -4,8 +4,7 @@
   import { onMount } from "svelte";
   import * as THREE from "three";
   import { GetPackage } from "$src/api/pack";
-  import { OutfitLayer, type OutfitPackage } from "$model/package";
-  import { DEFAULT_PACKAGE } from "$src/data/consts/data.js";
+  import { type OutfitPackage } from "$model/package";
   import { APP_STATE } from "$src/data/consts/app.js";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import { PACKAGE_TYPE } from "$src/data/consts.js";
@@ -44,17 +43,16 @@
   import type { MinecraftIntegrationSettings } from "$src/model/integration/minecraft";
   import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
   import { propertyStore } from "svelte-writable-derived";
-  import { MODEL_TYPE } from "$src/data/consts/model.js";
+  import { OutfitPackageToTextureConverter } from "$src/data/render.js";
 
   export let data;
 
-  const itemPackage: Writable<OutfitPackage> = writable(DEFAULT_PACKAGE);
-  const itemPackageLayers: Writable<OutfitLayer[]> = propertyStore(
-    itemPackage,
-    "layers"
-  );
   const renderConfiguration: Writable<OutfitPackageRenderConfig> = writable(
     new OutfitPackageRenderConfig()
+  );
+  const itemPackage: Writable<OutfitPackage> = propertyStore(
+    renderConfiguration,
+    "item"
   );
   let loaded = false;
   let isOutfitSet = false;
@@ -67,9 +65,6 @@
     animation: RenderAnimation,
     force: boolean = false
   ) {};
-  let getCurrentTexture = function (): string {
-    return "";
-  };
 
   onMount(async () => {
     CURRENT_APP_STATE.subscribe(async (state) => {
@@ -81,7 +76,6 @@
 
       $itemPackage = await GetPackage(data.id);
       isOutfitSet = $itemPackage.type === PACKAGE_TYPE.OUTFIT_SET;
-      $renderConfiguration.modelName = $itemPackage.model as MODEL_TYPE;
       $renderConfiguration.item = $itemPackage;
       if (!isOutfitSet)
         $renderConfiguration.selectedLayerId = $itemPackage.layers[0].id;
@@ -155,7 +149,12 @@
   };
   //export
   const exportPackage = async () => {
-    await ExportImage(getCurrentTexture(), $itemPackage.name);
+    await ExportImage(
+      await new OutfitPackageToTextureConverter().ConvertFromOptionsAsync(
+        $renderConfiguration
+      ),
+      $itemPackage.name
+    );
     addAnimation(HandsUpAnimation);
   };
   //animations
@@ -172,10 +171,9 @@
         <div id="render-node">
           <DragAndDrop on:drop={importLayerFromDrop}>
             <OutfitPackageRender
-              bind:getCurrentTexture
               bind:addAnimation={__addAnimation}
               source={$renderConfiguration.item}
-              model={$renderConfiguration.modelName}
+              model={$itemPackage.model}
               isDynamic
               layerId={$renderConfiguration.selectedLayerId}
               isFlatten={$renderConfiguration.isFlatten}
@@ -222,7 +220,7 @@
           on:moveDown={moveLayerDown}
           on:select={setSelectedLayer}
           on:delete={removeLayer}
-          model={$itemPackage.model === MODEL_TYPE.ALEX ? "alex" : "steve"}
+          model={$itemPackage.model}
         ></OutfitLayerList>
       {/if}
       <div id="item-data-layers-options">
@@ -262,7 +260,7 @@
     <div id="item-data-model">
       <SectionTitle label="Model" placeholder={!loaded} />
       <Placeholder height="40px" {loaded}>
-        <ModelRadioGroup bind:selectedValue={$renderConfiguration.modelName} />
+        <ModelRadioGroup bind:selectedValue={$itemPackage.model} />
       </Placeholder>
     </div>
     <div id="item-data-minimal">

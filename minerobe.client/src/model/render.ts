@@ -1,5 +1,5 @@
+import { DEFAULT_PACKAGE } from "$src/data/consts";
 import { OutfitLayer, type OutfitPackage } from "$src/model/package";
-import type { MODEL_TYPE } from "$src/data/consts/model";
 
 export class ModelTextureArea {
   public constructor(
@@ -30,11 +30,11 @@ export class ModelMap {
 }
 export class OutfitPackageRenderConfig {
   public constructor(
-    public item: OutfitPackage = null,
+    public item: OutfitPackage = DEFAULT_PACKAGE,
     public baseTexture: OutfitLayer | string = null,
     public isFlatten: boolean = false,
+    public excludedPartsFromFlat: string[] = ["head"],
     public selectedLayerId: string = null,
-    public capeId: string = null,
-    public modelName: MODEL_TYPE = null
+    public capeId: string = null
   ) {}
 }

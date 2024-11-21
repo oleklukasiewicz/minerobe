@@ -18,6 +18,7 @@
   import { onDestroy, onMount } from "svelte";
   import Resize from "../other/Resize/Resize.svelte";
   import { MODEL_TYPE } from "$src/data/consts/model";
+  import { text } from "@sveltejs/kit";
 
   export let source: string | OutfitPackage;
   export let model: MODEL_TYPE | "source" = "source";
@@ -42,6 +43,10 @@
   export let resizable = false;
   export let resizeDebounce = 300;
 
+  let _source: string | OutfitPackage = structuredClone(source);
+  let _model: MODEL_TYPE | "source" = structuredClone(model);
+  let _isFlatten: boolean = isFlatten;
+  let _baseTexture: OutfitLayer | string = baseTexture;
   let renderReady = false;
   let cachedtexture: string = null;
   let renderNode: any;
@@ -77,36 +82,35 @@
     }
   };
   const loadInitialParams = async function () {
-    if (source == null || source == "") return;
-    if (model == "source" && typeof source === "string") {
-      console.error("Model is source but source is string");
+    if (_source == null || _source == "") return;
+    if (_model == "source" && typeof _source === "string") {
+      console.error("_model is _source but _source is string");
       return;
     }
 
-    if (typeof source !== "string") {
-      merger.SetOutfitPackage(source);
+    if (typeof _source !== "string") {
+      merger.SetOutfitPackage(_source);
       if (layerId != null && layerId != "") merger.SetLayerId(layerId);
     }
-
-    let targetModel = model as string;
-    if (model == "source" && typeof source !== "string")
-      targetModel = source.model;
+    let targetModel = _model as string;
+    if (_model == "source" && typeof _source !== "string")
+      targetModel = _source.model;
     await syncModel(targetModel);
 
-    if (baseTexture != null) {
-      if (typeof baseTexture === "string") merger.SetBaseTexture(baseTexture);
-      else merger.SetBaseTexture(baseTexture[targetModel].content);
+    if (_baseTexture != null) {
+      if (typeof _baseTexture === "string") merger.SetBaseTexture(_baseTexture);
+      else merger.SetBaseTexture(_baseTexture[targetModel].content);
     }
 
-    if (isFlatten) merger.SetAsFlatten();
-    if (typeof source !== "string")
+    if (_isFlatten) merger.SetAsFlatten();
+    if (typeof _source !== "string")
       cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
-    else cachedtexture = source as string;
+    else cachedtexture = _source as string;
 
     if (cameraOptions == "auto") {
-      if (typeof source !== "string") {
+      if (typeof _source !== "string") {
         textureRenderer.SetCameraOptions(
-          CAMERA_CONFIG.getForOutfit(source.outfitType)
+          CAMERA_CONFIG.getForOutfit(_source.outfitType)
         );
       } else {
         textureRenderer.SetCameraOptions(
@@ -120,24 +124,43 @@
   };
   const setSource = async (v) => {
     if (!initialized) return;
-    if (source == null || source == "") return;
-    cachedtexture = source as string;
-    if (typeof source !== "string") {
-      if (model == "source") {
-        const sourceModel = source.model;
+    if (_source == null || _source == "") return;
+    if (typeof v === "string" && typeof _source === "string" && v === _source)
+      return;
+    if (typeof v !== "string" && typeof _source !== "string") {
+      //compare layers contents to avoid unnecessary re-render
+      const vAsPackage = v as OutfitPackage;
+      const _sourceAsPackage = merger.GetOutfitPackage() as OutfitPackage;
+      if (vAsPackage.layers.length == _sourceAsPackage.layers.length) {
+        let isChanged = false;
+        vAsPackage.layers.forEach((layer, index) => {
+          if (
+            layer[merger.GetModel()].content !=
+            _sourceAsPackage.layers[index][merger.GetModel()].content
+          )
+            isChanged = true;
+        });
+        if (!isChanged) return;
+      }
+    }
+    _source = structuredClone(v);
+    cachedtexture = _source as string;
+    if (typeof _source !== "string") {
+      if (_model == "source") {
+        const sourceModel = _source.model;
         await syncModel(sourceModel);
       }
       if (cameraOptions == "auto") {
         textureRenderer.SetCameraOptions(
-          CAMERA_CONFIG.getForOutfit(source.outfitType)
+          CAMERA_CONFIG.getForOutfit(_source.outfitType)
         );
       }
       cachedtexture = await merger
-        .SetOutfitPackage(source)
+        .SetOutfitPackage(_source)
         .ConvertAsyncWithFlattenSettings();
     } else {
-      await syncModel(model);
-      cachedtexture = source;
+      await syncModel(_model);
+      cachedtexture = _source;
     }
     await textureRenderer.SetTextureAsync(cachedtexture);
     if (!isDynamic) await textureRenderer.RenderStatic();
@@ -145,20 +168,24 @@
   };
   const setModel = async (v) => {
     if (!initialized) return;
+    if (v == _model) return;
+    _model = v;
 
-    await syncModel(model);
-    await setSource(source);
+    await syncModel(v);
+    if (!isDynamic) await textureRenderer.RenderStatic();
   };
   const setOutfitType = async (v) => {
     if (!initialized) return;
 
-    await syncModel(source);
+    await syncModel(_source);
   };
   const setFlatten = async (v) => {
     if (!initialized) return;
+    if (v == _isFlatten) return;
+    _isFlatten = v;
 
-    if (source == null && source == "") return;
-    if (isFlatten) merger.SetAsFlatten();
+    if (_source == null && _source == "") return;
+    if (_isFlatten) merger.SetAsFlatten();
     else merger.SetAsNotFlatten();
 
     cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
@@ -170,7 +197,7 @@
   const setLayerId = async (v) => {
     if (!initialized) return;
 
-    if (merger && typeof source !== "string") {
+    if (merger && typeof _source !== "string") {
       cachedtexture = await merger
         .SetLayerId(layerId)
         .ConvertAsyncWithFlattenSettings();
@@ -182,8 +209,8 @@
     if (!initialized) return;
 
     let targetCameraOptions = cameraOptions;
-    if (cameraOptions == "auto" && typeof source !== "string") {
-      targetCameraOptions = CAMERA_CONFIG.getForOutfit(source.outfitType);
+    if (cameraOptions == "auto" && typeof _source !== "string") {
+      targetCameraOptions = CAMERA_CONFIG.getForOutfit(_source.outfitType);
     }
     textureRenderer.SetCameraOptions(targetCameraOptions);
 
@@ -191,12 +218,27 @@
   };
   const setBaseTexture = async (v) => {
     if (!initialized) return;
+    if (
+      typeof v === "string" &&
+      typeof _baseTexture === "string" &&
+      v === _baseTexture
+    )
+      return;
+    if (
+      typeof v !== "string" &&
+      typeof _baseTexture !== "string" &&
+      v[merger.GetModel()].content ===
+        (_baseTexture as OutfitLayer)[merger.GetModel()].content
+    )
+      return;
+    _baseTexture = v;
 
-    if (baseTexture != null) {
-      if (typeof baseTexture === "string") merger.SetBaseTexture(baseTexture);
-      else merger.SetBaseTexture(baseTexture[merger.GetModel()].content);
+    if (_baseTexture != null) {
+      if (typeof _baseTexture === "string") merger.SetBaseTexture(_baseTexture);
+      else merger.SetBaseTexture(_baseTexture[merger.GetModel()].content);
     }
-    await setSource(source);
+
+    cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
   };
   const baseModelTypesList = [
     OUTFIT_TYPE.OUTFIT_SET,
@@ -205,15 +247,13 @@
   ];
 
   const syncModel = async (modelToSync) => {
-    merger.SetModel(
-      modelToSync == MODEL_TYPE.ALEX ? MODEL_TYPE.ALEX : MODEL_TYPE.STEVE
-    );
+    merger.SetModel(modelToSync);
 
     let modelScene = null;
     if (
-      (typeof source !== "string" &&
-        baseModelTypesList.includes(source.outfitType)) ||
-      (typeof source === "string" && baseModelTypesList.includes(outfitType))
+      (typeof _source !== "string" &&
+        baseModelTypesList.includes(_source.outfitType)) ||
+      (typeof _source === "string" && baseModelTypesList.includes(outfitType))
     ) {
       modelScene =
         modelToSync === MODEL_TYPE.ALEX ? $ALEX_MODELSCENE : $STEVE_MODELSCENE;

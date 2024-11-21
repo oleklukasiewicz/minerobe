@@ -8,6 +8,7 @@ import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
 import { ALEX_MODEL, MODEL_TYPE, STEVE_MODEL } from "./consts/model";
 import { DEFAULT_RENDERER } from "./static";
 import type { OutfitLayer, OutfitPackage } from "$src/model/package";
+import type { OutfitPackageRenderConfig } from "$src/model/render";
 export class CameraConfig {
   rotation: THREE.Vector3;
   position: THREE.Vector3;
@@ -177,15 +178,15 @@ export class TextureRender {
     this.modelScene.camera.updateProjectionMatrix();
   };
   private _renderInNode = function () {
-    if (this.temporaryRenderNode != null)
-      this.temporaryRenderNode.appendChild(this.renderer.domElement);
-    else this.node.appendChild(this.renderer.domElement);
+    const renderNode = this.temporaryRenderNode || this.node;
+    renderNode.appendChild(this.renderer.domElement);
 
     this.renderer.render(this.modelScene.scene, this.modelScene.camera);
+
     const dataUrl = this.renderer.domElement.toDataURL();
     this.node.src = dataUrl;
 
-    if (this.temporaryRenderNode == null) this.node.children[0].remove();
+    renderNode.removeChild(this.renderer.domElement);
   };
 
   constructor(renderer: any = DEFAULT_RENDERER) {
@@ -455,13 +456,18 @@ export class OutfitPackageToTextureConverter {
     return this;
   };
   SetOptions = function (
-    options: OutfitPackageTextureConfig
+    options: OutfitPackageRenderConfig
   ): OutfitPackageToTextureConverter {
-    this.layerId = options.layerId;
-    this.model = options.model;
+    this.outfitPackage = options.item;
+    if (typeof options.baseTexture == "string")
+      this.basetexture = options.baseTexture;
+    else this.basetexture = options.baseTexture[options.item.model].content;
+    this.layerId = options.selectedLayerId;
+    this.model = options.item.model;
     this.isFlatten = options.isFlatten;
     this.excludedPartsFromFlat = options.excludedPartsFromFlat;
-    this.modelMap = options.model == "steve" ? STEVE_MODEL : ALEX_MODEL;
+    this.modelMap =
+      options.item.model == MODEL_TYPE.STEVE ? STEVE_MODEL : ALEX_MODEL;
     return this;
   };
   SetExcludedPartsFromFlat = function (
@@ -470,9 +476,7 @@ export class OutfitPackageToTextureConverter {
     this.excludedPartsFromFlat = excludedPartsFromFlat;
     return this;
   };
-  SetModel = function (
-    model: "steve" | "alex" | string
-  ): OutfitPackageToTextureConverter {
+  SetModel = function (model: MODEL_TYPE): OutfitPackageToTextureConverter {
     this.model = model;
     this.modelMap = model == "steve" ? STEVE_MODEL : ALEX_MODEL;
     return this;
@@ -535,6 +539,9 @@ export class OutfitPackageToTextureConverter {
   GetModel = function (): string {
     return this.model;
   };
+  GetOutfitPackage = function (): OutfitPackage {
+    return this.outfitPackage;
+  };
   ConvertAsync = async function (): Promise<OutfitPackageToTextureConverter> {
     //set modelMap
     const modelMap = this.modelMap;
@@ -571,12 +578,10 @@ export class OutfitPackageToTextureConverter {
     return this.texture;
   };
   ConvertFromOptionsAsync = async function (
-    options: OutfitPackageTextureConfig
+    options: OutfitPackageRenderConfig
   ): Promise<string> {
     this.SetOptions(options);
-    await this.Convert();
-    if (this.isFlatten) await this.AsFlatten();
-    return this.texture;
+    return await this.ConvertAsyncWithFlattenSettings();
   };
 }
 const mergeTextures = async function (textures: string[], modelMap) {

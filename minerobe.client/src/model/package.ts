@@ -1,9 +1,10 @@
-import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/consts";
+import { PACKAGE_TYPE } from "$src/data/consts";
+import type { MODEL_TYPE } from "$src/data/consts/model";
 import type { MinerobeUserSimple } from "./user";
 
 export class OutfitPackage {
   name: string;
-  model: string;
+  model: MODEL_TYPE;
   type: string;
   layers: OutfitLayer[];
   publisher: MinerobeUserSimple;
@@ -20,7 +21,7 @@ export class OutfitPackage {
   presentationConfig: OutfitPackagePresentationConfigModel;
   constructor(
     name: string,
-    model: string,
+    model: MODEL_TYPE,
     layers: OutfitLayer[],
     type: string = PACKAGE_TYPE.OUTFIT
   ) {

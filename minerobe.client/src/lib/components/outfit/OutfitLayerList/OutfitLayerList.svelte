@@ -9,7 +9,7 @@
   const dispatch = createEventDispatcher();
 
   export let items: OutfitLayer[];
-  export let model: "alex" | "steve";
+  export let model: MODEL_TYPE;
   export let selectedLayerId: string = "";
   export let selectable: boolean = true;
   export let movable: boolean = true;
