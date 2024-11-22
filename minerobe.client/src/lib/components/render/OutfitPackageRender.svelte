@@ -125,54 +125,33 @@
   const setSource = async (v) => {
     if (!initialized) return;
     if (_source == null || _source == "") return;
-    if (typeof v === "string" && typeof _source === "string" && v === _source)
-      return;
-    if (typeof v !== "string" && typeof _source !== "string") {
-      //compare layers contents to avoid unnecessary re-render
-      const vAsPackage = v as OutfitPackage;
-      const _sourceAsPackage = merger.GetOutfitPackage() as OutfitPackage;
-      if (vAsPackage.layers.length == _sourceAsPackage.layers.length) {
-        let isChanged = false;
-        vAsPackage.layers.forEach((layer, index) => {
-          if (
-            layer[merger.GetModel()].content !=
-            _sourceAsPackage.layers[index][merger.GetModel()].content
-          )
-            isChanged = true;
-        });
-        if (!isChanged) return;
-      }
-    }
+
     _source = structuredClone(v);
     cachedtexture = _source as string;
     if (typeof _source !== "string") {
-      if (_model == "source") {
-        const sourceModel = _source.model;
-        await syncModel(sourceModel);
-      }
       if (cameraOptions == "auto") {
         textureRenderer.SetCameraOptions(
           CAMERA_CONFIG.getForOutfit(_source.outfitType)
         );
       }
+
       cachedtexture = await merger
         .SetOutfitPackage(_source)
         .ConvertAsyncWithFlattenSettings();
+      await textureRenderer.SetTextureAsync(cachedtexture);
     } else {
-      await syncModel(_model);
       cachedtexture = _source;
+      await textureRenderer.SetTextureAsync(cachedtexture);
     }
-    await textureRenderer.SetTextureAsync(cachedtexture);
     if (!isDynamic) await textureRenderer.RenderStatic();
     renderReady = true;
   };
   const setModel = async (v) => {
     if (!initialized) return;
-    if (v == _model) return;
+    if (_model == v && v != "source") return;
     _model = v;
 
     await syncModel(v);
-    if (!isDynamic) await textureRenderer.RenderStatic();
   };
   const setOutfitType = async (v) => {
     if (!initialized) return;
@@ -247,6 +226,7 @@
   ];
 
   const syncModel = async (modelToSync) => {
+    if (modelToSync == "source") modelToSync = (source as OutfitPackage).model;
     merger.SetModel(modelToSync);
 
     let modelScene = null;
@@ -265,9 +245,12 @@
     }
     await textureRenderer.SetModelScene(Object.assign({}, { ...modelScene }));
   };
+  const syncModelSource = async function (vModel, vSource) {
+    await setModel(vModel);
+    await setSource(vSource);
+  };
 
-  $: setModel(model);
-  $: setSource(source);
+  $: syncModelSource(model, source);
   $: setBaseTexture(baseTexture);
   $: setOutfitType(outfitType);
 

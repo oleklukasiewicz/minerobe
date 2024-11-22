@@ -173,7 +173,6 @@
             <OutfitPackageRender
               bind:addAnimation={__addAnimation}
               source={$renderConfiguration.item}
-              model={$itemPackage.model}
               isDynamic
               layerId={$renderConfiguration.selectedLayerId}
               isFlatten={$renderConfiguration.isFlatten}
