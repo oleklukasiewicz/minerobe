@@ -4,7 +4,7 @@
   import { onMount } from "svelte";
   import * as THREE from "three";
   import { GetPackage } from "$src/api/pack";
-  import { type OutfitPackage } from "$model/package";
+  import { OutfitLayer, type OutfitPackage } from "$model/package";
   import { APP_STATE } from "$src/data/consts/app.js";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import { PACKAGE_TYPE } from "$src/data/consts.js";
@@ -44,6 +44,8 @@
   import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
   import { propertyStore } from "svelte-writable-derived";
   import { OutfitPackageToTextureConverter } from "$src/data/render.js";
+  import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
+  import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
 
   export let data;
 
@@ -54,12 +56,20 @@
     renderConfiguration,
     "item"
   );
+  const itemPackageLayers: Writable<OutfitLayer[]> = propertyStore(
+    itemPackage,
+    "layers"
+  );
   let loaded = false;
   let isOutfitSet = false;
   let isMinecraftIntegrated = false;
   let userSettings: MinerobeUserSettingsSimple = null;
   let integrationSettings: MinecraftIntegrationSettings = null;
   let renderer: any = null;
+
+  // dialog data
+  let dialogSelectedLayer: OutfitLayer = null;
+  let isLayerEditDialogOpen = false;
 
   let __addAnimation = function (
     animation: RenderAnimation,
@@ -162,6 +172,12 @@
     if (animation) __addAnimation(animation, false);
     __addAnimation(DefaultAnimation, true);
   };
+  //dialogs
+  const openLayerEditDialog = (e) => {
+    const layer = e.detail.item;
+    dialogSelectedLayer = structuredClone(layer);
+    isLayerEditDialogOpen = true;
+  };
 </script>
 
 <div id="item-page" class:mobile={$IS_MOBILE_VIEW}>
@@ -211,10 +227,11 @@
       />
       {#if loaded}
         <OutfitLayerList
-          items={$itemPackage.layers}
+          items={$itemPackageLayers}
           selectable={!isOutfitSet}
           selectedLayerId={$renderConfiguration.selectedLayerId}
           movable={isOutfitSet}
+          on:edit={openLayerEditDialog}
           on:moveUp={moveLayerUp}
           on:moveDown={moveLayerDown}
           on:select={setSelectedLayer}
@@ -318,6 +335,11 @@
       {/if}
     </div>
   </div>
+  <!-- Dialogs -->
+  <EditLayerDialog
+    bind:open={isLayerEditDialogOpen}
+    item={dialogSelectedLayer}
+  />
 </div>
 
 <style lang="scss">

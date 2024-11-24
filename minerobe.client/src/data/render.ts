@@ -478,7 +478,7 @@ export class OutfitPackageToTextureConverter {
   };
   SetModel = function (model: MODEL_TYPE): OutfitPackageToTextureConverter {
     this.model = model;
-    this.modelMap = model == "steve" ? STEVE_MODEL : ALEX_MODEL;
+    this.modelMap = model == MODEL_TYPE.STEVE ? STEVE_MODEL : ALEX_MODEL;
     return this;
   };
   SetLayerId = function (layerId: string): OutfitPackageToTextureConverter {
