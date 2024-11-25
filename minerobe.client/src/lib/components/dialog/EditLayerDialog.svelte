@@ -78,6 +78,7 @@
       flex-direction: column;
       div {
         max-width: 200px;
+        min-width: 13vw;
         background-color: var(--color-theme-D1);
         margin-bottom: 8px;
       }

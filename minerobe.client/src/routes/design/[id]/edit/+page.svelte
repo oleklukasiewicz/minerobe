@@ -1,30 +1,50 @@
 <script lang="ts">
+  //main imports
   import { _ } from "svelte-i18n";
   import { writable, type Writable } from "svelte/store";
   import { onMount } from "svelte";
+  import { propertyStore } from "svelte-writable-derived";
   import * as THREE from "three";
+  //api
   import { GetPackage } from "$src/api/pack";
-  import { OutfitLayer, type OutfitPackage } from "$model/package";
-  import { APP_STATE } from "$src/data/consts/app.js";
-  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import { PACKAGE_TYPE } from "$src/data/consts.js";
+  import { FetchSettings } from "$src/api/settings";
+  import { GetAccount } from "$src/api/integration/minecraft.js";
+  //services
+  import { ImportImages, ImportImagesFromFiles } from "$src/helpers/import.js";
+  import { ExportImage } from "$src/helpers/export.js";
+  import { OutfitPackageToTextureConverter } from "$src/data/render.js";
+  //consts
   import {
     BASE_TEXTURE,
     CURRENT_APP_STATE,
     IS_MOBILE_VIEW,
   } from "$src/data/static.js";
-  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
-  import DefaultAnimation from "$src/animation/default.js";
+  import { APP_STATE } from "$src/data/consts/app.js";
+  import { PACKAGE_TYPE } from "$src/data/consts.js";
+  //model
   import type { RenderAnimation } from "$src/data/animation.js";
+  import type { MinecraftIntegrationSettings } from "$src/model/integration/minecraft";
+  import { OutfitLayer, type OutfitPackage } from "$model/package";
+  import DefaultAnimation from "$src/animation/default.js";
+  import { OutfitPackageRenderConfig } from "$src/model/render";
+  import { MinerobeUserSettingsSimple } from "$src/model/user";
+  import HandsUpAnimation from "$src/animation/handsup";
+  import NewOutfitBottomAnimation from "$src/animation/bottom.js";
+  import NewOutfitBottomAltAnimation from "$src/animation/bottomAlt.js";
+  //components
+  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
   import OutfitLayerList from "$lib/components/outfit/OutfitLayerList/OutfitLayerList.svelte";
   import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
   import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
-  import { OutfitPackageRenderConfig } from "$src/model/render";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import TrashIcon from "$icons/trash.svg?raw";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
+  import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
+  import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
+  //icons
+  import TrashIcon from "$icons/trash.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
@@ -32,20 +52,6 @@
   import CloudIcon from "$icons/cloud.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
-  import { FetchSettings } from "$src/api/settings";
-  import { MinerobeUserSettingsSimple } from "$src/model/user";
-  import { ImportImages, ImportImagesFromFiles } from "$src/helpers/import.js";
-  import { ExportImage } from "$src/helpers/export.js";
-  import HandsUpAnimation from "$src/animation/handsup";
-  import NewOutfitBottomAnimation from "$src/animation/bottom.js";
-  import NewOutfitBottomAltAnimation from "$src/animation/bottomAlt.js";
-  import { GetAccount } from "$src/api/integration/minecraft.js";
-  import type { MinecraftIntegrationSettings } from "$src/model/integration/minecraft";
-  import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
-  import { propertyStore } from "svelte-writable-derived";
-  import { OutfitPackageToTextureConverter } from "$src/data/render.js";
-  import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
-  import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
 
   export let data;
 

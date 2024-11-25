@@ -25,6 +25,7 @@
     }
     .dialog-title-bar {
       display: grid;
+      user-select: none;
       grid-template-columns: 1fr auto;
       height: 34px;
       margin: 8px;

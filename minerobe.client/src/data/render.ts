@@ -2,9 +2,6 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RenderAnimation } from "./animation";
-import { defaultRenderer, snapshotTemporaryNode } from "./cache";
-import { get } from "svelte/store";
-import { GetCameraConfigForType } from "$src/helpers/render/renderHelper";
 import { ALEX_MODEL, MODEL_TYPE, STEVE_MODEL } from "./consts/model";
 import { DEFAULT_RENDERER } from "./static";
 import type { OutfitLayer, OutfitPackage } from "$src/model/package";
@@ -113,7 +110,6 @@ export class TextureRender {
     const _clockElapsedTime = this.clock.getElapsedTime();
 
     //animations
-    //console.log(this.animations);
     const currentAnimation: RenderAnimation = this.animations[0];
     if (currentAnimation != null) {
       if (!_self.animationPrepared)
@@ -196,12 +192,13 @@ export class TextureRender {
   SetModelScene = async function (
     newModelScene: ModelScene
   ): Promise<TextureRender> {
-    const targetSceneModel = Object.assign({}, newModelScene);
-    const newScene = targetSceneModel.scene.clone(true);
-    const newRenderScene = newScene.children.find((x) => x.name == "model");
+    const targetSceneModel = newModelScene;
+    const newRenderScene = targetSceneModel.scene.children.find(
+      (x) => x.name == "model"
+    );
     if (this.modelScene == null) {
       this.modelScene = targetSceneModel;
-      this.modelScene.scene = newScene;
+      this.modelScene.scene = targetSceneModel.scene;
       this.modelScene.renderScene = newRenderScene;
     } else {
       this.modelScene.scene.remove(this.modelScene.renderScene);
@@ -420,6 +417,17 @@ export class ModelScene {
     renderScene.getObjectByName("LeftLeg").rotation.set(0, 0, 0);
     renderScene.getObjectByName("Head").rotation.set(0, 0, 0);
     return this;
+  }
+  Clone() {
+    const cloned = Object.assign({}, this);
+    cloned.scene = this.scene.clone(true);
+    cloned.renderScene.traverse((child: any) => {
+      if (child.isMesh) {
+        const mat = child.material as THREE.MeshStandardMaterial;
+        child.material = mat.clone();
+      }
+    });
+    return cloned;
   }
 }
 export class OutfitPackageTextureConfig {

@@ -3,6 +3,7 @@
   import { CAMERA_CONFIG } from "$src/data/consts/render";
   import {
     CameraConfig,
+    ModelScene,
     OutfitPackageToTextureConverter,
     TextureRender,
   } from "$src/data/render";
@@ -229,7 +230,7 @@
     if (modelToSync == "source") modelToSync = (source as OutfitPackage).model;
     merger.SetModel(modelToSync);
 
-    let modelScene = null;
+    let modelScene:ModelScene = null;
     if (
       (typeof _source !== "string" &&
         baseModelTypesList.includes(_source.outfitType)) ||
@@ -243,7 +244,7 @@
           ? $ALEX_MODELSCENE_BASE
           : $STEVE_MODELSCENE_BASE;
     }
-    await textureRenderer.SetModelScene(Object.assign({}, { ...modelScene }));
+    await textureRenderer.SetModelScene(modelScene.Clone());
   };
   const syncModelSource = async function (vModel, vSource) {
     await setModel(vModel);
