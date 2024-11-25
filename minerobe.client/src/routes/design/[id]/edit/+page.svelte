@@ -20,7 +20,7 @@
     IS_MOBILE_VIEW,
   } from "$src/data/static.js";
   import { APP_STATE } from "$src/data/consts/app.js";
-  import { PACKAGE_TYPE } from "$src/data/consts.js";
+  import { PACKAGE_TYPE } from "$src/data/consts/data.js";
   //model
   import type { RenderAnimation } from "$src/data/animation.js";
   import type { MinecraftIntegrationSettings } from "$src/model/integration/minecraft";

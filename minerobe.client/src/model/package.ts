@@ -1,4 +1,5 @@
 import { PACKAGE_TYPE } from "$src/data/consts";
+import type { LAYER_TYPE, OUTFIT_TYPE } from "$src/data/consts/data";
 import type { MODEL_TYPE } from "$src/data/consts/model";
 import type { MinerobeUserSimple } from "./user";
 
@@ -53,9 +54,9 @@ export class OutfitLayer {
   alex: FileData;
   id: string;
   sourcePackageId: string;
-  type: string;
+  type: LAYER_TYPE;
   colorName: string;
-  outfitType: string;
+  outfitType: OUTFIT_TYPE;
   isSnapshot: boolean;
   isLoaded: boolean;
   constructor(

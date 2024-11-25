@@ -17,3 +17,10 @@ export const APP_STATE = {
     SKIN_SET: "skin_set",
     SHARE: "share",
   };
+  //main imports
+  //api
+  //services
+  //consts
+  //model
+  //components
+  //icons

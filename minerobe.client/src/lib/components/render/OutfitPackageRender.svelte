@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { OUTFIT_TYPE } from "$src/data/consts";
   import { CAMERA_CONFIG } from "$src/data/consts/render";
   import {
     CameraConfig,
@@ -19,7 +18,7 @@
   import { onDestroy, onMount } from "svelte";
   import Resize from "../other/Resize/Resize.svelte";
   import { MODEL_TYPE } from "$src/data/consts/model";
-  import { text } from "@sveltejs/kit";
+  import { OUTFIT_TYPE } from "$src/data/consts/data";
 
   export let source: string | OutfitPackage;
   export let model: MODEL_TYPE | "source" = "source";
@@ -233,8 +232,8 @@
     let modelScene:ModelScene = null;
     if (
       (typeof _source !== "string" &&
-        baseModelTypesList.includes(_source.outfitType)) ||
-      (typeof _source === "string" && baseModelTypesList.includes(outfitType))
+        baseModelTypesList.includes(_source.outfitType as OUTFIT_TYPE)) ||
+      (typeof _source === "string" && baseModelTypesList.includes(outfitType as OUTFIT_TYPE))
     ) {
       modelScene =
         modelToSync === MODEL_TYPE.ALEX ? $ALEX_MODELSCENE : $STEVE_MODELSCENE;
