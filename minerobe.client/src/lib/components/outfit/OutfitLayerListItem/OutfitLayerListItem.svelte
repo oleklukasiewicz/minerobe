@@ -1,16 +1,19 @@
 <script lang="ts">
+  //main imports
+  import { createEventDispatcher } from "svelte";
+  //model
+  import type { OutfitLayer } from "$src/model/package";
+  import type { MODEL_TYPE } from "$src/data/consts/model";
+  //components
   import Button from "$lib/components/base/Button/Button.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import type { OutfitLayer } from "$src/model/package";
-
+  //icons
   import UpIcon from "$src/icons/chevron-up.svg?raw";
   import DownIcon from "$src/icons/chevron-down.svg?raw";
   import DeleteIcon from "$src/icons/close.svg?raw";
   import EditIcon from "$src/icons/edit.svg?raw";
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
-  import { createEventDispatcher } from "svelte";
-  import type { MODEL_TYPE } from "$src/data/consts/model";
 
   const dispatch = createEventDispatcher();
 

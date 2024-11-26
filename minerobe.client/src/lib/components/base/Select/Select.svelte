@@ -1,13 +1,17 @@
 <script lang="ts">
+  //main imports
+  import { createEventDispatcher } from "svelte";
+  //services
+  import { clickOutside } from "$src/helpers/data/component";
+  import { isMobileView } from "$src/data/cache";
+  //components
+  import Button from "../Button/Button.svelte";
+  //icons
   import ChevronUpIcon from "$icons/chevron-up.svg?raw";
   import ChevronDownIcon from "$icons/chevron-down.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import CheckBoxIcon from "$icons/checkbox.svg?raw";
   import CheckBoxOffIcon from "$icons/checkbox-off.svg?raw";
-  import { createEventDispatcher } from "svelte";
-  import Button from "../Button/Button.svelte";
-  import { clickOutside } from "$src/helpers/data/component";
-  import { isMobileView } from "$src/data/cache";
 
   const dispatch = createEventDispatcher();
 

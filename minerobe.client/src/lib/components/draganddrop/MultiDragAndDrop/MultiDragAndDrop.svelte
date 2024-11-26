@@ -1,7 +1,11 @@
 <script lang="ts">
-  import type { ValueData } from "$src/model/base";
+  //main imports
   import { createEventDispatcher } from "svelte";
+  //models
+  import type { ValueData } from "$src/model/base";
+  
   const dispatch = createEventDispatcher();
+  
   export let options: ValueData[];
   export let disabled: boolean = false;
 

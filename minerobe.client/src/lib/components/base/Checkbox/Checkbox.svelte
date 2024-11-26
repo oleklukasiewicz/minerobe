@@ -1,6 +1,9 @@
 <script lang="ts">
-  import CheckIcon from "$icons/check.svg?raw";
+  //main imports
   import { createEventDispatcher } from "svelte";
+  //icons
+  import CheckIcon from "$icons/check.svg?raw";
+  
   const dispatch = createEventDispatcher();
 
   export let style = "";

@@ -1,11 +1,14 @@
 <script lang="ts">
-  import { CAMERA_CONFIG } from "$src/data/consts/render";
+  //main imports
+  import { onDestroy, onMount } from "svelte";
+  //services
   import {
     CameraConfig,
     ModelScene,
     OutfitPackageToTextureConverter,
     TextureRender,
   } from "$src/data/render";
+  //consts
   import {
     ALEX_MODELSCENE,
     ALEX_MODELSCENE_BASE,
@@ -13,12 +16,15 @@
     STEVE_MODELSCENE,
     STEVE_MODELSCENE_BASE,
   } from "$src/data/static";
-  import type { OutfitLayer, OutfitPackage } from "$src/model/package";
-  import floorTexture from "$texture/floor.png?url";
-  import { onDestroy, onMount } from "svelte";
-  import Resize from "../other/Resize/Resize.svelte";
+  import { CAMERA_CONFIG } from "$src/data/consts/render";
   import { MODEL_TYPE } from "$src/data/consts/model";
   import { OUTFIT_TYPE } from "$src/data/consts/data";
+  //model
+  import type { OutfitLayer, OutfitPackage } from "$src/model/package";
+  //components
+  import Resize from "../other/Resize/Resize.svelte";
+  //icons
+  import floorTexture from "$texture/floor.png?url";
 
   export let source: string | OutfitPackage;
   export let model: MODEL_TYPE | "source" = "source";
@@ -229,11 +235,12 @@
     if (modelToSync == "source") modelToSync = (source as OutfitPackage).model;
     merger.SetModel(modelToSync);
 
-    let modelScene:ModelScene = null;
+    let modelScene: ModelScene = null;
     if (
       (typeof _source !== "string" &&
         baseModelTypesList.includes(_source.outfitType as OUTFIT_TYPE)) ||
-      (typeof _source === "string" && baseModelTypesList.includes(outfitType as OUTFIT_TYPE))
+      (typeof _source === "string" &&
+        baseModelTypesList.includes(outfitType as OUTFIT_TYPE))
     ) {
       modelScene =
         modelToSync === MODEL_TYPE.ALEX ? $ALEX_MODELSCENE : $STEVE_MODELSCENE;

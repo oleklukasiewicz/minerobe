@@ -1,4 +1,5 @@
 <script>
+  //main imports
   import { createEventDispatcher } from "svelte";
   import { WindowResizeEvent } from "$src/helpers/other/windowEvents";
 

@@ -1,6 +1,9 @@
 <script lang="ts">
+  //main imports
   import { createEventDispatcher } from "svelte";
+  //components
   import Button from "../Button/Button.svelte";
+  //icons
   import CloseIcon from "$icons/close.svg?raw";
 
   export let value = "";
@@ -19,7 +22,7 @@
 </script>
 
 <div class="text-box">
-  <input bind:value on:input={handleInput} />
+  <input bind:value on:input={handleInput} {placeholder} />
   {#if clearable && value?.length > 0}
     <Button
       onlyIcon

@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { isMobileNavigation } from "$src/data/cache";
+  //main imports
   import { onMount } from "svelte";
+  //services
+  import { isMobileNavigation } from "$src/data/cache";
 
   export let href: string = null;
   export let label: string = null;

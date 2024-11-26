@@ -1,7 +1,10 @@
 <script lang="ts">
-  import RadioGroup from "$lib/components/base/RadioGroup/RadioGroup.svelte";
+  //consts
   import { MODEL_TYPE } from "$src/data/consts/model";
+  //models
   import { ValueData } from "$src/model/base";
+  //components
+  import RadioGroup from "$lib/components/base/RadioGroup/RadioGroup.svelte";
 
   export let selectedValue = "";
 </script>

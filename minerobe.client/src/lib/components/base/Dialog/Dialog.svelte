@@ -1,9 +1,11 @@
 <script lang="ts">
+  //main imports
+  import { createEventDispatcher } from "svelte";
+  //components
   import Button from "../Button/Button.svelte";
-
+  //icons
   import CloseIcon from "$icons/close.svg?raw";
 
-  import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
 
   export let open = false;

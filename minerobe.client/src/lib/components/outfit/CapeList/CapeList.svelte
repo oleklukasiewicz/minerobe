@@ -1,12 +1,15 @@
 <script lang="ts">
-  import type { Cape } from "$src/model/integration/minecraft";
+  //main imports
   import { createEventDispatcher } from "svelte";
+  //models
+  import type { Cape } from "$src/model/integration/minecraft";
+  //components
   import CapeListItem from "../CapeListItem/CapeListItem.svelte";
+
+  const dispatch = createEventDispatcher();
 
   export let items: Cape[];
   export let selectedCapeId: string;
-
-  const dispatch = createEventDispatcher();
 
   const onSelect = function (item: Cape) {
     selectedCapeId = item?.id;

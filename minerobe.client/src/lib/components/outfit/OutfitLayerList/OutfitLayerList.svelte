@@ -1,11 +1,14 @@
 <script lang="ts">
-  import type { OutfitLayer } from "$src/model/package";
+  //main imports
   import { createEventDispatcher } from "svelte";
+  //model
+  import type { OutfitLayer } from "$src/model/package";
+  import { MODEL_TYPE } from "$src/data/consts/model";
+  //components
   import OutfitLayerListItem from "../OutfitLayerListItem/OutfitLayerListItem.svelte";
   import MultiDragAndDrop from "$lib/components/draganddrop/MultiDragAndDrop/MultiDragAndDrop.svelte";
   import Resize from "$lib/components/other/Resize/Resize.svelte";
-  import { MODEL_TYPE } from "$src/data/consts/model";
-
+  
   const dispatch = createEventDispatcher();
 
   export let items: OutfitLayer[];

@@ -1,8 +1,11 @@
 <script lang="ts">
+  //consts
   import { COLORS_ARRAY } from "$src/data/consts";
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/data";
   import { MODEL_TYPE } from "$src/data/consts/model";
+  //models
   import type { OutfitLayer } from "$src/model/package";
+  //components
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
@@ -10,6 +13,7 @@
   import TextBox from "../base/TextBox/TextBox.svelte";
   import DragAndDrop from "../draganddrop/DragAndDrop/DragAndDrop.svelte";
   import OutfitPackageRender from "../render/OutfitPackageRender.svelte";
+  
   export let open = false;
   export let item: OutfitLayer;
 
