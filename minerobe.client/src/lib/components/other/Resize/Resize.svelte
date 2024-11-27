@@ -29,3 +29,8 @@
 
 <div use:mount />
 
+<style lang="scss">
+  div {
+    display: none;
+  }
+</style>

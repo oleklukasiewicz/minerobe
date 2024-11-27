@@ -1,3 +1,4 @@
+import type { OUTFIT_TYPE } from "$src/data/consts/data";
 import { FileData, OutfitLayer } from "$src/model/package";
 import { GetDominantColorFromImageContext } from "./image/colorHelper";
 import { GetContextFromBase64, GetOutfitType } from "./image/imageDataHelpers";
@@ -44,12 +45,29 @@ const ConvertFileToLayer = async function (file: any): Promise<OutfitLayer> {
   const layerName = file.name.replace(/\.[^/.]+$/, "");
   const newLayer = new OutfitLayer();
 
-  newLayer.id = layerName + Math.random();//only for testing
+  newLayer.id = layerName + Math.random(); //only for testing
   newLayer.name = layerName;
   newLayer.alex = new FileData(layerName, base64Data);
   newLayer.steve = new FileData(layerName, base64Data);
   newLayer.colorName = colorName;
-  newLayer.outfitType = outfitType;
+  newLayer.outfitType = outfitType as OUTFIT_TYPE;
 
   return newLayer;
+};
+
+export const ConvertFileToFileData = async function (
+  file: any
+): Promise<FileData> {
+  const reader = new FileReader();
+  const readerPromise = new Promise<any>((resolve) => {
+    reader.onload = (event: any) => {
+      resolve(event.target.result);
+    };
+  });
+  reader.readAsDataURL(file);
+  const base64Data = await readerPromise;
+  const fileName = file.name.replace(/\.[^/.]+$/, "");
+  const newFileData = new FileData(fileName, base64Data);
+  
+  return newFileData;
 };

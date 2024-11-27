@@ -12,6 +12,7 @@
   export let style = "";
   export let label = "";
   export let showTitleBar = true;
+  export let className = "";
 
   const onClose = () => {
     open = false;
@@ -21,7 +22,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="dialog" class:open on:click={onClose}>
+<div class="dialog {className}" class:open on:click={onClose}>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   {#if open}

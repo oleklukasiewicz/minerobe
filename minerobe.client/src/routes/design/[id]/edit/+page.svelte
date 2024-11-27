@@ -52,6 +52,7 @@
   import CloudIcon from "$icons/cloud.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
+  import OverviewDialog from "$lib/components/dialog/OverviewDialog.svelte";
 
   export let data;
 
@@ -76,6 +77,7 @@
   // dialog data
   let dialogSelectedLayer: OutfitLayer = null;
   let isLayerEditDialogOpen = false;
+  let isOverviewDialogOpen = false;
 
   let __addAnimation = function (
     animation: RenderAnimation,
@@ -163,6 +165,15 @@
       return item;
     });
   };
+  const editLayer = function (e) {
+    const item = e.detail.item;
+
+    itemPackageLayers.update((layers) => {
+      const index = layers.findIndex((x) => x.id == item.id);
+      layers[index] = item;
+      return layers;
+    });
+  };
   //export
   const exportPackage = async () => {
     await ExportImage(
@@ -184,6 +195,7 @@
     dialogSelectedLayer = structuredClone(layer);
     isLayerEditDialogOpen = true;
   };
+  const openOverviewDialog = () => (isOverviewDialogOpen = true);
 </script>
 
 <div id="item-page" class:mobile={$IS_MOBILE_VIEW}>
@@ -328,7 +340,8 @@
           />
         {:else}
           <Button
-            label="Social data"
+            on:click={openOverviewDialog}
+            label="Overview"
             icon={MoreHorizontalIcon}
             onlyIcon={!$IS_MOBILE_VIEW}
             size={"large"}
@@ -343,9 +356,11 @@
   </div>
   <!-- Dialogs -->
   <EditLayerDialog
+    on:edit={editLayer}
     bind:open={isLayerEditDialogOpen}
     item={dialogSelectedLayer}
   />
+  <OverviewDialog bind:open={isOverviewDialogOpen}></OverviewDialog>
 </div>
 
 <style lang="scss">
