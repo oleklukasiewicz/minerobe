@@ -1,6 +1,10 @@
 import type { OUTFIT_TYPE } from "$src/data/consts/data";
 import { FileData, OutfitLayer } from "$src/model/package";
-import { GetDominantColorFromImageContext } from "./image/colorHelper";
+import {
+  FindClosestColor,
+  FindColorTitle,
+  GetDominantColorFromImageContext,
+} from "./image/colorHelper";
 import { GetContextFromBase64, GetOutfitType } from "./image/imageDataHelpers";
 
 export let ImportImages = async function (): Promise<OutfitLayer[]> {
@@ -41,7 +45,8 @@ const ConvertFileToLayer = async function (file: any): Promise<OutfitLayer> {
   const base64Data = await readerPromise;
   const context = await GetContextFromBase64(base64Data);
   const outfitType = await GetOutfitType(context);
-  const colorName = await GetDominantColorFromImageContext(context);
+  const color = await GetDominantColorFromImageContext(context);
+  const colorName = await FindColorTitle(color);
   const layerName = file.name.replace(/\.[^/.]+$/, "");
   const newLayer = new OutfitLayer();
 
@@ -68,6 +73,6 @@ export const ConvertFileToFileData = async function (
   const base64Data = await readerPromise;
   const fileName = file.name.replace(/\.[^/.]+$/, "");
   const newFileData = new FileData(fileName, base64Data);
-  
+
   return newFileData;
 };

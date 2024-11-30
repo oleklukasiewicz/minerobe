@@ -1,9 +1,4 @@
-import {
-  ALEX_MODEL,
-  COLOR_TYPE,
-  OUTFIT_TYPE,
-  STEVE_MODEL,
-} from "$data/consts";
+import { ALEX_MODEL, COLOR_TYPE, OUTFIT_TYPE, STEVE_MODEL } from "$data/consts";
 import HatIcon from "$icons/clothes/hat.svg?raw";
 import TopIcon from "$icons/clothes/top.svg?raw";
 import BottomIcon from "$icons/clothes/bottom.svg?raw";
@@ -18,7 +13,7 @@ import { MODEL_TYPE } from "$src/data/consts/model";
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =
     GetPixelCountInArea(imageContext, 0, 8, 64, 8) +
-    GetPixelCountInArea(imageContext, 8, 0, 16, 8)+ 
+    GetPixelCountInArea(imageContext, 8, 0, 16, 8) +
     GetPixelCountInArea(imageContext, 40, 0, 16, 8);
 
   const bodyArea =
@@ -179,15 +174,6 @@ export const GetFaceOfRemoteSkin = async function (skinUrl) {
   const faceUrl = faceCanvas.toDataURL();
 
   return faceUrl;
-};
-export const MergePackageLayers = async function (
-  layers: OutfitLayer[],
-  model = MODEL_TYPE.STEVE
-) {
-  let config = new OutfitPackageRenderConfig();
-  config.model = model == MODEL_TYPE.ALEX ? ALEX_MODEL : STEVE_MODEL;
-  let merged = await MergeLayersToImage(layers, config);
-  return merged;
 };
 export const GetImageArea = function (
   base64Image,

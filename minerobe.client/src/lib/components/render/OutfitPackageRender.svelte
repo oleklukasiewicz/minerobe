@@ -155,6 +155,12 @@
   const setModel = async (v) => {
     if (!initialized) return;
     if (_model == v && v != "source") return;
+    if (
+      _model == "source" &&
+      typeof _source !== "string" &&
+      (source as OutfitPackage).model == _source.model
+    )
+      return;
     _model = v;
 
     await syncModel(v);
@@ -275,7 +281,7 @@
 <div class="outfit-render">
   {#if !isDynamic}
     <!-- svelte-ignore a11y-missing-attribute -->
-    <img bind:this={renderNode} class:renderReady />
+    <img bind:this={renderNode} class:renderReady draggable="false" />
   {:else}
     <div bind:this={renderNode}></div>
   {/if}

@@ -13,10 +13,7 @@ export const GetPackage = async function (id: string) {
 export const UpdatePackage = async function (packageData: OutfitPackage) {
   const data = Object.assign({}, packageData);
   delete data.layers;
-  const res = await PutRequest(
-    "/api/Package/" + packageData.id,
-    data
-  );
+  const res = await PutRequest("/api/Package/" + packageData.id, data);
   return res;
 };
 //layers
@@ -32,11 +29,18 @@ export const RemovePackageLayer = async function (layerId: string) {
   const res = await DeleteRequest("/api/Layers/" + layerId);
   return res;
 };
+export const RemovePackageLayerWithPackageContext = async function (
+  layer: OutfitLayer,
+  packageId: string
+) {
+  if (layer.sourcePackageId === packageId) await RemovePackageLayer(layer.id);
+  else await RemoveRemoteLayerFromPackage(layer.id, packageId);
+};
 export const UpdatePackageLayer = async function (layer: OutfitLayer) {
   const res = await PutRequest("/api/Layers/" + layer.id, layer);
   return res;
 };
-export const OrderPackageLayer = async function (
+export const SetPackageLayerOrder = async function (
   packageId: string,
   layersIds: string[]
 ) {

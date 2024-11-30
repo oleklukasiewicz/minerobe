@@ -313,30 +313,26 @@ namespace minerobe.api.Services
         }
         public async Task<OutfitLayer> SetMergedLayer(OutfitLayer mergedLayer)
         {
-            var matching = await _context.PackageLayerMatchings.FirstOrDefaultAsync(x => x.PackageId == mergedLayer.SourcePackageId && x.LayerId == mergedLayer.Id);
+            var layer = await _context.OutfitLayers.FirstOrDefaultAsync(x => x.SourcePackageId == mergedLayer.SourcePackageId && x.IsMerged == true);
 
             mergedLayer.IsMerged = true;
 
-            if (matching != null)
+            if (layer != null)
             {
-                var layer = await _context.OutfitLayers.FindAsync(matching.LayerId);
-                if (layer != null)
-                {
-                    layer.Alex = mergedLayer.Alex;
-                    layer.Steve = mergedLayer.Steve;
-                    layer.Type = mergedLayer.Type;
-                    layer.Name = mergedLayer.Name;
-                    layer.ColorName = mergedLayer.ColorName;
-                    layer.OutfitType = mergedLayer.OutfitType;
+                layer.Alex = mergedLayer.Alex;
+                layer.Steve = mergedLayer.Steve;
+                layer.Type = mergedLayer.Type;
+                layer.Name = mergedLayer.Name;
+                layer.ColorName = mergedLayer.ColorName;
+                layer.OutfitType = mergedLayer.OutfitType;
 
-                    _context.OutfitLayers.Update(layer);
-                }
+                _context.OutfitLayers.Update(layer);
             }
             else
             {
                 mergedLayer.Id = Guid.NewGuid();
                 await _context.OutfitLayers.AddAsync(mergedLayer);
-                matching = new PackageLayerMatching
+                var matching = new PackageLayerMatching
                 {
                     Id = Guid.NewGuid(),
                     LayerId = mergedLayer.Id,

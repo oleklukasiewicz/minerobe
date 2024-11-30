@@ -5,6 +5,8 @@
   import { COLORS_ARRAY } from "$src/data/consts";
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/data";
   import { MODEL_TYPE } from "$src/data/consts/model";
+  //services
+  import { ConvertFileToFileData, ImportImages } from "$src/helpers/import";
   //models
   import type { OutfitLayer } from "$src/model/package";
   //components
@@ -15,7 +17,6 @@
   import TextBox from "../base/TextBox/TextBox.svelte";
   import DragAndDrop from "../draganddrop/DragAndDrop/DragAndDrop.svelte";
   import OutfitPackageRender from "../render/OutfitPackageRender.svelte";
-  import { ConvertFileToFileData } from "$src/helpers/import";
 
   const dispatch = createEventDispatcher();
 
@@ -31,6 +32,11 @@
     item[model] = await ConvertFileToFileData(droppped);
     onEdit();
   };
+  const onUpload = async function (e, model) {
+    const layers = await ImportImages();
+    item[model] = layers[0][model];
+    onEdit();
+  };
 </script>
 
 <Dialog bind:open label="Edit layer">
@@ -43,6 +49,7 @@
       bind:selectedItem={item.outfitType}
       itemText="normalizedName"
       itemValue="name"
+      on:select={onEdit}
     />
     <SectionTitle label="color" />
     <Select
@@ -51,6 +58,7 @@
       itemText="normalizedName"
       itemValue="name"
       dropDownStyle="max-height: 275px"
+      on:select={onEdit}
     />
     <div class="textures">
       <div class="model-selection">
@@ -65,7 +73,10 @@
             />
           </DragAndDrop>
         </div>
-        <Button label="Upload image" />
+        <Button
+          label="Upload image"
+          on:click={(e) => onUpload(e, MODEL_TYPE.STEVE)}
+        />
       </div>
       <div class="model-selection">
         <SectionTitle label="Slim" />
@@ -79,7 +90,10 @@
             />
           </DragAndDrop>
         </div>
-        <Button label="Upload image" />
+        <Button
+          label="Upload image"
+          on:click={(e) => onUpload(e, MODEL_TYPE.ALEX)}
+        />
       </div>
     </div>
   </div>
@@ -87,7 +101,7 @@
 
 <style lang="scss">
   .editItemDialog {
-    min-width: 50vw;
+    min-width: 30vw;
     .textures {
       margin-top: 8px;
       display: flex;
@@ -102,7 +116,6 @@
           padding: 4px;
           box-sizing: border-box;
           display: flex;
-          max-width: 100%;
           aspect-ratio: 1;
           overflow: hidden;
           background-color: var(--color-theme-D1);

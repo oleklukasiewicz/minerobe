@@ -1,52 +1,35 @@
-import { COLOR_TYPE, MODEL_TYPE, OUTFIT_TYPE } from "$src/data/consts";
-import { RenderTextureInTemporyNode } from "$src/data/render";
-import { FileData, OutfitLayer, OutfitPackage } from "$src/model/package";
-import { get } from "svelte/store";
+import { OUTFIT_TYPE } from "$src/data/consts/data";
+import { MODEL_TYPE } from "$src/data/consts/model";
+import { OutfitPackageToTextureConverter } from "$src/data/render";
+import { FileData, OutfitLayer, type OutfitPackage } from "$src/model/package";
 import {
-  FindClosestColor,
-  GetDominantColorFromImage,
+  FindColorTitle,
+  GetDominantColorFromImageContext,
 } from "../image/colorHelper";
-import { MergePackageLayers } from "../image/imageDataHelpers";
-import { currentUser } from "$src/data/cache";
+import { GetContextFromBase64 } from "../image/imageDataHelpers";
 
-export const AddLayerSnapshot = async function (oldLayer: OutfitLayer) {
-  const layer = Object.assign({}, oldLayer);
-  const steve = layer.steve;
-  const steveSnap = await RenderTextureInTemporyNode(
-    steve.content,
-    MODEL_TYPE.STEVE,
-    layer.outfitType
-  );
-  const alex = layer.alex;
-  const alexSnap = await RenderTextureInTemporyNode(
-    alex.content,
-    MODEL_TYPE.ALEX,
-    layer.outfitType
-  );
-  const snapLayer = Object.assign({}, layer);
-  snapLayer.steve.contentSnapshot = steveSnap;
-  snapLayer.alex.contentSnapshot = alexSnap;
-  return snapLayer;
-};
-export const GetMergedLayer = async function (pack: OutfitPackage) {
-  const steve = await MergePackageLayers(pack.layers, MODEL_TYPE.STEVE);
-  const color = await GetDominantColorFromImage(steve);
-  const colorClossest = await FindClosestColor(color, COLOR_TYPE.STRING_COLOR);
-  const steveFileData = new FileData(pack.name, steve);
-  const alex = await MergePackageLayers(pack.layers, MODEL_TYPE.ALEX);
-  const alexFileData = new FileData(pack.name, alex);
-  const glob = new OutfitLayer(pack.name, steveFileData, alexFileData);
-  glob.colorName = colorClossest.name;
-  glob.outfitType = OUTFIT_TYPE.OUTFIT_SET;
-  glob.sourcePackageId = pack.id;
-  return glob;
-};
-export const CreateNewOutfitPackage = async function (
-  name: string,
-  type: string
-) {
-  const pack = new OutfitPackage(name, MODEL_TYPE.STEVE, [], type);
-  pack.description = "";
-  pack.publisherId = get(currentUser)?.id;
-  return pack;
+export const MergePackageLayers = async function (
+  outfitPackage: OutfitPackage
+): Promise<OutfitLayer> {
+  const merger = new OutfitPackageToTextureConverter();
+  merger.SetOutfitPackage(outfitPackage);
+  
+  merger.SetModel(MODEL_TYPE.ALEX);
+  const textureAlex = await merger.ConvertAsync();
+  merger.SetModel(MODEL_TYPE.STEVE);
+  const textureSteve = await merger.ConvertAsync();
+
+  const mergedLayer = new OutfitLayer();
+
+  const context = await GetContextFromBase64(textureSteve);
+  const color = await GetDominantColorFromImageContext(context);
+  const colorName = await FindColorTitle(color);
+
+  mergedLayer.alex = new FileData("merged", textureAlex);
+  mergedLayer.steve = new FileData("merged", textureSteve);
+  mergedLayer.name = "Merged";
+  mergedLayer.sourcePackageId = outfitPackage.id;
+  mergedLayer.outfitType = OUTFIT_TYPE.OUTFIT_SET;
+  mergedLayer.colorName = colorName;
+  return mergedLayer;
 };

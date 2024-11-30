@@ -16,7 +16,7 @@ export let style: string = "";
     font-family: minecraft;
     font-size: medium;
     box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.6);
-    padding: 2px 8px 4px;
+    padding: 1px 8px 5px;
     text-shadow: 0 1px rgba(255, 255, 255, 0.6);
     user-select: none;
     text-align: end;

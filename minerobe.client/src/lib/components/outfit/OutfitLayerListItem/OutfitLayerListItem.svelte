@@ -66,6 +66,19 @@
 
   <div class="actions">
     {#if !readonly}
+      {#if editable}
+        <Button
+          onlyIcon
+          icon={EditIcon}
+          whiteText={selected}
+          size="large"
+          type="quaternary"
+          on:click={onEdit}
+        />
+      {/if}
+      {#if editable && (movable || removable || link)}
+        <div class="separator vertical"></div>
+      {/if}
       {#if movable}
         <Button
           onlyIcon
@@ -86,20 +99,7 @@
           on:click={onMoveDown}
         />
       {/if}
-      {#if movable && (editable || removable || link)}
-        <div class="separator vertical"></div>
-      {/if}
-      {#if editable}
-        <Button
-          onlyIcon
-          icon={EditIcon}
-          whiteText={selected}
-          size="large"
-          type="quaternary"
-          on:click={onEdit}
-        />
-      {/if}
-      {#if editable && (removable || link)}
+      {#if movable && (removable || link)}
         <div class="separator vertical"></div>
       {/if}
       {#if removable}

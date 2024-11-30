@@ -6,13 +6,22 @@
   import { propertyStore } from "svelte-writable-derived";
   import * as THREE from "three";
   //api
-  import { GetPackage } from "$src/api/pack";
+  import {
+    GetPackage,
+    UpdatePackage,
+    UpdatePackageLayer,
+    SetPackageLayerOrder,
+    RemovePackageLayerWithPackageContext,
+    AddPackageLayer,
+    SetMergedLayer,
+  } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
   import { GetAccount } from "$src/api/integration/minecraft.js";
   //services
   import { ImportImages, ImportImagesFromFiles } from "$src/helpers/import.js";
   import { ExportImage } from "$src/helpers/export.js";
   import { OutfitPackageToTextureConverter } from "$src/data/render.js";
+  import { MergePackageLayers } from "$src/helpers/package/packageHelper.js";
   //consts
   import {
     BASE_TEXTURE,
@@ -104,13 +113,27 @@
       else $renderConfiguration.baseTexture = $BASE_TEXTURE;
 
       isMinecraftIntegrated = userSettings?.integrations.includes("minecraft");
-      if (isMinecraftIntegrated) {
+      if (isMinecraftIntegrated && isOutfitSet) {
         integrationSettings = await GetAccount();
         $renderConfiguration.capeId = integrationSettings.currentCapeId;
       }
 
       loaded = true;
       setTimeout(() => addAnimation(null), 0);
+      itemPackageLayers.subscribe(async (layers) => {
+        await SetPackageLayerOrder(
+          $itemPackage.id,
+          layers.map((x) => x.id)
+        );
+        if (isOutfitSet) {
+          const merged = await MergePackageLayers($itemPackage);
+          await SetMergedLayer(merged);
+        }
+        // await SetMergedLayer()
+      });
+      itemPackage.subscribe(async (item) => {
+        await UpdatePackage(item);
+      });
     });
   });
 
@@ -122,7 +145,7 @@
       return config;
     });
   };
-  const moveLayerDown = (e) => {
+  const moveLayerDown = async (e) => {
     const layer = e.detail.item;
     const index = e.detail.index;
     itemPackage.update((item) => {
@@ -142,30 +165,45 @@
     });
     addAnimation(NewOutfitBottomAnimation);
   };
-  const removeLayer = (e) => {
+  const removeLayer = async (e) => {
     const layer = e.detail.item;
     itemPackage.update((item) => {
       item.layers = item.layers.filter((l) => l.id !== layer.id);
       return item;
     });
+    await RemovePackageLayerWithPackageContext(layer, $itemPackage.id);
   };
   //imports
   const importImage = async () => {
     const layers = await ImportImages();
+    const addedlayers = await Promise.all(
+      layers.map(async (layer) => {
+        layer.sourcePackageId = $itemPackage.id;
+        layer.id = null;
+        return await AddPackageLayer(layer);
+      })
+    );
     itemPackage.update((item) => {
-      item.layers.push(...layers);
+      item.layers.push(...addedlayers);
       return item;
     });
   };
   const importLayerFromDrop = async (e) => {
     const files = e.detail.items;
     const layers = await ImportImagesFromFiles(files);
+    const addedlayers = await Promise.all(
+      layers.map(async (layer) => {
+        layer.sourcePackageId = $itemPackage.id;
+        layer.id = null;
+        return await AddPackageLayer(layer);
+      })
+    );
     itemPackage.update((item) => {
-      item.layers.push(...layers);
+      item.layers.push(...addedlayers);
       return item;
     });
   };
-  const editLayer = function (e) {
+  const editLayer = async function (e) {
     const item = e.detail.item;
 
     itemPackageLayers.update((layers) => {
@@ -173,6 +211,7 @@
       layers[index] = item;
       return layers;
     });
+    await UpdatePackageLayer(item);
   };
   //export
   const exportPackage = async () => {
@@ -245,6 +284,7 @@
       />
       {#if loaded}
         <OutfitLayerList
+          packageId={$itemPackage.id}
           items={$itemPackageLayers}
           selectable={!isOutfitSet}
           selectedLayerId={$renderConfiguration.selectedLayerId}
@@ -360,7 +400,7 @@
     bind:open={isLayerEditDialogOpen}
     item={dialogSelectedLayer}
   />
-  <OverviewDialog bind:open={isOverviewDialogOpen}></OverviewDialog>
+  <OverviewDialog bind:open={isOverviewDialogOpen} item={$itemPackage} />
 </div>
 
 <style lang="scss">

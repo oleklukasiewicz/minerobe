@@ -27,7 +27,7 @@
 
 <div class="social-info" class:dense {style}>
   {#if data?.likes > 0 && showLikes}
-    <div class="icon-custom-small mc-font-simple data">
+    <div class=" mc-font-simple data">
       {@html HeartSmallIcon}
       <div class="info-text">
         {normalizedLikes}
@@ -35,7 +35,7 @@
     </div>
   {/if}
   {#if data?.downloads > 0 && showDownloads}
-    <div class="icon-custom-small mc-font-simple data">
+    <div class=" mc-font-simple data">
       {@html DownloadSmallIcon}
       <div class="info-text">
         {normalizedDownloads}
@@ -47,7 +47,6 @@
 <style lang="scss">
   .social-info {
     display: flex;
-    flex-wrap: wrap;
     gap: 12px;
     &.dense {
       height: 22px;

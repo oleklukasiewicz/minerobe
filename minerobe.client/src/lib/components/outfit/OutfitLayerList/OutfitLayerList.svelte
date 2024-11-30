@@ -8,10 +8,11 @@
   import OutfitLayerListItem from "../OutfitLayerListItem/OutfitLayerListItem.svelte";
   import MultiDragAndDrop from "$lib/components/draganddrop/MultiDragAndDrop/MultiDragAndDrop.svelte";
   import Resize from "$lib/components/other/Resize/Resize.svelte";
-  
+
   const dispatch = createEventDispatcher();
 
   export let items: OutfitLayer[];
+  export let packageId: string = null;
   export let model: MODEL_TYPE;
   export let selectedLayerId: string = "";
   export let selectable: boolean = true;
@@ -66,7 +67,9 @@
           {model}
           {movable}
           {removable}
-          {editable}
+          editable={packageId != null
+            ? item.sourcePackageId == packageId
+            : true && editable}
           canUp={index > 0}
           canDown={index < items.length - 1}
           on:moveDown={() => onMoveDown(item, items.length - index - 1)}

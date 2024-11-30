@@ -22,6 +22,7 @@
       .map((item) => item.getAsFile());
 
     dispatch("drop", { items: items });
+    isDragging = false;
   };
 </script>
 
@@ -41,6 +42,8 @@
   .drag-and-drop {
     outline: 3px solid transparent;
     outline-offset: 2px;
+    user-select: none;
+
     &.isDragging {
       outline-color: var(--color-accent);
     }

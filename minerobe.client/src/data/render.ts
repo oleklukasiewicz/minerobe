@@ -550,7 +550,7 @@ export class OutfitPackageToTextureConverter {
   GetOutfitPackage = function (): OutfitPackage {
     return this.outfitPackage;
   };
-  ConvertAsync = async function (): Promise<OutfitPackageToTextureConverter> {
+  ConvertAsync = async function (): Promise<string> {
     //set modelMap
     const modelMap = this.modelMap;
     //load target layers
@@ -577,7 +577,7 @@ export class OutfitPackageToTextureConverter {
       texture = await mergeTextures(layers, modelMap);
     }
     this.texture = texture;
-    return this;
+    return texture;
   };
   ConvertAsyncWithFlattenSettings = async function (): Promise<string> {
     await this.ConvertAsync();
