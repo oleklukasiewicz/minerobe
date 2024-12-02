@@ -14,6 +14,7 @@
     RemovePackageLayerWithPackageContext,
     AddPackageLayer,
     SetMergedLayer,
+    RemovePackage,
   } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
   import { GetAccount } from "$src/api/integration/minecraft.js";
@@ -62,6 +63,8 @@
   import ListIcon from "$icons/list.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
   import OverviewDialog from "$lib/components/dialog/OverviewDialog.svelte";
+  import ConfirmDialog from "$lib/components/dialog/ConfirmDialog.svelte";
+  import { navigateToHome } from "$src/helpers/other/navigationHelper.js";
 
   export let data;
 
@@ -87,6 +90,7 @@
   let dialogSelectedLayer: OutfitLayer = null;
   let isLayerEditDialogOpen = false;
   let isOverviewDialogOpen = false;
+  let isRemoveDialogOpen = false;
 
   let __addAnimation = function (
     animation: RenderAnimation,
@@ -235,6 +239,12 @@
     isLayerEditDialogOpen = true;
   };
   const openOverviewDialog = () => (isOverviewDialogOpen = true);
+  const openRemoveDialog = () => (isRemoveDialogOpen = true);
+  //actions
+  const deletePackage = async () => {
+    await RemovePackage($itemPackage.id);
+    navigateToHome();
+  };
 </script>
 
 <div id="item-page" class:mobile={$IS_MOBILE_VIEW}>
@@ -264,7 +274,13 @@
     <Placeholder {loaded} height="40px">
       <div id="item-data-title">
         <input class="title-input" bind:value={$itemPackage.name} />
-        <Button onlyIcon icon={TrashIcon} label={"Delete"} type={"tertiary"} />
+        <Button
+          onlyIcon
+          icon={TrashIcon}
+          label={"Delete"}
+          type={"tertiary"}
+          on:click={openRemoveDialog}
+        />
       </div>
     </Placeholder>
     <div id="item-data-type">
@@ -401,6 +417,14 @@
     item={dialogSelectedLayer}
   />
   <OverviewDialog bind:open={isOverviewDialogOpen} item={$itemPackage} />
+  <ConfirmDialog
+    bind:open={isRemoveDialogOpen}
+    message={"Do you want to delete this item?"}
+    label={"Delete item"}
+    cancelIcon={null}
+    confirmLabel={"Delete"}
+    on:confirm={deletePackage}
+  />
 </div>
 
 <style lang="scss">
