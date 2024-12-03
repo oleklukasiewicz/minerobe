@@ -18,6 +18,7 @@
   } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
   import { GetAccount } from "$src/api/integration/minecraft.js";
+  import { GetWadrobeCollectionsWithPackageContext } from "$src/api/wardrobe.js";
   //services
   import { ImportImages, ImportImagesFromFiles } from "$src/helpers/import.js";
   import { ExportImage } from "$src/helpers/export.js";
@@ -34,6 +35,8 @@
   //model
   import type { RenderAnimation } from "$src/data/animation.js";
   import type { MinecraftIntegrationSettings } from "$src/model/integration/minecraft";
+  import type { PagedResponse } from "$src/model/base";
+  import type { OutfitPackageCollectionWithPackageContext } from "$src/model/collection";
   import { OutfitLayer, type OutfitPackage } from "$model/package";
   import DefaultAnimation from "$src/animation/default.js";
   import { OutfitPackageRenderConfig } from "$src/model/render";
@@ -52,6 +55,7 @@
   import Button from "$lib/components/base/Button/Button.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
   import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
+  import CollectionsDialog from "$lib/components/dialog/CollectionsDialog.svelte";
   import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
   //icons
   import TrashIcon from "$icons/trash.svg?raw";
@@ -88,9 +92,12 @@
 
   // dialog data
   let dialogSelectedLayer: OutfitLayer = null;
+  let dialogCollections: PagedResponse<OutfitPackageCollectionWithPackageContext> =
+    null;
   let isLayerEditDialogOpen = false;
   let isOverviewDialogOpen = false;
   let isRemoveDialogOpen = false;
+  let isCollectionsDialogOpen = false;
 
   let __addAnimation = function (
     animation: RenderAnimation,
@@ -177,6 +184,17 @@
     });
     await RemovePackageLayerWithPackageContext(layer, $itemPackage.id);
   };
+  const editLayer = async function (e) {
+    const item = e.detail.item;
+
+    itemPackageLayers.update((layers) => {
+      const index = layers.findIndex((x) => x.id == item.id);
+      layers[index] = item;
+      return layers;
+    });
+    await UpdatePackageLayer(item);
+  };
+
   //imports
   const importImage = async () => {
     const layers = await ImportImages();
@@ -207,16 +225,7 @@
       return item;
     });
   };
-  const editLayer = async function (e) {
-    const item = e.detail.item;
 
-    itemPackageLayers.update((layers) => {
-      const index = layers.findIndex((x) => x.id == item.id);
-      layers[index] = item;
-      return layers;
-    });
-    await UpdatePackageLayer(item);
-  };
   //export
   const exportPackage = async () => {
     await ExportImage(
@@ -227,11 +236,13 @@
     );
     addAnimation(HandsUpAnimation);
   };
+
   //animations
   const addAnimation = (animation: RenderAnimation) => {
     if (animation) __addAnimation(animation, false);
     __addAnimation(DefaultAnimation, true);
   };
+
   //dialogs
   const openLayerEditDialog = (e) => {
     const layer = e.detail.item;
@@ -240,6 +251,13 @@
   };
   const openOverviewDialog = () => (isOverviewDialogOpen = true);
   const openRemoveDialog = () => (isRemoveDialogOpen = true);
+  const openCollectionsDialog = async () => {
+    isCollectionsDialogOpen = true;
+    dialogCollections = await GetWadrobeCollectionsWithPackageContext(
+      $itemPackage.id
+    );
+  };
+
   //actions
   const deletePackage = async () => {
     await RemovePackage($itemPackage.id);
@@ -385,6 +403,7 @@
           size="large"
           onlyIcon={!$IS_MOBILE_VIEW}
           icon={ListIcon}
+          on:click={openCollectionsDialog}
         />
         {#if !$itemPackage?.social?.isShared}
           <Button
@@ -424,6 +443,10 @@
     cancelIcon={null}
     confirmLabel={"Delete"}
     on:confirm={deletePackage}
+  />
+  <CollectionsDialog
+    bind:open={isCollectionsDialogOpen}
+    items={dialogCollections}
   />
 </div>
 

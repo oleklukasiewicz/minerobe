@@ -34,6 +34,7 @@
             type="quaternary"
             icon={CloseIcon}
             label="Close"
+            iconSize="large"
             onlyIcon
             on:click={onClose}
           />
