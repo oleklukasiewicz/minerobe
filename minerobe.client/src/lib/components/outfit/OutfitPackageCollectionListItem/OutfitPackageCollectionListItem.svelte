@@ -1,47 +1,89 @@
 <script lang="ts">
+  //main imports
+  import { createEventDispatcher } from "svelte";
   //models
   import type {
     OutfitPackageCollection,
     OutfitPackageCollectionWithPackageContext,
   } from "$src/model/collection";
+  //components
+  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
+
+  const dispatch = createEventDispatcher();
 
   export let item:
     | OutfitPackageCollectionWithPackageContext
     | OutfitPackageCollection;
-  export let editable = false;
+  export let selectable = false;
+
+  const onSelect = () => {
+    dispatch("select", item);
+  };
+  const onUnselect = () => {
+    dispatch("unselect", item);
+  };
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
 <a class="outfit-package-collection-list-item">
-  <b>{item.name}</b>
-  <div>
-    <span class="items-count">
-      {#if item.itemsCount == 1}
-        {item.itemsCount} item
-      {:else}
-        {item.itemsCount} items
-      {/if}</span
-    >
+  <div class="items-actions">
+    {#if selectable}
+      <Checkbox
+        on:select={onSelect}
+        on:unselect={onUnselect}
+        value={(item as OutfitPackageCollectionWithPackageContext)
+          ?.isInCollection}
+      />
+    {/if}
+  </div>
+  <div class="item-data">
+    <b>{item.name}</b>
+    <div>
+      <span class="items-count">
+        {#if item.itemsCount == 1}
+          {item.itemsCount} item
+        {:else}
+          {item.itemsCount} items
+        {/if}</span
+      >
+    </div>
   </div>
 </a>
 
 <style lang="scss">
   .outfit-package-collection-list-item {
-    padding: 8px;
+    padding: 8px 12px;
     box-sizing: border-box;
     background-color: var(--color-theme-D1);
-    b {
-      width: 100%;
+    display: flex;
+    gap: 16px;
+    .item-data {
+      flex: 1;
+      display: block;
       overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-family: minecraft;
-    }
-    div {
-      .items-count {
-        font-family: minecraft-simple;
-        font-size: var(--size-font-caption);
+      b {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: minecraft;
       }
+      div {
+        .items-count {
+          font-family: minecraft-simple;
+          font-size: var(--size-font-caption);
+        }
+      }
+    }
+
+    .items-actions {
+      margin-top: 5px;
+    }
+    &:hover {
+      background-color: var(--color-theme-D2);
+    }
+    &:active {
+      background-color: var(--color-theme-D3);
     }
   }
 </style>

@@ -1,15 +1,33 @@
 <script lang="ts">
+  //main imports
+  import { createEventDispatcher } from "svelte";
+  //models
   import type { OutfitPackage } from "$src/model/package";
+  //components
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import Label from "../base/Label/Label.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
   import SocialInfo from "../social/SocialInfo/SocialInfo.svelte";
+  //icons
   import CloudIcon from "$icons/cloud.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import SpotlightIcon from "$icons/spotlight.svg?raw";
+
+  const dispatch = createEventDispatcher();
+
   export let open: boolean;
   export let item: OutfitPackage;
+
+  const onUnshare = () => {
+    dispatch("unshare");
+  };
+  const onShare = () => {
+    dispatch("share");
+  };
+  const onItemPage = () => {
+    dispatch("page");
+  };
 </script>
 
 <Dialog bind:open label="Overview">
@@ -29,10 +47,15 @@
     <SectionTitle label="Actions" />
     <div class="item-actions">
       {#if item.social.isShared}
-        <Button label="item page" icon={SpotlightIcon} />
-        <Button label="Unshare" type="tertiary" icon={CloseIcon} />
+        <Button label="item page" icon={SpotlightIcon} on:click={onItemPage} />
+        <Button
+          label="Unshare"
+          type="tertiary"
+          icon={CloseIcon}
+          on:click={onUnshare}
+        />
       {:else}
-        <Button label="Share" icon={CloudIcon} />
+        <Button label="Share" icon={CloudIcon} on:click={onShare} />
       {/if}
     </div>
   </div>

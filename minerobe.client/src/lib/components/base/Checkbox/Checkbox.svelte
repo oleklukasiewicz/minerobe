@@ -3,7 +3,7 @@
   import { createEventDispatcher } from "svelte";
   //icons
   import CheckIcon from "$icons/check.svg?raw";
-  
+
   const dispatch = createEventDispatcher();
 
   export let style = "";
@@ -12,6 +12,11 @@
   const toggleValue = () => {
     value = !value;
     dispatch("change", { value });
+    if (value) {
+      dispatch("select");
+    } else {
+      dispatch("unselect");
+    }
   };
 </script>
 

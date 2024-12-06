@@ -15,6 +15,7 @@
   import ToastController from "$lib/components/other/ToastController/ToastController.svelte";
   import Navigation from "$lib/components/other/Navigation/Navigation.svelte";
   import { Initialize } from "$src/data/static";
+  import { TOAST_LIST } from "$src/helpers/toast";
 
   export const load = async () => {
     if (browser) {
@@ -31,7 +32,7 @@
 </script>
 
 {#if !$isLoading}
-  <ToastController items={$currentToasts} />
+  <ToastController items={$TOAST_LIST} />
   <Navigation />
   <div id="view" class:mobile={$isMobileNavigation}>
     <slot />

@@ -19,11 +19,17 @@
   import { FetchSettings } from "$src/api/settings";
   import { GetAccount } from "$src/api/integration/minecraft.js";
   import { GetWadrobeCollectionsWithPackageContext } from "$src/api/wardrobe.js";
+  import {
+    AddPackageToCollection,
+    RemovePackageFromCollection,
+  } from "$src/api/collection.js";
   //services
   import { ImportImages, ImportImagesFromFiles } from "$src/helpers/import.js";
   import { ExportImage } from "$src/helpers/export.js";
   import { OutfitPackageToTextureConverter } from "$src/data/render.js";
   import { MergePackageLayers } from "$src/helpers/package/packageHelper.js";
+  import { ShowToast } from "$src/helpers/toast.js";
+  import { debounce } from "$src/helpers/base.js";
   //consts
   import {
     BASE_TEXTURE,
@@ -68,7 +74,11 @@
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
   import OverviewDialog from "$lib/components/dialog/OverviewDialog.svelte";
   import ConfirmDialog from "$lib/components/dialog/ConfirmDialog.svelte";
-  import { navigateToHome } from "$src/helpers/other/navigationHelper.js";
+  import {
+    navigateToHome,
+    navigateToOutfitPackage,
+  } from "$src/helpers/other/navigationHelper.js";
+  import { SharePackage, UnSharePackage } from "$src/api/social.js";
 
   export let data;
 
@@ -98,6 +108,22 @@
   let isOverviewDialogOpen = false;
   let isRemoveDialogOpen = false;
   let isCollectionsDialogOpen = false;
+
+  //api helpers
+  const UpdatePackageDebounced = debounce(async () => {
+    await UpdatePackage($itemPackage);
+  }, 500);
+  const UpdatePackegeLayers = async function () {
+    const layers = $itemPackage.layers;
+    await SetPackageLayerOrder(
+      $itemPackage.id,
+      layers.map((x) => x.id)
+    );
+    if (isOutfitSet) {
+      const merged = await MergePackageLayers($itemPackage);
+      await SetMergedLayer(merged);
+    }
+  };
 
   let __addAnimation = function (
     animation: RenderAnimation,
@@ -131,19 +157,8 @@
 
       loaded = true;
       setTimeout(() => addAnimation(null), 0);
-      itemPackageLayers.subscribe(async (layers) => {
-        await SetPackageLayerOrder(
-          $itemPackage.id,
-          layers.map((x) => x.id)
-        );
-        if (isOutfitSet) {
-          const merged = await MergePackageLayers($itemPackage);
-          await SetMergedLayer(merged);
-        }
-        // await SetMergedLayer()
-      });
       itemPackage.subscribe(async (item) => {
-        await UpdatePackage(item);
+        await UpdatePackageDebounced();
       });
     });
   });
@@ -252,6 +267,7 @@
   const openOverviewDialog = () => (isOverviewDialogOpen = true);
   const openRemoveDialog = () => (isRemoveDialogOpen = true);
   const openCollectionsDialog = async () => {
+    dialogCollections = null;
     isCollectionsDialogOpen = true;
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
       $itemPackage.id
@@ -263,6 +279,41 @@
     await RemovePackage($itemPackage.id);
     navigateToHome();
   };
+  const addToCollection = async function (e) {
+    const collection = e.detail.item;
+    await AddPackageToCollection(collection.id, $itemPackage.id);
+    ShowToast("Item added to collection");
+    dialogCollections = await GetWadrobeCollectionsWithPackageContext(
+      $itemPackage.id
+    );
+  };
+  const removeFromCollection = async function (e) {
+    const collection = e.detail.item;
+    await RemovePackageFromCollection(collection.id, $itemPackage.id);
+    ShowToast("Item removed from collection", "info");
+    dialogCollections = await GetWadrobeCollectionsWithPackageContext(
+      $itemPackage.id
+    );
+  };
+  const sharePackage = async function () {
+    const sharedSocialInfo = await SharePackage($itemPackage.social.id);
+    itemPackage.update((item) => {
+      item.social = sharedSocialInfo;
+      return item;
+    });
+    ShowToast("Item shared");
+  };
+  const unsharePackage = async function () {
+    const unSharedpackageInfo = await UnSharePackage($itemPackage.social.id);
+    itemPackage.update((item) => {
+      item.social = unSharedpackageInfo;
+      return item;
+    });
+    ShowToast("Item unshared");
+  };
+  const goToPackagePage = async function () {
+    navigateToOutfitPackage($itemPackage);
+  };
 </script>
 
 <div id="item-page" class:mobile={$IS_MOBILE_VIEW}>
@@ -272,6 +323,7 @@
         <div id="render-node">
           <DragAndDrop on:drop={importLayerFromDrop}>
             <OutfitPackageRender
+              on:textureUpdate={UpdatePackegeLayers}
               bind:addAnimation={__addAnimation}
               source={$renderConfiguration.item}
               isDynamic
@@ -412,6 +464,7 @@
             onlyIcon={!$IS_MOBILE_VIEW}
             size={"large"}
             type={"tertiary"}
+            on:click={sharePackage}
           />
         {:else}
           <Button
@@ -435,7 +488,13 @@
     bind:open={isLayerEditDialogOpen}
     item={dialogSelectedLayer}
   />
-  <OverviewDialog bind:open={isOverviewDialogOpen} item={$itemPackage} />
+  <OverviewDialog
+    bind:open={isOverviewDialogOpen}
+    item={$itemPackage}
+    on:unshare={unsharePackage}
+    on:share={sharePackage}
+    on:page={goToPackagePage}
+  />
   <ConfirmDialog
     bind:open={isRemoveDialogOpen}
     message={"Do you want to delete this item?"}
@@ -445,8 +504,11 @@
     on:confirm={deletePackage}
   />
   <CollectionsDialog
+    loading={dialogCollections == null}
     bind:open={isCollectionsDialogOpen}
     items={dialogCollections}
+    on:unselect={removeFromCollection}
+    on:select={addToCollection}
   />
 </div>
 

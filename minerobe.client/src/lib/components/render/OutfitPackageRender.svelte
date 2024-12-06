@@ -1,6 +1,6 @@
 <script lang="ts">
   //main imports
-  import { onDestroy, onMount } from "svelte";
+  import { onDestroy, onMount, createEventDispatcher } from "svelte";
   //services
   import {
     CameraConfig,
@@ -25,6 +25,8 @@
   import Resize from "../other/Resize/Resize.svelte";
   //icons
   import floorTexture from "$texture/floor.png?url";
+
+  const dispatch = createEventDispatcher();
 
   export let source: string | OutfitPackage;
   export let model: MODEL_TYPE | "source" = "source";
@@ -71,6 +73,11 @@
   onDestroy(() => {
     textureRenderer.StopRendering();
   });
+
+  const onTextureUpdate = function () {
+    dispatch("textureUpdate", { texture: textureRenderer.GetTexture() });
+  };
+
   const setRenderMode = async (v) => {
     if (isDynamic) {
       textureRenderer
@@ -131,7 +138,10 @@
   const setSource = async (v) => {
     if (!initialized) return;
     if (_source == null || _source == "") return;
-
+    if (typeof _source !== "string" && v !== "string") {
+      const isReRender = isReRenderNeeded(_source, v);
+      if (!isReRender) return;
+    }
     _source = structuredClone(v);
     cachedtexture = _source as string;
     if (typeof _source !== "string") {
@@ -151,6 +161,7 @@
     }
     if (!isDynamic) await textureRenderer.RenderStatic();
     renderReady = true;
+    onTextureUpdate();
   };
   const setModel = async (v) => {
     if (!initialized) return;
@@ -195,6 +206,7 @@
       await textureRenderer.SetTextureAsync(cachedtexture);
       if (!isDynamic) await textureRenderer.RenderStatic();
     }
+    onTextureUpdate();
   };
   const setCameraOptions = async (v) => {
     if (!initialized) return;
@@ -261,6 +273,19 @@
   const syncModelSource = async function (vModel, vSource) {
     await setModel(vModel);
     await setSource(vSource);
+  };
+
+  const isReRenderNeeded = function (
+    aSource: OutfitPackage,
+    bSource: OutfitPackage
+  ) {
+    const aLayers = aSource.layers;
+    const bLayers = bSource.layers;
+    if (aLayers.length != bLayers.length) return true;
+    for (let i = 0; i < aLayers.length; i++) {
+      if (aLayers[i].id != bLayers[i].id) return true;
+    }
+    return false;
   };
 
   $: syncModelSource(model, source);
