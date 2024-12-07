@@ -23,8 +23,9 @@ export let style: string = "";
     color: var(--color-theme-font);
   }
   .label.dense {
-    padding: 1px 6px;
+    padding: 2px 6px;
     font-size: var(--size-font-caption);
+    height: 18px;
   }
   .label.unique {
     background: linear-gradient(var(--color-unique), var(--color-unique-A1));

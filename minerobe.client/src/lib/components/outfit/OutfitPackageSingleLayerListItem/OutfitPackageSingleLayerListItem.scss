@@ -1,0 +1,34 @@
+.outfit-package-single-layer-list-item {
+  background-color: var(--color-theme-D1);
+  border: 2px solid var(--color-theme-D1);
+  min-height: 64px;
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  .render {
+    margin: 2px;
+    aspect-ratio: 1;
+    width: 58px;
+    background-color: var(--color-theme-D2);
+  }
+  .data {
+    margin-top: 8px;
+    margin-right: 8px;
+    font-family: minecraft;
+    font-size: var(--size-font-subtitlealt);
+    flex: 1;
+    overflow: hidden;
+    span {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      display: block;
+      margin-bottom: 8px;
+    }
+    div
+    {
+        display: flex;
+        gap: 8px;
+    }
+  }
+}

@@ -4,6 +4,7 @@
   export let color: string;
   export let colorName: string;
   export let selected: boolean = false;
+  export let selectable: boolean = true;
   export let style: string = "";
 
   let normalizedColor;
@@ -31,6 +32,7 @@
   class="color-badge"
   title={colorName || color}
   class:selected
+  class:selectable
   style={`background-color: ${normalizedColor} ` + style}
 ></span>
 
@@ -41,11 +43,13 @@
     display: table;
     aspect-ratio: 1;
     border: 2px solid var(--color-theme-D2);
-    &:hover {
-      border-color: var(--color-accent-L1);
-    }
-    &.selected {
-      border-color: var(--color-accent-L2);
+    &.selectable {
+      &:hover {
+        border-color: var(--color-accent-L1);
+      }
+      &.selected {
+        border-color: var(--color-accent-L2);
+      }
     }
   }
 </style>

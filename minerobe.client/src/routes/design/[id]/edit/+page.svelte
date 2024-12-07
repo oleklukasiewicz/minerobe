@@ -291,7 +291,7 @@
   };
   const openOutfitPickerDialog = async (e) => {
     let options = e?.detail?.options;
-    if (!options) options = { page: 0, pageSize: 10 };
+    if (!options) options = { page: 0, pageSize: 12 };
     dialogOutfits = {
       items: null,
       page: options.page,
@@ -557,6 +557,7 @@
   />
   <OutfitPickerDialog
     items={dialogOutfits}
+    pageSizes={[12, 24, 48]}
     bind:open={isOutfitPickerDialogOpen}
     loading={dialogOutfits?.items == null}
     on:optionsChanged={openOutfitPickerDialog}

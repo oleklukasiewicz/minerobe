@@ -2,6 +2,7 @@
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import type { PagedResponse } from "$src/model/base";
   import type { OutfitPackage } from "$src/model/package";
+  import OutfitPackageSingleLayerListItem from "../OutfitPackageSingleLayerListItem/OutfitPackageSingleLayerListItem.svelte";
 
   export let items: PagedResponse<OutfitPackage>;
   export let loading = true;
@@ -14,7 +15,7 @@
     {/each}
   {:else}
     {#each items?.items as item}
-      {item.name}
+      <OutfitPackageSingleLayerListItem item={item} />
     {/each}
   {/if}
 </div>
