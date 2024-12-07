@@ -1,46 +1,47 @@
 <script lang="ts">
+  //main imports
   import { createEventDispatcher } from "svelte";
-  import OutfitPackageCollectionItem from "../OutfitPackageCollectionItem/OutfitPackageCollectionItem.svelte";
+  //models
+  import { OutfitPackageCollectionWithPackageContext } from "$src/model/collection";
+  import type { PagedResponse } from "$src/model/base";
+  //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
-  import { OutfitPackageCollection } from "$src/model/collection";
-
-  export let items: OutfitPackageCollection[] = [];
-  export let loading = false;
-  export let minItemWidth = "135px";
-  export let fillMethod = "auto-fit";
-  export let maxItemWidth = "1fr";
-  export let dense = true;
-  export let placeholderCount = 48;
+  import OutfitPackageCollectionListItem from "../OutfitPackageCollectionListItem/OutfitPackageCollectionListItem.svelte";
 
   const dispatch = createEventDispatcher();
 
-  const onSelect = (item) => {
-    dispatch("select", item);
+  export let items: PagedResponse<OutfitPackageCollectionWithPackageContext>;
+  export let loading = true;
+
+  const onSelect = (item: OutfitPackageCollectionWithPackageContext) => {
+    dispatch("select", { item: item });
+  };
+  const onUnselect = (item: OutfitPackageCollectionWithPackageContext) => {
+    dispatch("unselect", { item: item });
   };
 </script>
 
-<div
-  class="outfit-package-collection-list"
-  class:dense
-  style="grid-template-columns: repeat({fillMethod}, minmax({minItemWidth}, {maxItemWidth}));"
->
-  {#if !loading}
-    {#each items as item (item.id)}
-      <OutfitPackageCollectionItem {item} on:click={() => onSelect(item)} />
+<div id="collections-list">
+  {#if loading}
+    {#each Array(12) as _}
+      <Placeholder width="100%" height="50px" />
     {/each}
   {:else}
-    {#each Array(placeholderCount) as _}
-      <Placeholder style="aspect-ratio:8/5;height:100%" />
+    {#each items?.items as item}
+      <OutfitPackageCollectionListItem
+        {item}
+        selectable
+        on:select={() => onSelect(item)}
+        on:unselect={() => onUnselect(item)}
+      />
     {/each}
   {/if}
 </div>
+
 <style lang="scss">
-    .outfit-package-collection-list {
-      display: grid;
-      gap: 4px;
-      max-width: 100%;
-      &.dense {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      }
-    }
-  </style>
+  #collections-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 8px;
+  }
+</style>

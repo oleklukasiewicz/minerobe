@@ -113,7 +113,7 @@
   const UpdatePackageDebounced = debounce(async () => {
     await UpdatePackage($itemPackage);
   }, 500);
-  const UpdatePackegeLayers = async function () {
+  const UpdatePackageLayersOrder = async function () {
     const layers = $itemPackage.layers;
     await SetPackageLayerOrder(
       $itemPackage.id,
@@ -323,7 +323,7 @@
         <div id="render-node">
           <DragAndDrop on:drop={importLayerFromDrop}>
             <OutfitPackageRender
-              on:textureUpdate={UpdatePackegeLayers}
+              on:textureUpdate={UpdatePackageLayersOrder}
               bind:addAnimation={__addAnimation}
               source={$renderConfiguration.item}
               isDynamic

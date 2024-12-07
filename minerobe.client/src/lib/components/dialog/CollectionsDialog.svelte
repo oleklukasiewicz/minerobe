@@ -8,6 +8,8 @@
   import OutfitPackageCollectionListItem from "../outfit/OutfitPackageCollectionListItem/OutfitPackageCollectionListItem.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import Placeholder from "../base/Placeholder/Placeholder.svelte";
+  import PagedList from "../base/PagedList/PagedList.svelte";
+  import OutfitPackageCollectionList from "../outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -25,29 +27,21 @@
 </script>
 
 <Dialog bind:open {label}>
-  <div id="collections-dialog">
-    {#if loading}
-      {#each Array(12) as _}
-        <Placeholder width="100%" height="50px" />
-      {/each}
-    {:else}
-      {#each items?.items as item}
-        <OutfitPackageCollectionListItem
-          {item}
-          selectable
-          on:select={() => onSelect(item)}
-          on:unselect={() => onUnselect(item)}
-        />
-      {/each}
-    {/if}
+  <div id="collection-dialog">
+    <PagedList
+      {items}
+      {loading}
+      let:items={pagedItems}
+      let:loading={pagedLoading}
+    >
+      <OutfitPackageCollectionList items={pagedItems} loading={pagedLoading} />
+    </PagedList>
   </div>
 </Dialog>
 
 <style lang="scss">
-  #collections-dialog {
-    display: grid;
+  #collection-dialog {
+    min-width: 50vw;
     max-width: 600px;
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 8px;
   }
 </style>

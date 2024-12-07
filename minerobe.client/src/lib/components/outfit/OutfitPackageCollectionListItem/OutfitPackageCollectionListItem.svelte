@@ -3,7 +3,6 @@
   import { createEventDispatcher } from "svelte";
   //models
   import type {
-    OutfitPackageCollection,
     OutfitPackageCollectionWithPackageContext,
   } from "$src/model/collection";
   //components
@@ -11,9 +10,7 @@
 
   const dispatch = createEventDispatcher();
 
-  export let item:
-    | OutfitPackageCollectionWithPackageContext
-    | OutfitPackageCollection;
+  export let item: OutfitPackageCollectionWithPackageContext;
   export let selectable = false;
 
   const onSelect = () => {
@@ -25,14 +22,14 @@
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
+<!-- svelte-ignore a11y-missing-attribute -->
 <a class="outfit-package-collection-list-item">
   <div class="items-actions">
     {#if selectable}
       <Checkbox
         on:select={onSelect}
         on:unselect={onUnselect}
-        value={(item as OutfitPackageCollectionWithPackageContext)
-          ?.isInCollection}
+        value={item?.isInCollection}
       />
     {/if}
   </div>
