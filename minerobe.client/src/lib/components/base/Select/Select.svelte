@@ -25,6 +25,7 @@
   export let itemValue = null;
   export let clearable = false;
   export let dropDownStyle = null;
+  export let disabled = false;
   // export let autocomplete = false;
 
   export let sorter = function (a, b) {
@@ -107,7 +108,7 @@
       if (multiple)
         selectedItemValue = items.filter((i) => value?.includes(i[itemValue]));
       else selectedItemValue = items.find((i) => i[itemValue] == value);
-    }
+    } else selectedItemValue = items.find((i) => i == value);
   };
 
   $: setSelectedItemValue(selectedItem);
@@ -117,6 +118,7 @@
 <div
   class="select"
   class:opened
+  class:disabled
   class:mobile={$isMobileView}
   bind:this={menu}
   use:clickOutside

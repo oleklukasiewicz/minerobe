@@ -18,11 +18,15 @@
   } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
   import { GetAccount } from "$src/api/integration/minecraft.js";
-  import { GetWadrobeCollectionsWithPackageContext } from "$src/api/wardrobe.js";
+  import {
+    GetWadrobeCollectionsWithPackageContext,
+    GetWadrobePackagesSingleLayer,
+  } from "$src/api/wardrobe.js";
   import {
     AddPackageToCollection,
     RemovePackageFromCollection,
   } from "$src/api/collection.js";
+  import { SharePackage, UnSharePackage } from "$src/api/social.js";
   //services
   import { ImportImages, ImportImagesFromFiles } from "$src/helpers/import.js";
   import { ExportImage } from "$src/helpers/export.js";
@@ -50,6 +54,10 @@
   import HandsUpAnimation from "$src/animation/handsup";
   import NewOutfitBottomAnimation from "$src/animation/bottom.js";
   import NewOutfitBottomAltAnimation from "$src/animation/bottomAlt.js";
+  import {
+    navigateToHome,
+    navigateToOutfitPackage,
+  } from "$src/helpers/other/navigationHelper.js";
   //components
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
@@ -63,6 +71,9 @@
   import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
   import CollectionsDialog from "$lib/components/dialog/CollectionsDialog.svelte";
   import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
+  import OutfitPickerDialog from "$lib/components/dialog/OutfitPickerDialog.svelte";
+  import OverviewDialog from "$lib/components/dialog/OverviewDialog.svelte";
+  import ConfirmDialog from "$lib/components/dialog/ConfirmDialog.svelte";
   //icons
   import TrashIcon from "$icons/trash.svg?raw";
   import ImportPackageIcon from "$icons/upload.svg?raw";
@@ -72,13 +83,6 @@
   import CloudIcon from "$icons/cloud.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
-  import OverviewDialog from "$lib/components/dialog/OverviewDialog.svelte";
-  import ConfirmDialog from "$lib/components/dialog/ConfirmDialog.svelte";
-  import {
-    navigateToHome,
-    navigateToOutfitPackage,
-  } from "$src/helpers/other/navigationHelper.js";
-  import { SharePackage, UnSharePackage } from "$src/api/social.js";
 
   export let data;
 
@@ -104,10 +108,12 @@
   let dialogSelectedLayer: OutfitLayer = null;
   let dialogCollections: PagedResponse<OutfitPackageCollectionWithPackageContext> =
     null;
+  let dialogOutfits: PagedResponse<OutfitPackage> = null;
   let isLayerEditDialogOpen = false;
   let isOverviewDialogOpen = false;
   let isRemoveDialogOpen = false;
   let isCollectionsDialogOpen = false;
+  let isOutfitPickerDialogOpen = false;
 
   //api helpers
   const UpdatePackageDebounced = debounce(async () => {
@@ -266,11 +272,37 @@
   };
   const openOverviewDialog = () => (isOverviewDialogOpen = true);
   const openRemoveDialog = () => (isRemoveDialogOpen = true);
-  const openCollectionsDialog = async () => {
-    dialogCollections = null;
+  const openCollectionsDialog = async (e) => {
+    let options = e?.detail?.options;
+    if (!options) options = { page: 0, pageSize: 6 };
+    dialogCollections = {
+      items: null,
+      page: options.page,
+      pageSize: options.pageSize,
+      total: 0,
+    };
     isCollectionsDialogOpen = true;
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
-      $itemPackage.id
+      $itemPackage.id,
+      undefined,
+      options.page,
+      options.pageSize
+    );
+  };
+  const openOutfitPickerDialog = async (e) => {
+    let options = e?.detail?.options;
+    if (!options) options = { page: 0, pageSize: 10 };
+    dialogOutfits = {
+      items: null,
+      page: options.page,
+      pageSize: options.pageSize,
+      total: 0,
+    };
+    isOutfitPickerDialogOpen = true;
+    dialogOutfits = await GetWadrobePackagesSingleLayer(
+      undefined,
+      options.page,
+      options.pageSize
     );
   };
 
@@ -284,7 +316,10 @@
     await AddPackageToCollection(collection.id, $itemPackage.id);
     ShowToast("Item added to collection");
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
-      $itemPackage.id
+      $itemPackage.id,
+      undefined,
+      dialogCollections.page,
+      dialogCollections.pageSize
     );
   };
   const removeFromCollection = async function (e) {
@@ -292,7 +327,10 @@
     await RemovePackageFromCollection(collection.id, $itemPackage.id);
     ShowToast("Item removed from collection", "info");
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
-      $itemPackage.id
+      $itemPackage.id,
+      undefined,
+      dialogCollections.page,
+      dialogCollections.pageSize
     );
   };
   const sharePackage = async function () {
@@ -384,16 +422,21 @@
         ></OutfitLayerList>
       {/if}
       <div id="item-data-layers-options">
-        <Placeholder {loaded} height="40px" loadedStyle={"flex:1"}>
-          {#if isOutfitSet}
-            <Button label={"Add outfit"} icon={AddIcon} type={"tertiary"} />
-          {:else}
-            <Button label={"Add variant"} icon={AddIcon} type={"tertiary"} />
-          {/if}
-        </Placeholder>
-        {#if isOutfitSet && loaded}
+        {#if isOutfitSet || !loaded}
+          <Placeholder {loaded} height="40px" loadedStyle={"flex:1"}>
+            {#if isOutfitSet}
+              <Button
+                label={"Add outfit"}
+                icon={AddIcon}
+                type={"tertiary"}
+                on:click={openOutfitPickerDialog}
+              />
+            {/if}
+          </Placeholder>
+        {/if}
+        {#if loaded}
           <Button
-            label={"Import image"}
+            label={isOutfitSet ? "Import image" : "Import variant"}
             icon={ImportPackageIcon}
             type={"tertiary"}
             on:click={importImage}
@@ -504,11 +547,19 @@
     on:confirm={deletePackage}
   />
   <CollectionsDialog
-    loading={dialogCollections == null}
+    loading={dialogCollections?.items == null}
     bind:open={isCollectionsDialogOpen}
     items={dialogCollections}
+    pageSizes={[6, 12, 24, 48]}
     on:unselect={removeFromCollection}
     on:select={addToCollection}
+    on:optionsChanged={openCollectionsDialog}
+  />
+  <OutfitPickerDialog
+    items={dialogOutfits}
+    bind:open={isOutfitPickerDialogOpen}
+    loading={dialogOutfits?.items == null}
+    on:optionsChanged={openOutfitPickerDialog}
   />
 </div>
 

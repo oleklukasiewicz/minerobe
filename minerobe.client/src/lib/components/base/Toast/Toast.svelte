@@ -8,7 +8,7 @@
   export let mobile = false;
   export let show: boolean = false;
   export let icon: string = "";
-  export const closeable: boolean = true;
+  export let closeable: boolean = true;
 
   const dispatch = createEventDispatcher();
 

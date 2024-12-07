@@ -11,7 +11,6 @@
 
   import { onMount } from "svelte";
   import { PACKAGE_TYPE } from "$src/data/consts";
-  import { MODEL_TYPE } from "$src/data/consts/model";
 
   export let item: OutfitPackage;
   export let layerId: string = null;

@@ -23,7 +23,7 @@
 
 <div id="collections-list">
   {#if loading}
-    {#each Array(12) as _}
+    {#each Array(items?.pageSize || 10) as _}
       <Placeholder width="100%" height="50px" />
     {/each}
   {:else}
