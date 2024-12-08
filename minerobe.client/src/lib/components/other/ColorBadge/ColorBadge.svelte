@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { COLORS } from "$src/data/consts";
+  import { COLORS } from "$src/data/consts/color";
 
   export let color: string;
   export let colorName: string;

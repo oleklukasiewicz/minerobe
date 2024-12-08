@@ -2,11 +2,11 @@
   //main imports
   import { createEventDispatcher } from "svelte";
   //consts
-  import { COLORS_ARRAY } from "$src/data/consts";
-  import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/data";
-  import { MODEL_TYPE } from "$src/data/consts/model";
+  import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
+  import { COLORS_ARRAY } from "$src/data/consts/color";
+  import { MODEL_TYPE } from "$src/data/enums/model";
   //services
-  import { ConvertFileToFileData, ImportImages } from "$src/helpers/import";
+  import { ConvertFileToFileData, ImportImages } from "$src/data/import";
   //models
   import type { OutfitLayer } from "$src/model/package";
   //components

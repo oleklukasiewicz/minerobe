@@ -24,7 +24,7 @@
 <div id="collections-list">
   {#if loading}
     {#each Array(items?.pageSize || 10) as _}
-      <Placeholder width="100%" height="50px" />
+      <Placeholder width="100%" height="51px" />
     {/each}
   {:else}
     {#each items?.items as item}

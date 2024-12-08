@@ -1,4 +1,4 @@
-import { PACKAGE_TYPE } from "$src/data/consts/data";
+import { PACKAGE_TYPE } from "$src/data/enums/outfit";
 
 export class OutfitFilter
 {

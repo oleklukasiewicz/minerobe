@@ -9,10 +9,9 @@ import {
   type Writable,
 } from "svelte/store";
 import type { MinerobeUser } from "$src/model/user";
-import { APP_STATE } from "./consts/app";
 import { ModelScene } from "./render";
-import { ALEX_MODEL } from "./consts/model";
-import { STEVE_MODEL } from "./consts";
+import { ALEX_MODEL, STEVE_MODEL } from "./consts/model";
+import { APP_STATE } from "./enums/app";
 
 //steve modelscene
 const steveModelSceneWritable: Writable<ModelScene> = writable(null);

@@ -1,21 +1,34 @@
 <script lang="ts">
-  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  //main imports
+  import { createEventDispatcher } from "svelte";
+  //models
   import type { PagedResponse } from "$src/model/base";
   import type { OutfitPackage } from "$src/model/package";
+  //components
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import OutfitPackageSingleLayerListItem from "../OutfitPackageSingleLayerListItem/OutfitPackageSingleLayerListItem.svelte";
+
+  const dispatch = createEventDispatcher();
 
   export let items: PagedResponse<OutfitPackage>;
   export let loading = true;
+
+  const onSelect = (item: OutfitPackage) => {
+    dispatch("select", { item: item });
+  };
 </script>
 
 <div id="outfit-package-picker-list">
   {#if loading}
     {#each Array(items?.pageSize || 10) as _}
-      <Placeholder width="100%" height="50px" />
+      <Placeholder width="100%" height="68px" />
     {/each}
   {:else}
     {#each items?.items as item}
-      <OutfitPackageSingleLayerListItem item={item} />
+      <OutfitPackageSingleLayerListItem
+        {item}
+        on:click={() => onSelect(item)}
+      />
     {/each}
   {/if}
 </div>

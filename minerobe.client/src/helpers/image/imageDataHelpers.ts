@@ -1,14 +1,11 @@
-import { ALEX_MODEL, COLOR_TYPE, OUTFIT_TYPE, STEVE_MODEL } from "$data/consts";
 import HatIcon from "$icons/clothes/hat.svg?raw";
 import TopIcon from "$icons/clothes/top.svg?raw";
 import BottomIcon from "$icons/clothes/bottom.svg?raw";
 import ShoesIcon from "$icons/clothes/shoes.svg?raw";
 import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
-import { ConvertColor, GetColorFromFileData } from "./colorHelper";
-import { MergeLayersToImage } from "$src/data/imageMerger";
-import { OutfitPackageRenderConfig } from "$model/render";
+import { ConvertColor } from "./colorHelper";
 import type { OutfitLayer, OutfitPackage } from "$src/model/package";
-import { MODEL_TYPE } from "$src/data/consts/model";
+import { OUTFIT_TYPE } from "$src/data/enums/outfit";
 
 export const GetOutfitType = function (imageContext: any) {
   const hatArea =
@@ -115,22 +112,6 @@ export const GetOutfitIconFromType = function (type: string) {
     default:
       return TopIcon;
   }
-};
-
-export const sortOutfitLayersByColor = async function (
-  layers: OutfitLayer[],
-  modelType
-) {
-  let hues = [];
-  for (let i = 0; i < layers.length; i++) {
-    let color = ConvertColor(
-      await GetColorFromFileData(layers[i][modelType]),
-      COLOR_TYPE.RGB,
-      COLOR_TYPE.HSL
-    ) as any;
-    hues.push({ h: color.h, item: layers[i] });
-  }
-  return hues.sort((a, b) => a.h - b.h).map((x) => x.item);
 };
 export const GetFaceOfRemoteSkin = async function (skinUrl) {
   //fetch skin

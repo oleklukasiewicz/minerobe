@@ -1,11 +1,7 @@
-import type { OUTFIT_TYPE } from "$src/data/consts/data";
+import type { OUTFIT_TYPE } from "$src/data/enums/outfit";
+import { FindColorTitle, GetDominantColorFromImageContext } from "$src/helpers/image/colorHelper";
+import { GetContextFromBase64, GetOutfitType } from "$src/helpers/image/imageDataHelpers";
 import { FileData, OutfitLayer } from "$src/model/package";
-import {
-  FindClosestColor,
-  FindColorTitle,
-  GetDominantColorFromImageContext,
-} from "./image/colorHelper";
-import { GetContextFromBase64, GetOutfitType } from "./image/imageDataHelpers";
 
 export let ImportImages = async function (): Promise<OutfitLayer[]> {
   const input = document.createElement("input");

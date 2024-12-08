@@ -2,10 +2,11 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RenderAnimation } from "./animation";
-import { ALEX_MODEL, MODEL_TYPE, STEVE_MODEL } from "./consts/model";
+import { ALEX_MODEL, STEVE_MODEL } from "./consts/model";
 import { DEFAULT_RENDERER } from "./static";
 import type { OutfitLayer, OutfitPackage } from "$src/model/package";
 import type { OutfitPackageRenderConfig } from "$src/model/render";
+import { MODEL_TYPE } from "./enums/model";
 export class CameraConfig {
   rotation: THREE.Vector3;
   position: THREE.Vector3;

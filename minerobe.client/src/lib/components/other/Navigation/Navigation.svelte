@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { isMobileView, currentUser, isMobileNavigation } from "$src/data/cache";
   import { _ } from "svelte-i18n";
   import HomeIcon from "$src/icons/home.svg?raw";
   import SearchIcon from "$src/icons/search.svg?raw";
@@ -7,12 +6,15 @@
   import AvatarIcon from "$src/icons/avatar.svg?raw";
   import NavigationItem from "../NavigationItem/NavigationItem.svelte";
   import Search from "$lib/components/base/Search/Search.svelte";
-  import { navigate, navigateToProfile } from "$src/helpers/other/navigationHelper";
+  import {
+    navigate,
+    navigateToProfile,
+  } from "$src/helpers/other/navigationHelper";
   import { loginUser } from "$src/api/auth";
-  import { CURRENT_USER } from "$src/data/static";
+  import { CURRENT_USER, IS_MOBILE_VIEW } from "$src/data/static";
 
   const profileAction = async () => {
-    if ($currentUser) {
+    if ($CURRENT_USER) {
       navigateToProfile();
       isMenuOpened = false;
     } else {
@@ -28,9 +30,9 @@
   id="nav"
   class:opened={isMenuOpened}
   class:closed={!isMenuOpened}
-  class:mobile={$isMobileNavigation}
+  class:mobile={$IS_MOBILE_VIEW}
 >
-  {#if !$isMobileNavigation}
+  {#if !$IS_MOBILE_VIEW}
     <div class="items">
       <a id="nav-title" href={"/"}>
         <img src="/texture/logo.png" alt="Logo" />
@@ -40,7 +42,7 @@
           dense={true}
           style="width:100%;max-width:400px;margin-top:2px;"
           placeholder={"Search outfits, sets and collections"}
-          on:search={()=>navigate("/explore")}
+          on:search={() => navigate("/explore")}
         />
       </div>
       <div style="display:flex;gap:8px">
@@ -53,9 +55,9 @@
         />
         <NavigationItem
           on:click={profileAction}
-          label={$currentUser ? null : $_("navigation.login")}
-          iconImage={$currentUser ? $currentUser?.avatar : null}
-          icon={$currentUser == null ? AvatarIcon : null}
+          label={$CURRENT_USER ? null : $_("navigation.login")}
+          iconImage={$CURRENT_USER ? $CURRENT_USER?.avatar : null}
+          icon={$CURRENT_USER == null ? AvatarIcon : null}
           viewId={"profile"}
           minimal
           customCall
@@ -73,8 +75,8 @@
       />
       <NavigationItem
         on:click={profileAction}
-        iconImage={$currentUser ? $currentUser?.avatar : null}
-        icon={$currentUser == null ? AvatarIcon : null}
+        iconImage={$CURRENT_USER ? $CURRENT_USER?.avatar : null}
+        icon={$CURRENT_USER == null ? AvatarIcon : null}
         viewId={"profile"}
         minimal
         customCall
@@ -86,7 +88,7 @@
 <style lang="scss">
   #nav {
     backdrop-filter: blur(60px) saturate(150%);
-    background-color: rgba(226,226,226,0.8);
+    background-color: rgba(226, 226, 226, 0.8);
     color: var(--color-theme);
     font-family: minecraft;
     height: 60px;

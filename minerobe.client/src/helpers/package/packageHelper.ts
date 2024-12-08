@@ -1,5 +1,5 @@
-import { OUTFIT_TYPE } from "$src/data/consts/data";
-import { MODEL_TYPE } from "$src/data/consts/model";
+import { MODEL_TYPE } from "$src/data/enums/model";
+import { OUTFIT_TYPE } from "$src/data/enums/outfit";
 import { OutfitPackageToTextureConverter } from "$src/data/render";
 import { FileData, OutfitLayer, type OutfitPackage } from "$src/model/package";
 import {
@@ -8,7 +8,7 @@ import {
 } from "../image/colorHelper";
 import { GetContextFromBase64 } from "../image/imageDataHelpers";
 
-export const MergePackageLayers = async function (
+export const MergePackageLayersToSingleLayer = async function (
   outfitPackage: OutfitPackage
 ): Promise<OutfitLayer> {
   const merger = new OutfitPackageToTextureConverter();

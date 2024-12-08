@@ -15,6 +15,7 @@
     AddPackageLayer,
     SetMergedLayer,
     RemovePackage,
+    AddRemoteLayerToPackage,
   } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
   import { GetAccount } from "$src/api/integration/minecraft.js";
@@ -28,21 +29,22 @@
   } from "$src/api/collection.js";
   import { SharePackage, UnSharePackage } from "$src/api/social.js";
   //services
-  import { ImportImages, ImportImagesFromFiles } from "$src/helpers/import.js";
-  import { ExportImage } from "$src/helpers/export.js";
+  import { ImportImages, ImportImagesFromFiles } from "$src/data/import.js";
+  import { ExportImage } from "$src/data/export.js";
   import { OutfitPackageToTextureConverter } from "$src/data/render.js";
-  import { MergePackageLayers } from "$src/helpers/package/packageHelper.js";
-  import { ShowToast } from "$src/helpers/toast.js";
-  import { debounce } from "$src/helpers/base.js";
+  import { MergePackageLayersToSingleLayer } from "$src/helpers/package/packageHelper.js";
+  import { ShowToast } from "$src/data/toast.js";
+  import { debounce } from "$src/data/base.js";
   //consts
   import {
     BASE_TEXTURE,
     CURRENT_APP_STATE,
     IS_MOBILE_VIEW,
   } from "$src/data/static.js";
-  import { APP_STATE } from "$src/data/consts/app.js";
-  import { PACKAGE_TYPE } from "$src/data/consts/data.js";
   //model
+  import { OutfitFilter } from "$src/model/filter.js";
+  import { APP_STATE } from "$src/data/enums/app.js";
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit.js";
   import type { RenderAnimation } from "$src/data/animation.js";
   import type { MinecraftIntegrationSettings } from "$src/model/integration/minecraft";
   import type { PagedResponse } from "$src/model/base";
@@ -126,7 +128,7 @@
       layers.map((x) => x.id)
     );
     if (isOutfitSet) {
-      const merged = await MergePackageLayers($itemPackage);
+      const merged = await MergePackageLayersToSingleLayer($itemPackage);
       await SetMergedLayer(merged);
     }
   };
@@ -298,9 +300,11 @@
       pageSize: options.pageSize,
       total: 0,
     };
+    const filter = new OutfitFilter();
+    filter.type = PACKAGE_TYPE.OUTFIT;
     isOutfitPickerDialogOpen = true;
     dialogOutfits = await GetWadrobePackagesSingleLayer(
-      undefined,
+      filter,
       options.page,
       options.pageSize
     );
@@ -351,6 +355,16 @@
   };
   const goToPackagePage = async function () {
     navigateToOutfitPackage($itemPackage);
+  };
+  const addPackageLayer = async function (e) {
+    const newPack = e.detail.item;
+    const layer = newPack.layers[0];
+    itemPackage.update((pack) => {
+      pack.layers.push(layer);
+      return pack;
+    });
+    await AddRemoteLayerToPackage(layer.id, $itemPackage.id);
+    isOutfitPickerDialogOpen = false;
   };
 </script>
 
@@ -550,17 +564,18 @@
     loading={dialogCollections?.items == null}
     bind:open={isCollectionsDialogOpen}
     items={dialogCollections}
-    pageSizes={[6, 12, 24, 48]}
+    pageSizes={[6, 12, 24]}
     on:unselect={removeFromCollection}
     on:select={addToCollection}
     on:optionsChanged={openCollectionsDialog}
   />
   <OutfitPickerDialog
     items={dialogOutfits}
-    pageSizes={[12, 24, 48]}
+    pageSizes={[6, 12, 24]}
     bind:open={isOutfitPickerDialogOpen}
     loading={dialogOutfits?.items == null}
     on:optionsChanged={openOutfitPickerDialog}
+    on:select={addPackageLayer}
   />
 </div>
 

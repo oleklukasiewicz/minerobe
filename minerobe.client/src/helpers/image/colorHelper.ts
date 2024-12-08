@@ -1,7 +1,8 @@
 import { closest } from "color-diff";
 import { GetContextFromBase64 } from "./imageDataHelpers";
-import { COLORS, COLORS_ARRAY, COLOR_TYPE } from "$src/data/consts";
 import type { FileData } from "$src/model/package";
+import { COLOR_TYPE } from "$src/data/enums/color";
+import { COLORS, COLORS_ARRAY } from "$src/data/consts/color";
 const ConvertRGBToHex = (rgb: any) => {
   const { r, g, b } = rgb;
   return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
@@ -103,13 +104,6 @@ export const FindColor = function (
 ) {
   const cr = FindClosestColor(rgbString, COLOR_TYPE.STRING_COLOR);
   return ConvertColor(cr, COLOR_TYPE.RGB, to);
-};
-export const GetColorFromFileData = async function (fileData: FileData) {
-  let dominantColor: any;
-  dominantColor =
-    fileData.color || (await GetDominantColorFromImage(fileData.content));
-  let closestColor = FindClosestColor(dominantColor, COLOR_TYPE.STRING_COLOR);
-  return closestColor;
 };
 export const ConvertColor = function (color: string, from: string, to: string) {
   if (from == COLOR_TYPE.RGB && to == COLOR_TYPE.HEX) {

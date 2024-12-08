@@ -1,6 +1,5 @@
-import { PACKAGE_TYPE } from "$src/data/consts";
-import type { LAYER_TYPE, OUTFIT_TYPE } from "$src/data/consts/data";
-import type { MODEL_TYPE } from "$src/data/consts/model";
+import type { MODEL_TYPE } from "$src/data/enums/model";
+import { LAYER_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
 import type { MinerobeUserSimple } from "./user";
 
 export class OutfitPackage {

@@ -20,14 +20,17 @@
       let:items={pagedItems}
       let:loading={pagedLoading}
     >
-      <OutfitPackagePickerList items={pagedItems} loading={pagedLoading} />
+      <OutfitPackagePickerList
+        items={pagedItems}
+        loading={pagedLoading}
+        on:select
+      />
     </PagedList>
   </div>
 </Dialog>
 
 <style lang="scss">
   #outfit-picker-dialog {
-    min-width: 50vw;
-    max-width: 600px;
+    min-width: 60vw;
   }
 </style>

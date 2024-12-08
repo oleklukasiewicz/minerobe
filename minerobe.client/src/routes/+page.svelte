@@ -6,8 +6,8 @@
     GetMostRecent,
     GetMostDownloaded,
   } from "$src/api/view/landing";
-  import { appState, isMobileView } from "$src/data/cache";
-  import { APP_STATE } from "$src/data/consts";
+  import { APP_STATE } from "$src/data/enums/app";
+  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
   import type { OutfitLayer } from "$src/model/package";
   import type { MinerobeUserSettingsSimple } from "$src/model/user";
@@ -22,7 +22,7 @@
   let landingLoaded = false;
   onMount(async () => {
     // let landing ;
-    appState.subscribe(async (state) => {
+    CURRENT_APP_STATE.subscribe(async (state) => {
       if (!(state == APP_STATE.READY || state == APP_STATE.GUEST_READY)) return;
 
       const recent = await GetMostRecent(0, 6);
@@ -50,7 +50,7 @@
   };
 </script>
 
-<div id="content" class:mobile={$isMobileView}>
+<div id="content" class:mobile={$IS_MOBILE_VIEW}>
   <div class="banner">
     <h1 id="view-title">Welcome to Minerobe</h1>
     <p id="view-description">

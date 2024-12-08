@@ -34,7 +34,7 @@
     const pageSize = event.detail.item;
     items.pageSize = pageSize;
     //check if the current page is valid
-    if (items.page >= totalPages) {
+    if (items.page >= Math.ceil(items?.total / items?.pageSize)) {
       items.page = 0;
     }
     onOptionsChanged();

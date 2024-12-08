@@ -3,7 +3,7 @@ import {
   lerpOutCubic,
   isPoseReady,
 } from "$data/animation";
-import { MODEL_TYPE } from "$src/data/consts/model";
+import { MODEL_TYPE } from "$src/data/enums/model";
 const JumpAnimation = new RenderAnimation(
   function (scene, keepData = false, modelName) {
     let data: any = {

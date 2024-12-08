@@ -3,7 +3,7 @@
   import { createEventDispatcher } from "svelte";
   //model
   import type { OutfitLayer } from "$src/model/package";
-  import { MODEL_TYPE } from "$src/data/consts/model";
+  import { MODEL_TYPE } from "$src/data/enums/model";
   //components
   import OutfitLayerListItem from "../OutfitLayerListItem/OutfitLayerListItem.svelte";
   import MultiDragAndDrop from "$lib/components/draganddrop/MultiDragAndDrop/MultiDragAndDrop.svelte";

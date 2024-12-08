@@ -10,7 +10,7 @@
   import { normalizeNumber } from "$src/helpers/data/dataHelper";
 
   import { onMount } from "svelte";
-  import { PACKAGE_TYPE } from "$src/data/consts";
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
 
   export let item: OutfitPackage;
   export let layerId: string = null;

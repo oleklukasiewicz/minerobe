@@ -4,18 +4,11 @@
   import { locale, waitLocale, isLoading, _ } from "svelte-i18n";
 
   import { onMount } from "svelte";
-  import {
-    currentToasts,
-    isMobileNavigation,
-    preSetup,
-    setup,
-    snapshotTemporaryNode,
-  } from "$src/data/cache";
   import { getCurrentUser } from "$src/api/auth";
   import ToastController from "$lib/components/other/ToastController/ToastController.svelte";
   import Navigation from "$lib/components/other/Navigation/Navigation.svelte";
-  import { Initialize } from "$src/data/static";
-  import { TOAST_LIST } from "$src/helpers/toast";
+  import { Initialize, IS_MOBILE_VIEW } from "$src/data/static";
+  import { TOAST_LIST } from "$src/data/toast";
 
   export const load = async () => {
     if (browser) {
@@ -24,24 +17,18 @@
     await waitLocale();
   };
   onMount(async () => {
-    await preSetup();
     await getCurrentUser();
     await Initialize();
-    setup();
   });
 </script>
 
 {#if !$isLoading}
   <ToastController items={$TOAST_LIST} />
   <Navigation />
-  <div id="view" class:mobile={$isMobileNavigation}>
+  <div id="view" class:mobile={$IS_MOBILE_VIEW}>
     <slot />
   </div>
 {/if}
-<div
-  style="min-width: 300px;min-height:300px;max-width:300px; max-height:300px;display:none"
-  bind:this={$snapshotTemporaryNode}
-></div>
 
 <style lang="scss">
   @use "layout_style.scss";

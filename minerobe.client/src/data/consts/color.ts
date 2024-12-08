@@ -1,11 +1,3 @@
-export const COLOR_TYPE = {
-  RGB: "rgb",
-  HEX: "hex",
-  HSL: "hsl",
-  RGBA: "rgba",
-  STRING_COLOR: "string_color",
-};
-
 export const COLORS = {
   WHITE: { r: 255, g: 255, b: 255 },
   CREAM: { r: 255, g: 253, b: 208 },

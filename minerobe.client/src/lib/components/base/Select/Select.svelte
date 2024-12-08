@@ -2,10 +2,11 @@
   //main imports
   import { createEventDispatcher } from "svelte";
   //services
-  import { clickOutside } from "$src/helpers/data/component";
-  import { isMobileView } from "$src/data/cache";
+  import { clickOutside } from "$src/helpers/data/componentHelper";
   //components
   import Button from "../Button/Button.svelte";
+  //consts
+  import { IS_MOBILE_VIEW } from "$src/data/static";
   //icons
   import ChevronUpIcon from "$icons/chevron-up.svg?raw";
   import ChevronDownIcon from "$icons/chevron-down.svg?raw";
@@ -92,7 +93,7 @@
   };
   const setMenuWidth = (op) => {
     if (!opened) return;
-    if ($isMobileView) {
+    if ($IS_MOBILE_VIEW) {
       itemsContainer.style.minWidth = null;
       itemsContainer.style.maxWidth = null;
     } else {
@@ -119,7 +120,7 @@
   class="select"
   class:opened
   class:disabled
-  class:mobile={$isMobileView}
+  class:mobile={$IS_MOBILE_VIEW}
   bind:this={menu}
   use:clickOutside
   on:click_outside={() => (opened = false)}

@@ -1,6 +1,6 @@
 <script lang="ts">
   //consts
-  import { MODEL_TYPE } from "$src/data/consts/model";
+  import { MODEL_TYPE } from "$src/data/enums/model";
   //models
   import { ValueData } from "$src/model/base";
   //components

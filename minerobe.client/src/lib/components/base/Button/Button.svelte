@@ -1,9 +1,6 @@
 <script lang="ts">
   //main imports
   import { onMount } from "svelte";
-  //services
-  import { isMobileNavigation } from "$src/data/cache";
-
   export let href: string = null;
   export let label: string = null;
   export let icon: string = null;
@@ -79,7 +76,6 @@
   class:fab-static={fab === "static"}
   class:fab-dynamic={fab === "dynamic"}
   class:fab-expanded={fab === "expanded"}
-  class:nav-fab={$isMobileNavigation}
 >
   {#if icon != null}
     <div

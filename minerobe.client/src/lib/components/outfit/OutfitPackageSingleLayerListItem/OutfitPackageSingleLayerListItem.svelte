@@ -8,7 +8,10 @@
 
 <!-- svelte-ignore a11y_consider_explicit_label -->
 <!-- svelte-ignore a11y_missing_attribute -->
-<a class="outfit-package-single-layer-list-item">
+<!-- svelte-ignore a11y-missing-attribute -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<a class="outfit-package-single-layer-list-item" on:click>
   <div class="render">
     <OutfitPackageRender source={item} />
   </div>

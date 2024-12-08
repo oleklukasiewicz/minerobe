@@ -1,4 +1,4 @@
-import { DEFAULT_PACKAGE } from "$src/data/consts";
+import { DEFAULT_PACKAGE } from "$src/data/consts/outfit";
 import { OutfitLayer, type OutfitPackage } from "$src/model/package";
 
 export class ModelTextureArea {

@@ -2,9 +2,9 @@
   import type { OutfitLayer, OutfitPackage } from "$src/model/package";
   import { createEventDispatcher } from "svelte";
   import OutfitPackageListItem from "../OutfitPackageListItem/OutfitPackageListItem.svelte";
-  import { PACKAGE_TYPE } from "$src/data/consts";
   import { GetLayer } from "$src/api/pack";
   import Resize from "$lib/components/other/Resize/Resize.svelte";
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
 
   const dispatch = createEventDispatcher();
 
