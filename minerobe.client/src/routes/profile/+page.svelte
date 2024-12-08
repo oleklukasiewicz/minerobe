@@ -35,8 +35,8 @@
     CreateDefaultRenderProvider,
     type RenderProvider,
   } from "$src/data/render";
-  import { CurrentTexture, MinerobeUserProfile } from "$src/model/user";
-  import type { OutfitPackage } from "$src/model/package";
+  import { CurrentTexture, MinerobeUserProfile } from "$data/models/user";
+  import type { OutfitPackage } from "$data/models/package";
   import LinkAccountDialog from "$lib/components/dialog/LinkAccountDialog.svelte";
   import {
     GetFullAccount,

@@ -2,7 +2,7 @@
   //main imports
   import { createEventDispatcher } from "svelte";
   //model
-  import type { OutfitLayer } from "$src/model/package";
+  import type { OutfitLayer } from "$data/models/package";
   import type { MODEL_TYPE } from "$src/data/enums/model";
   //components
   import Button from "$lib/components/base/Button/Button.svelte";

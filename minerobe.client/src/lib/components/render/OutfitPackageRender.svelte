@@ -18,7 +18,7 @@
   } from "$src/data/static";
   import { CAMERA_CONFIG } from "$src/data/consts/render";
   //model
-  import type { OutfitLayer, OutfitPackage } from "$src/model/package";
+  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
   import { MODEL_TYPE } from "$src/data/enums/model";
   import { OUTFIT_TYPE } from "$src/data/enums/outfit";
   //components

@@ -1,6 +1,6 @@
 import { closest } from "color-diff";
 import { GetContextFromBase64 } from "./imageDataHelpers";
-import type { FileData } from "$src/model/package";
+import type { FileData } from "$data/models/package";
 import { COLOR_TYPE } from "$src/data/enums/color";
 import { COLORS, COLORS_ARRAY } from "$src/data/consts/color";
 const ConvertRGBToHex = (rgb: any) => {

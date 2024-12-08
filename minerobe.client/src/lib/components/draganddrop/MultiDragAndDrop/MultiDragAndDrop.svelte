@@ -2,7 +2,7 @@
   //main imports
   import { createEventDispatcher } from "svelte";
   //models
-  import type { ValueData } from "$src/model/base";
+  import type { ValueData } from "$data/models/base";
   
   const dispatch = createEventDispatcher();
   

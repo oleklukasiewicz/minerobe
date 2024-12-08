@@ -7,7 +7,7 @@
     isMobileView,
     userPreferences,
   } from "$src/data/cache";
-  import { MenuItem } from "$src/model/component";
+  import { MenuItem } from "$data/models/component";
 
   import CheckBoxIcon from "$icons/checkbox.svg?raw";
   import CheckBoxOffIcon from "$icons/checkbox-off.svg?raw";
@@ -25,14 +25,14 @@
     PACKAGE_TYPE,
   } from "$src/data/consts";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import { OutfitFilter } from "$src/model/filter";
+  import { OutfitFilter } from "$data/models/filter";
   import Select from "$lib/components/base/Select/Select.svelte";
   import { ConvertToStringColor } from "$src/helpers/image/colorHelper";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import Search from "$lib/components/base/Search/Search.svelte";
   import { writable, type Writable } from "svelte/store";
-  import type { PagedResponse } from "$src/model/base";
-  import type { MinerobeUserSettingsSimple } from "$src/model/user";
+  import type { PagedResponse } from "$data/models/base";
+  import type { MinerobeUserSettingsSimple } from "$data/models/user";
   import { onMount } from "svelte";
   import { FetchSettings } from "$src/api/settings";
   import {
@@ -49,9 +49,9 @@
   import OutfitPackageCollectionList from "$lib/components/outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
   import { CreateNewOutfitPackage } from "$src/helpers/package/packageHelper";
   import { AddPackage } from "$src/api/pack";
-  import { OutfitPackageCollection } from "$src/model/collection";
+  import { OutfitPackageCollection } from "$data/models/collection";
   import { AddCollection } from "$src/api/collection";
-  import type { OutfitPackage } from "$src/model/package";
+  import type { OutfitPackage } from "$data/models/package";
   import OutfitPackageSnapshotPagedList from "$lib/components/outfit/OutfitPackageSnapshotPagedList/OutfitPackageSnapshotPagedList.svelte";
   import { CURRENT_APP_STATE, CURRENT_USER } from "$src/data/static";
 

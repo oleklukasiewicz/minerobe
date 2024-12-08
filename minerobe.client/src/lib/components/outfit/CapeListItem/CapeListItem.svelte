@@ -2,7 +2,7 @@
   //services
   import { GetImageArea } from "$src/helpers/image/imageDataHelpers";
   //models
-  import { Cape } from "$src/model/integration/minecraft";
+  import { Cape } from "$data/models/integration/minecraft";
   //icons
   import CloseBoxIcon from "$icons/close-box.svg?raw";
 

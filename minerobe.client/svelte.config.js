@@ -23,7 +23,7 @@ const config = {
       $helpers: "src/helpers",
       $texture: "src/texture",
       $component: "src/lib/components",
-      $model: "src/model",
+      $model: "src/data/models",
       $api: "src/api",
     },
     serviceWorker: {

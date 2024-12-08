@@ -1,7 +1,7 @@
 import { MODEL_TYPE } from "$src/data/enums/model";
 import { OUTFIT_TYPE } from "$src/data/enums/outfit";
 import { OutfitPackageToTextureConverter } from "$src/data/render";
-import { FileData, OutfitLayer, type OutfitPackage } from "$src/model/package";
+import { FileData, OutfitLayer, type OutfitPackage } from "$data/models/package";
 import {
   FindColorTitle,
   GetDominantColorFromImageContext,

@@ -2,7 +2,7 @@
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import { CAMERA_CONFIG } from "$src/data/consts/render";
   import type { MODEL_TYPE } from "$src/data/enums/model";
-  import type { OutfitLayer } from "$src/model/package";
+  import type { OutfitLayer } from "$data/models/package";
 
   export let item: OutfitLayer;
   export let model: MODEL_TYPE;

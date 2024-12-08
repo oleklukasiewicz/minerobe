@@ -7,7 +7,7 @@ import {
   login,
   logout,
 } from "../data/api";
-import type { MinerobeUser } from "$src/model/user";
+import type { MinerobeUser } from "$data/models/user";
 import { currentUserWritable } from "$src/data/static";
 
 export const getCurrentUser = async function () {

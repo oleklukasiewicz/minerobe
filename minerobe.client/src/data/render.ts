@@ -4,8 +4,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RenderAnimation } from "./animation";
 import { ALEX_MODEL, STEVE_MODEL } from "./consts/model";
 import { DEFAULT_RENDERER } from "./static";
-import type { OutfitLayer, OutfitPackage } from "$src/model/package";
-import type { OutfitPackageRenderConfig } from "$src/model/render";
+import type { OutfitLayer, OutfitPackage } from "$data/models/package";
+import type { OutfitPackageRenderConfig } from "$data/models/render";
 import { MODEL_TYPE } from "./enums/model";
 export class CameraConfig {
   rotation: THREE.Vector3;
@@ -429,15 +429,6 @@ export class ModelScene {
       }
     });
     return cloned;
-  }
-}
-export class OutfitPackageTextureConfig {
-  layerId: string;
-  model: "steve" | "alex";
-  isFlatten: boolean;
-  excludedPartsFromFlat: string[];
-  constructor() {
-    this.excludedPartsFromFlat = ["head"];
   }
 }
 export class OutfitPackageToTextureConverter {

@@ -16,15 +16,15 @@
     navigateToOutfitPackageEdit,
     navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper";
-  import type { OutfitPackageCollection } from "$src/model/collection";
-  import type { MinerobeUserSettingsSimple } from "$src/model/user";
+  import type { OutfitPackageCollection } from "$data/models/collection";
+  import type { MinerobeUserSettingsSimple } from "$data/models/user";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
 
   import TrashIcon from "$icons/trash.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
-  import type { OutfitLayer, OutfitPackage } from "$src/model/package";
+  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
 
   export let data: any;
   let loaded = false;

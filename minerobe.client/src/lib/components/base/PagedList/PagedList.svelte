@@ -2,7 +2,7 @@
   //main imports
   import { createEventDispatcher } from "svelte";
   //models
-  import type { PagedResponse } from "$src/model/base";
+  import type { PagedResponse } from "$data/models/base";
   //components
   import Button from "../Button/Button.svelte";
   import Select from "../Select/Select.svelte";

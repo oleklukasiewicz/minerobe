@@ -2,8 +2,8 @@
   //main imports
   import { createEventDispatcher } from "svelte";
   //models
-  import { OutfitPackageCollectionWithPackageContext } from "$src/model/collection";
-  import type { PagedResponse } from "$src/model/base";
+  import { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
+  import type { PagedResponse } from "$data/models/base";
   //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import OutfitPackageCollectionListItem from "../OutfitPackageCollectionListItem/OutfitPackageCollectionListItem.svelte";

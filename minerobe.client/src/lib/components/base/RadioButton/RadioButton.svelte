@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ValueData } from "$src/model/base";
+  import type { ValueData } from "$data/models/base";
   import { createEventDispatcher } from "svelte";
 
   export let value: ValueData = null;

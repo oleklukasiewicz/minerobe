@@ -18,7 +18,6 @@ export class OutfitPackage {
   modifiedAt: Date;
   isInWardrobe: boolean;
   totalLayersCount: number;
-  presentationConfig: OutfitPackagePresentationConfigModel;
   constructor(
     name: string,
     model: MODEL_TYPE,
@@ -31,10 +30,6 @@ export class OutfitPackage {
     this.type = type;
     this.createdAt = new Date();
   }
-}
-export class OutfitPackagePresentationConfigModel {
-  public isMerged;
-  public isSnapshot;
 }
 
 //layers and files

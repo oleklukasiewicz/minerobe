@@ -12,7 +12,7 @@
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import Button from "../base/Button/Button.svelte";
   import { ALEX_MODEL, STEVE_MODEL } from "$src/data/consts";
-  import { FileData, OutfitLayer, OutfitPackage } from "$src/model/package";
+  import { FileData, OutfitLayer, OutfitPackage } from "$data/models/package";
 
   const dispatch = createEventDispatcher();
 

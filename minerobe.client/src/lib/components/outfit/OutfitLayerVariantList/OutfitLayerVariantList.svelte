@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { OutfitLayer } from "$src/model/package";
+  import type { OutfitLayer } from "$data/models/package";
   import { createEventDispatcher } from "svelte";
   import OutfitLayerVariantListItem from "../OutfitLayerVariantListItem/OutfitLayerVariantListItem.svelte";
   import type { MODEL_TYPE } from "$src/data/enums/model";

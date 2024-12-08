@@ -1,4 +1,4 @@
-import type { ToastItem } from "$src/model/component";
+import type { ToastItem } from "$data/models/component";
 import { readonly, writable, type Writable } from "svelte/store";
 
 const toastWritable: Writable<ToastItem[]> = writable([]);

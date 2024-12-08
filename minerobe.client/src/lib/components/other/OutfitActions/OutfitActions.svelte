@@ -10,7 +10,7 @@
   import CloudIcon from "$icons/cloud.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
-  import type { OutfitPackage } from "$src/model/package";
+  import type { OutfitPackage } from "$data/models/package";
 
   const dispatch = createEventDispatcher();
 

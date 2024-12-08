@@ -2,7 +2,7 @@
   //main imports
   import { createEventDispatcher } from "svelte";
   //models
-  import type { Cape } from "$src/model/integration/minecraft";
+  import type { Cape } from "$data/models/integration/minecraft";
   //components
   import CapeListItem from "../CapeListItem/CapeListItem.svelte";
 

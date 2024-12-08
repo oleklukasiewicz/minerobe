@@ -2,7 +2,7 @@
   //main imports
   import { createEventDispatcher } from "svelte";
   //models
-  import type { OutfitPackage } from "$src/model/package";
+  import type { OutfitPackage } from "$data/models/package";
   //components
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";

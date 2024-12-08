@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import RadioButton from "../RadioButton/RadioButton.svelte";
-  import type { ValueData } from "$src/model/base";
+  import type { ValueData } from "$data/models/base";
 
   export let options: ValueData[] = [];
   export let selectedValue = null;

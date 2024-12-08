@@ -2,7 +2,7 @@
   import Label from "$lib/components/base/Label/Label.svelte";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import type { OutfitPackage } from "$src/model/package";
+  import type { OutfitPackage } from "$data/models/package";
   export let item: OutfitPackage;
 </script>
 

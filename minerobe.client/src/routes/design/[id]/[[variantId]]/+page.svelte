@@ -28,7 +28,7 @@
     type MinerobeUserSettingsSimple,
   } from "$model/user";
   import type { OutfitPackage } from "$model/package";
-  import { OutfitPackageCollection } from "$src/model/collection.js";
+  import { OutfitPackageCollection } from "$data/models/collection.js";
 
   import { CreateDefaultRenderProvider } from "$data/render";
   import {

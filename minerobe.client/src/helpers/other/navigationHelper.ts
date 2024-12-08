@@ -1,5 +1,5 @@
 import { goto } from "$app/navigation";
-import type { OutfitPackage } from "$src/model/package";
+import type { OutfitPackage } from "$data/models/package";
 
 export const navigateToWardrobe = function (
   page: string = "all",

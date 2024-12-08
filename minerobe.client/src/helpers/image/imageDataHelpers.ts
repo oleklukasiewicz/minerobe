@@ -4,7 +4,7 @@ import BottomIcon from "$icons/clothes/bottom.svg?raw";
 import ShoesIcon from "$icons/clothes/shoes.svg?raw";
 import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
 import { ConvertColor } from "./colorHelper";
-import type { OutfitLayer, OutfitPackage } from "$src/model/package";
+import type { OutfitLayer, OutfitPackage } from "$data/models/package";
 import { OUTFIT_TYPE } from "$src/data/enums/outfit";
 
 export const GetOutfitType = function (imageContext: any) {

@@ -4,7 +4,7 @@ import {
   PostRequest,
   PutRequest,
 } from "$src/data/api";
-import type { OutfitLayer, OutfitPackage } from "$src/model/package";
+import type { OutfitLayer, OutfitPackage } from "$data/models/package";
 //packages
 export const GetPackage = async function (id: string) {
   const res = await GetRequest("/api/Package/" + id);

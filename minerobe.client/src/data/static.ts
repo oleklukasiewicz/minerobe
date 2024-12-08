@@ -8,7 +8,7 @@ import {
   type Readable,
   type Writable,
 } from "svelte/store";
-import type { MinerobeUser } from "$src/model/user";
+import type { MinerobeUser } from "$data/models/user";
 import { ModelScene } from "./render";
 import { ALEX_MODEL, STEVE_MODEL } from "./consts/model";
 import { APP_STATE } from "./enums/app";

@@ -42,17 +42,17 @@
     IS_MOBILE_VIEW,
   } from "$src/data/static.js";
   //model
-  import { OutfitFilter } from "$src/model/filter.js";
+  import { OutfitFilter } from "$data/models/filter.js";
   import { APP_STATE } from "$src/data/enums/app.js";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit.js";
   import type { RenderAnimation } from "$src/data/animation.js";
-  import type { MinecraftIntegrationSettings } from "$src/model/integration/minecraft";
-  import type { PagedResponse } from "$src/model/base";
-  import type { OutfitPackageCollectionWithPackageContext } from "$src/model/collection";
+  import type { MinecraftIntegrationSettings } from "$data/models/integration/minecraft";
+  import type { PagedResponse } from "$data/models/base";
+  import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
   import { OutfitLayer, type OutfitPackage } from "$model/package";
   import DefaultAnimation from "$src/animation/default.js";
-  import { OutfitPackageRenderConfig } from "$src/model/render";
-  import { MinerobeUserSettingsSimple } from "$src/model/user";
+  import { OutfitPackageRenderConfig } from "$data/models/render";
+  import { MinerobeUserSettingsSimple } from "$data/models/user";
   import HandsUpAnimation from "$src/animation/handsup";
   import NewOutfitBottomAnimation from "$src/animation/bottom.js";
   import NewOutfitBottomAltAnimation from "$src/animation/bottomAlt.js";

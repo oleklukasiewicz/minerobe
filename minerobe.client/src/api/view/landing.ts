@@ -1,6 +1,6 @@
 import { PostRequest } from "$src/data/api";
-import type { PagedResponse } from "$src/model/base";
-import type { OutfitPackage } from "$src/model/package";
+import type { PagedResponse } from "$data/models/base";
+import type { OutfitPackage } from "$data/models/package";
 
 export const GetMostRecent = async function (
   page: number = 0,

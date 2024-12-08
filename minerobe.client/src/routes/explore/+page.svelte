@@ -16,7 +16,7 @@
   import { GetLayer, GetLayerSnapshot, GetPackage } from "$src/api/pack";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import { GetWardrobePackages } from "$src/api/wardrobe";
-  import { OutfitFilter } from "$src/model/filter";
+  import { OutfitFilter } from "$data/models/filter";
   import { CAMERA_CONFIG } from "$src/data/consts/render";
   import OutfitPackageListItem from "$lib/components/outfit/OutfitPackageListItem/OutfitPackageListItem.svelte";
   import OutfitLayerListItem from "$lib/components/outfit/OutfitLayerListItem/OutfitLayerListItem.svelte";

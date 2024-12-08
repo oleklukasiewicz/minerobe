@@ -26,8 +26,4 @@ export const DEFAULT_PACKAGE = {
   },
   isInWardrobe: false,
   totalLayersCount: 0,
-  presentationConfig: {
-    isMerged: false,
-    isSnapshot: false,
-  },
 };

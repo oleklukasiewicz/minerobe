@@ -4,7 +4,7 @@
   //models
   import type {
     OutfitPackageCollectionWithPackageContext,
-  } from "$src/model/collection";
+  } from "$data/models/collection";
   //components
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
 

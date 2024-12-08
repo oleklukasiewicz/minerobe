@@ -8,7 +8,7 @@
   //services
   import { ConvertFileToFileData, ImportImages } from "$src/data/import";
   //models
-  import type { OutfitLayer } from "$src/model/package";
+  import type { OutfitLayer } from "$data/models/package";
   //components
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";

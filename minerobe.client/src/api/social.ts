@@ -1,5 +1,5 @@
 import { PostRequest } from "$src/data/api";
-import type { PackageSocialData } from "$src/model/package";
+import type { PackageSocialData } from "$data/models/package";
 
 export const SharePackage = async function (socialId: string) {
   const resp = await PostRequest("/api/Social/Share/" + socialId, {});

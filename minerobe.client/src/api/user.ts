@@ -1,5 +1,5 @@
 import { GetRequest, PutRequest } from "$src/data/api";
-import type { MinerobeUser, MinerobeUserProfile } from "$src/model/user";
+import type { MinerobeUser, MinerobeUserProfile } from "$data/models/user";
 
 export const GetUserProfile = async function (userId: string) {
   const res = await GetRequest("/api/User/" + userId + "/profile");

@@ -14,7 +14,7 @@ import {
 import { CHANGE_TYPE } from "$src/data/enums/app";
 import { MODEL_TYPE } from "$src/data/enums/model";
 import { OUTFIT_TYPE } from "$src/data/enums/outfit";
-import type { OutfitPackage } from "$src/model/package";
+import type { OutfitPackage } from "$data/models/package";
 import * as THREE from "three";
 const CreatePropertyStep = function (
   data,

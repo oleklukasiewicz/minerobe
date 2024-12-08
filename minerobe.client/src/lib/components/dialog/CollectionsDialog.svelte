@@ -1,7 +1,7 @@
 <script lang="ts">
   //models
-  import type { PagedResponse } from "$src/model/base";
-  import type { OutfitPackageCollectionWithPackageContext } from "$src/model/collection";
+  import type { PagedResponse } from "$data/models/base";
+  import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
   //components
   import Dialog from "../base/Dialog/Dialog.svelte";
   import PagedList from "../base/PagedList/PagedList.svelte";

@@ -6,7 +6,7 @@
   import DownloadSmallIcon from "$icons/small/download-micro.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
 
-  import type { OutfitLayer, OutfitPackage } from "$src/model/package";
+  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
   import { normalizeNumber } from "$src/helpers/data/dataHelper";
 
   import { onMount } from "svelte";

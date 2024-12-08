@@ -2,7 +2,7 @@
   import CloseBoxIcon from "$icons/close-box.svg?raw";
   import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
   import ItemCape from "$lib/components/outfit/ItemCape/ItemCape.svelte";
-  import type { Cape } from "$src/model/integration/minecraft";
+  import type { Cape } from "$data/models/integration/minecraft";
 
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
