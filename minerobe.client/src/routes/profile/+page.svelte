@@ -16,7 +16,7 @@
     navigate,
     navigateToHome,
   } from "$src/helpers/other/navigationHelper";
-  import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
+  import SocialInfo from "$lib/components/social/SocialInfo.svelte";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import Dialog from "$component/base/Dialog/Dialog.svelte";
   import LoginIcon from "$src/icons/login.svg?raw";

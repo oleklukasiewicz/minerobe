@@ -1,6 +1,6 @@
 <script lang="ts">
   import RatioGroup from "$lib/components/base/RatioGroup/RatioGroup.svelte";
-  import { MODEL_TYPE } from "$src/data/consts";
+  import { MODEL_TYPE } from "$src/data/enums/model";
   import { _ } from "svelte-i18n";
 
   export let disabled: boolean = false;

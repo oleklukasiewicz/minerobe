@@ -1,10 +1,11 @@
 <script lang="ts">
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import { CAMERA_CONFIG } from "$src/data/consts/render";
+  import type { MODEL_TYPE } from "$src/data/enums/model";
   import type { OutfitLayer } from "$src/model/package";
 
   export let item: OutfitLayer;
-  export let model: "alex" | "steve";
+  export let model: MODEL_TYPE;
   export let selected = false;
   export let label: string = "";
 </script>

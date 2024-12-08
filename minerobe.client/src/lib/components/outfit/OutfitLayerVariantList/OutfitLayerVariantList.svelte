@@ -2,11 +2,12 @@
   import type { OutfitLayer } from "$src/model/package";
   import { createEventDispatcher } from "svelte";
   import OutfitLayerVariantListItem from "../OutfitLayerVariantListItem/OutfitLayerVariantListItem.svelte";
+  import type { MODEL_TYPE } from "$src/data/enums/model";
 
   const dispatch = createEventDispatcher();
 
   export let items: OutfitLayer[];
-  export let model: "alex" | "steve";
+  export let model: MODEL_TYPE;
   export let selectedLayerId: string = "";
   export let selectable: boolean = true;
 

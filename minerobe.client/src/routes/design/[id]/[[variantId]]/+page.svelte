@@ -8,7 +8,7 @@
   import ItemLayer from "$component/outfit/ItemLayer/ItemLayer.svelte";
   import DynamicRender from "$component/render/DynamicRender.svelte";
   import Label from "$component/base/Label/Label.svelte";
-  import SocialInfo from "$component/social/SocialInfo/SocialInfo.svelte";
+  import SocialInfo from "$lib/components/social/SocialInfo.svelte";
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
   import SectionTitle from "$component/base/SectionTitle/SectionTitle.svelte";
   import ModelSelection from "$component/outfit/ModelSelection/ModelSelection.svelte";

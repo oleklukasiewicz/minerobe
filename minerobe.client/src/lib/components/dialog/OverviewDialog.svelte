@@ -8,7 +8,7 @@
   import Dialog from "../base/Dialog/Dialog.svelte";
   import Label from "../base/Label/Label.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
-  import SocialInfo from "../social/SocialInfo/SocialInfo.svelte";
+  import SocialInfo from "../social/SocialInfo.svelte";
   //icons
   import CloudIcon from "$icons/cloud.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
