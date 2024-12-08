@@ -1,9 +1,11 @@
 import { MODEL_TYPE } from "../enums/model";
 import { OUTFIT_TYPE, PACKAGE_TYPE } from "../enums/outfit";
 //package data
-export const OUTFIT_TYPE_ARRAY = Object.keys(OUTFIT_TYPE).map((key) => {
-  return { name: OUTFIT_TYPE[key], normalizedName: key.replace(/_/g, " ") };
-});
+export const OUTFIT_TYPE_ARRAY = Object.keys(OUTFIT_TYPE)
+  .filter((x) => x !== "OUTFIT_SET")
+  .map((key) => {
+    return { name: OUTFIT_TYPE[key], normalizedName: key.replace(/_/g, " ") };
+  });
 export const DEFAULT_PACKAGE = {
   name: "Default",
   model: MODEL_TYPE.STEVE,

@@ -24,7 +24,7 @@
       <Placeholder width="100%" height="68px" />
     {/each}
   {:else}
-    {#each items?.items as item}
+    {#each items?.items as item (item.id + item.layers[0].id)}
       <OutfitPackageSingleLayerListItem
         {item}
         on:click={() => onSelect(item)}

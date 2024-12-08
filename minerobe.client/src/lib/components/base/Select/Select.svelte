@@ -98,7 +98,13 @@
       itemsContainer.style.maxWidth = null;
     } else {
       menuWidth = menu?.offsetWidth;
+      const menuCoords = menu?.getBoundingClientRect();
+      const menuY = menuCoords?.top;
+      const menuHeight = menuCoords?.height;
       if (itemsContainer) {
+        if (itemsContainer.style.maxHeight == null )
+          itemsContainer.style.maxHeight = `calc(100vh - ${menuY}px - ${menuHeight}px)`;
+
         itemsContainer.style.minWidth = `${menuWidth}px`;
         itemsContainer.style.maxWidth = `${menuWidth}px`;
       }

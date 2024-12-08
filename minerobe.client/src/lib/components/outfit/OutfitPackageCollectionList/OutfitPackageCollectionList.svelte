@@ -27,7 +27,7 @@
       <Placeholder width="100%" height="51px" />
     {/each}
   {:else}
-    {#each items?.items as item}
+    {#each items?.items as item (item.id)}
       <OutfitPackageCollectionListItem
         {item}
         selectable

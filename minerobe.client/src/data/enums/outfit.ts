@@ -3,10 +3,6 @@ export enum PACKAGE_TYPE {
   OUTFIT_SET = "set",
   OUTFIT_COLLECTION = "outfit_collection",
 }
-export enum LAYER_TYPE {
-  LOCAL = "local",
-  REMOTE = "remote",
-}
 export enum OUTFIT_TYPE {
   TOP = "top",
   HOODIE = "hoodie",

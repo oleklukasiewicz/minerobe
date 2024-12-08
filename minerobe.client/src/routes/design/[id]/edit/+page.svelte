@@ -35,6 +35,7 @@
   import { MergePackageLayersToSingleLayer } from "$src/helpers/package/packageHelper.js";
   import { ShowToast } from "$src/data/toast.js";
   import { debounce } from "$src/data/base.js";
+  import { SetMinecraftSkin } from "$src/data/integration.js";
   //consts
   import {
     BASE_TEXTURE,
@@ -85,6 +86,7 @@
   import CloudIcon from "$icons/cloud.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
+  import LoaderIcon from "$icons/loader.svg?raw";
 
   export let data;
 
@@ -111,11 +113,15 @@
   let dialogCollections: PagedResponse<OutfitPackageCollectionWithPackageContext> =
     null;
   let dialogOutfits: PagedResponse<OutfitPackage> = null;
+  let dialogOutfitsFilter: OutfitFilter = new OutfitFilter();
   let isLayerEditDialogOpen = false;
   let isOverviewDialogOpen = false;
   let isRemoveDialogOpen = false;
   let isCollectionsDialogOpen = false;
   let isOutfitPickerDialogOpen = false;
+
+  //others
+  let isSkinSetting = false;
 
   //api helpers
   const UpdatePackageDebounced = debounce(async () => {
@@ -300,11 +306,10 @@
       pageSize: options.pageSize,
       total: 0,
     };
-    const filter = new OutfitFilter();
-    filter.type = PACKAGE_TYPE.OUTFIT;
+    dialogOutfitsFilter.type = PACKAGE_TYPE.OUTFIT;
     isOutfitPickerDialogOpen = true;
     dialogOutfits = await GetWadrobePackagesSingleLayer(
-      filter,
+      dialogOutfitsFilter,
       options.page,
       options.pageSize
     );
@@ -366,6 +371,12 @@
     await AddRemoteLayerToPackage(layer.id, $itemPackage.id);
     isOutfitPickerDialogOpen = false;
   };
+  const setSkin = async function () {
+    isSkinSetting = true;
+    addAnimation(HandsUpAnimation);
+    await SetMinecraftSkin($renderConfiguration);
+    isSkinSetting = false;
+  };
 </script>
 
 <div id="item-page" class:mobile={$IS_MOBILE_VIEW}>
@@ -414,6 +425,11 @@
           <Label variant="rare">Shared</Label>
         {/if}
       </Placeholder>
+      {#if loaded && userSettings?.currentTexturePackageId == $itemPackage.id}
+        <Placeholder {loaded} height="24px" width="120px">
+          <Label variant="ancient">Current skin</Label>
+        </Placeholder>
+      {/if}
     </div>
     <div id="item-data-layers">
       <SectionTitle
@@ -492,10 +508,12 @@
       {#if loaded}
         {#if isMinecraftIntegrated && isOutfitSet}
           <Button
-            label="Set my skin"
+            label={isSkinSetting ? "Setting skin..." : "Set my skin"}
             type="primary"
-            icon={HumanHandsUpIcon}
+            icon={isSkinSetting ? LoaderIcon : HumanHandsUpIcon}
             size="large"
+            on:click={setSkin}
+            disabled={isSkinSetting}
           />
         {/if}
         <Button
@@ -571,11 +589,13 @@
   />
   <OutfitPickerDialog
     items={dialogOutfits}
+    filters={dialogOutfitsFilter}
     pageSizes={[6, 12, 24]}
     bind:open={isOutfitPickerDialogOpen}
     loading={dialogOutfits?.items == null}
     on:optionsChanged={openOutfitPickerDialog}
     on:select={addPackageLayer}
+    on:filter={openOutfitPickerDialog}
   />
 </div>
 

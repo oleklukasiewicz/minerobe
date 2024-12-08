@@ -1,9 +1,12 @@
-import { SetCurrentTexture } from "$src/api/settings";
 import { OutfitPackageRenderConfig } from "./models/render";
 
 export const SetMinecraftSkin = async (
   configuration: OutfitPackageRenderConfig
 ): Promise<boolean> => {
   const currentTextureConfig = configuration.ToExportConfig();
-  return true;
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 3000);
+  });
 };

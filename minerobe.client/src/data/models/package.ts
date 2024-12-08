@@ -1,5 +1,5 @@
 import type { MODEL_TYPE } from "$src/data/enums/model";
-import { LAYER_TYPE, OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
+import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
 import type { MinerobeUserSimple } from "./user";
 
 export class OutfitPackage {
@@ -48,7 +48,6 @@ export class OutfitLayer {
   alex: FileData;
   id: string;
   sourcePackageId: string;
-  type: LAYER_TYPE;
   colorName: string;
   outfitType: OUTFIT_TYPE;
   isSnapshot: boolean;

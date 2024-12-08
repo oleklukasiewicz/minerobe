@@ -14,7 +14,7 @@
   import DeleteIcon from "$src/icons/close.svg?raw";
   import EditIcon from "$src/icons/edit.svg?raw";
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
-  
+
   const dispatch = createEventDispatcher();
 
   export let item: OutfitLayer;
@@ -27,6 +27,7 @@
   export let removable = false;
   export let link = null;
   export let selected = false;
+  export let packageId: string = null;
 
   const onMoveUp = function () {
     dispatch("moveUp", { item: item });
@@ -59,7 +60,7 @@
   <div class="data">
     <span class="name">{item.name}</span>
     <Label variant="common">{item.outfitType}</Label>
-    {#if item.type == "local"}
+    {#if item.sourcePackageId == packageId}
       <Label variant={"rare"}>Image</Label>
     {/if}
   </div>

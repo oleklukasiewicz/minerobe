@@ -65,6 +65,7 @@
           {item}
           selected={item.id == selectedLayerId}
           {model}
+          {packageId}
           {movable}
           {removable}
           editable={packageId != null
