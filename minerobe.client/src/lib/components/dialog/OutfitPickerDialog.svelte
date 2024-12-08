@@ -72,7 +72,8 @@
 
 <style lang="scss">
   #outfit-picker-dialog {
-    min-width: 60vw;
+    min-width: 50vw;
+    max-width: 600px;
     .dialog-filters {
       display: grid;
       margin-left: auto;
