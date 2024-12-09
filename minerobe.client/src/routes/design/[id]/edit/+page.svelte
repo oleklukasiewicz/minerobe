@@ -227,7 +227,7 @@
     const layer = e.detail.item;
     const option = e.detail.option;
     const file = e.detail.file;
-    
+
     const index = $itemPackageLayers.findIndex((x) => x.id == layer.id);
     itemPackage.update((item) => {
       item.layers[index][option] = file;
@@ -605,6 +605,7 @@
   />
   <OutfitPickerDialog
     items={dialogOutfits}
+    packageContext={$itemPackage}
     filters={dialogOutfitsFilter}
     pageSizes={[6, 12, 24]}
     bind:open={isOutfitPickerDialogOpen}

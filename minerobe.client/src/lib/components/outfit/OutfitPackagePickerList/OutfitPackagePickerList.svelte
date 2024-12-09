@@ -11,6 +11,7 @@
   const dispatch = createEventDispatcher();
 
   export let items: PagedResponse<OutfitPackage>;
+  export let packageContext: OutfitPackage = null;
   export let loading = true;
 
   const onSelect = (item: OutfitPackage) => {
@@ -26,6 +27,9 @@
   {:else}
     {#each items?.items as item (item.id + item.layers[0].id)}
       <OutfitPackageSingleLayerListItem
+        disabled={packageContext?.layers.find(
+          (layer) => layer.id === item.layers[0].id
+        ) != null}
         {item}
         on:click={() => onSelect(item)}
       />

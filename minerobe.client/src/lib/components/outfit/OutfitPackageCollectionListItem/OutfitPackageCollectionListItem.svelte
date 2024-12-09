@@ -68,7 +68,7 @@
       div {
         .items-count {
           font-family: minecraft-simple;
-          font-size: var(--size-font-base);
+          font-size: var(--size-font-caption);
         }
       }
     }

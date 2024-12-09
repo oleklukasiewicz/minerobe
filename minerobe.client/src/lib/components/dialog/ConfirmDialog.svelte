@@ -45,7 +45,7 @@
     text-align: center;
     .dialog-message {
       margin: 0px 2px 16px;
-      font-size: var(--size-font-base);
+      font-size: var(--size-font-caption);
     }
     .actions {
       display: flex;

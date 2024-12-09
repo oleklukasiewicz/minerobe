@@ -14,6 +14,7 @@
   const dispatch = createEventDispatcher();
 
   export let items: PagedResponse<OutfitPackage>;
+  export let packageContext: OutfitPackage = null;
   export let filters: OutfitFilter = new OutfitFilter();
   export let pageSizes = [5, 10, 15, 20];
   export let open = false;
@@ -62,6 +63,7 @@
       let:loading={pagedLoading}
     >
       <OutfitPackagePickerList
+        {packageContext}
         items={pagedItems}
         loading={pagedLoading}
         on:select

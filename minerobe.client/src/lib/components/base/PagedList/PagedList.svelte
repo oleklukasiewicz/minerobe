@@ -84,7 +84,7 @@
     div {
       margin-top: 12px;
       font-family: minecraft-simple;
-      font-size: var(--size-font-base);
+      font-size: var(--size-font-caption);
       user-select: none;
     }
   }

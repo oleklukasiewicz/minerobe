@@ -3,7 +3,9 @@
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import type { OutfitPackage } from "$data/models/package";
+  
   export let item: OutfitPackage;
+  export let disabled = false;
 </script>
 
 <!-- svelte-ignore a11y_consider_explicit_label -->
@@ -11,7 +13,7 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<a class="outfit-package-single-layer-list-item" on:click>
+<a class="outfit-package-single-layer-list-item" on:click class:disabled>
   <div class="render">
     <OutfitPackageRender source={item} />
   </div>
