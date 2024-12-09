@@ -18,10 +18,12 @@
   export let selectable: boolean = true;
   export let movable: boolean = true;
   export let editable: boolean = true;
+  export let readonly: boolean = false;
   export let removable: boolean = true;
   export let dropable: boolean = false;
   export let resizable: boolean = false;
   export let resizeDebounce = 300;
+  export let link = null;
 
   const onSelect = function (layer: OutfitLayer) {
     if (!selectable) return;
@@ -62,15 +64,19 @@
       >
         <OutfitLayerListItem
           on:click={() => onSelect(item)}
+          link={item.sourcePackageId != packageId && link != null
+            ? link + item.sourcePackageId + "/" + item.id
+            : null}
           {item}
+          {readonly}
           selected={item.id == selectedLayerId}
           {model}
           {packageId}
           {movable}
           {removable}
-          editable={packageId != null
+          editable={(packageId != null
             ? item.sourcePackageId == packageId
-            : true && editable}
+            : true) && editable}
           canUp={index > 0}
           canDown={index < items.length - 1}
           on:moveDown={() => onMoveDown(item, items.length - index - 1)}

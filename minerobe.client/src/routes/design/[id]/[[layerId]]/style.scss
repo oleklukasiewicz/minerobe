@@ -1,0 +1,96 @@
+#item-page {
+  max-width: 100%;
+  width: 1800px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  margin: 0px auto;
+  #item-render {
+    min-width: 300px;
+    max-width: 50vw;
+    flex: 2;
+    #render {
+      position: sticky;
+      top: 90px;
+      display: block;
+      overflow: hidden;
+      aspect-ratio: 1;
+      max-height: calc(100vh - 120px);
+      max-width: calc(100% - 70px);
+      margin: 30px;
+      & #render-node {
+        margin: 5px;
+      }
+    }
+  }
+  #item-data {
+    flex: 1;
+    min-width: 200px;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    margin: 90px 30px 30px;
+    #item-data-title {
+      font-family: minecraft;
+      font-size: var(--size-font-subheader);
+      margin-bottom: 4px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    #item-data-type {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+    }
+    #item-data-layers {
+      margin-top: 8px;
+      #item-data-layers-options {
+        display: flex;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        flex-direction: row;
+        gap: 8px;
+      }
+    }
+    #item-data-integration {
+      margin-bottom: 8px;
+    }
+    #item-data-description {
+      margin-bottom: 16px;
+      #item-description {
+        width: 100%;
+        font-size: var(--size-font-base);
+      }
+    }
+    #item-data-minimal {
+      margin: 12px 8px 12px;
+    }
+    #item-data-action {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+    }
+  }
+  &.mobile {
+    #item-render {
+      max-width: 100%;
+      #render {
+        max-height: calc(100vh - 60px);
+        max-width: 100%;
+        margin: 0px;
+        & #render-node {
+          margin: 0px;
+        }
+      }
+    }
+    #item-data {
+      margin: 10px;
+      #item-data-action {
+        display: grid;
+        grid-template-columns: auto;
+      }
+    }
+  }
+}

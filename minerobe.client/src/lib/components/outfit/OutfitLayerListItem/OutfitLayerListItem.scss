@@ -61,7 +61,30 @@
     }
   }
   &.readonly {
-    pointer-events: none;
+    &:hover {
+      background-color: var(--color-theme-D1);
+      border-color: var(--color-theme-D1);
+      .render {
+        background-color: var(--color-theme-D2);
+      }
+      .actions {
+        .separator {
+          border-color: var(--color-theme-D2);
+        }
+      }
+    }
+    &:active {
+      background-color: var(--color-theme-D1);
+      border-color: var(--color-theme-D1);
+      .render {
+        background-color: var(--color-theme-D2);
+      }
+      .actions {
+        .separator {
+          border-color: var(--color-theme-D2);
+        }
+      }
+    }
   }
   &:hover {
     background-color: var(--color-theme-D2);
