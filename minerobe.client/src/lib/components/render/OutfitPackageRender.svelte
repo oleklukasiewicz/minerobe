@@ -135,13 +135,19 @@
     if (cachedtexture != null)
       await textureRenderer.SetTextureAsync(cachedtexture);
   };
-  const setSource = async (v) => {
+  const setSource = async (v, oldModel, newModel) => {
     if (!initialized) return;
     if (_source == null || _source == "") return;
+    
+    //compare source
+    let isReRender = false;
+    let isLayersOrderNew = false;
     if (typeof _source !== "string" && v !== "string") {
-      const isReRender = isReRenderNeeded(_source, v);
+      isReRender = isReRenderNeeded(_source, v, oldModel, newModel);
+      isLayersOrderNew = isLayersOrderChanged(_source, v);
       if (!isReRender) return;
     }
+
     _source = structuredClone(v);
     cachedtexture = _source as string;
     if (typeof _source !== "string") {
@@ -161,20 +167,28 @@
     }
     if (!isDynamic) await textureRenderer.RenderStatic();
     renderReady = true;
-    onTextureUpdate();
+
+    //if layers order changed - trigger event
+    if (
+      isLayersOrderNew ||
+      typeof _source == "string" ||
+      typeof source == "string"
+    )
+      onTextureUpdate();
   };
   const setModel = async (v) => {
-    if (!initialized) return;
-    if (_model == v && v != "source") return;
+    if (!initialized) return false;
+    if (_model == v && v != "source") return false;
     if (
       _model == "source" &&
       typeof _source !== "string" &&
       (source as OutfitPackage).model == merger.GetModel()
     )
-      return;
+      return false;
     _model = v;
 
     await syncModel(v);
+    return true;
   };
   const setOutfitType = async (v) => {
     if (!initialized) return;
@@ -271,11 +285,31 @@
     await textureRenderer.SetModelScene(modelScene.Clone());
   };
   const syncModelSource = async function (vModel, vSource) {
-    await setModel(vModel);
-    await setSource(vSource);
+    const oldModel = merger.GetModel();
+    const modelChanged = await setModel(vModel);
+    const newModel = merger.GetModel();
+    await setSource(vSource, oldModel, newModel);
   };
 
   const isReRenderNeeded = function (
+    aSource: OutfitPackage,
+    bSource: OutfitPackage,
+    oldModel: MODEL_TYPE,
+    newModel: MODEL_TYPE
+  ) {
+    const aLayers = aSource.layers;
+    const bLayers = bSource.layers;
+    if (aLayers.length != bLayers.length) return true;
+    for (let i = 0; i < aLayers.length; i++) {
+      if (
+        aLayers[i].id != bLayers[i].id ||
+        aLayers[i][oldModel].content != bLayers[i][newModel].content
+      )
+        return true;
+    }
+    return false;
+  };
+  const isLayersOrderChanged = function (
     aSource: OutfitPackage,
     bSource: OutfitPackage
   ) {
