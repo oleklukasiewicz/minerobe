@@ -86,9 +86,7 @@
 
   //others
   let isSkinSetting = false;
-
-  //api helpers
-
+  
   let __addAnimation = function (
     animation: RenderAnimation,
     force: boolean = false
