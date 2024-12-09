@@ -23,6 +23,7 @@
   export let removable: boolean = true;
   export let dropable: boolean = false;
   export let resizable: boolean = false;
+  export let dense: boolean = false;
   export let resizeDebounce = 300;
   export let link = null;
 
@@ -54,7 +55,7 @@
 </script>
 
 <div class="outfit-layer-list">
-  <div class="outfit-layer-list-items">
+  <div class="outfit-layer-list-items" class:dense>
     {#each [...items].reverse() as item, index (item.id)}
       <MultiDragAndDrop
         on:drop={(e) => onDrop(item, e.detail)}
@@ -69,6 +70,7 @@
           link={item.sourcePackageId != packageId && link != null
             ? link + item.sourcePackageId + "/" + item.id
             : null}
+          {dense}
           {item}
           {readonly}
           selected={item.id == selectedLayerId}
@@ -102,6 +104,10 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+      &.dense {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
     }
   }
 </style>

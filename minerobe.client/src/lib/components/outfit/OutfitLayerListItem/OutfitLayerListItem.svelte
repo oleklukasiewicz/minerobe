@@ -28,6 +28,7 @@
   export let link = null;
   export let selected = false;
   export let packageId: string = null;
+  export let dense = false;
 
   const onMoveUp = function () {
     dispatch("moveUp", { item: item });
@@ -49,7 +50,14 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-missing-attribute -->
-<a class="outfit-layer-list-item" class:selected class:readonly on:click>
+<a
+  class="outfit-layer-list-item"
+  class:selected
+  class:readonly
+  class:dense
+  title={item.name}
+  on:click
+>
   <div class="render">
     <OutfitPackageRender
       source={item[model].content}
@@ -57,77 +65,79 @@
       outfitType={item.outfitType}
     />
   </div>
-  <div class="data">
-    <span class="name">{item.name}</span>
-    <Label variant="common">{item.outfitType}</Label>
-    {#if item.sourcePackageId == packageId}
-      <Label variant={"rare"}>Image</Label>
-    {/if}
-  </div>
+  {#if !dense}
+    <div class="data">
+      <span class="name">{item.name}</span>
+      <Label variant="common">{item.outfitType}</Label>
+      {#if item.sourcePackageId == packageId}
+        <Label variant={"rare"}>Image</Label>
+      {/if}
+    </div>
 
-  <div class="actions">
-    {#if !readonly}
-      {#if editable}
+    <div class="actions">
+      {#if !readonly}
+        {#if editable}
+          <Button
+            onlyIcon
+            icon={EditIcon}
+            whiteText={selected}
+            size="large"
+            type="quaternary"
+            on:click={onEdit}
+          />
+        {/if}
+        {#if editable && (movable || removable || link)}
+          <div class="separator vertical"></div>
+        {/if}
+        {#if movable}
+          <Button
+            onlyIcon
+            icon={UpIcon}
+            size="large"
+            type="quaternary"
+            disabled={!canUp}
+            whiteText={selected}
+            on:click={onMoveUp}
+          />
+          <Button
+            onlyIcon
+            icon={DownIcon}
+            size="large"
+            type="quaternary"
+            disabled={!canDown}
+            whiteText={selected}
+            on:click={onMoveDown}
+          />
+        {/if}
+        {#if movable && (removable || link)}
+          <div class="separator vertical"></div>
+        {/if}
+        {#if removable}
+          <Button
+            onlyIcon
+            icon={DeleteIcon}
+            whiteText={selected}
+            size="large"
+            type="quaternary"
+            on:click={onDelete}
+          />
+        {/if}
+        {#if removable && link}
+          <div class="separator vertical"></div>
+        {/if}
+      {/if}
+      {#if link}
         <Button
           onlyIcon
-          icon={EditIcon}
           whiteText={selected}
+          icon={ExternalLinkIcon}
           size="large"
-          type="quaternary"
-          on:click={onEdit}
+          type="tertiary"
+          href={link}
         />
       {/if}
-      {#if editable && (movable || removable || link)}
-        <div class="separator vertical"></div>
-      {/if}
-      {#if movable}
-        <Button
-          onlyIcon
-          icon={UpIcon}
-          size="large"
-          type="quaternary"
-          disabled={!canUp}
-          whiteText={selected}
-          on:click={onMoveUp}
-        />
-        <Button
-          onlyIcon
-          icon={DownIcon}
-          size="large"
-          type="quaternary"
-          disabled={!canDown}
-          whiteText={selected}
-          on:click={onMoveDown}
-        />
-      {/if}
-      {#if movable && (removable || link)}
-        <div class="separator vertical"></div>
-      {/if}
-      {#if removable}
-        <Button
-          onlyIcon
-          icon={DeleteIcon}
-          whiteText={selected}
-          size="large"
-          type="quaternary"
-          on:click={onDelete}
-        />
-      {/if}
-      {#if removable && link}
-        <div class="separator vertical"></div>
-      {/if}
-    {/if}
-    {#if link}
-      <Button
-        onlyIcon
-        whiteText={selected}
-        icon={ExternalLinkIcon}
-        size="large"
-        type="tertiary"
-        href={link}
-      />
-    {/if}
-  </div>
+    </div>
+  {/if}
 </a>
 
 <style lang="scss">

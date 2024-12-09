@@ -59,6 +59,12 @@
         }
       }
     }
+    &.dense
+    {
+      .render {
+        background-color: var(--color-accent);
+      }
+    }
   }
   &.readonly {
     &:hover {

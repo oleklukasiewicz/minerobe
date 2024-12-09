@@ -86,7 +86,7 @@
 
   //others
   let isSkinSetting = false;
-  
+
   let __addAnimation = function (
     animation: RenderAnimation,
     force: boolean = false
@@ -252,6 +252,7 @@
       />
       {#if loaded}
         <OutfitLayerList
+          dense={!isOutfitSet}
           link={"/design/"}
           readonly={isOutfitSet}
           packageId={$itemPackage.id}
