@@ -422,7 +422,7 @@
         <Button
           onlyIcon
           icon={TrashIcon}
-          label={"Delete"}
+          label={"Delete item"}
           type={"tertiary"}
           on:click={openRemoveDialog}
         />
