@@ -311,7 +311,7 @@
   };
   const openOutfitPickerDialog = async (e) => {
     let options = e?.detail?.options;
-    if (!options) options = { page: 0, pageSize: 12 };
+    if (!options) options = { page: 0, pageSize: dialogOutfits?.pageSize || 12 };
     dialogOutfits = {
       items: null,
       page: options.page,

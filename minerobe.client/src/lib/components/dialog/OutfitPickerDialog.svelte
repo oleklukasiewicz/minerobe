@@ -68,6 +68,9 @@
         loading={pagedLoading}
         on:select
       />
+      {#if items?.items?.length === 0 && !loading}
+        <div class="no-items-error">No items found</div>
+      {/if}
     </PagedList>
   </div>
 </Dialog>
@@ -83,6 +86,14 @@
       grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
       gap: 8px;
       margin-bottom: 8px;
+    }
+    .no-items-error {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+      font-family: minecraft;
+      font-size: var(--size-font-base);
     }
   }
 </style>
