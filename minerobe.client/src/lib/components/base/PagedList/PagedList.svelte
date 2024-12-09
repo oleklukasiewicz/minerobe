@@ -82,9 +82,9 @@
     justify-content: end;
     margin-top: 8px;
     div {
-      margin-top: 8px;
+      margin-top: 12px;
       font-family: minecraft-simple;
-      font-size: var(--size-font-caption);
+      font-size: var(--size-font-base);
       user-select: none;
     }
   }

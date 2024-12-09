@@ -20,9 +20,9 @@
     flex-direction: row;
     .select-placeholder {
       font-family: minecraft-simple;
-      font-size: 12px;
+      font-size:  var(--size-font-subheaderalt);
       color: var(--color-theme-D4);
-      margin: 6px 12px;
+      margin: 8px 12px 4px;
       user-select: none;
       white-space: nowrap;
       text-overflow: ellipsis;

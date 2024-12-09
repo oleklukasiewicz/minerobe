@@ -138,16 +138,15 @@
   const setSource = async (v, oldModel, newModel) => {
     if (!initialized) return;
     if (_source == null || _source == "") return;
-    
+
     //compare source
     let isReRender = false;
-    let isLayersOrderNew = false;
+    let isLayersModified = false;
     if (typeof _source !== "string" && v !== "string") {
       isReRender = isReRenderNeeded(_source, v, oldModel, newModel);
-      isLayersOrderNew = isLayersOrderChanged(_source, v);
+      isLayersModified = isLayersChanged(_source, v);
       if (!isReRender) return;
     }
-
     _source = structuredClone(v);
     cachedtexture = _source as string;
     if (typeof _source !== "string") {
@@ -170,7 +169,7 @@
 
     //if layers order changed - trigger event
     if (
-      isLayersOrderNew ||
+      isLayersModified ||
       typeof _source == "string" ||
       typeof source == "string"
     )
@@ -235,6 +234,7 @@
   };
   const setBaseTexture = async (v) => {
     if (!initialized) return;
+    if (v == null) return;
     if (
       typeof v === "string" &&
       typeof _baseTexture === "string" &&
@@ -244,6 +244,7 @@
     if (
       typeof v !== "string" &&
       typeof _baseTexture !== "string" &&
+      _baseTexture != null &&
       v[merger.GetModel()].content ===
         (_baseTexture as OutfitLayer)[merger.GetModel()].content
     )
@@ -309,7 +310,7 @@
     }
     return false;
   };
-  const isLayersOrderChanged = function (
+  const isLayersChanged = function (
     aSource: OutfitPackage,
     bSource: OutfitPackage
   ) {
@@ -317,7 +318,12 @@
     const bLayers = bSource.layers;
     if (aLayers.length != bLayers.length) return true;
     for (let i = 0; i < aLayers.length; i++) {
-      if (aLayers[i].id != bLayers[i].id) return true;
+      if (
+        aLayers[i].id != bLayers[i].id ||
+        aLayers[i].alex.content != bLayers[i].alex.content ||
+        aLayers[i].steve.content != bLayers[i].steve.content
+      )
+        return true;
     }
     return false;
   };

@@ -3,9 +3,9 @@
   import { createEventDispatcher } from "svelte";
   //models
   import type { ValueData } from "$data/models/base";
-  
+
   const dispatch = createEventDispatcher();
-  
+
   export let options: ValueData[];
   export let disabled: boolean = false;
 
@@ -37,7 +37,9 @@
   const handleOptionDrop = (e) => {
     if (disabled) return;
     e.preventDefault();
-    const items = e.dataTransfer.items;
+    const items = (Array.from(e.dataTransfer.items) as any[])
+      .filter((item) => item.kind === "file")
+      .map((item) => item.getAsFile());
     dispatch("drop", { option: draggingOption.value, items: items });
     draggingOption = null;
     isDragging = false;

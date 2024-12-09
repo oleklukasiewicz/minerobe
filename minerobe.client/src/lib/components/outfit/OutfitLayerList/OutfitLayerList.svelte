@@ -8,6 +8,7 @@
   import OutfitLayerListItem from "../OutfitLayerListItem/OutfitLayerListItem.svelte";
   import MultiDragAndDrop from "$lib/components/draganddrop/MultiDragAndDrop/MultiDragAndDrop.svelte";
   import Resize from "$lib/components/other/Resize/Resize.svelte";
+  import { ConvertFileToFileData } from "$src/data/import";
 
   const dispatch = createEventDispatcher();
 
@@ -43,8 +44,9 @@
   const onDelete = function (layer: OutfitLayer, index: number) {
     dispatch("delete", { item: layer, index: index });
   };
-  const onDrop = function (layer: OutfitLayer, option: any) {
-    dispatch("drop", { item: layer, option: option });
+  const onDrop = async function (layer: OutfitLayer, option: any) {
+    const items = await ConvertFileToFileData(option.items[0]);
+    dispatch("drop", { item: layer, option: option.option, file: items });
   };
   const onResize = function () {
     items = [...items];
@@ -55,8 +57,8 @@
   <div class="outfit-layer-list-items">
     {#each [...items].reverse() as item, index (item.id)}
       <MultiDragAndDrop
-        on:drop={(e) => onDrop(item, e.detail.option)}
-        disabled={!dropable || !editable}
+        on:drop={(e) => onDrop(item, e.detail)}
+        disabled={!dropable || !editable || item.sourcePackageId != packageId}
         options={[
           { label: "Classic", value: MODEL_TYPE.STEVE },
           { label: "Slim", value: MODEL_TYPE.ALEX },

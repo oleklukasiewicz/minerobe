@@ -5,6 +5,7 @@
   max-width: 100%;
   height: 36px;
   input {
+    font-size: var(--size-font-subheaderalt);
     transition: var(--time);
     background-color: var(--color-theme-D1);
     padding-left: 8px;
@@ -25,11 +26,9 @@
     max-height: 32px;
     input {
       max-height: 32px;
-      font-size: 8px;
     }
   }
-  &.dark
-  {
+  &.dark {
     input {
       background-color: var(--color-theme-D6);
       color: var(--color-theme);

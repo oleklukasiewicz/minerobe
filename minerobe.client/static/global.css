@@ -4,14 +4,18 @@
   font-weight: 700;
   font-display: swap;
   ascent-override: 100%;
-  src: url(/font/minecraftBolder.ttf) format("truetype");
+  src: url(/font/minecraftBolder.woff) format("truetype");
 }
 @font-face {
   font-family: minecraft-simple;
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(/font/minecraftSimple.ttf) format("truetype");
+  src: url(/font/minecraftSimple.woff2) format("truetype");
+  -webkit-font-smoothing: antialiased; /* For WebKit-based browsers */
+  -moz-osx-font-smoothing: grayscale; /* For macOS */
+  text-rendering: optimizeLegibility; /* Optimize for legibility */
+  font-smoothing: antialiased; /* Standard property */
 }
 @font-face {
   font-family: minecraft-micro;
@@ -115,33 +119,6 @@ h6 {
 br {
   user-select: none;
 }
-.label {
-  box-sizing: border-box;
-  display: inline-table;
-  font-family: minecraft;
-  font-size: medium;
-  box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.6);
-  padding: 0px 8px 4px;
-  text-shadow: 0 1px rgba(255, 255, 255, 0.6);
-  user-select: none;
-  text-align: end;
-}
-.label.dense {
-  padding: 1px 6px;
-  font-size: var(--size-font-caption);
-}
-.label.unique {
-  background: linear-gradient(var(--color-unique), var(--color-unique-A1));
-}
-.label.rare {
-  background: linear-gradient(var(--color-rare), var(--color-rare-A1));
-}
-.label.common {
-  background: linear-gradient(var(--color-common), var(--color-common-A1));
-}
-.label.legendary {
-  background: linear-gradient(var(--color-legend), var(--color-legend-A1));
-}
 .caption {
   font-size: small;
   color: var(--color-theme-D6);
@@ -185,118 +162,6 @@ br {
   border: 1px solid red;
   padding: 4px;
   box-sizing: border-box;
-}
-button {
-  border: 0;
-  transition: background-color var(--time), border-color var(--time),
-    color var(--time);
-  border-top: 2px solid var(--color-accent-L1);
-  background-color: var(--color-accent);
-  border-bottom: 2px solid var(--color-accent-D1);
-  color: var(--color-accent-font);
-  font-family: minecraft;
-  box-sizing: border-box;
-  padding: 7px 16px;
-}
-button > svg,
-button > .icon,
-button > img {
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
-  display: inline-table;
-  vertical-align: middle;
-}
-button.tertiary {
-  background-color: transparent;
-  border-color: transparent;
-  color: var(--color-theme-font);
-}
-button.icon {
-  width: 42px;
-  height: 42px;
-  padding: 6px 8px;
-}
-button.small {
-  padding: 3px 8px 2px;
-}
-button.icon.small {
-  width: 32px;
-  height: 32px;
-  padding: 3px 4px;
-}
-button.secondary {
-  background-color: transparent;
-  border-color: transparent;
-  color: var(--color-accent);
-}
-button.secondary:hover,
-button:hover {
-  color: var(--color-accent-font);
-  background-color: var(--color-hover);
-  border-top-color: var(--color-hover-L1);
-  border-bottom-color: var(--color-hover-D1);
-}
-button.secondary:active,
-button:active {
-  color: var(--color-accent-font);
-  background-color: var(--color-active);
-  border-top-color: var(--color-active-L1);
-  border-bottom-color: var(--color-active-D1);
-}
-button.dark {
-  background-color: transparent;
-  border-color: transparent;
-  color: var(--color-accent-font);
-}
-button.dark:hover,
-button:hover {
-  color: var(--color-accent-font);
-  background-color: var(--color-hover);
-  border-top-color: var(--color-hover-L1);
-  border-bottom-color: var(--color-hover-D1);
-}
-button.dark:active,
-button:active {
-  color: var(--color-accent-font);
-  background-color: var(--color-active);
-  border-top-color: var(--color-active-L1);
-  border-bottom-color: var(--color-active-D1);
-}
-button.selected {
-  border-top: 2px solid var(--color-accent-L1);
-  background-color: var(--color-accent);
-  border-bottom: 2px solid var(--color-accent-D1);
-  color: var(--color-accent-font);
-}
-button.fab {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  height: 48px;
-  padding: 11px;
-  z-index: 4;
-}
-button.fab.dynamic {
-  max-width: 48px;
-  overflow: hidden;
-  transition: var(--time) cubic-bezier(0.1, 0.9, 0.2, 1);
-}
-button.fab.dynamic > div {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 14px;
-  width: 100%;
-}
-button.fab.dynamic > div > span {
-  margin-top: 4px;
-  margin-right: 12px;
-  text-wrap: nowrap;
-  vertical-align: middle;
-}
-button.fab.dynamic:hover {
-  max-width: 140px;
-  width: auto;
 }
 .separator.vertical {
   width: 1px;
@@ -342,7 +207,7 @@ button.fab.dynamic:hover {
 }
 input {
   font-family: minecraft-simple;
-  font-size: var(--size-font-base);
+  font-size: var(--size-font-subtitlealt);
   border: 0;
   background-color: transparent;
   outline: 0;
@@ -368,7 +233,7 @@ input:hover {
   transform: scale(1);
 }
 .b-icon-medium > svg {
-  transform: scale(0.7);
+  transform: scale(0.75);
 }
 textarea {
   font-family: Arial, Helvetica, sans-serif;

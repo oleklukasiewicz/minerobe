@@ -35,7 +35,6 @@
 <div class="search" class:dense {style} class:dark>
   <input
     type="text"
-    style="font-size: var(--size-font-caption);"
     {placeholder}
     bind:value
     class="search-input"

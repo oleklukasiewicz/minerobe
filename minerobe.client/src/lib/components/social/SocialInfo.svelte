@@ -58,8 +58,8 @@
     }
   }
   .info-text {
-    vertical-align: top;
+    margin-top: 2px;
     display: inline-table;
-    font-size: 14px;
+    font-size: var(--size-font-subtitle);
   }
 </style>

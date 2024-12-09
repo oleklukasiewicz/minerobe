@@ -112,7 +112,7 @@
     }
   }
   &.secondary {
-    font-size: 12px;
+    font-size: var(--size-font-subheaderalt);
     color: var(--color-theme-font);
     font-family: minecraft-simple;
     background-color: var(--color-theme-D2);
@@ -151,7 +151,7 @@
     }
   }
   &.tertiary {
-    font-size: 12px;
+    font-size: var(--size-font-subheaderalt);
     border: none;
     box-shadow: none;
     background-color: transparent;
@@ -166,7 +166,7 @@
       background-color: var(--color-active);
     }
     &.medium {
-      padding: 8px 12px 7px;
+      padding: 10px 12px 5px;
       &.icon {
         padding: 6px;
         & > .icon {
@@ -174,7 +174,7 @@
         }
       }
       & > .icon {
-        transform: translateY(-2px);
+        transform: translateY(-4px);
       }
     }
     &.large {
@@ -204,7 +204,7 @@
     }
   }
   &.quaternary {
-    font-size: 12px;
+    font-size: var(--size-font-subheaderalt);
     border: none;
     box-shadow: none;
     background-color: transparent;
@@ -238,7 +238,7 @@
       }
     }
     &.small {
-      padding: 2px 6px 4px;
+      padding: 4px 6px 2px;
       &.icon {
         padding: 2px;
       }

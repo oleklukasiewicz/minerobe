@@ -223,6 +223,18 @@
     });
     await UpdatePackageLayer(item);
   };
+  const dropLayer = async (e) => {
+    const layer = e.detail.item;
+    const option = e.detail.option;
+    const file = e.detail.file;
+    
+    const index = $itemPackageLayers.findIndex((x) => x.id == layer.id);
+    itemPackage.update((item) => {
+      item.layers[index][option] = file;
+      return item;
+    });
+    await UpdatePackageLayer($itemPackageLayers[index]);
+  };
 
   //imports
   const importImage = async () => {
@@ -443,11 +455,13 @@
           selectable={!isOutfitSet}
           selectedLayerId={$renderConfiguration.selectedLayerId}
           movable={isOutfitSet}
+          dropable
           on:edit={openLayerEditDialog}
           on:moveUp={moveLayerUp}
           on:moveDown={moveLayerDown}
           on:select={setSelectedLayer}
           on:delete={removeLayer}
+          on:drop={dropLayer}
           model={$itemPackage.model}
         ></OutfitLayerList>
       {/if}
@@ -458,6 +472,7 @@
               <Button
                 label={"Add outfit"}
                 icon={AddIcon}
+                iconSize="medium"
                 type={"tertiary"}
                 on:click={openOutfitPickerDialog}
               />
@@ -466,6 +481,7 @@
         {/if}
         {#if loaded}
           <Button
+            iconSize="medium"
             label={isOutfitSet ? "Import image" : "Import variant"}
             icon={ImportPackageIcon}
             type={"tertiary"}
