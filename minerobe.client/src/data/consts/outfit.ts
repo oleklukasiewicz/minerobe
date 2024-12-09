@@ -2,7 +2,7 @@ import { MODEL_TYPE } from "../enums/model";
 import { OUTFIT_TYPE, PACKAGE_TYPE } from "../enums/outfit";
 //package data
 export const OUTFIT_TYPE_ARRAY = Object.keys(OUTFIT_TYPE)
-  .filter((x) => x !== "OUTFIT_SET")
+  .filter((x) => x !== "OUTFIT_SET").sort()
   .map((key) => {
     return { name: OUTFIT_TYPE[key], normalizedName: key.replace(/_/g, " ") };
   });

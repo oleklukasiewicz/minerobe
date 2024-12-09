@@ -169,7 +169,7 @@
     if (
       _model == "source" &&
       typeof _source !== "string" &&
-      (source as OutfitPackage).model == _source.model
+      (source as OutfitPackage).model == merger.GetModel()
     )
       return;
     _model = v;
