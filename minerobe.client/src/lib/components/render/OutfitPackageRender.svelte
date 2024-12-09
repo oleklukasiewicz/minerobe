@@ -140,9 +140,14 @@
     if (_source == null || _source == "") return;
 
     //compare source
-    let isReRender = false;
-    let isLayersModified = false;
-    if (typeof _source !== "string" && v !== "string") {
+    let isReRender = true;
+    let isLayersModified = true;
+    if (
+      typeof _source !== "string" &&
+      typeof v !== "string" &&
+      _source != null &&
+      oldModel != null
+    ) {
       isReRender = isReRenderNeeded(_source, v, oldModel, newModel);
       isLayersModified = isLayersChanged(_source, v);
       if (!isReRender) return;
@@ -304,7 +309,7 @@
     for (let i = 0; i < aLayers.length; i++) {
       if (
         aLayers[i].id != bLayers[i].id ||
-        aLayers[i][oldModel].content != bLayers[i][newModel].content
+        aLayers[i][oldModel]?.content != bLayers[i][newModel]?.content
       )
         return true;
     }
@@ -320,8 +325,8 @@
     for (let i = 0; i < aLayers.length; i++) {
       if (
         aLayers[i].id != bLayers[i].id ||
-        aLayers[i].alex.content != bLayers[i].alex.content ||
-        aLayers[i].steve.content != bLayers[i].steve.content
+        aLayers[i].alex?.content != bLayers[i].alex?.content ||
+        aLayers[i].steve?.content != bLayers[i].steve?.content
       )
         return true;
     }

@@ -19,10 +19,13 @@
   import { OutfitPackageToTextureConverter } from "$src/data/render.js";
   import { ShowToast } from "$src/data/toast.js";
   import { SetMinecraftSkin } from "$src/data/integration.js";
+  import { replaceState } from "$app/navigation";
+  import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
   //consts
   import {
     BASE_TEXTURE,
     CURRENT_APP_STATE,
+    CURRENT_USER,
     IS_MOBILE_VIEW,
   } from "$src/data/static.js";
   //model
@@ -54,7 +57,7 @@
   import ListIcon from "$icons/list.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import SocialInfo from "$lib/components/social/SocialInfo.svelte";
-  import { replaceState } from "$app/navigation";
+  import EditIcon from "$src/icons/edit.svg?raw";
 
   export let data;
 
@@ -324,6 +327,16 @@
           icon={ListIcon}
           on:click={openCollectionsDialog}
         />
+        {#if $CURRENT_USER.id == $itemPackage.publisher.id}
+          <Button
+            label="Edit item"
+            type="tertiary"
+            size="large"
+            onlyIcon={!$IS_MOBILE_VIEW}
+            icon={EditIcon}
+            on:click={() => navigateToOutfitPackageEdit($itemPackage.id)}
+          />
+        {/if}
       {:else}
         <Placeholder height="46px" />
         <Placeholder height="46px" />
