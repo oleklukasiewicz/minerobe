@@ -23,7 +23,7 @@ export let style: string = "";
     color: var(--color-theme-font);
   }
   .label.dense {
-    padding: 2px 6px;
+    padding: 1px 6px;
     font-size: var(--size-font-caption);
     height: 18px;
   }
