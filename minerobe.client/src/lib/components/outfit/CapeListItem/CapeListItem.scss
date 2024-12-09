@@ -19,6 +19,7 @@
   }
   &:active {
     background-color: var(--color-theme-D6);
+    color: var(--color-accent-font);
   }
   &.selected {
     color: var(--color-accent-font);
