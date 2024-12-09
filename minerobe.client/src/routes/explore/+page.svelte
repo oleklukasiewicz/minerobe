@@ -11,17 +11,26 @@
   onMount(() => {
     CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
-      const items = await GetWadrobePackagesSingleLayer(undefined, 0, 5);
+      const items = await GetWadrobePackagesSingleLayer(undefined, 0, 10);
       pages.push(items);
       console.log(pages);
       loaded = true;
     });
   });
+  const loadNewpage = async (e) => {
+    const lastPage = e.detail.options;
+    const items = await GetWadrobePackagesSingleLayer(
+      undefined,
+      lastPage.page + 1,
+      lastPage.pageSize
+    );
+    pages = [...pages, items];
+  };
 </script>
 
-<div style="width: 100vw;">
+<div style="width: 50vw;">
   {#if loaded}
-    <LazyList let:items itemsPages={pages}>
+    <LazyList let:items itemsPages={pages} on:loading={loadNewpage}>
       <OutfitPackageList {items} />
     </LazyList>
   {/if}

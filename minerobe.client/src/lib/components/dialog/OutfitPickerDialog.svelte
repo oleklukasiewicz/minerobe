@@ -64,7 +64,8 @@
     >
       <OutfitPackagePickerList
         {packageContext}
-        items={pagedItems}
+        items={pagedItems.items}
+        pageSize={pagedItems.pageSize}
         loading={pagedLoading}
         on:select
       />

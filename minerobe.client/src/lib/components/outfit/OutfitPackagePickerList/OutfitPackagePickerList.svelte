@@ -2,7 +2,6 @@
   //main imports
   import { createEventDispatcher } from "svelte";
   //models
-  import type { PagedResponse } from "$data/models/base";
   import type { OutfitPackage } from "$data/models/package";
   //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
@@ -10,7 +9,8 @@
 
   const dispatch = createEventDispatcher();
 
-  export let items: PagedResponse<OutfitPackage>;
+  export let items: OutfitPackage[];
+  export let pageSize: number = 25;
   export let packageContext: OutfitPackage = null;
   export let loading = true;
 
@@ -21,11 +21,11 @@
 
 <div id="outfit-package-picker-list">
   {#if loading}
-    {#each Array(items?.pageSize || 10) as _}
+    {#each Array(pageSize || 10) as _}
       <Placeholder width="100%" height="68px" />
     {/each}
   {:else}
-    {#each items?.items as item (item.id + item.layers[0].id)}
+    {#each items as item (item.id + item.layers[0].id)}
       <OutfitPackageSingleLayerListItem
         disabled={packageContext?.layers.find(
           (layer) => layer.id === item.layers[0].id

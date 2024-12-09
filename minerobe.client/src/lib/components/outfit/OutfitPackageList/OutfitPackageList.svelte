@@ -27,7 +27,7 @@
 
 <div class="outfit-package-list">
   <div class="outfit-package-list-items">
-    {#each items as item (item.id)}
+    {#each items as item (item.id + item?.layers[0]?.id)}
       <OutfitPackageListItem
         {item}
         {fetchLayer}

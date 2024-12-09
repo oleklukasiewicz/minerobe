@@ -1,29 +1,44 @@
 <script lang="ts">
   import { PagedResponse } from "$src/data/models/base";
+  import IntersectionObserver from "svelte-intersection-observer";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
 
   export let itemsPages: PagedResponse<any>[] = [];
+  export let rootMargin: string = "30px";
 
-  let itemsWithPlaceholder: PagedResponse<any>[] = [];
-  $: itemsWithPlaceholder = [
-    ...itemsPages,
-    new PagedResponse<any>(0, 0, 0, []),
-  ];
+  let element;
+  let itemsList: any[] = [];
+  $: convertPagesToItems(itemsPages);
 
-  const onNewPageNeeded = () => {
-    dispatch("loading", { length: itemsWithPlaceholder.length - 1 });
+  const convertPagesToItems = (v) => {
+    const pages = itemsPages.map((page) => page.items);
+    itemsList = pages.flat();
+  };
+
+  const onNewPageNeeded = (e) => {
+    if (e.detail.isIntersecting == false) return;
+    const lastPage = itemsPages[itemsPages.length - 1];
+    if (lastPage.items.length < lastPage.pageSize) return;
+    dispatch("loading", { options: lastPage });
   };
 </script>
 
 <div class="lazy-list">
-  {#each itemsWithPlaceholder as itemsPage, index}
-    <slot
-      items={itemsPage.items}
-      loading={index == itemsWithPlaceholder.length - 1}
-    />
-  {/each}
+  <slot items={itemsList} />
+  <IntersectionObserver
+    {element}
+    on:observe={onNewPageNeeded}
+    {rootMargin}
+    threshold={1}
+  >
+    <div bind:this={element}>
+      {#if itemsPages[itemsPages.length - 1].items.length == itemsPages[itemsPages.length - 1].pageSize}
+        <slot name="loading">loading...</slot>
+      {/if}
+    </div>
+  </IntersectionObserver>
 </div>
 
 <style lang="scss">

@@ -58,24 +58,26 @@
       in your own Minecraft worlds or use them as a base for your own skins.
     </p>
   </div>
-  <h2 class="list-title">Most Recent</h2>
-  <OutfitPackageList
-    items={mostRecent}
-    on:select={goToItemPage}
-    baseTexture={$userSettings?.baseTexture?.layers[0]}
-  />
-  <h2 class="list-title">Most Liked</h2>
-  <OutfitPackageList
-    items={mostLiked}
-    on:select={goToItemPage}
-    baseTexture={$userSettings?.baseTexture?.layers[0]}
-  />
-  <h2 class="list-title">Most Downloaded</h2>
-  <OutfitPackageList
-    items={mostDownloaded}
-    on:select={goToItemPage}
-    baseTexture={$userSettings?.baseTexture?.layers[0]}
-  />
+  {#if landingLoaded}
+    <h2 class="list-title">Most Recent</h2>
+    <OutfitPackageList
+      items={mostRecent}
+      on:select={goToItemPage}
+      baseTexture={$userSettings?.baseTexture?.layers[0]}
+    />
+    <h2 class="list-title">Most Liked</h2>
+    <OutfitPackageList
+      items={mostLiked}
+      on:select={goToItemPage}
+      baseTexture={$userSettings?.baseTexture?.layers[0]}
+    />
+    <h2 class="list-title">Most Downloaded</h2>
+    <OutfitPackageList
+      items={mostDownloaded}
+      on:select={goToItemPage}
+      baseTexture={$userSettings?.baseTexture?.layers[0]}
+    />
+  {/if}
 </div>
 
 <style lang="scss">
