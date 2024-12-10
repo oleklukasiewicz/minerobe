@@ -5,7 +5,7 @@ namespace minerobe.api.Entity.Summary
 {
     public class OutfitPackageAgregation
     {
-        public Guid PackageId { get; set; }
+        public Guid Id { get; set; }
         public Guid? VariantId { get; set; }
         public string Name { get; set; }
         public DateTime? ModifiedAt { get; set; }

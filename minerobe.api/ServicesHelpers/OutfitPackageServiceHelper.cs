@@ -23,11 +23,11 @@ namespace minerobe.api.ServicesHelpers
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
-                var package = await _packageService.GetById(item.PackageId, null, true);
+                var package = await _packageService.GetById(item.Id, null, true);
 
                 var isInwadrobe = false;
                 if (user != null)
-                    isInwadrobe = await _wardrobeService.IsPackageInWardrobe(user.WardrobeId, item.PackageId);
+                    isInwadrobe = await _wardrobeService.IsPackageInWardrobe(user.WardrobeId, item.Id);
                 items.Add(package.ToListItemResponseModel(maxLayersCount, 1, isInwadrobe));
             }
             return items;
@@ -37,7 +37,7 @@ namespace minerobe.api.ServicesHelpers
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
-                var package = await _packageService.GetById(item.PackageId, null, true);
+                var package = await _packageService.GetById(item.Id, null, true);
                 items.Add(package.ToListItemResponseModel(maxLayerCount, 1, false));
             }
             return items;
@@ -49,7 +49,7 @@ namespace minerobe.api.ServicesHelpers
             {
                 if (item.VariantId == null)
                     continue;
-                var package = await _packageService.GetById(item.PackageId, item.VariantId.Value);
+                var package = await _packageService.GetById(item.Id, item.VariantId.Value);
                 items.Add(package.ToListItemResponseModel(1, 1, isInWardrobe));
             }
             return items;

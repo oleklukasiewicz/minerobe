@@ -115,7 +115,7 @@
 
       if (state == APP_STATE.READY) {
         userSettings = await FetchSettings();
-        if (isOutfitSet)
+        if (isOutfitSet && userSettings?.baseTexture != null)
           $renderConfiguration.baseTexture = userSettings.baseTexture.layers[0];
         else $renderConfiguration.baseTexture = $BASE_TEXTURE;
 

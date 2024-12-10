@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Reflection;
 
 namespace minerobe.api.Helpers
 {
@@ -14,6 +15,10 @@ namespace minerobe.api.Helpers
         {
             var serialized = JsonConvert.SerializeObject(obj);
             return JsonConvert.DeserializeObject<T>(serialized);
+        }
+        public static bool HasIdProperty<T>()
+        {
+            return typeof(T).GetProperty("Id", BindingFlags.Public | BindingFlags.Instance) != null;
         }
     }
 }

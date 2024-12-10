@@ -21,8 +21,8 @@
     const lastPage = e.detail.options;
     const items = await GetWadrobePackagesSingleLayer(
       undefined,
-      lastPage.page + 1,
-      lastPage.pageSize
+      lastPage?.page || 0,
+      lastPage?.pageSize || 10
     );
     pages = [...pages, items];
   };

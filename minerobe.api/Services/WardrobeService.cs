@@ -223,7 +223,7 @@ namespace minerobe.api.Services
         public async Task<IQueryable<OutfitPackageAgregation>> GetWardrobeOutfitsSingleLayer(Guid wardrobeId, OutfitFilter filter)
         {
             var outfits = _context.Set<OutfitPackageAgregation>().FromSqlInterpolated($"SELECT * FROM fGetWardrobeOutfitsSingleLayer({wardrobeId})");
-            outfits = outfits.OrderBy(x => x.PackageId);
+            outfits = outfits.OrderBy(x => x.Id);
             if (filter != null)
             {
                 outfits = filter.Filter(outfits);

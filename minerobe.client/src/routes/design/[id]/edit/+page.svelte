@@ -159,13 +159,13 @@
         $renderConfiguration.selectedLayerId = $itemPackage.layers[0].id;
 
       userSettings = await FetchSettings();
-      if (isOutfitSet)
+      if (isOutfitSet && userSettings?.baseTexture != null)
         $renderConfiguration.baseTexture = userSettings.baseTexture.layers[0];
       else $renderConfiguration.baseTexture = $BASE_TEXTURE;
 
       isMinecraftIntegrated = userSettings?.integrations.includes("minecraft");
       if (isMinecraftIntegrated && isOutfitSet) {
-        integrationSettings = await GetAccount();
+        integrationSettings = await GetAccount(false);
         $renderConfiguration.capeId = integrationSettings.currentCapeId;
       }
 

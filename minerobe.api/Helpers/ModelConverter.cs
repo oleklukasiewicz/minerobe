@@ -1,4 +1,5 @@
 ﻿using minerobe.api.Helpers.Model;
+using System.Linq.Dynamic.Core;
 
 namespace minerobe.api.Helpers
 {
@@ -23,6 +24,12 @@ namespace minerobe.api.Helpers
             int count = entity.Count();
             if (pageSize == -1)
                 pageSize = count;
+
+            if (TypeExtension.HasIdProperty<T>())
+            {
+                entity = entity.OrderBy("Id");
+            }
+
             var items = entity.Skip(pageSize * (page)).Take(pageSize).ToList();
             return new PagedResponse<T>
             {
