@@ -5,7 +5,7 @@
   import type { OutfitPackage } from "$src/data/models/package";
   import { createEventDispatcher } from "svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
-  import PagedList from "../base/PagedList/PagedList.svelte";
+  import PagedList from "../list/PagedList/PagedList.svelte";
   import Search from "../base/Search/Search.svelte";
   import Select from "../base/Select/Select.svelte";
   import OutfitPackagePickerList from "../outfit/OutfitPackagePickerList/OutfitPackagePickerList.svelte";
@@ -60,12 +60,13 @@
       {loading}
       on:optionsChanged
       let:items={pagedItems}
+      let:pageSize={pagedPageSize}
       let:loading={pagedLoading}
     >
       <OutfitPackagePickerList
         {packageContext}
-        items={pagedItems.items}
-        pageSize={pagedItems.pageSize}
+        items={pagedItems}
+        pageSize={pagedPageSize}
         loading={pagedLoading}
         on:select
       />

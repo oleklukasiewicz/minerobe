@@ -4,8 +4,8 @@
   //models
   import type { PagedResponse } from "$data/models/base";
   //components
-  import Button from "../Button/Button.svelte";
-  import Select from "../Select/Select.svelte";
+  import Button from "../../base/Button/Button.svelte";
+  import Select from "../../base/Select/Select.svelte";
   //icons
   import ChevronLeftIcon from "$icons/chevron-left.svg?raw";
   import ChevronRightIcon from "$icons/chevron-right.svg?raw";
@@ -43,7 +43,12 @@
 
 <div class="paged-list">
   <div class="list-items">
-    <slot {items} {loading}></slot>
+    <slot
+      items={items?.items}
+      pageSize={items?.pageSize}
+      page={items.page}
+      {loading}
+    ></slot>
   </div>
   <div class="list-actions">
     <Button

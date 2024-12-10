@@ -1,5 +1,5 @@
 <script lang="ts">
-  import LazyList from "$lib/components/base/LazyList/LazyList.svelte";
+  import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
   import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
   import { GetWadrobePackagesSingleLayer } from "$src/api/wardrobe";
   import { APP_STATE } from "$src/data/enums/app";

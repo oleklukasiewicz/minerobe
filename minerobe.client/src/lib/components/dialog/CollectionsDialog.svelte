@@ -4,7 +4,7 @@
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
   //components
   import Dialog from "../base/Dialog/Dialog.svelte";
-  import PagedList from "../base/PagedList/PagedList.svelte";
+  import PagedList from "../list/PagedList/PagedList.svelte";
   import OutfitPackageCollectionList from "../outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
 
   export let open = false;
@@ -22,10 +22,12 @@
       {loading}
       {pageSizes}
       let:items={pagedItems}
+      let:pageSize={pagedPageSize}
       let:loading={pagedLoading}
     >
       <OutfitPackageCollectionList
         items={pagedItems}
+        pageSize={pagedPageSize}
         loading={pagedLoading}
         on:select
         on:unselect

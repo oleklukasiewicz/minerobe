@@ -26,7 +26,7 @@
 </script>
 
 <div class="lazy-list">
-  <slot items={itemsList} />
+  <slot items={itemsList}/>
   <IntersectionObserver
     {element}
     on:observe={onNewPageNeeded}
