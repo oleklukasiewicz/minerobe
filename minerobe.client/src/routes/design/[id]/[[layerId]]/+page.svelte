@@ -94,7 +94,7 @@
 
   onMount(async () => {
     CURRENT_APP_STATE.subscribe(async (state) => {
-      if (state != APP_STATE.READY) return;
+      if (state != APP_STATE.READY && state != APP_STATE.GUEST_READY) return;
       renderer = new THREE.WebGLRenderer({
         alpha: true,
       });
@@ -108,17 +108,20 @@
           $renderConfiguration.selectedLayerId = $itemPackage.layers[0].id;
         else $renderConfiguration.selectedLayerId = data.layerId;
       }
+      if (state == APP_STATE.READY) {
+        userSettings = await FetchSettings();
+        if (isOutfitSet)
+          $renderConfiguration.baseTexture = userSettings.baseTexture.layers[0];
+        else $renderConfiguration.baseTexture = $BASE_TEXTURE;
 
-      userSettings = await FetchSettings();
-      if (isOutfitSet)
-        $renderConfiguration.baseTexture = userSettings.baseTexture.layers[0];
-      else $renderConfiguration.baseTexture = $BASE_TEXTURE;
-
-      isMinecraftIntegrated = userSettings?.integrations.includes("minecraft");
-      if (isMinecraftIntegrated && isOutfitSet) {
-        integrationSettings = await GetAccount(false);
-        $renderConfiguration.capeId = integrationSettings.currentCapeId;
-      }
+        isMinecraftIntegrated =
+          userSettings?.integrations.includes("minecraft");
+        if (isMinecraftIntegrated && isOutfitSet) {
+          integrationSettings = await GetAccount(false);
+          $renderConfiguration.capeId = integrationSettings.currentCapeId;
+        }
+      }else
+        $renderConfiguration.baseTexture = $BASE_TEXTURE;
 
       loaded = true;
       setTimeout(() => addAnimation(null), 0);
@@ -137,10 +140,13 @@
 
   //export
   const exportPackage = async () => {
+    const texture = new OutfitPackageToTextureConverter().SetOptions(
+      $renderConfiguration
+    );
+    if (userSettings?.baseTexture == null || !isOutfitSet)
+      texture.SetBaseTexture(null);
     await ExportImage(
-      await new OutfitPackageToTextureConverter().ConvertFromOptionsAsync(
-        $renderConfiguration
-      ),
+      await texture.ConvertAsyncWithFlattenSettingsAsync(),
       $itemPackage.name
     );
     addAnimation(HandsUpAnimation);
@@ -326,7 +332,7 @@
           icon={ListIcon}
           on:click={openCollectionsDialog}
         />
-        {#if $CURRENT_USER.id == $itemPackage.publisher.id}
+        {#if $CURRENT_USER?.id == $itemPackage.publisher.id}
           <Button
             label="Edit item"
             type="tertiary"

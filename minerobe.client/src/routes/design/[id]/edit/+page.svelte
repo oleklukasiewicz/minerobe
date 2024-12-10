@@ -269,10 +269,13 @@
 
   //export
   const exportPackage = async () => {
+    const texture = new OutfitPackageToTextureConverter().SetOptions(
+      $renderConfiguration
+    );
+    if (userSettings?.baseTexture == null || !isOutfitSet)
+      texture.SetBaseTexture(null);
     await ExportImage(
-      await new OutfitPackageToTextureConverter().ConvertFromOptionsAsync(
-        $renderConfiguration
-      ),
+      await texture.ConvertAsyncWithFlattenSettingsAsync(),
       $itemPackage.name
     );
     addAnimation(HandsUpAnimation);
@@ -311,7 +314,8 @@
   };
   const openOutfitPickerDialog = async (e) => {
     let options = e?.detail?.options;
-    if (!options) options = { page: 0, pageSize: dialogOutfits?.pageSize || 12 };
+    if (!options)
+      options = { page: 0, pageSize: dialogOutfits?.pageSize || 12 };
     dialogOutfits = {
       items: null,
       page: options.page,

@@ -571,7 +571,7 @@ export class OutfitPackageToTextureConverter {
     this.texture = texture;
     return texture;
   };
-  ConvertAsyncWithFlattenSettings = async function (): Promise<string> {
+  ConvertAsyncWithFlattenSettingsAsync = async function (): Promise<string> {
     await this.ConvertAsync();
     if (this.isFlatten) await this.AsFlattenAsync();
     else await this.AsNotFlatten();
@@ -581,7 +581,7 @@ export class OutfitPackageToTextureConverter {
     options: OutfitPackageRenderConfig
   ): Promise<string> {
     this.SetOptions(options);
-    return await this.ConvertAsyncWithFlattenSettings();
+    return await this.ConvertAsyncWithFlattenSettingsAsync();
   };
 }
 const mergeTextures = async function (textures: string[], modelMap) {

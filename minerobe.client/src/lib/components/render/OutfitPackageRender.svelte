@@ -117,7 +117,7 @@
 
     if (_isFlatten) merger.SetAsFlatten();
     if (typeof _source !== "string")
-      cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
+      cachedtexture = await merger.ConvertAsyncWithFlattenSettingsAsync();
     else cachedtexture = _source as string;
 
     if (cameraOptions == "auto") {
@@ -163,7 +163,7 @@
 
       cachedtexture = await merger
         .SetOutfitPackage(_source)
-        .ConvertAsyncWithFlattenSettings();
+        .ConvertAsyncWithFlattenSettingsAsync();
       await textureRenderer.SetTextureAsync(cachedtexture);
     } else {
       cachedtexture = _source;
@@ -208,7 +208,7 @@
     if (_isFlatten) merger.SetAsFlatten();
     else merger.SetAsNotFlatten();
 
-    cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
+    cachedtexture = await merger.ConvertAsyncWithFlattenSettingsAsync();
 
     if (cachedtexture != null)
       await textureRenderer.SetTextureAsync(cachedtexture);
@@ -220,7 +220,7 @@
     if (merger && typeof _source !== "string") {
       cachedtexture = await merger
         .SetLayerId(layerId)
-        .ConvertAsyncWithFlattenSettings();
+        .ConvertAsyncWithFlattenSettingsAsync();
       await textureRenderer.SetTextureAsync(cachedtexture);
       if (!isDynamic) await textureRenderer.RenderStatic();
     }
@@ -261,7 +261,7 @@
       else merger.SetBaseTexture(_baseTexture[merger.GetModel()].content);
     }
 
-    cachedtexture = await merger.ConvertAsyncWithFlattenSettings();
+    cachedtexture = await merger.ConvertAsyncWithFlattenSettingsAsync();
   };
   const baseModelTypesList = [
     OUTFIT_TYPE.OUTFIT_SET,
