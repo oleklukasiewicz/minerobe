@@ -58,6 +58,7 @@
   import LoaderIcon from "$icons/loader.svg?raw";
   import SocialInfo from "$lib/components/social/SocialInfo.svelte";
   import EditIcon from "$src/icons/edit.svg?raw";
+  import type { MODEL_TYPE } from "$src/data/enums/model.js";
 
   export let data;
 
@@ -103,11 +104,15 @@
       $itemPackage = await GetPackage(data.id);
       isOutfitSet = $itemPackage.type === PACKAGE_TYPE.OUTFIT_SET;
       $renderConfiguration.item = $itemPackage;
+
       if (!isOutfitSet) {
         if (data.layerId == null)
           $renderConfiguration.selectedLayerId = $itemPackage.layers[0].id;
         else $renderConfiguration.selectedLayerId = data.layerId;
       }
+      if (data.isFlat != null) $renderConfiguration.isFlatten = data.isFlat;
+      if (data.model != null) $itemPackage.model = data.model as MODEL_TYPE;
+
       if (state == APP_STATE.READY) {
         userSettings = await FetchSettings();
         if (isOutfitSet)
@@ -120,8 +125,7 @@
           integrationSettings = await GetAccount(false);
           $renderConfiguration.capeId = integrationSettings.currentCapeId;
         }
-      }else
-        $renderConfiguration.baseTexture = $BASE_TEXTURE;
+      } else $renderConfiguration.baseTexture = $BASE_TEXTURE;
 
       loaded = true;
       setTimeout(() => addAnimation(null), 0);
