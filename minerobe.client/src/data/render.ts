@@ -559,8 +559,8 @@ export class OutfitPackageToTextureConverter {
       const layer: OutfitLayer = this.outfitPackage.layers.find(
         (x) => x.id == this.layerId
       );
-      if (this.model == MODEL_TYPE.STEVE) layers.push(layer.steve.content);
-      else layers.push(layer.alex.content);
+      if (this.model == MODEL_TYPE.STEVE) layers.push(layer?.steve?.content);
+      else layers.push(layer?.alex?.content);
     }
 
     let texture = layers[0];

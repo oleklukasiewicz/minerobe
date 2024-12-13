@@ -165,7 +165,7 @@
 
       isMinecraftIntegrated = userSettings?.integrations.includes("minecraft");
       if (isMinecraftIntegrated && isOutfitSet) {
-        integrationSettings = await GetAccount(false);
+        integrationSettings = await GetAccount(true);
         $renderConfiguration.capeId = integrationSettings.currentCapeId;
       }
 

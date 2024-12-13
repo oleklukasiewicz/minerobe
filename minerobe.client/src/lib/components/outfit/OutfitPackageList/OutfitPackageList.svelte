@@ -10,8 +10,10 @@
 
   export let items: OutfitPackage[];
   export let baseTexture: OutfitLayer | string = null;
+  export let columns: number = -1;
   export let resizable = true;
   export let resizeDebounce = 300;
+  export let currentPackageId: string = null;
 
   const selectOutfit = function (item) {
     dispatch("select", { item: item });
@@ -26,9 +28,13 @@
 </script>
 
 <div class="outfit-package-list">
-  <div class="outfit-package-list-items">
+  <div
+    class="outfit-package-list-items"
+    style={`grid-template-columns: repeat(auto-fit, minmax(${columns > 0 ? `calc((100% / ${columns}) - 4px)` : "128px"}, 1fr));`}
+  >
     {#each items as item (item.id + item?.layers[0]?.id)}
       <OutfitPackageListItem
+        currentItem={currentPackageId == item.id}
         {item}
         {fetchLayer}
         on:click={() => selectOutfit(item)}

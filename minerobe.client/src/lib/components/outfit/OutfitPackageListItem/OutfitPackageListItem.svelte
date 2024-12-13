@@ -44,8 +44,6 @@
     await setCurrentLayer(item);
   };
 
-  $: setCurrentLayer(item);
-
   onMount(async () => {
     await setCurrentLayer(item);
     initialized = true;

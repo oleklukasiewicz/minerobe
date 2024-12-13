@@ -34,7 +34,6 @@
     {element}
     on:observe={onNewPageNeeded}
     {rootMargin}
-    threshold={1}
   >
     <div bind:this={element}>
       {#if itemsPages[itemsPages.length - 1]?.items?.length == itemsPages[itemsPages.length - 1]?.pageSize}

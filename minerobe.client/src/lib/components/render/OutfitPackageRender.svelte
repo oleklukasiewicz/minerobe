@@ -197,7 +197,7 @@
   const setOutfitType = async (v) => {
     if (!initialized) return;
 
-    await syncModel(_source);
+    await setCameraOptions(v);
   };
   const setFlatten = async (v) => {
     if (!initialized) return;
@@ -230,8 +230,10 @@
     if (!initialized) return;
 
     let targetCameraOptions = cameraOptions;
-    if (cameraOptions == "auto" && typeof _source !== "string") {
-      targetCameraOptions = CAMERA_CONFIG.getForOutfit(_source.outfitType);
+    if (cameraOptions == "auto") {
+      if (typeof _source !== "string")
+        targetCameraOptions = CAMERA_CONFIG.getForOutfit(_source.outfitType);
+      else targetCameraOptions = CAMERA_CONFIG.getForOutfit(outfitType);
     }
     textureRenderer.SetCameraOptions(targetCameraOptions);
 
