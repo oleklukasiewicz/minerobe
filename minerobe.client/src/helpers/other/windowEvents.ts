@@ -11,7 +11,6 @@ function createWindowEventStore(event) {
   return {
     subscribe(cb) {
       subs.push(cb);
-      cb();
 
       if (!listener) {
         window.addEventListener(event, on);

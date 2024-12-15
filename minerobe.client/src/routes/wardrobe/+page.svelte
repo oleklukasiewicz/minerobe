@@ -13,6 +13,11 @@
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
 
+  import ImportPackageIcon from "$icons/upload.svg?raw";
+  import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
+  import MenuHeader from "$lib/components/base/MenuHeader/MenuHeader.svelte";
+  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
+
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
   const pageCollections: Writable<PagedResponse<OutfitPackageCollection>[]> =
     writable([]);
@@ -48,7 +53,13 @@
 </script>
 
 <div id="wardrobe-view" class:mobile={$IS_MOBILE_VIEW}>
-  <div class="navigation"></div>
+  <div class="navigation">
+    <div>
+    <MenuItem label="Import" icon={ImportPackageIcon} badgelabel={"2"}/>
+    <MenuItem label="Import" icon={ImportPackageIcon} badgelabel={"2"} selected/>
+    <MenuHeader label="Wardrobe" />
+    <MenuSeparator /></div>
+  </div>
   <div class="content">
     {#if loaded}
       <LazyList

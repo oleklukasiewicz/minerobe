@@ -7,6 +7,7 @@ import { DEFAULT_RENDERER } from "./static";
 import type { OutfitLayer, OutfitPackage } from "$data/models/package";
 import type { OutfitPackageRenderConfig } from "$data/models/render";
 import { MODEL_TYPE } from "./enums/model";
+import { t } from "svelte-i18n";
 export class CameraConfig {
   rotation: THREE.Vector3;
   position: THREE.Vector3;
@@ -163,7 +164,6 @@ export class TextureRender {
     const height = canvas.clientHeight != 0 ? canvas.clientHeight : 300;
     const canvasSizeMultiplier = 1;
     const fov = 1;
-
     if (this.renderer == null) return;
 
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -362,9 +362,12 @@ export class TextureRender {
     this.renderer.setClearColor(new THREE.Color(0x000000), 0);
     return this;
   };
-  Resize() {
+  async Resize() {
+    if (this.renderer == null) return this;
+    this._loadCameraOptions();
     this._updateRenderSize();
-    if (!this.renderingActive) this._renderInNode();
+
+    this._renderInNode();
     return this;
   }
 }
@@ -539,6 +542,9 @@ export class OutfitPackageToTextureConverter {
   GetModel = function (): string {
     return this.model;
   };
+  GetLayerId = function (): string {  
+    return this.layerId;
+  }
   GetOutfitPackage = function (): OutfitPackage {
     return this.outfitPackage;
   };

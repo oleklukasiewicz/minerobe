@@ -23,6 +23,7 @@
   export let fetchLayer = async function (id, item): Promise<OutfitLayer> {
     return null;
   };
+  export let resize = async () => {};
 
   let initialized = false;
   let currentLayer: OutfitLayer;
@@ -62,6 +63,7 @@
     </div>
     {#if initialized}
       <OutfitPackageRender
+        bind:resize
         source={item}
         layerId={currentLayer?.id}
         isDynamic={false}

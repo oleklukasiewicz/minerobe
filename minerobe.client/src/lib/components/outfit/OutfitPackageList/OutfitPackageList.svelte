@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { OutfitLayer, OutfitPackage } from "$data/models/package";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import OutfitPackageListItem from "../OutfitPackageListItem/OutfitPackageListItem.svelte";
   import { GetLayer } from "$src/api/pack";
   import Resize from "$lib/components/other/Resize/Resize.svelte";
@@ -21,19 +21,23 @@
   const fetchLayer = async function (id, item): Promise<OutfitLayer> {
     return await GetLayer(id);
   };
+  let renderList: any[] = [];
 
-  const onResize = function () {
-    items = [...items];
+  const onResize = async function () {
+    for (let i = 0; i < items.length; i++) {
+      await renderList[i]();
+    }
   };
 </script>
 
 <div class="outfit-package-list">
   <div
     class="outfit-package-list-items"
-    style={`grid-template-columns: repeat(auto-fit, minmax(${columns > 0 ? `calc((100% / ${columns}) - 4px)` : "128px"}, 1fr));`}
+    style={`grid-template-columns: repeat(auto-fit, minmax(max(5px, ${columns > 0 ? `calc((100% / ${columns}) - 4px)` : "128px"}),1fr));`}
   >
-    {#each items as item (item.id + item?.layers[0]?.id)}
+    {#each items as item, index (item.id + item?.layers[0]?.id)}
       <OutfitPackageListItem
+        bind:resize={renderList[index]}
         currentItem={currentPackageId == item.id}
         {item}
         {fetchLayer}
@@ -54,7 +58,6 @@
       display: grid;
       gap: 4px;
       flex-wrap: wrap;
-      grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
     }
   }
 </style>

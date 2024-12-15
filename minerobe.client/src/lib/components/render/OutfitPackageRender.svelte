@@ -41,9 +41,9 @@
     if (textureRenderer == null) return;
     textureRenderer.AddAnimation(animation, force);
   };
-  export const resize = function () {
+  export const resize = async function () {
     if (textureRenderer == null) return;
-    textureRenderer.Resize();
+    await textureRenderer.Resize();
   };
   export const getCurrentTexture = function () {
     return textureRenderer.GetTexture();
@@ -55,6 +55,7 @@
   let _model: MODEL_TYPE | "source" = structuredClone(model);
   let _isFlatten: boolean = isFlatten;
   let _baseTexture: OutfitLayer | string = baseTexture;
+  let _layerId: string = layerId;
   let renderReady = false;
   let cachedtexture: string = null;
   let renderNode: any;
@@ -121,21 +122,19 @@
     else cachedtexture = _source as string;
 
     if (cameraOptions == "auto") {
+      let options: CameraConfig;
       if (typeof _source !== "string") {
-        textureRenderer.SetCameraOptions(
-          CAMERA_CONFIG.getForOutfit(_source.outfitType)
-        );
+        options = CAMERA_CONFIG.getForOutfit(_source.outfitType);
       } else {
-        textureRenderer.SetCameraOptions(
-          CAMERA_CONFIG.getForOutfit(outfitType)
-        );
+        options = CAMERA_CONFIG.getForOutfit(outfitType);
       }
+      textureRenderer.SetCameraOptions(options);
     }
 
     if (cachedtexture != null)
       await textureRenderer.SetTextureAsync(cachedtexture);
   };
-  const setSource = async (v, oldModel, newModel) => {
+  const setSource = async (v, oldModel, newModel, oldLayerId, newLayerId) => {
     if (!initialized) return;
     if (_source == null || _source == "") return;
 
@@ -146,7 +145,8 @@
       typeof _source !== "string" &&
       typeof v !== "string" &&
       _source != null &&
-      oldModel != null
+      oldModel != null &&
+      newLayerId != oldLayerId
     ) {
       isReRender = isReRenderNeeded(_source, v, oldModel, newModel);
       isLayersModified = isLayersChanged(_source, v);
@@ -216,15 +216,20 @@
   };
   const setLayerId = async (v) => {
     if (!initialized) return;
-
+    if (v == _layerId) return false;
+    _layerId = v;
     if (merger && typeof _source !== "string") {
-      cachedtexture = await merger
-        .SetLayerId(layerId)
-        .ConvertAsyncWithFlattenSettingsAsync();
+      await merger.SetLayerId(layerId);
       await textureRenderer.SetTextureAsync(cachedtexture);
-      if (!isDynamic) await textureRenderer.RenderStatic();
+      if (typeof _source !== "string") {
+        const layer = _source.layers.find((x) => x.id == layerId);
+        textureRenderer.SetCameraOptions(
+          CAMERA_CONFIG.getForOutfit(layer.outfitType)
+        );
+      }
     }
     onTextureUpdate();
+    return true;
   };
   const setCameraOptions = async (v) => {
     if (!initialized) return;
@@ -292,11 +297,14 @@
     }
     await textureRenderer.SetModelScene(modelScene.Clone());
   };
-  const syncModelSource = async function (vModel, vSource) {
+  const syncModelSource = async function (vModel, vSource, vLayerId) {
     const oldModel = merger.GetModel();
-    const modelChanged = await setModel(vModel);
+    await setModel(vModel);
     const newModel = merger.GetModel();
-    await setSource(vSource, oldModel, newModel);
+    const oldLayerId = merger.GetLayerId();
+    await setLayerId(vLayerId);
+    const newLayerId = merger.GetLayerId();
+    await setSource(vSource, oldModel, newModel, oldLayerId, newLayerId);
   };
 
   const isReRenderNeeded = function (
@@ -335,7 +343,7 @@
     return false;
   };
 
-  $: syncModelSource(model, source);
+  $: syncModelSource(model, source, layerId);
   $: setBaseTexture(baseTexture);
   $: setOutfitType(outfitType);
 

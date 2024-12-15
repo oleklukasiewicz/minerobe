@@ -1,12 +1,22 @@
 #wardrobe-view {
   width: 100%;
   display: grid;
-  grid-template-columns: 33vw 1fr;
+  grid-template-columns: auto 1fr;
   &.mobile {
     grid-template-columns: 1fr;
     grid-template-rows: 50px 1fr;
   }
   .content {
     margin: 8px;
+  }
+  .navigation {
+    width: 25vw;
+    display: block;
+    max-width: 300px;
+    min-width: none;
+    div {
+      position: sticky;
+      top: 60px;
+    }
   }
 }
