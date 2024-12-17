@@ -9,7 +9,7 @@
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
-<a class="menu-item" class:disabled {href} class:selected on:click>
+<a class="menu-item-header" class:disabled {href} class:selected on:click>
   {#if icon}
     <div class="icon b-icon-medium">
       {@html icon}
@@ -24,13 +24,13 @@
 </a>
 
 <style lang="scss">
-  .menu-item {
+  .menu-item-header {
     user-select: none;
     cursor: pointer;
     display: flex;
     box-sizing: border-box;
     font-size: var(--size-font-base);
-    font-family: minecraft-simple;
+    font-family: minecraft;
     box-sizing: border-box;
     padding: 7px 9px 7px 7px;
     gap: 8px;
@@ -42,7 +42,7 @@
       color: var(--color-accent-font);
     }
     span {
-      margin: 5px 0px;
+      margin: 2px 0px;
       flex: 1;
       text-overflow: ellipsis;
       overflow: hidden;
@@ -51,14 +51,15 @@
     .badge {
       margin: 5px 8px 5px 0px;
     }
+    .icon
+    {
+        height: 24px;
+    }
     &.selected {
       background: var(--color-accent);
       color: var(--color-accent-font);
       line-height: var(--size-font-base);
       font-family: minecraft;
-      span {
-        margin: 4px 0px 6px;
-      }
       &:hover {
         background: var(--color-accent-D1);
       }

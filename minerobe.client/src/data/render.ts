@@ -31,6 +31,7 @@ export class CameraConfig {
     this.zoom = zoom;
   }
 }
+import { CAPE_MODEL } from "./consts/model";
 export class TextureRender {
   private renderer: any;
   private model: any;
@@ -47,6 +48,8 @@ export class TextureRender {
   private shadowScene: any = null;
   private floorScene: boolean = null;
   private temporaryRenderNode: any = null;
+  private capeTexture: string = null;
+  private capeScene: any = null;
 
   //for dynamic render
   private clock = null;
@@ -55,10 +58,18 @@ export class TextureRender {
   private animationPrepared: boolean = false;
   private animationIsQuiting: boolean = false;
 
-  private _loadTexture = async function () {
+  private _loadTexture = async function (targetTexture: string = null) {
     return new Promise((resolve) => {
-      this.textureLoader.load(this.texture, (texture) => {
+      this.textureLoader.load(targetTexture, (texture) => {
         resolve(texture);
+      });
+    });
+  };
+  private _loadModelToTempScene = async function (model: string) {
+    return new Promise((resolve) => {
+      const modelLoader = new GLTFLoader();
+      modelLoader.load(model, (gltf) => {
+        resolve(gltf.scene);
       });
     });
   };
@@ -213,7 +224,7 @@ export class TextureRender {
   };
   SetTextureAsync = async function (texture: string): Promise<TextureRender> {
     this.texture = texture;
-    this.loadedTexture = await this._loadTexture();
+    this.loadedTexture = await this._loadTexture(texture);
     if (this.renderingActive) await this._applyTextureToModel();
     return this;
   };
@@ -361,6 +372,49 @@ export class TextureRender {
     if (this.renderer == null) return this;
     this.renderer.setClearColor(new THREE.Color(0x000000), 0);
     return this;
+  };
+  SetCapeAsync = async function (capeTexture: string): Promise<TextureRender> {
+    this.capeTexture = capeTexture;
+    if (this.capeScene != null) this.modelScene.scene.remove(this.capeScene);
+
+    const capeTxt = new THREE.TextureLoader().load(capeTexture);
+    //load cape_model
+    const capeModel = await this._loadModelToTempScene(CAPE_MODEL.model);
+    capeTxt.magFilter = THREE.NearestFilter;
+    capeTxt.minFilter = THREE.LinearMipmapLinearFilter;
+    capeTxt.wrapS = THREE.RepeatWrapping;
+    capeTxt.wrapT = THREE.RepeatWrapping;
+
+    capeModel.traverse((child: any) => {
+      if (child.isMesh) {
+        child.material.map = capeTxt;
+        child.material.roughness = 1;
+      }
+    });
+    //fond body part and pin into it
+    const bodyPart = this.modelScene.renderScene.getObjectByName("Body");
+    // //create pivot
+    const pivot = new THREE.Object3D();
+    pivot.position.y = 0;
+    pivot.position.x = 0;
+    pivot.position.z = 0;
+    this.capeScene = capeModel;
+    this.modelScene.scene.add(this.capeScene);
+    bodyPart.add(pivot);
+    pivot.add(this.capeScene);
+    //set cape position
+  
+    this.capeScene.position.y = -1.40;
+    this.capeScene.position.x = 0.55;
+    this.capeScene.position.z = 0.73;
+    this.capeScene.rotation.x = -0.5;
+
+    return this;
+  };
+  RemoveCape = function (): TextureRender {
+    this.capeTexture = null;
+    if (this.capeScene != null) this.modelScene.scene.remove(this.capeScene);
+    return;
   };
   async Resize() {
     if (this.renderer == null) return this;
@@ -542,9 +596,9 @@ export class OutfitPackageToTextureConverter {
   GetModel = function (): string {
     return this.model;
   };
-  GetLayerId = function (): string {  
+  GetLayerId = function (): string {
     return this.layerId;
-  }
+  };
   GetOutfitPackage = function (): OutfitPackage {
     return this.outfitPackage;
   };

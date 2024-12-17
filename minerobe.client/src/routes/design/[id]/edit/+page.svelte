@@ -47,7 +47,10 @@
   import { APP_STATE } from "$src/data/enums/app.js";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit.js";
   import type { RenderAnimation } from "$src/data/animation.js";
-  import type { MinecraftIntegrationSettings } from "$data/models/integration/minecraft";
+  import type {
+    Cape,
+    MinecraftIntegrationSettings,
+  } from "$data/models/integration/minecraft";
   import type { PagedResponse } from "$data/models/base";
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
   import { OutfitLayer, type OutfitPackage } from "$model/package";
@@ -393,6 +396,12 @@
     await SetMinecraftSkin($renderConfiguration);
     isSkinSetting = false;
   };
+  const setCape = function (e) {
+    const item = e.detail.item as Cape;
+    $renderConfiguration.capeId = item?.id;
+    $renderConfiguration.capeTexture = item?.texture;
+    addAnimation(HandsUpAnimation);
+  };
 </script>
 
 <div id="item-page" class:mobile={$IS_MOBILE_VIEW}>
@@ -406,6 +415,7 @@
               bind:addAnimation={__addAnimation}
               source={$renderConfiguration.item}
               isDynamic
+              cape={$renderConfiguration.capeTexture}
               layerId={$renderConfiguration.selectedLayerId}
               isFlatten={$renderConfiguration.isFlatten}
               resizable
@@ -499,7 +509,8 @@
         <SectionTitle label="Capes" />
         <CapeList
           items={integrationSettings.capes}
-          bind:selectedCapeId={$renderConfiguration.capeId}
+          selectedCapeId={$renderConfiguration.capeId}
+          on:select={setCape}
         />
       </div>
     {/if}

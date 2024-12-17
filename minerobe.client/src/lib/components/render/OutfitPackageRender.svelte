@@ -36,6 +36,7 @@
   export let layerId: string = "";
   export let cameraOptions: CameraConfig | "auto" = "auto";
   export let renderer = $DEFAULT_RENDERER;
+  export let cape: string = null;
   export let baseTexture: OutfitLayer | string = null;
   export const addAnimation = function (animation, force = false) {
     if (textureRenderer == null) return;
@@ -56,6 +57,7 @@
   let _isFlatten: boolean = isFlatten;
   let _baseTexture: OutfitLayer | string = baseTexture;
   let _layerId: string = layerId;
+  let _cape: string = cape;
   let renderReady = false;
   let cachedtexture: string = null;
   let renderNode: any;
@@ -270,6 +272,13 @@
 
     cachedtexture = await merger.ConvertAsyncWithFlattenSettingsAsync();
   };
+  const setCape = async (v) => {
+    if (!initialized) return;
+    if (v == _cape) return;
+    _cape = v;
+    if (v != null) await textureRenderer.SetCapeAsync(v);
+    else textureRenderer.RemoveCape();
+  };
   const baseModelTypesList = [
     OUTFIT_TYPE.OUTFIT_SET,
     OUTFIT_TYPE.SHOES,
@@ -350,6 +359,7 @@
   $: setFlatten(isFlatten);
   $: setLayerId(layerId);
   $: setCameraOptions(cameraOptions);
+  $: setCape(cape);
 
   const onResize = async function () {
     if (!initialized) return;

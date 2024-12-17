@@ -36,7 +36,8 @@ export class OutfitPackageRenderConfig {
     public isFlatten: boolean = false,
     public excludedPartsFromFlat: string[] = ["head"],
     public selectedLayerId: string = null,
-    public capeId: string = null
+    public capeId: string = null,
+    public capeTexture: string = null
   ) {}
   ToExportConfig(): OutfitPackageExportConfig {
     const config = new OutfitPackageExportConfig();

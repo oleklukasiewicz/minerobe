@@ -17,6 +17,14 @@
   import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
   import MenuHeader from "$lib/components/base/MenuHeader/MenuHeader.svelte";
   import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
+  import Menu from "$lib/components/base/Menu/Menu.svelte";
+  import MenuIcon from "$src/icons/menu.svg?raw";
+  import MenuItemHeader from "$lib/components/base/MenuItemHeader/MenuItemHeader.svelte";
+  import AnimationIcon from "$icons/animation.svg?raw";
+  import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
+  import SubscriptionIcon from "$src/icons/subscriptions.svg?raw";
+  import ListIcon from "$icons/list.svg?raw";
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
 
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
   const pageCollections: Writable<PagedResponse<OutfitPackageCollection>[]> =
@@ -24,6 +32,8 @@
 
   let userSettings: MinerobeUserSettingsSimple = null;
   let loaded = false;
+  let menuOpened = false;
+  let selectedViewId = null;
 
   onMount(async () => {
     CURRENT_APP_STATE.subscribe(async (state) => {
@@ -47,7 +57,6 @@
       options?.page || 0,
       options?.pageSize || 24
     );
-    console.log(pagedItems);
     pageItems.update((items) => [...items, pagedItems]);
   };
 </script>
@@ -55,10 +64,36 @@
 <div id="wardrobe-view" class:mobile={$IS_MOBILE_VIEW}>
   <div class="navigation">
     <div>
-    <MenuItem label="Import" icon={ImportPackageIcon} badgelabel={"2"}/>
-    <MenuItem label="Import" icon={ImportPackageIcon} badgelabel={"2"} selected/>
-    <MenuHeader label="Wardrobe" />
-    <MenuSeparator /></div>
+      <Menu let:opened opened={menuOpened}>
+        <MenuItemHeader
+          label="Wardrobe"
+          icon={MenuIcon}
+          {opened}
+          on:click={() => (menuOpened = !menuOpened)}
+        />
+        <MenuItem
+          label="Sets"
+          icon={AnimationIcon}
+          {opened}
+          selected={selectedViewId === PACKAGE_TYPE.OUTFIT_SET}
+          on:click={() => (selectedViewId = PACKAGE_TYPE.OUTFIT_SET)}
+        />
+        <MenuItem
+          {opened}
+          label="Outfits"
+          icon={ShoppingBagIcon}
+          selected={selectedViewId === PACKAGE_TYPE.OUTFIT}
+          on:click={() => (selectedViewId = PACKAGE_TYPE.OUTFIT)}
+        />
+        <MenuItem
+          {opened}
+          label="Collections"
+          icon={ListIcon}
+          selected={selectedViewId === PACKAGE_TYPE.OUTFIT_COLLECTION}
+          on:click={() => (selectedViewId = PACKAGE_TYPE.OUTFIT_COLLECTION)}
+        />
+      </Menu>
+    </div>
   </div>
   <div class="content">
     {#if loaded}
