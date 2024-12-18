@@ -426,7 +426,10 @@ export class TextureRender {
   };
   RemoveCape = function (): TextureRender {
     this.capeTexture = null;
-    if (this.capeScene != null) this.modelScene.scene.remove(this.capeScene);
+    const bodypart = this.modelScene.renderScene.getObjectByName("Body");
+    bodypart.remove(this.capePivot);
+    this.capePivot = null;
+    this.capeScene = null;
     return;
   };
   async Resize() {
