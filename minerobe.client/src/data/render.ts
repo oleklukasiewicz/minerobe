@@ -413,6 +413,10 @@ export class TextureRender {
     capeModel.traverse((child: any) => {
       child.name = "Cape";
       if (child.isMesh) {
+        if (this.shadowsEnabled) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
         child.material = material;
         child.material.roughness = 1;
       }
