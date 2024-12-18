@@ -1,1 +1,113 @@
-{"asset":{"version":"2.0","generator":"Blockbench 4.11.2 glTF exporter"},"scenes":[{"nodes":[2],"name":"blockbench_export"}],"scene":0,"nodes":[{"translation":[0.5625,-1.5,-0.1875],"name":"cape","mesh":0},{"rotation":[0,-1,0,6.123233995736766e-17],"translation":[-0.5625,1.5,0.1875],"name":"cape","children":[0]},{"children":[1]}],"bufferViews":[{"buffer":0,"byteOffset":0,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":288,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":576,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":768,"byteLength":72,"target":34963}],"buffers":[{"byteLength":840,"uri":"data:application/octet-stream;base64,AACAvgAAwD8AAIA+AACAvgAAwD8AAEA+AACAvgAAAD8AAIA+AACAvgAAAD8AAEA+AABgvwAAwD8AAEA+AABgvwAAwD8AAIA+AABgvwAAAD8AAEA+AABgvwAAAD8AAIA+AABgvwAAwD8AAEA+AACAvgAAwD8AAEA+AABgvwAAwD8AAIA+AACAvgAAwD8AAIA+AABgvwAAAD8AAIA+AACAvgAAAD8AAIA+AABgvwAAAD8AAEA+AACAvgAAAD8AAEA+AABgvwAAwD8AAIA+AACAvgAAwD8AAIA+AABgvwAAAD8AAIA+AACAvgAAAD8AAIA+AACAvgAAwD8AAEA+AABgvwAAwD8AAEA+AACAvgAAAD8AAEA+AABgvwAAAD8AAEA+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAOQAAAj0AAHw8AAACPQAAgDkA4Ac/AAB8PADgBz8AQDA+AAACPQDAPz4AAAI9AEAwPgDgBz8AwD8+AOAHPwDALz4AAPw8AACCPAAA/DwAwC8+AAAAOgAAgjwAAAA6AOCnPgAAADoAQDA+AAAAOgDgpz4AAPw8AEAwPgAA/DwAQEA+AAACPQDgrz4AAAI9AEBAPgDgBz8A4K8+AOAHPwAAgjwAAAI9AMAvPgAAAj0AAII8AOAHPwDALz4A4Ac/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUA"}],"accessors":[{"bufferView":0,"componentType":5126,"count":24,"max":[-0.25,1.5,0.25],"min":[-0.875,0.5,0.1875],"type":"VEC3"},{"bufferView":1,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":2,"componentType":5126,"count":24,"max":[0.343505859375,0.53076171875],"min":[0.000244140625,0.00048828125],"type":"VEC2"},{"bufferView":3,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"}],"materials":[{"pbrMetallicRoughness":{"metallicFactor":0,"roughnessFactor":1,"baseColorTexture":{"index":0}},"alphaMode":"MASK","alphaCutoff":0.05,"doubleSided":true}],"textures":[{"sampler":0,"source":0,"name":"cape and elytra.png"}],"samplers":[{"magFilter":9728,"minFilter":9728,"wrapS":33071,"wrapT":33071}],"images":[{"mimeType":"image/png","uri":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAR9JREFUaENjZGBgYNhy5eF/EE0IzO+dTEgJWH7t/B5GmEJamk2UYwgoYnR+0ftf4ko6UWbNPDWJgSX8DVFqOZT7wIEwZAJAQYIbr8cevPjKAAsAdml1vGp/Pr3J4M0tDVZDSuCC1JMawETFBh5F8BRAywAg1mxYABATwLAUNhoAFIbAaAqAFYLEJlNQHiUmiSKXAcSaPZoFoIUgMQE8WgZAq1kKiwCG0TJgtAyAtgSJLahGC8HRWmC0GhxtBxBTTw+5hhAx9Skp3eEhEwDEeJwcNaDqFdYdJraGGZCmMDmeI0bPaACMpoDRLAAvA4jJMqACdkCGxIhx3HBWAx++Hs6exOe30QAYqTEP8/doChhNASM8BEazwAhPAAwjPgUAANRLyDCd+Lu6AAAAAElFTkSuQmCC"}],"meshes":[{"primitives":[{"mode":4,"attributes":{"POSITION":0,"NORMAL":1,"TEXCOORD_0":2},"indices":3,"material":0}]}]}
+{
+  "asset": { "version": "2.0", "generator": "Blockbench 4.11.2 glTF exporter" },
+  "scenes": [{ "nodes": [2], "name": "blockbench_export" }],
+  "scene": 0,
+  "nodes": [
+    { "translation": [0.5625, -1.5, -0.1875], "name": "cape", "mesh": 0 },
+    {
+      "rotation": [0, -1, 0, 6.123233995736766e-17],
+      "translation": [0,0, 0.1875],
+      "name": "cape",
+      "children": [0]
+    },
+    { "children": [1] }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 288,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 288,
+      "byteLength": 288,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 576,
+      "byteLength": 192,
+      "target": 34962,
+      "byteStride": 8
+    },
+    { "buffer": 0, "byteOffset": 768, "byteLength": 72, "target": 34963 }
+  ],
+  "buffers": [
+    {
+      "byteLength": 840,
+      "uri": "data:application/octet-stream;base64,AACAvgAAwD8AAIA+AACAvgAAwD8AAEA+AACAvgAAAD8AAIA+AACAvgAAAD8AAEA+AABgvwAAwD8AAEA+AABgvwAAwD8AAIA+AABgvwAAAD8AAEA+AABgvwAAAD8AAIA+AABgvwAAwD8AAEA+AACAvgAAwD8AAEA+AABgvwAAwD8AAIA+AACAvgAAwD8AAIA+AABgvwAAAD8AAIA+AACAvgAAAD8AAIA+AABgvwAAAD8AAEA+AACAvgAAAD8AAEA+AABgvwAAwD8AAIA+AACAvgAAwD8AAIA+AABgvwAAAD8AAIA+AACAvgAAAD8AAIA+AACAvgAAwD8AAEA+AABgvwAAwD8AAEA+AACAvgAAAD8AAEA+AABgvwAAAD8AAEA+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAOQAAAj0AAHw8AAACPQAAgDkA4Ac/AAB8PADgBz8AQDA+AAACPQDAPz4AAAI9AEAwPgDgBz8AwD8+AOAHPwDALz4AAPw8AACCPAAA/DwAwC8+AAAAOgAAgjwAAAA6AOCnPgAAADoAQDA+AAAAOgDgpz4AAPw8AEAwPgAA/DwAQEA+AAACPQDgrz4AAAI9AEBAPgDgBz8A4K8+AOAHPwAAgjwAAAI9AMAvPgAAAj0AAII8AOAHPwDALz4A4Ac/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUA"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 24,
+      "max": [-0.25, 1.5, 0.25],
+      "min": [-0.875, 0.5, 0.1875],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 24,
+      "max": [1, 1, 1],
+      "min": [-1, -1, -1],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 24,
+      "max": [0.343505859375, 0.53076171875],
+      "min": [0.000244140625, 0.00048828125],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 36,
+      "max": [23],
+      "min": [0],
+      "type": "SCALAR"
+    }
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {
+        "metallicFactor": 0,
+        "roughnessFactor": 1,
+        "baseColorTexture": { "index": 0 }
+      },
+      "alphaMode": "MASK",
+      "alphaCutoff": 0.05,
+      "doubleSided": true
+    }
+  ],
+  "textures": [{ "sampler": 0, "source": 0, "name": "cape and elytra.png" }],
+  "samplers": [
+    { "magFilter": 9728, "minFilter": 9728, "wrapS": 33071, "wrapT": 33071 }
+  ],
+  "images": [
+    {
+      "mimeType": "image/png",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAR9JREFUaENjZGBgYNhy5eF/EE0IzO+dTEgJWH7t/B5GmEJamk2UYwgoYnR+0ftf4ko6UWbNPDWJgSX8DVFqOZT7wIEwZAJAQYIbr8cevPjKAAsAdml1vGp/Pr3J4M0tDVZDSuCC1JMawETFBh5F8BRAywAg1mxYABATwLAUNhoAFIbAaAqAFYLEJlNQHiUmiSKXAcSaPZoFoIUgMQE8WgZAq1kKiwCG0TJgtAyAtgSJLahGC8HRWmC0GhxtBxBTTw+5hhAx9Skp3eEhEwDEeJwcNaDqFdYdJraGGZCmMDmeI0bPaACMpoDRLAAvA4jJMqACdkCGxIhx3HBWAx++Hs6exOe30QAYqTEP8/doChhNASM8BEazwAhPAAwjPgUAANRLyDCd+Lu6AAAAAElFTkSuQmCC"
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "mode": 4,
+          "attributes": { "POSITION": 0, "NORMAL": 1, "TEXCOORD_0": 2 },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    }
+  ]
+}

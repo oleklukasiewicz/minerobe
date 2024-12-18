@@ -1,6 +1,5 @@
 import alexModelData from "$src/playerModel/alex.gltf?raw";
 import steveModelData from "$src/playerModel/steve.gltf?raw";
-import capeModelData from "$src/playerModel/cape.gltf?raw";
 import { MODEL_TYPE } from "../enums/model";
 
 export const STEVE_MODEL = {
@@ -54,8 +53,4 @@ export const ALEX_MODEL = {
     textureArea: { x: 40, y: 16, width: 14, height: 16 },
     outerTextureArea: { x: 40, y: 32, width: 14, height: 16 },
   },
-};
-export const CAPE_MODEL = {
-  name: "CAPE",
-  model: "data:model/gltf+json;base64," + btoa(capeModelData),
 };

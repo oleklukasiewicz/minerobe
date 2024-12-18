@@ -31,7 +31,7 @@ export class CameraConfig {
     this.zoom = zoom;
   }
 }
-import { CAPE_MODEL } from "./consts/model";
+import capeModelData from "$src/playerModel/cape.gltf?raw";
 export class TextureRender {
   private renderer: any;
   private model: any;
@@ -50,6 +50,7 @@ export class TextureRender {
   private temporaryRenderNode: any = null;
   private capeTexture: string = null;
   private capeScene: any = null;
+  private capePivot: any = null;
 
   //for dynamic render
   private clock = null;
@@ -65,6 +66,19 @@ export class TextureRender {
       });
     });
   };
+  private _attachCapeToModel = function (oldCape) {
+    const bodyPart = this.modelScene.renderScene.getObjectByName("Body");
+    if (this.capePivot != null) {
+      bodyPart.remove(this.capePivot);
+      this.capePivot = null;
+    }
+
+    const pivot = new THREE.Object3D();
+    pivot.position.set(0, -0.02, 0);
+    this.capePivot = pivot;
+    pivot.add(this.capeScene);
+    bodyPart.add(pivot);
+  };
   private _loadModelToTempScene = async function (model: string) {
     return new Promise((resolve) => {
       const modelLoader = new GLTFLoader();
@@ -75,17 +89,17 @@ export class TextureRender {
   };
   private _applyTextureToModel = async function () {
     if (this.loadedTexture == null) return;
+    this.loadedTexture.magFilter = THREE.NearestFilter;
+    this.loadedTexture.minFilter = THREE.LinearMipmapLinearFilter;
+    this.loadedTexture.wrapS = THREE.RepeatWrapping;
+    this.loadedTexture.wrapT = THREE.RepeatWrapping;
+
     this.modelScene.renderScene.traverse((child: any) => {
-      if (child.isMesh) {
+      if (child.isMesh && child.name != "Cape") {
         if (this.shadowsEnabled) {
           child.castShadow = true;
           child.receiveShadow = true;
         }
-        this.loadedTexture.magFilter = THREE.NearestFilter;
-        this.loadedTexture.minFilter = THREE.LinearMipmapLinearFilter;
-        this.loadedTexture.wrapS = THREE.RepeatWrapping;
-        this.loadedTexture.wrapT = THREE.RepeatWrapping;
-
         const mat = child.material as THREE.MeshStandardMaterial;
         mat.map = this.loadedTexture;
         mat.roughness = 1;
@@ -164,7 +178,8 @@ export class TextureRender {
     if (this.animationPrepared && !force) return;
     const animationData = animation.prepare(
       this.modelScene.renderScene,
-      keepData
+      keepData,
+      this.modelScene.name
     );
     this.animationData = Object.assign(this.animationData || {}, animationData);
     this.animationPrepared = true;
@@ -217,7 +232,11 @@ export class TextureRender {
       this.modelScene.scene.add(newRenderScene);
       this.modelScene.renderScene = newRenderScene;
     }
+    this.modelScene.name = targetSceneModel.name;
     if (this.renderingActive) await this._applyTextureToModel();
+    if (this.capeTexture != null) {
+      this._attachCapeToModel();
+    }
     if (this.animations.length > 0 && this.renderingActive)
       this._prepareAnimation(this.animations[0], true, true);
     return this;
@@ -379,35 +398,29 @@ export class TextureRender {
 
     const capeTxt = new THREE.TextureLoader().load(capeTexture);
     //load cape_model
-    const capeModel = await this._loadModelToTempScene(CAPE_MODEL.model);
+
     capeTxt.magFilter = THREE.NearestFilter;
     capeTxt.minFilter = THREE.LinearMipmapLinearFilter;
-    capeTxt.wrapS = THREE.RepeatWrapping;
-    capeTxt.wrapT = THREE.RepeatWrapping;
+    //flip texture vertically
+    capeTxt.flipY = false;
 
+    const capeModel = await this._loadModelToTempScene(
+      "data:model/gltf+json;base64," + btoa(capeModelData)
+    );
+    const material = new THREE.MeshStandardMaterial({
+      map: capeTxt,
+    });
     capeModel.traverse((child: any) => {
+      child.name = "Cape";
       if (child.isMesh) {
-        child.material.map = capeTxt;
+        child.material = material;
         child.material.roughness = 1;
       }
     });
-    //fond body part and pin into it
-    const bodyPart = this.modelScene.renderScene.getObjectByName("Body");
-    // //create pivot
-    const pivot = new THREE.Object3D();
-    pivot.position.y = 0;
-    pivot.position.x = 0;
-    pivot.position.z = 0;
     this.capeScene = capeModel;
-    this.modelScene.scene.add(this.capeScene);
-    bodyPart.add(pivot);
-    pivot.add(this.capeScene);
-    //set cape position
-  
-    this.capeScene.position.y = -1.40;
-    this.capeScene.position.x = 0.55;
-    this.capeScene.position.z = 0.73;
-    this.capeScene.rotation.x = -0.5;
+    this._attachCapeToModel();
+    if (this.animations.length > 0 && this.renderingActive)
+      this._prepareAnimation(this.animations[0], true, true);
 
     return this;
   };

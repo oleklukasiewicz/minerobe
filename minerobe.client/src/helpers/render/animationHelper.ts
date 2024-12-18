@@ -26,6 +26,7 @@ const CreatePropertyStep = function (
   ease: "direct" | "ease" = "ease",
   clock
 ) {
+  if (data[part] == undefined) return;
   if (ease == "ease") {
     data[part][property][value] = lerpOutCubic(
       clock,
@@ -193,6 +194,7 @@ export const CreateModelAnimationData = function (
     rightLegPivot: null,
     headPivot: null,
     bodyPivot: null,
+    cape: scene.getObjectByName("Cape"),
   };
   const la = CreatePivotPart(
     data.body,
@@ -262,6 +264,7 @@ export const AnimationStep = function (
   if (
     isNextStepReady(
       props.map((prop) => {
+        if (data[prop.part] == undefined) return { value: 0, target: 0 };
         return {
           value: data[prop.part][prop.property][prop.value],
           target: prop.targetValue,

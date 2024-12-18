@@ -96,6 +96,13 @@ const DefaultAnimation = new RenderAnimation(
             data.returnSpeed
           ),
           new AnimationPropertyStep(
+            "cape",
+            "rotation",
+            "x",
+            -0.1 + amplitude * Math.sin(elapsedRenderTime) * 2,
+            data.returnSpeed
+          ),
+          new AnimationPropertyStep(
             "headPivot",
             "rotation",
             "x",
@@ -172,7 +179,8 @@ const DefaultAnimation = new RenderAnimation(
           resetSpeed
         ),
       ],
-      clock,0.05
+      clock,
+      0.05
     );
   }
 );

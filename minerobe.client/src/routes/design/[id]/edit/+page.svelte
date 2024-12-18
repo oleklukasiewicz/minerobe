@@ -400,7 +400,6 @@
     const item = e.detail.item as Cape;
     $renderConfiguration.capeId = item?.id;
     $renderConfiguration.capeTexture = item?.texture;
-    addAnimation(HandsUpAnimation);
   };
 </script>
 
