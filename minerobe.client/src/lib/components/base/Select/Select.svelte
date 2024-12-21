@@ -102,7 +102,7 @@
       const menuY = menuCoords?.top;
       const menuHeight = menuCoords?.height;
       if (itemsContainer) {
-        if (itemsContainer.style.maxHeight == null )
+        if (itemsContainer.style.maxHeight?.length == 0)
           itemsContainer.style.maxHeight = `calc(100vh - ${menuY}px - ${menuHeight}px)`;
 
         itemsContainer.style.minWidth = `${menuWidth}px`;

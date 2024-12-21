@@ -19,12 +19,11 @@
       top: 60px;
       z-index: 5;
       background-color: var(--color-theme);
-      padding: 8px 8px 8px 0px;
+      padding: 8px 0px 8px 0px;
       box-sizing: border-box;
-      display: flex;
-      flex-direction: row;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(19%, 1fr));
       gap: 8px;
-      flex-wrap: wrap;
     }
   }
   #navigation {

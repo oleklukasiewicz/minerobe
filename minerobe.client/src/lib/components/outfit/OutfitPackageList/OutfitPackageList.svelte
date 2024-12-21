@@ -33,7 +33,7 @@
 <div class="outfit-package-list">
   <div
     class="outfit-package-list-items"
-    style={`grid-template-columns: repeat(auto-fit, minmax(max(5px, ${columns > 0 ? `calc((100% / ${columns}) - 4px)` : "128px"}),1fr));`}
+    style={`grid-template-columns: repeat(auto-fill, minmax(max(5px, ${columns > 0 ? `calc((100% / ${columns}) - 4px)` : "128px"}),1fr));`}
   >
     {#each items as item, index (item.id + item?.layers[0]?.id)}
       <OutfitPackageListItem

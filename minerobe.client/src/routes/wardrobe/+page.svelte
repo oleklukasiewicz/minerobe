@@ -29,6 +29,7 @@
   import Select from "$lib/components/base/Select/Select.svelte";
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
   import { COLORS_ARRAY } from "$src/data/consts/color";
+  import { OutfitFilter } from "$src/data/models/filter";
 
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
   const pageCollections: Writable<PagedResponse<OutfitPackageCollection>[]> =
@@ -36,17 +37,21 @@
 
   let userSettings: MinerobeUserSettingsSimple = null;
   let loaded = false;
+  let itemsLoaded = false;
   let menuOpened = false;
   let selectedViewId = null;
+
+  let filter: OutfitFilter = new OutfitFilter();
 
   onMount(async () => {
     CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
 
       userSettings = await FetchSettings();
+      loaded = true;
 
       await fetchItems({});
-      loaded = true;
+      itemsLoaded = true;
     });
   });
 
@@ -57,11 +62,17 @@
   const fetchItems = async (e) => {
     const options = e?.detail?.options;
     const pagedItems = await GetWardrobePackages(
-      undefined,
+      filter,
       options?.page || 0,
       options?.pageSize || 24
     );
     pageItems.update((items) => [...items, pagedItems]);
+  };
+  const updateFilter = async () => {
+    itemsLoaded = false;
+    pageItems.set([]);
+    await fetchItems(null);
+    itemsLoaded = true;
   };
 </script>
 
@@ -101,21 +112,48 @@
   </div>
   <div id="content">
     <div id="content-header">
-      <Select placeholder="Shared" />
+      <Select
+        placeholder="Shared"
+        itemText="name"
+        itemValue="value"
+        clearable
+        items={[
+          { name: "Shared", value: true },
+          { name: "Not shared", value: false },
+        ]}
+        bind:selectedItem={filter.isShared}
+        on:select={updateFilter}
+        on:clear={updateFilter}
+      />
       <Select
         placeholder="Type"
         items={OUTFIT_TYPE_ARRAY}
         itemText="normalizedName"
         itemValue="name"
+        multiple
+        clearable
+        bind:selectedItem={filter.outfitType}
+        on:select={updateFilter}
+        on:clear={updateFilter}
       />
+
       <Select
         placeholder="Colors"
+        multiple
         items={COLORS_ARRAY}
         itemText="normalizedName"
         itemValue="name"
-        dropDownStyle="max-height: 275px"
+        clearable
+        bind:selectedItem={filter.colors}
+        on:select={updateFilter}
+        on:clear={updateFilter}
       />
-      <Search />
+      <div></div>
+      <Search
+        bind:value={filter.phrase}
+        on:search={updateFilter}
+        on:clear={updateFilter}
+      />
     </div>
     {#if loaded}
       <LazyList
@@ -123,6 +161,7 @@
         on:loading={fetchItems}
         itemsPages={$pageItems}
         rootMargin={"40px"}
+        loading={!itemsLoaded}
       >
         <OutfitPackageList
           resizable

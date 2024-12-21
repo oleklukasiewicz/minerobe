@@ -7,6 +7,7 @@
 
   export let itemsPages: PagedResponse<any>[] = [];
   export let rootMargin: string = "30px";
+  export let loading: boolean = false;
 
   let element;
   let itemsList: any[] = [];
@@ -18,6 +19,7 @@
   };
 
   const onNewPageNeeded = (e) => {
+    if (loading) return;
     if (e.detail.isIntersecting == false) return;
     const lastPage = itemsPages[itemsPages.length - 1];
     if (lastPage != null) {
@@ -30,11 +32,7 @@
 
 <div class="lazy-list">
   <slot items={itemsList} />
-  <IntersectionObserver
-    {element}
-    on:observe={onNewPageNeeded}
-    {rootMargin}
-  >
+  <IntersectionObserver {element} on:observe={onNewPageNeeded} {rootMargin}>
     <div bind:this={element}>
       {#if itemsPages[itemsPages.length - 1]?.items?.length == itemsPages[itemsPages.length - 1]?.pageSize}
         <slot name="loading">loading...</slot>
