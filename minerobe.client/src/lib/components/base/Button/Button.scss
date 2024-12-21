@@ -77,7 +77,11 @@
         padding: 6px;
       }
       & > .icon {
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+      }
+      & > span {
+        line-height: 17px;
+        font-size: var(--size-font-base);
       }
     }
     &.large {

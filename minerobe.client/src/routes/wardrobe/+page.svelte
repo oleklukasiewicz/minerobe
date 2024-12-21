@@ -1,45 +1,54 @@
 <script lang="ts">
-  import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
-  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
-  import { FetchSettings } from "$src/api/settings";
-  import { GetWardrobePackages } from "$src/api/wardrobe";
-  import { APP_STATE } from "$src/data/enums/app";
-  import type { PagedResponse } from "$src/data/models/base";
-  import type { OutfitPackageCollection } from "$src/data/models/collection";
-  import type { OutfitPackage } from "$src/data/models/package";
-  import type { MinerobeUserSettingsSimple } from "$src/data/models/user";
-  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
-  import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
+  //main imports
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
-
-  import ImportPackageIcon from "$icons/upload.svg?raw";
-  import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
-  import MenuHeader from "$lib/components/base/MenuHeader/MenuHeader.svelte";
-  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
-  import Menu from "$lib/components/base/Menu/Menu.svelte";
-  import MenuIcon from "$src/icons/menu.svg?raw";
-  import MenuItemHeader from "$lib/components/base/MenuItemHeader/MenuItemHeader.svelte";
-  import AnimationIcon from "$icons/animation.svg?raw";
-  import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
-  import SubscriptionIcon from "$src/icons/subscriptions.svg?raw";
-  import ListIcon from "$icons/list.svg?raw";
+  //api
+  import { FetchSettings } from "$src/api/settings";
+  import { GetWardrobePackages } from "$src/api/wardrobe";
+  //services
+  import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
+  //consts
+  import { APP_STATE } from "$src/data/enums/app";
+  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
-  import Search from "$lib/components/base/Search/Search.svelte";
-  import Select from "$lib/components/base/Select/Select.svelte";
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
   import { COLORS_ARRAY } from "$src/data/consts/color";
+  //models
+  import type { PagedResponse } from "$src/data/models/base";
+  import type { OutfitPackage } from "$src/data/models/package";
+  import type {
+    OutfitPackageCollection,
+    OutfitPackageCollectionWithPackageContext,
+  } from "$src/data/models/collection";
   import { OutfitFilter } from "$src/data/models/filter";
+  import type { MinerobeUserSettingsSimple } from "$src/data/models/user";
+  //components
+  import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
+  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
+  import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
+  import Menu from "$lib/components/base/Menu/Menu.svelte";
+  import MenuItemHeader from "$lib/components/base/MenuItemHeader/MenuItemHeader.svelte";
+  import Search from "$lib/components/base/Search/Search.svelte";
+  import Select from "$lib/components/base/Select/Select.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
+  //icons
+  import MenuIcon from "$src/icons/menu.svg?raw";
+  import AnimationIcon from "$icons/animation.svg?raw";
+  import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
+  import ListIcon from "$icons/list.svg?raw";
+  import AddIcon from "$icons/plus.svg?raw";
+  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
+  import OutfitLayerList from "$lib/components/outfit/OutfitLayerList/OutfitLayerList.svelte";
 
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
-  const pageCollections: Writable<PagedResponse<OutfitPackageCollection>[]> =
-    writable([]);
+  const pageCollections: Writable<
+    PagedResponse<OutfitPackageCollectionWithPackageContext>[]
+  > = writable([]);
 
   let userSettings: MinerobeUserSettingsSimple = null;
   let loaded = false;
   let itemsLoaded = false;
-  let menuOpened = false;
-  let selectedViewId = null;
+  let menuOpened = true;
 
   let filter: OutfitFilter = new OutfitFilter();
 
@@ -64,7 +73,7 @@
     const pagedItems = await GetWardrobePackages(
       filter,
       options?.page || 0,
-      options?.pageSize || 24
+      options?.pageSize || 36
     );
     pageItems.update((items) => [...items, pagedItems]);
   };
@@ -73,6 +82,13 @@
     pageItems.set([]);
     await fetchItems(null);
     itemsLoaded = true;
+  };
+  const setPage = function (pageType) {
+    filter.type = pageType;
+    filter.colors = [];
+    filter.outfitType = [];
+    filter.isShared = null;
+    updateFilter();
   };
 </script>
 
@@ -90,65 +106,69 @@
           label="Sets"
           icon={AnimationIcon}
           {opened}
-          selected={selectedViewId === PACKAGE_TYPE.OUTFIT_SET}
-          on:click={() => (selectedViewId = PACKAGE_TYPE.OUTFIT_SET)}
+          selected={filter.type === PACKAGE_TYPE.OUTFIT_SET}
+          on:click={() => setPage(PACKAGE_TYPE.OUTFIT_SET)}
         />
         <MenuItem
           {opened}
           label="Outfits"
           icon={ShoppingBagIcon}
-          selected={selectedViewId === PACKAGE_TYPE.OUTFIT}
-          on:click={() => (selectedViewId = PACKAGE_TYPE.OUTFIT)}
+          selected={filter.type === PACKAGE_TYPE.OUTFIT}
+          on:click={() => setPage(PACKAGE_TYPE.OUTFIT)}
         />
         <MenuItem
           {opened}
           label="Collections"
           icon={ListIcon}
-          selected={selectedViewId === PACKAGE_TYPE.OUTFIT_COLLECTION}
-          on:click={() => (selectedViewId = PACKAGE_TYPE.OUTFIT_COLLECTION)}
+          selected={filter.type === PACKAGE_TYPE.OUTFIT_COLLECTION}
+          on:click={() => setPage(PACKAGE_TYPE.OUTFIT_COLLECTION)}
         />
       </Menu>
     </div>
   </div>
   <div id="content">
     <div id="content-header">
-      <Select
-        placeholder="Shared"
-        itemText="name"
-        itemValue="value"
-        clearable
-        items={[
-          { name: "Shared", value: true },
-          { name: "Not shared", value: false },
-        ]}
-        bind:selectedItem={filter.isShared}
-        on:select={updateFilter}
-        on:clear={updateFilter}
-      />
-      <Select
-        placeholder="Type"
-        items={OUTFIT_TYPE_ARRAY}
-        itemText="normalizedName"
-        itemValue="name"
-        multiple
-        clearable
-        bind:selectedItem={filter.outfitType}
-        on:select={updateFilter}
-        on:clear={updateFilter}
-      />
+      <Button icon={AddIcon} label="Create new" />
+      <div id="content-filters">
+        <Select
+          placeholder="Is Shared"
+          itemText="name"
+          itemValue="value"
+          clearable
+          items={[
+            { name: "Shared", value: true },
+            { name: "Not shared", value: false },
+          ]}
+          bind:selectedItem={filter.isShared}
+          on:select={updateFilter}
+          on:clear={updateFilter}
+        />
+        <Select
+          disabled={filter.type !== PACKAGE_TYPE.OUTFIT}
+          placeholder="Type"
+          items={OUTFIT_TYPE_ARRAY}
+          itemText="normalizedName"
+          itemValue="name"
+          multiple
+          clearable
+          bind:selectedItem={filter.outfitType}
+          on:select={updateFilter}
+          on:clear={updateFilter}
+        />
 
-      <Select
-        placeholder="Colors"
-        multiple
-        items={COLORS_ARRAY}
-        itemText="normalizedName"
-        itemValue="name"
-        clearable
-        bind:selectedItem={filter.colors}
-        on:select={updateFilter}
-        on:clear={updateFilter}
-      />
-      <div></div>
+        <Select
+          disabled={filter.type == PACKAGE_TYPE.OUTFIT_COLLECTION}
+          placeholder="Colors"
+          multiple
+          items={COLORS_ARRAY}
+          itemText="normalizedName"
+          itemValue="name"
+          clearable
+          bind:selectedItem={filter.colors}
+          on:select={updateFilter}
+          on:clear={updateFilter}
+        />
+      </div>
       <Search
         bind:value={filter.phrase}
         on:search={updateFilter}
@@ -160,7 +180,7 @@
         let:items={pagedItems}
         on:loading={fetchItems}
         itemsPages={$pageItems}
-        rootMargin={"40px"}
+        rootMargin={"100px"}
         loading={!itemsLoaded}
       >
         <OutfitPackageList
@@ -170,6 +190,13 @@
           currentPackageId={userSettings.currentTexturePackageId}
           baseTexture={userSettings?.baseTexture.layers[0]}
           items={pagedItems}
+          columns={$IS_MOBILE_VIEW ? 3 : 6}
+        />
+        <OutfitPackageList
+          loading
+          items={[]}
+          pageSize={18}
+          slot="loading"
           columns={$IS_MOBILE_VIEW ? 3 : 6}
         />
       </LazyList>

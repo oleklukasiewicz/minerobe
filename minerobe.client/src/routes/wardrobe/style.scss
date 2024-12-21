@@ -22,8 +22,12 @@
       padding: 8px 0px 8px 0px;
       box-sizing: border-box;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(19%, 1fr));
+      grid-template-columns: auto 1fr 300px;
       gap: 8px;
+      #content-filters {
+        display: flex;
+        gap: 8px;
+      }
     }
   }
   #navigation {

@@ -101,7 +101,8 @@
 
 <style lang="scss">
   .editItemDialog {
-    min-width: 30vw;
+    width: calc(75vh - 120px);
+    max-width: 100%;
     .textures {
       margin-top: 8px;
       display: flex;

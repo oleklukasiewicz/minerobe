@@ -59,7 +59,7 @@
       disabled={items?.page == 0 || items == null || loading}
       on:click={onPrevious}
     />
-    <div>
+    <div class="page">
       {items?.page + 1 || 0} of {totalPages || 0}
     </div>
     <Button
@@ -70,23 +70,28 @@
       disabled={items?.page == totalPages - 1 || items == null || loading}
       on:click={onNext}
     />
-    <Select
-      disabled={loading}
-      items={pageSizes}
-      selectedItem={items?.pageSize}
-      on:select={onPageSizeChanged}
-    />
+    <div>
+      <Select
+        disabled={loading}
+        items={pageSizes}
+        selectedItem={items?.pageSize}
+        on:select={onPageSizeChanged}
+      />
+    </div>
   </div>
 </div>
 
 <style lang="scss">
+  .list-items {
+    overflow: auto;
+  }
   .list-actions {
     display: flex;
     flex-direction: row;
     gap: 8px;
     justify-content: end;
     margin-top: 8px;
-    div {
+    .page {
       margin-top: 12px;
       font-family: minecraft-simple;
       font-size: var(--size-font-caption);

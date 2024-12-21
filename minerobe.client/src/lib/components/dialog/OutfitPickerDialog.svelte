@@ -84,8 +84,7 @@
     .dialog-filters {
       display: grid;
       margin-left: auto;
-      max-width: 600px;
-      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 8px;
       margin-bottom: 8px;
     }

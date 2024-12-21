@@ -5,6 +5,7 @@
   import { GetLayer } from "$src/api/pack";
   import Resize from "$lib/components/other/Resize/Resize.svelte";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -14,6 +15,8 @@
   export let resizable = true;
   export let resizeDebounce = 300;
   export let currentPackageId: string = null;
+  export let loading = false;
+  export let pageSize: number = 10;
 
   const selectOutfit = function (item) {
     dispatch("select", { item: item });
@@ -33,18 +36,26 @@
 <div class="outfit-package-list">
   <div
     class="outfit-package-list-items"
-    style={`grid-template-columns: repeat(auto-fill, minmax(max(5px, ${columns > 0 ? `calc((100% / ${columns}) - 4px)` : "128px"}),1fr));`}
+    style={`grid-template-columns: repeat(${columns > 0 ? "auto-fill" : "auto-fit"}, minmax(max(5px, ${columns > 0 ? `calc((100% / ${columns}) - 4px)` : "128px"}),1fr));`}
   >
-    {#each items as item, index (item.id + item?.layers[0]?.id)}
-      <OutfitPackageListItem
-        bind:resize={renderList[index]}
-        currentItem={currentPackageId == item.id}
-        {item}
-        {fetchLayer}
-        on:click={() => selectOutfit(item)}
-        baseTexture={item.type == PACKAGE_TYPE.OUTFIT_SET ? baseTexture : null}
-      />
-    {/each}
+    {#if loading}
+      {#each Array(pageSize || 10) as _}
+        <Placeholder width="100%" aspectRatio={"0.73"} height="100%" />
+      {/each}
+    {:else}
+      {#each items as item, index (item.id + item?.layers[0]?.id)}
+        <OutfitPackageListItem
+          bind:resize={renderList[index]}
+          currentItem={currentPackageId == item.id}
+          {item}
+          {fetchLayer}
+          on:click={() => selectOutfit(item)}
+          baseTexture={item.type == PACKAGE_TYPE.OUTFIT_SET
+            ? baseTexture
+            : null}
+        />
+      {/each}
+    {/if}
   </div>
   {#if resizable}
     <Resize debounce={resizeDebounce} on:resize={onResize} />

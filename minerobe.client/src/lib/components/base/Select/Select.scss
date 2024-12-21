@@ -1,5 +1,6 @@
 .select {
   position: relative;
+  flex: 1;
   & .select-mobile-bg {
     position: fixed;
     top: 0;
@@ -20,7 +21,7 @@
     flex-direction: row;
     .select-placeholder {
       font-family: minecraft-simple;
-      font-size:  var(--size-font-subheaderalt);
+      font-size: var(--size-font-subheaderalt);
       color: var(--color-theme-D4);
       margin: 8px 12px 4px;
       user-select: none;
