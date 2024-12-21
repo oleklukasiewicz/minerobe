@@ -22,9 +22,10 @@
       padding: 8px 0px 8px 0px;
       box-sizing: border-box;
       display: grid;
-      grid-template-columns: auto 1fr 300px;
-      gap: 8px;
+      grid-template-columns: 170px 1fr 300px;
+      gap: 16px;
       #content-filters {
+        max-width: 600px;
         display: flex;
         gap: 8px;
       }
