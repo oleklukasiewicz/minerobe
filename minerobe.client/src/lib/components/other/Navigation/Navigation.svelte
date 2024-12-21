@@ -92,7 +92,7 @@
     color: var(--color-theme);
     font-family: minecraft;
     height: 60px;
-    padding: 10px 16px;
+    padding: 10px 0px;
     box-sizing: border-box;
     display: flex;
     position: fixed;
@@ -115,6 +115,10 @@
       display: grid;
       grid-template-columns: 23% 1fr 23%;
       gap: 16px;
+      max-width: 1300px;
+      padding: 0px 16px;
+      box-sizing: border-box;
+      margin: auto;
     }
     #nav-title {
       display: table;

@@ -1,23 +1,22 @@
 #item-page {
-  max-width: 100%;
-  width: 1800px;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
-  margin: 0px auto;
+  margin: 0px 16px 0px 14px;
   #item-render {
     min-width: 300px;
     max-width: 50vw;
     flex: 2;
     #render {
       position: sticky;
-      top: 90px;
+      top: 76px;
       display: block;
       overflow: hidden;
       aspect-ratio: 1;
-      max-height: calc(100vh - 120px);
-      max-width: calc(100% - 70px);
-      margin: 30px;
+      max-height: calc(100vh - 100px);
+      max-width: 100%;
+      margin: 16px 16px 16px 16px 0px;
       & #render-node {
         margin: 5px;
       }
@@ -29,7 +28,7 @@
     max-width: 600px;
     display: flex;
     flex-direction: column;
-    margin: 90px 30px 30px;
+    margin: 90px 0px 30px 30px;
     #item-data-title {
       display: flex;
       gap: 8px;
@@ -69,6 +68,7 @@
     }
   }
   &.mobile {
+    margin: 0px;
     #item-render {
       max-width: 100%;
       #render {

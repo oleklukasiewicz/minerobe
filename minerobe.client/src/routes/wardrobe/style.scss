@@ -1,21 +1,40 @@
 #wardrobe-view {
   width: 100%;
+  margin: 0px 16px;
   display: grid;
   grid-template-columns: auto 1fr;
   &.mobile {
     grid-template-columns: 1fr;
     grid-template-rows: 50px 1fr;
+    margin: 0px;
+    #content {
+      margin: 8px;
+    }
   }
-  .content {
-    margin: 8px;
+  #content {
+    margin: 0px 0px 8px 8px;
+    #content-header {
+      margin-bottom: 8px;
+      position: sticky;
+      top: 60px;
+      z-index: 5;
+      background-color: var(--color-theme);
+      padding: 8px 8px 8px 0px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
   }
-  .navigation {
+  #navigation {
+    margin-top: 8px;
     display: block;
-    max-width: 300px;
+    max-width: 250px;
     min-width: none;
     div {
       position: sticky;
-      top: 60px;
+      top: 68px;
     }
   }
 }

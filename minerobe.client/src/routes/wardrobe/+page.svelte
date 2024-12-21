@@ -25,6 +25,10 @@
   import SubscriptionIcon from "$src/icons/subscriptions.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+  import Search from "$lib/components/base/Search/Search.svelte";
+  import Select from "$lib/components/base/Select/Select.svelte";
+  import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
+  import { COLORS_ARRAY } from "$src/data/consts/color";
 
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
   const pageCollections: Writable<PagedResponse<OutfitPackageCollection>[]> =
@@ -62,7 +66,7 @@
 </script>
 
 <div id="wardrobe-view" class:mobile={$IS_MOBILE_VIEW}>
-  <div class="navigation">
+  <div id="navigation">
     <div>
       <Menu let:opened opened={menuOpened}>
         <MenuItemHeader
@@ -95,7 +99,24 @@
       </Menu>
     </div>
   </div>
-  <div class="content">
+  <div id="content">
+    <div id="content-header">
+      <Select placeholder="Shared" />
+      <Select
+        placeholder="Type"
+        items={OUTFIT_TYPE_ARRAY}
+        itemText="normalizedName"
+        itemValue="name"
+      />
+      <Select
+        placeholder="Colors"
+        items={COLORS_ARRAY}
+        itemText="normalizedName"
+        itemValue="name"
+        dropDownStyle="max-height: 275px"
+      />
+      <Search />
+    </div>
     {#if loaded}
       <LazyList
         let:items={pagedItems}

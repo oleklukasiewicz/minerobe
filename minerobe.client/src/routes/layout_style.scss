@@ -1,7 +1,9 @@
 #view {
   margin-top: 60px;
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
-  max-width: 100vw;
+  max-width: 1300px;
   width: 100%;
   min-height: calc(100vh - 60px);
   &.mobile {
