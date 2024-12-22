@@ -29,16 +29,15 @@
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import MenuItemHeader from "$lib/components/base/MenuItemHeader/MenuItemHeader.svelte";
   import Search from "$lib/components/base/Search/Search.svelte";
-  import Select from "$lib/components/base/Select/Select.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
+  import OutfitFiltersDialog from "$lib/components/dialog/OutfitFiltersDialog.svelte";
   //icons
   import MenuIcon from "$src/icons/menu.svg?raw";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
-  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
-  import OutfitLayerList from "$lib/components/outfit/OutfitLayerList/OutfitLayerList.svelte";
+  import Sliders2Icon from "$icons/sliders-2.svg?raw";
 
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
   const pageCollections: Writable<
@@ -49,6 +48,7 @@
   let loaded = false;
   let itemsLoaded = false;
   let menuOpened = true;
+  let isFilterDialogOpen = false;
 
   let filter: OutfitFilter = new OutfitFilter();
 
@@ -77,7 +77,12 @@
     );
     pageItems.update((items) => [...items, pagedItems]);
   };
-  const updateFilter = async () => {
+  const updateFilter = async (e) => {
+    isFilterDialogOpen = false;
+    const newFilter = e?.detail?.filter;
+    if (newFilter) {
+      filter = newFilter;
+    }
     itemsLoaded = false;
     pageItems.set([]);
     await fetchItems(null);
@@ -88,7 +93,10 @@
     filter.colors = [];
     filter.outfitType = [];
     filter.isShared = null;
-    updateFilter();
+    updateFilter({});
+  };
+  const openFilterDialog = function () {
+    isFilterDialogOpen = true;
   };
 </script>
 
@@ -129,44 +137,13 @@
   <div id="content">
     <div id="content-header">
       <Button icon={AddIcon} label="Create new" />
+      <div></div>
       <div id="content-filters">
-        <Select
-          placeholder="Is Shared"
-          itemText="name"
-          itemValue="value"
-          clearable
-          items={[
-            { name: "Shared", value: true },
-            { name: "Not shared", value: false },
-          ]}
-          bind:selectedItem={filter.isShared}
-          on:select={updateFilter}
-          on:clear={updateFilter}
-        />
-        <Select
-          disabled={filter.type !== PACKAGE_TYPE.OUTFIT}
-          placeholder="Type"
-          items={OUTFIT_TYPE_ARRAY}
-          itemText="normalizedName"
-          itemValue="name"
-          multiple
-          clearable
-          bind:selectedItem={filter.outfitType}
-          on:select={updateFilter}
-          on:clear={updateFilter}
-        />
-
-        <Select
-          disabled={filter.type == PACKAGE_TYPE.OUTFIT_COLLECTION}
-          placeholder="Colors"
-          multiple
-          items={COLORS_ARRAY}
-          itemText="normalizedName"
-          itemValue="name"
-          clearable
-          bind:selectedItem={filter.colors}
-          on:select={updateFilter}
-          on:clear={updateFilter}
+        <Button
+          label="Filters"
+          type="primary"
+          icon={Sliders2Icon}
+          on:click={openFilterDialog}
         />
       </div>
       <Search
@@ -202,6 +179,15 @@
       </LazyList>
     {/if}
   </div>
+  <!--Dialogs-->
+  <OutfitFiltersDialog
+    bind:open={isFilterDialogOpen}
+    hideType
+    hideOutfitType={filter.type !== PACKAGE_TYPE.OUTFIT}
+    hideColor={filter.type === PACKAGE_TYPE.OUTFIT_COLLECTION}
+    {filter}
+    on:filter={updateFilter}
+  />
 </div>
 
 <style lang="scss">
