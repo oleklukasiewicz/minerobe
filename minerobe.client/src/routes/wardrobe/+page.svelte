@@ -11,15 +11,10 @@
   import { APP_STATE } from "$src/data/enums/app";
   import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
-  import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
-  import { COLORS_ARRAY } from "$src/data/consts/color";
   //models
   import type { PagedResponse } from "$src/data/models/base";
   import type { OutfitPackage } from "$src/data/models/package";
-  import type {
-    OutfitPackageCollection,
-    OutfitPackageCollectionWithPackageContext,
-  } from "$src/data/models/collection";
+  import type { OutfitPackageCollectionWithPackageContext } from "$src/data/models/collection";
   import { OutfitFilter } from "$src/data/models/filter";
   import type { MinerobeUserSettingsSimple } from "$src/data/models/user";
   //components
@@ -75,6 +70,7 @@
       options?.page || 0,
       options?.pageSize || 36
     );
+    if (pagedItems.items[0].type != filter.type) return;
     pageItems.update((items) => [...items, pagedItems]);
   };
   const updateFilter = async (e) => {
@@ -89,6 +85,7 @@
     itemsLoaded = true;
   };
   const setPage = function (pageType) {
+    if (filter.type === pageType) return;
     filter.type = pageType;
     filter.colors = [];
     filter.outfitType = [];

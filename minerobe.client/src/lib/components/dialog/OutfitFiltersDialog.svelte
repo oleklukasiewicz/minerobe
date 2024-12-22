@@ -8,6 +8,7 @@
   import Dialog from "../base/Dialog/Dialog.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
   import Select from "../base/Select/Select.svelte";
+  import Sliders2Icon from "$icons/sliders-2.svg?raw";
 
   const dispatch = createEventDispatcher();
 
@@ -23,7 +24,7 @@
   };
 </script>
 
-<Dialog bind:open label="Filter items">
+<Dialog bind:open label="Filters">
   <div id="outfit-filters-dialog">
     {#if !hideType}
       <div>
@@ -87,7 +88,7 @@
       </div>
     {/if}
     <div id="filter-btn">
-      <Button label="Filter" on:click={onFilter} />
+      <Button label="Filter items" on:click={onFilter} icon={Sliders2Icon} />
     </div>
   </div>
 </Dialog>
