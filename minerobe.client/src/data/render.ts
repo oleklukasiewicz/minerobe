@@ -201,6 +201,7 @@ export class TextureRender {
     this.modelScene.camera.updateProjectionMatrix();
   };
   private _renderInNode = function () {
+    if (this.loadedTexture == null) return;
     const renderNode = this.temporaryRenderNode || this.node;
     renderNode.appendChild(this.renderer.domElement);
 
@@ -574,6 +575,7 @@ export class OutfitPackageToTextureConverter {
     this.isFlatten = true;
     const modelMap = this.modelMap;
     const ctx = document.createElement("canvas").getContext("2d");
+    if (this.texture == null) return null;
     //create image
     var Image = window.Image;
     var img = new Image();
@@ -631,18 +633,21 @@ export class OutfitPackageToTextureConverter {
     if (this.layerId == null || this.layerId == "") {
       //load all layers
       this.outfitPackage.layers.forEach((layer: OutfitLayer) => {
-        if (this.model == MODEL_TYPE.STEVE) layers.push(layer.steve.content);
-        else layers.push(layer.alex.content);
+        const content = layer[this.model]?.content;
+        if (content != null) layers.push(content);
       });
     } else {
       //load single
       const layer: OutfitLayer = this.outfitPackage.layers.find(
         (x) => x.id == this.layerId
       );
-      if (this.model == MODEL_TYPE.STEVE) layers.push(layer?.steve?.content);
-      else layers.push(layer?.alex?.content);
+      const content = layer[this.model]?.content;
+      if (content != null) layers.push(content);
     }
-
+    if (layers.length == 0) {
+      this.texture = null;
+      return null;
+    }
     let texture = layers[0];
     if (layers.length > 1) {
       //merge all layers

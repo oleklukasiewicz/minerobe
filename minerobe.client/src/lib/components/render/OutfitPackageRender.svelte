@@ -103,7 +103,6 @@
       console.error("_model is _source but _source is string");
       return;
     }
-
     if (typeof _source !== "string") {
       merger.SetOutfitPackage(_source);
       if (layerId != null && layerId != "") merger.SetLayerId(layerId);
@@ -132,7 +131,6 @@
       }
       textureRenderer.SetCameraOptions(options);
     }
-
     if (cachedtexture != null)
       await textureRenderer.SetTextureAsync(cachedtexture);
   };

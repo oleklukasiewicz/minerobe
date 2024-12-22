@@ -1,7 +1,11 @@
 import { MODEL_TYPE } from "$src/data/enums/model";
 import { OUTFIT_TYPE } from "$src/data/enums/outfit";
 import { OutfitPackageToTextureConverter } from "$src/data/render";
-import { FileData, OutfitLayer, type OutfitPackage } from "$data/models/package";
+import {
+  FileData,
+  OutfitLayer,
+  OutfitPackage,
+} from "$data/models/package";
 import {
   FindColorTitle,
   GetDominantColorFromImageContext,
@@ -13,7 +17,7 @@ export const MergePackageLayersToSingleLayer = async function (
 ): Promise<OutfitLayer> {
   const merger = new OutfitPackageToTextureConverter();
   merger.SetOutfitPackage(outfitPackage);
-  
+
   merger.SetModel(MODEL_TYPE.ALEX);
   const textureAlex = await merger.ConvertAsync();
   merger.SetModel(MODEL_TYPE.STEVE);

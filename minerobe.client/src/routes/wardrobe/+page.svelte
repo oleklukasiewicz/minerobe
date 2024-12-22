@@ -3,17 +3,24 @@
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
   //api
+  import { AddPackage } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
-  import { GetWardrobePackages } from "$src/api/wardrobe";
+  import { AddPackageToWardrobe, GetWardrobePackages } from "$src/api/wardrobe";
   //services
+  import { ShowToast } from "$src/data/toast";
   import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
   //consts
   import { APP_STATE } from "$src/data/enums/app";
-  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
-  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+  import {
+    CURRENT_APP_STATE,
+    CURRENT_USER,
+    IS_MOBILE_VIEW,
+  } from "$src/data/static";
+  import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
   //models
   import type { PagedResponse } from "$src/data/models/base";
-  import type { OutfitPackage } from "$src/data/models/package";
+  import { MODEL_TYPE } from "$src/data/enums/model";
+  import { OutfitPackage } from "$src/data/models/package";
   import type { OutfitPackageCollectionWithPackageContext } from "$src/data/models/collection";
   import { OutfitFilter } from "$src/data/models/filter";
   import type { MinerobeUserSettingsSimple } from "$src/data/models/user";
@@ -44,6 +51,7 @@
   let itemsLoaded = false;
   let menuOpened = true;
   let isFilterDialogOpen = false;
+  let isCreating = false;
 
   let filter: OutfitFilter = new OutfitFilter();
 
@@ -95,6 +103,31 @@
   const openFilterDialog = function () {
     isFilterDialogOpen = true;
   };
+  const newOutfit = async function () {
+    isCreating = true;
+    const type = filter.type as PACKAGE_TYPE;
+    const name = type == PACKAGE_TYPE.OUTFIT_SET ? "New set" : "New outfit";
+    const newPack = new OutfitPackage(name, MODEL_TYPE.ALEX, [], type);
+    newPack.publisherId = $CURRENT_USER.id;
+    newPack.description = "";
+    newPack.outfitType =
+      type == PACKAGE_TYPE.OUTFIT
+        ? OUTFIT_TYPE.DEFAULT
+        : OUTFIT_TYPE.OUTFIT_SET;
+    try {
+      const resp = await AddPackage(newPack);
+      if (resp == null) {
+        isCreating = false;
+        return;
+      }
+      await AddPackageToWardrobe(resp.id);
+      isCreating = false;
+      navigateToOutfitPackageEdit(resp.id);
+    } catch (e) {
+      isCreating = false;
+      ShowToast("Error creating new outfit", "error");
+    }
+  };
 </script>
 
 <div id="wardrobe-view" class:mobile={$IS_MOBILE_VIEW}>
@@ -133,7 +166,12 @@
   </div>
   <div id="content">
     <div id="content-header">
-      <Button icon={AddIcon} label="Create new" />
+      <Button
+        icon={AddIcon}
+        label="Create new"
+        on:click={newOutfit}
+        disabled={isCreating}
+      />
       <div></div>
       <div id="content-filters">
         <Button

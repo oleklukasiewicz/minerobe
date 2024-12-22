@@ -132,6 +132,7 @@
   }, 500);
   const UpdatePackageLayersOrder = async function () {
     const layers = $itemPackage.layers;
+    if (layers.length == 0) return;
     await SetPackageLayerOrder(
       $itemPackage.id,
       layers.map((x) => x.id)
@@ -159,7 +160,7 @@
       isOutfitSet = $itemPackage.type === PACKAGE_TYPE.OUTFIT_SET;
       $renderConfiguration.item = $itemPackage;
       if (!isOutfitSet)
-        $renderConfiguration.selectedLayerId = $itemPackage.layers[0].id;
+        $renderConfiguration.selectedLayerId = $itemPackage.layers[0]?.id;
 
       userSettings = await FetchSettings();
       if (isOutfitSet && userSettings?.baseTexture != null)
@@ -564,6 +565,7 @@
         />
         {#if !$itemPackage?.social?.isShared}
           <Button
+            disabled={$itemPackage?.layers.length == 0}
             label="Share"
             icon={CloudIcon}
             onlyIcon={!$IS_MOBILE_VIEW}

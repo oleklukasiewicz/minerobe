@@ -32,7 +32,7 @@
     font-size: var(--size-font-base);
     font-family: minecraft-simple;
     box-sizing: border-box;
-    padding: 7px 9px 7px 7px;
+    padding: 7px 8px;
     gap: 8px;
     &:hover {
       background: var(--color-theme-D2);
