@@ -1,6 +1,6 @@
 import { DeleteRequest, GetRequest, PostRequest } from "$src/data/api";
 import type { PagedResponse } from "$data/models/base";
-import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
+import type { OutfitPackageCollection, OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
 import type { OutfitFilter } from "$data/models/filter";
 import type { OutfitPackage } from "$data/models/package";
 import type { WardrobePackage } from "$data/models/wadrobe";
@@ -41,7 +41,7 @@ export const GetWadrobeCollections = async function (
     filter: {
       phrase,
     },
-  })) as PagedResponse<OutfitPackage>;
+  })) as PagedResponse<OutfitPackageCollection>;
   return req;
 };
 export const GetWadrobeCollectionsWithPackageContext = async function (

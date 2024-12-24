@@ -33,12 +33,12 @@
 <div class="lazy-list">
   {#if itemsList.length == 0 && !loading}
     <slot name="noitems">No items</slot>
-  {:else}
+  {:else if !loading}
     <slot items={itemsList} />
   {/if}
   <IntersectionObserver {element} on:observe={onNewPageNeeded} {rootMargin}>
     <div bind:this={element}>
-      {#if itemsPages[itemsPages.length - 1]?.items?.length == itemsPages[itemsPages.length - 1]?.pageSize}
+      {#if itemsPages[itemsPages.length - 1]?.items?.length == itemsPages[itemsPages.length - 1]?.pageSize && loading}
         <slot name="loading">loading...</slot>
       {/if}
     </div>

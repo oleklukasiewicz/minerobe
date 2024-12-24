@@ -26,6 +26,7 @@
       let:loading={pagedLoading}
     >
       <OutfitPackageCollectionList
+        selectable
         items={pagedItems}
         pageSize={pagedPageSize}
         loading={pagedLoading}

@@ -5,7 +5,11 @@
   //api
   import { AddPackage } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
-  import { AddPackageToWardrobe, GetWardrobePackages } from "$src/api/wardrobe";
+  import {
+    AddPackageToWardrobe,
+    GetWadrobeCollections,
+    GetWardrobePackages,
+  } from "$src/api/wardrobe";
   //services
   import { ShowToast } from "$src/data/toast";
   import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
@@ -35,11 +39,14 @@
   import OutfitFiltersDialog from "$lib/components/dialog/OutfitFiltersDialog.svelte";
   //icons
   import MenuIcon from "$src/icons/menu.svg?raw";
-  import AnimationIcon from "$icons/animation.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
+  import AnimationIcon from "$icons/animation.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
   import Sliders2Icon from "$icons/sliders-2.svg?raw";
+  import OutfitPackageCollectionList from "$lib/components/outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
+  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
+  import OutfitPackageTypePickerDialog from "$lib/components/dialog/OutfitPackageTypePickerDialog.svelte";
 
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
   const pageCollections: Writable<
@@ -51,18 +58,21 @@
   let itemsLoaded = false;
   let menuOpened = true;
   let isFilterDialogOpen = false;
+  let isTypePickerDialogOpen = false;
   let isCreating = false;
 
   let filter: OutfitFilter = new OutfitFilter();
+  filter.type = PACKAGE_TYPE.OUTFIT_SET;
 
   onMount(async () => {
+    filter.type = PACKAGE_TYPE.OUTFIT_SET;
     CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
 
       userSettings = await FetchSettings();
       loaded = true;
 
-      await fetchItems({});
+      await updateFilter({});
       itemsLoaded = true;
     });
   });
@@ -71,6 +81,7 @@
     const item = e.detail.item;
     navigateToOutfitPackageEdit(item.id);
   };
+  const goToCollection = function (e) {};
   const fetchItems = async (e) => {
     const options = e?.detail?.options;
     const pagedItems = await GetWardrobePackages(
@@ -78,8 +89,17 @@
       options?.page || 0,
       options?.pageSize || 36
     );
-    if (pagedItems.items[0].type != filter.type) return;
+    if (pagedItems?.items[0]?.type != filter.type) return;
     pageItems.update((items) => [...items, pagedItems]);
+  };
+  const fetchCollections = async (e) => {
+    const options = e?.detail?.options;
+    const pagedCollections = (await GetWadrobeCollections(
+      filter.phrase,
+      options?.page || 0,
+      options?.pageSize || 36
+    )) as any;
+    pageCollections.update((items) => [...items, pagedCollections]);
   };
   const updateFilter = async (e) => {
     isFilterDialogOpen = false;
@@ -88,8 +108,13 @@
       filter = newFilter;
     }
     itemsLoaded = false;
-    pageItems.set([]);
-    await fetchItems(null);
+    if (filter.type === PACKAGE_TYPE.OUTFIT_COLLECTION) {
+      pageCollections.set([]);
+      await fetchCollections(null);
+    } else {
+      pageItems.set([]);
+      await fetchItems(null);
+    }
     itemsLoaded = true;
   };
   const setPage = function (pageType) {
@@ -98,14 +123,19 @@
     filter.colors = [];
     filter.outfitType = [];
     filter.isShared = null;
+    window.scrollTo(0, 0);
     updateFilter({});
   };
   const openFilterDialog = function () {
     isFilterDialogOpen = true;
   };
-  const newOutfit = async function () {
+  const openOutfitTypePickerDialog = function () {
+    isTypePickerDialogOpen = true;
+  };
+  const newOutfit = async function (e) {
+    const type = e.detail.type;
     isCreating = true;
-    const type = filter.type as PACKAGE_TYPE;
+    isTypePickerDialogOpen = false;
     const name = type == PACKAGE_TYPE.OUTFIT_SET ? "New set" : "New outfit";
     const newPack = new OutfitPackage(name, MODEL_TYPE.ALEX, [], type);
     newPack.publisherId = $CURRENT_USER.id;
@@ -140,6 +170,17 @@
           {opened}
           on:click={() => (menuOpened = !menuOpened)}
         />
+        <div>
+          <Button
+            icon={AddIcon}
+            label={"Create new item"}
+            on:click={openOutfitTypePickerDialog}
+            onlyIcon={!menuOpened}
+            disabled={isCreating}
+            size={menuOpened ? "medium" : "auto"}
+          />
+        </div>
+        <MenuSeparator />
         <MenuItem
           label="Sets"
           icon={AnimationIcon}
@@ -166,12 +207,6 @@
   </div>
   <div id="content">
     <div id="content-header">
-      <Button
-        icon={AddIcon}
-        label="Create new"
-        on:click={newOutfit}
-        disabled={isCreating}
-      />
       <div></div>
       <div id="content-filters">
         <Button
@@ -187,32 +222,60 @@
         on:clear={updateFilter}
       />
     </div>
-    {#if loaded}
-      <LazyList
-        let:items={pagedItems}
-        on:loading={fetchItems}
-        itemsPages={$pageItems}
-        rootMargin={"100px"}
-        loading={!itemsLoaded}
-      >
-        <OutfitPackageList
-          resizable
-          on:select={goToEdit}
-          resizeDebounce={10}
-          currentPackageId={userSettings.currentTexturePackageId}
-          baseTexture={userSettings?.baseTexture.layers[0]}
-          items={pagedItems}
-          columns={$IS_MOBILE_VIEW ? 3 : 6}
-        />
-        <OutfitPackageList
-          loading
-          items={[]}
-          pageSize={18}
-          slot="loading"
-          columns={$IS_MOBILE_VIEW ? 3 : 6}
-        />
-      </LazyList>
-    {/if}
+    <div id="content-list">
+      {#if loaded}
+        {#if filter.type !== PACKAGE_TYPE.OUTFIT_COLLECTION}
+          <LazyList
+            let:items={pagedItems}
+            on:loading={fetchItems}
+            itemsPages={$pageItems}
+            rootMargin={"100px"}
+            loading={!itemsLoaded}
+          >
+            <OutfitPackageList
+              resizable
+              on:select={goToEdit}
+              resizeDebounce={10}
+              currentPackageId={userSettings.currentTexturePackageId}
+              baseTexture={userSettings?.baseTexture.layers[0]}
+              items={pagedItems}
+              columns={$IS_MOBILE_VIEW ? 3 : 6}
+            />
+            <OutfitPackageList
+              loading
+              items={[]}
+              pageSize={36}
+              slot="loading"
+              columns={$IS_MOBILE_VIEW ? 3 : 6}
+            />
+          </LazyList>
+        {:else}
+          <LazyList
+            let:items={pagedCollections}
+            on:loading={fetchCollections}
+            itemsPages={$pageCollections}
+            rootMargin={"100px"}
+            loading={!itemsLoaded}
+          >
+            <OutfitPackageCollectionList
+              items={pagedCollections}
+              loading={!itemsLoaded}
+              on:select={goToCollection}
+              dense={false}
+              columns={$IS_MOBILE_VIEW ? 3 : 6}
+            />
+            <OutfitPackageCollectionList
+              pageSize={36}
+              loading
+              items={[]}
+              slot="loading"
+              dense={false}
+              columns={$IS_MOBILE_VIEW ? 3 : 6}
+            />
+          </LazyList>
+        {/if}
+      {/if}
+    </div>
   </div>
   <!--Dialogs-->
   <OutfitFiltersDialog
@@ -222,6 +285,10 @@
     hideColor={filter.type === PACKAGE_TYPE.OUTFIT_COLLECTION}
     {filter}
     on:filter={updateFilter}
+  />
+  <OutfitPackageTypePickerDialog
+    bind:open={isTypePickerDialogOpen}
+    on:select={newOutfit}
   />
 </div>
 

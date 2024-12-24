@@ -2,9 +2,7 @@
   //main imports
   import { createEventDispatcher } from "svelte";
   //models
-  import type {
-    OutfitPackageCollectionWithPackageContext,
-  } from "$data/models/collection";
+  import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
   //components
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
 
@@ -12,6 +10,7 @@
 
   export let item: OutfitPackageCollectionWithPackageContext;
   export let selectable = false;
+  export let dense = true;
 
   const onSelect = () => {
     dispatch("select", item);
@@ -23,16 +22,18 @@
 
 <!-- svelte-ignore a11y_missing_attribute -->
 <!-- svelte-ignore a11y-missing-attribute -->
-<a class="outfit-package-collection-list-item">
-  <div class="items-actions">
-    {#if selectable}
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<a class="outfit-package-collection-list-item" on:click={onSelect} class:dense>
+  {#if selectable}
+    <div class="items-actions">
       <Checkbox
         on:select={onSelect}
         on:unselect={onUnselect}
         value={item?.isInCollection}
       />
-    {/if}
-  </div>
+    </div>
+  {/if}
   <div class="item-data">
     <b>{item.name}</b>
     <div>
@@ -54,6 +55,13 @@
     background-color: var(--color-theme-D1);
     display: flex;
     gap: 16px;
+    &.dense {
+      .item-data {
+        b {
+          margin-bottom: 0px;
+        }
+      }
+    }
     .item-data {
       flex: 1;
       display: block;
@@ -64,6 +72,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         font-family: minecraft;
+        margin-bottom: 16px;
       }
       div {
         .items-count {

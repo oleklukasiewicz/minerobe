@@ -8,11 +8,21 @@
     grid-template-rows: 50px 1fr;
     margin: 0px;
     #content {
-      margin: 8px;
+      #content-header {
+        grid-template-columns: 1fr;
+        top: 0px;
+        padding: 8px;
+        box-sizing: border-box;
+        #content-filters {
+          max-width: 100%;
+        }
+      }
+      #content-list {
+        margin: 8px;
+      }
     }
   }
   #content {
-    margin: 0px 0px 8px 16px;
     #content-header {
       position: sticky;
       top: 60px;
@@ -21,13 +31,16 @@
       padding: 8px 0px 8px 0px;
       box-sizing: border-box;
       display: grid;
-      grid-template-columns: 170px 1fr auto 300px;
+      grid-template-columns: 1fr auto 300px;
       gap: 8px;
       #content-filters {
         display: grid;
         min-width: 120px;
         max-width: 200px;
       }
+    }
+    #content-list {
+      margin: 0px 0px 8px 16px;
     }
   }
   #navigation {

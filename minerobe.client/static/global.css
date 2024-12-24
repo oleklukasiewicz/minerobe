@@ -220,10 +220,10 @@ input:hover {
   border-bottom: 2px solid var(--color-active-L1);
 }
 .icon-small > svg {
-  transform: scale(0.8);
+  transform: scale(0.75);
 }
 .icon-big > svg {
-  transform: scale(1.3);
+  transform: scale(1.25);
 }
 .b-icon-small > svg {
   transform: scale(0.7);
