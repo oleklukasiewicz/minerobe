@@ -6,10 +6,11 @@
   export let badgelabel: string = null;
   export let selected: boolean = false;
   export let opened = true;
+  export let top = false;
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
-<a class="menu-item" class:disabled {href} class:selected on:click>
+<a class="menu-item" class:disabled {href} class:selected on:click class:top>
   {#if icon}
     <div class="icon b-icon-medium">
       {@html icon}
@@ -34,6 +35,12 @@
     box-sizing: border-box;
     padding: 7px 8px;
     gap: 8px;
+    &.top {
+      flex: 1;
+      text-align: center;
+      display: block;
+      height: 58px;
+    }
     &:hover {
       background: var(--color-theme-D2);
     }

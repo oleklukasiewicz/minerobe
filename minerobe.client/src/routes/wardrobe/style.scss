@@ -9,9 +9,10 @@
     margin: 0px;
     #content {
       #content-header {
-        grid-template-columns: 1fr;
+        margin-top: 16px;
+        grid-template-columns:32px 1fr;
         top: 0px;
-        padding: 8px;
+        padding: 8px 8px 8px;
         box-sizing: border-box;
         #content-filters {
           max-width: 100%;
@@ -19,6 +20,15 @@
       }
       #content-list {
         margin: 8px;
+        width: 100vw;
+      }
+    }
+    #navigation {
+      max-width: 100%;
+      margin-top: 8px;
+      div {
+        top: 8px;
+        margin: 0px 8px;
       }
     }
   }

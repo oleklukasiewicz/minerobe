@@ -273,21 +273,22 @@
     }
   }
   &.fab {
-    position: absolute;
+    position: fixed;
     z-index: 5;
-    bottom: 12px;
-    right: 12px;
+    bottom: 60px;
+    right: 8px;
     display: flex;
     overflow: hidden;
     gap: 2px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     &.nav-fab {
       bottom: 62px;
     }
     &.fab-dynamic {
       &.large {
-        padding-left: 16px;
-        padding-right: 6px;
+       padding: 12px 12px 12px;
+       aspect-ratio: 1;
+       width: 52px;
+       height: 52px;
       }
       &.small {
         padding: 2px 3px 6px 7px;

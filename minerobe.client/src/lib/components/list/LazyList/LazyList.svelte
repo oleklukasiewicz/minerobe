@@ -38,7 +38,7 @@
   {/if}
   <IntersectionObserver {element} on:observe={onNewPageNeeded} {rootMargin}>
     <div bind:this={element}>
-      {#if itemsPages[itemsPages.length - 1]?.items?.length == itemsPages[itemsPages.length - 1]?.pageSize && loading}
+      {#if itemsPages[itemsPages.length - 1]?.items?.length == itemsPages[itemsPages.length - 1]?.pageSize}
         <slot name="loading">loading...</slot>
       {/if}
     </div>

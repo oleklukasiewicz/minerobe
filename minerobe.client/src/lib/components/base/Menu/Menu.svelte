@@ -1,10 +1,11 @@
 <script lang="ts">
   export let opened = true;
+  export let top = false;
 </script>
 
-<div class="menu" class:opened>
+<div class="menu" class:opened class:top class:left={!top}>
   <div class="menu-items">
-    <slot {opened} />
+    <slot {opened} {top} />
   </div>
 </div>
 
@@ -16,8 +17,15 @@
       flex-direction: column;
       gap: 4px;
     }
-    &.opened {
+    &.left.opened {
       width: 25vw;
+    }
+    &.top {
+      width: 100vw;
+      .menu-items {
+        flex-direction: row;
+        gap: 8px;
+      }
     }
   }
 </style>

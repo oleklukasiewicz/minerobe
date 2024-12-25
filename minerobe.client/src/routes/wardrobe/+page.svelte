@@ -63,6 +63,7 @@
 
   let filter: OutfitFilter = new OutfitFilter();
   filter.type = PACKAGE_TYPE.OUTFIT_SET;
+  let abortController = new AbortController();
 
   onMount(async () => {
     filter.type = PACKAGE_TYPE.OUTFIT_SET;
@@ -73,7 +74,6 @@
       loaded = true;
 
       await updateFilter({});
-      itemsLoaded = true;
     });
   });
 
@@ -87,9 +87,9 @@
     const pagedItems = await GetWardrobePackages(
       filter,
       options?.page || 0,
-      options?.pageSize || 36
+      options?.pageSize || 36,
+      abortController
     );
-    if (pagedItems?.items[0]?.type != filter.type) return;
     pageItems.update((items) => [...items, pagedItems]);
   };
   const fetchCollections = async (e) => {
@@ -97,25 +97,30 @@
     const pagedCollections = (await GetWadrobeCollections(
       filter.phrase,
       options?.page || 0,
-      options?.pageSize || 36
+      options?.pageSize || 24,
+      abortController
     )) as any;
     pageCollections.update((items) => [...items, pagedCollections]);
   };
   const updateFilter = async (e) => {
-    isFilterDialogOpen = false;
-    const newFilter = e?.detail?.filter;
-    if (newFilter) {
-      filter = newFilter;
-    }
-    itemsLoaded = false;
-    if (filter.type === PACKAGE_TYPE.OUTFIT_COLLECTION) {
-      pageCollections.set([]);
-      await fetchCollections(null);
-    } else {
-      pageItems.set([]);
-      await fetchItems(null);
-    }
-    itemsLoaded = true;
+    try {
+      abortController.abort();
+      abortController = new AbortController();
+      isFilterDialogOpen = false;
+      const newFilter = e?.detail?.filter;
+      if (newFilter) {
+        filter = newFilter;
+      }
+      itemsLoaded = false;
+      if (filter.type === PACKAGE_TYPE.OUTFIT_COLLECTION) {
+        pageCollections.set([]);
+        await fetchCollections(null);
+      } else {
+        pageItems.set([]);
+        await fetchItems(null);
+      }
+      itemsLoaded = true;
+    } catch (e) {}
   };
   const setPage = function (pageType) {
     if (filter.type === pageType) return;
@@ -163,33 +168,37 @@
 <div id="wardrobe-view" class:mobile={$IS_MOBILE_VIEW}>
   <div id="navigation">
     <div>
-      <Menu let:opened opened={menuOpened}>
-        <MenuItemHeader
-          label="Wardrobe"
-          icon={MenuIcon}
-          {opened}
-          on:click={() => (menuOpened = !menuOpened)}
-        />
-        <div>
-          <Button
-            icon={AddIcon}
-            label={"Create new item"}
-            on:click={openOutfitTypePickerDialog}
-            onlyIcon={!menuOpened}
-            disabled={isCreating}
-            size={menuOpened ? "medium" : "auto"}
+      <Menu let:opened let:top opened={menuOpened} top={$IS_MOBILE_VIEW}>
+        {#if !$IS_MOBILE_VIEW}
+          <MenuItemHeader
+            label="Wardrobe"
+            icon={MenuIcon}
+            {opened}
+            on:click={() => (menuOpened = !menuOpened)}
           />
-        </div>
-        <MenuSeparator />
+          <div>
+            <Button
+              icon={AddIcon}
+              label={"Create new item"}
+              on:click={openOutfitTypePickerDialog}
+              onlyIcon={!menuOpened}
+              disabled={isCreating}
+              size={menuOpened ? "medium" : "auto"}
+            />
+          </div>
+          <MenuSeparator />
+        {/if}
         <MenuItem
           label="Sets"
           icon={AnimationIcon}
           {opened}
+          {top}
           selected={filter.type === PACKAGE_TYPE.OUTFIT_SET}
           on:click={() => setPage(PACKAGE_TYPE.OUTFIT_SET)}
         />
         <MenuItem
           {opened}
+          {top}
           label="Outfits"
           icon={ShoppingBagIcon}
           selected={filter.type === PACKAGE_TYPE.OUTFIT}
@@ -197,6 +206,7 @@
         />
         <MenuItem
           {opened}
+          {top}
           label="Collections"
           icon={ListIcon}
           selected={filter.type === PACKAGE_TYPE.OUTFIT_COLLECTION}
@@ -207,9 +217,12 @@
   </div>
   <div id="content">
     <div id="content-header">
-      <div></div>
+      {#if !$IS_MOBILE_VIEW}
+        <div></div>
+      {/if}
       <div id="content-filters">
         <Button
+          onlyIcon={$IS_MOBILE_VIEW}
           label="Filters"
           type="primary"
           icon={Sliders2Icon}
@@ -223,60 +236,67 @@
       />
     </div>
     <div id="content-list">
-      {#if loaded}
-        {#if filter.type !== PACKAGE_TYPE.OUTFIT_COLLECTION}
-          <LazyList
-            let:items={pagedItems}
-            on:loading={fetchItems}
-            itemsPages={$pageItems}
-            rootMargin={"100px"}
+      {#if filter.type !== PACKAGE_TYPE.OUTFIT_COLLECTION}
+        <LazyList
+          let:items={pagedItems}
+          on:loading={fetchItems}
+          itemsPages={$pageItems}
+          rootMargin={"100px"}
+          loading={!itemsLoaded}
+        >
+          <OutfitPackageList
+            resizable
+            on:select={goToEdit}
+            resizeDebounce={10}
+            currentPackageId={userSettings.currentTexturePackageId}
+            baseTexture={userSettings?.baseTexture.layers[0]}
+            items={pagedItems}
+            columns={$IS_MOBILE_VIEW ? 3 : 6}
+          />
+          <OutfitPackageList
+            loading
+            items={[]}
+            pageSize={36}
+            slot="loading"
+            columns={$IS_MOBILE_VIEW ? 3 : 6}
+          />
+        </LazyList>
+      {:else}
+        <LazyList
+          let:items={pagedCollections}
+          on:loading={fetchCollections}
+          itemsPages={$pageCollections}
+          rootMargin={"100px"}
+          loading={!itemsLoaded}
+        >
+          <OutfitPackageCollectionList
+            items={pagedCollections}
             loading={!itemsLoaded}
-          >
-            <OutfitPackageList
-              resizable
-              on:select={goToEdit}
-              resizeDebounce={10}
-              currentPackageId={userSettings.currentTexturePackageId}
-              baseTexture={userSettings?.baseTexture.layers[0]}
-              items={pagedItems}
-              columns={$IS_MOBILE_VIEW ? 3 : 6}
-            />
-            <OutfitPackageList
-              loading
-              items={[]}
-              pageSize={36}
-              slot="loading"
-              columns={$IS_MOBILE_VIEW ? 3 : 6}
-            />
-          </LazyList>
-        {:else}
-          <LazyList
-            let:items={pagedCollections}
-            on:loading={fetchCollections}
-            itemsPages={$pageCollections}
-            rootMargin={"100px"}
-            loading={!itemsLoaded}
-          >
-            <OutfitPackageCollectionList
-              items={pagedCollections}
-              loading={!itemsLoaded}
-              on:select={goToCollection}
-              dense={false}
-              columns={$IS_MOBILE_VIEW ? 3 : 6}
-            />
-            <OutfitPackageCollectionList
-              pageSize={36}
-              loading
-              items={[]}
-              slot="loading"
-              dense={false}
-              columns={$IS_MOBILE_VIEW ? 3 : 6}
-            />
-          </LazyList>
-        {/if}
+            on:select={goToCollection}
+            dense={false}
+            columns={$IS_MOBILE_VIEW ? 2 : 4}
+          />
+          <OutfitPackageCollectionList
+            pageSize={36}
+            loading
+            items={[]}
+            slot="loading"
+            dense={false}
+            columns={$IS_MOBILE_VIEW ? 2 : 4}
+          />
+        </LazyList>
       {/if}
     </div>
   </div>
+  {#if $IS_MOBILE_VIEW}
+    <Button
+      icon={AddIcon}
+      label={"Create new item"}
+      on:click={openOutfitTypePickerDialog}
+      fab={"dynamic"}
+      size={"large"}
+    />
+  {/if}
   <!--Dialogs-->
   <OutfitFiltersDialog
     bind:open={isFilterDialogOpen}

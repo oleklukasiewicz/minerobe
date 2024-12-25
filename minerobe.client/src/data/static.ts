@@ -68,13 +68,14 @@ export const WS_CONNECTION: Readable<any> = readonly(
 );
 
 //initialize static data
-export const Initialize = async function () {
-  //setup mobile view
+export const InitializeLayout = async function () {
   const matcher = window.matchMedia("(max-width: 768px)");
   isMobileViewWritable.set(matcher.matches);
   matcher.addEventListener("change", (e) => {
     isMobileViewWritable.set(e.matches);
   });
+};
+export const Initialize = async function () {
   alexModelSceneWritable.set(
     await new ModelScene(ALEX_MODEL.model, ALEX_MODEL.name).Create()
   );

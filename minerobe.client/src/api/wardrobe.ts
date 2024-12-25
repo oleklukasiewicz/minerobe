@@ -1,6 +1,9 @@
 import { DeleteRequest, GetRequest, PostRequest } from "$src/data/api";
 import type { PagedResponse } from "$data/models/base";
-import type { OutfitPackageCollection, OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
+import type {
+  OutfitPackageCollection,
+  OutfitPackageCollectionWithPackageContext,
+} from "$data/models/collection";
 import type { OutfitFilter } from "$data/models/filter";
 import type { OutfitPackage } from "$data/models/package";
 import type { WardrobePackage } from "$data/models/wadrobe";
@@ -21,34 +24,45 @@ export const GetUserWardrobe = async function () {
 export const GetWardrobePackages = async function (
   filter: OutfitFilter,
   page: number = 0,
-  pageSize: number = -1
+  pageSize: number = -1,
+  abortController = null
 ) {
-  const req = (await PostRequest("/api/Wardrobe/items", {
-    page,
-    pageSize,
-    filter,
-  })) as PagedResponse<OutfitPackage>;
+  const req = (await PostRequest(
+    "/api/Wardrobe/items",
+    {
+      page,
+      pageSize,
+      filter,
+    },
+    abortController
+  )) as PagedResponse<OutfitPackage>;
   return req;
 };
 export const GetWadrobeCollections = async function (
   phrase: string = "",
   page: number = 0,
-  pageSize: number = -1
+  pageSize: number = -1,
+  abortController = null
 ) {
-  const req = (await PostRequest("/api/Wardrobe/collections", {
-    page,
-    pageSize,
-    filter: {
-      phrase,
+  const req = (await PostRequest(
+    "/api/Wardrobe/collections",
+    {
+      page,
+      pageSize,
+      filter: {
+        phrase,
+      },
     },
-  })) as PagedResponse<OutfitPackageCollection>;
+    abortController
+  )) as PagedResponse<OutfitPackageCollection>;
   return req;
 };
 export const GetWadrobeCollectionsWithPackageContext = async function (
   packageId: string,
   phrase: string = "",
   page: number = 0,
-  pageSize: number = -1
+  pageSize: number = -1,
+  abortController = null
 ) {
   const req = (await PostRequest(
     "/api/Wardrobe/collections/context/" + packageId,
@@ -58,7 +72,8 @@ export const GetWadrobeCollectionsWithPackageContext = async function (
       filter: {
         phrase,
       },
-    }
+    },
+    abortController
   )) as PagedResponse<OutfitPackageCollectionWithPackageContext>;
   return req;
 };

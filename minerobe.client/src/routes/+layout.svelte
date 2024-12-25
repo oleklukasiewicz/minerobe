@@ -7,7 +7,11 @@
   import { getCurrentUser } from "$src/api/auth";
   import ToastController from "$lib/components/other/ToastController/ToastController.svelte";
   import Navigation from "$lib/components/other/Navigation/Navigation.svelte";
-  import { Initialize, IS_MOBILE_VIEW } from "$src/data/static";
+  import {
+    Initialize,
+    InitializeLayout,
+    IS_MOBILE_VIEW,
+  } from "$src/data/static";
   import { TOAST_LIST } from "$src/data/toast";
 
   export const load = async () => {
@@ -17,6 +21,7 @@
     await waitLocale();
   };
   onMount(async () => {
+    await InitializeLayout();
     await getCurrentUser();
     await Initialize();
   });
