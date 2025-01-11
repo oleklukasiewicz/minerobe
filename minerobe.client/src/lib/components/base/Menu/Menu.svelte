@@ -7,12 +7,23 @@
   <div class="menu-items">
     <slot {opened} {top} />
   </div>
+  <div class="menu-footer">
+    <slot name="footer" {opened} {top} />
+  </div>
 </div>
 
 <style lang="scss">
   .menu {
     max-width: 100%;
+    display: grid;
+    flex-direction: column;
     .menu-items {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .menu-footer {
+      margin-top: auto;
       display: flex;
       flex-direction: column;
       gap: 4px;

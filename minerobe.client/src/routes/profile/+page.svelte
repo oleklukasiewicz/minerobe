@@ -2,14 +2,40 @@
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
   import MenuItemHeader from "$lib/components/base/MenuItemHeader/MenuItemHeader.svelte";
-  import { IS_MOBILE_VIEW } from "$src/data/static";
+  import {
+    CURRENT_APP_STATE,
+    CURRENT_USER,
+    IS_MOBILE_VIEW,
+  } from "$src/data/static";
   import MenuIcon from "$src/icons/menu.svg?raw";
   import ContactIcon from "$icons/contact.svg?raw";
   import ZapIcon from "$icons/zap.svg?raw";
+  import AvatarIcon from "$icons/avatar.svg?raw";
+  import LoginIcon from "$icons/login.svg?raw";
   import DashboardIcon from "$icons/dashboard.svg?raw";
   import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
+  import { onMount } from "svelte";
+  import { APP_STATE } from "$src/data/enums/app";
+  import type { MinerobeUserProfile } from "$src/data/models/user";
+  import { writable, type Writable } from "svelte/store";
+  import { GetUserProfile } from "$src/api/user";
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import SocialInfo from "$lib/components/social/SocialInfo.svelte";
+  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
 
-  let menuOpened = false;
+  const profileUser: Writable<MinerobeUserProfile> = writable(null);
+
+  onMount(async () => {
+    CURRENT_APP_STATE.subscribe(async (state) => {
+      if (state != APP_STATE.READY) return;
+      $profileUser = await GetUserProfile($CURRENT_USER.id);
+      loaded = true;
+    });
+  });
+
+  let menuOpened = true;
+  let selectedView = "overview";
+  let loaded = false;
 </script>
 
 <div id="profile-view">
@@ -23,13 +49,82 @@
           on:click={() => (menuOpened = !menuOpened)}
         />
       {/if}
-      <MenuItem label="Overview" {opened} {top} icon={DashboardIcon} />
-      <MenuItem label="Your Data" {opened} {top} icon={ContactIcon} />
-      <MenuSeparator/>
-      <MenuItem label="Minecraft Account" {opened} {top} icon={ZapIcon} />
+      <MenuItem
+        label="Overview"
+        {opened}
+        {top}
+        icon={DashboardIcon}
+        selected={selectedView == "overview"}
+        on:click={() => (selectedView = "overview")}
+      />
+      <MenuItem
+        label="Profile Data"
+        {opened}
+        {top}
+        icon={ContactIcon}
+        selected={selectedView == "data"}
+        on:click={() => (selectedView = "data")}
+      />
+      <MenuItem
+        label="Your Skin"
+        {opened}
+        {top}
+        icon={AvatarIcon}
+        selected={selectedView == "skin"}
+        on:click={() => (selectedView = "skin")}
+      />
+      <MenuSeparator />
+      <MenuItem
+        label="Minecraft Account"
+        {opened}
+        {top}
+        icon={ZapIcon}
+        selected={selectedView == "minecraft-account"}
+        on:click={() => (selectedView = "minecraft-account")}
+      />
+      <MenuItem
+        slot="footer"
+        opened={menuOpened}
+        label="Sign Out"
+        icon={LoginIcon}
+      />
     </Menu>
   </div>
-  <div id="profile-content"></div>
+  <div id="profile-content">
+    {#if selectedView == "overview"}
+      <div id="overview">
+        <div id="overview-header">
+          <!-- svelte-ignore a11y-missing-attribute -->
+          <Placeholder
+            {loaded}
+            width="96px"
+            height="96px"
+            aspectRatio="1"
+            loadedStyle={"height:96px"}
+          >
+            <img
+              id="profile-avatar"
+              src={$profileUser.user.avatar}
+            /></Placeholder
+          >
+          <div id="profile-data">
+            <Placeholder {loaded} height="43px" width="50%">
+              <div id="profile-name">{$profileUser.user.name}</div>
+            </Placeholder>
+            <Placeholder {loaded} height="24px" width="20%">
+              <SocialInfo data={$profileUser.social} />
+            </Placeholder>
+          </div>
+        </div>
+      </div>
+    {/if}
+    {#if selectedView == "your-data"}
+      <h1>Your Data</h1>
+    {/if}
+    {#if selectedView == "minecraft-account"}
+      <h1>Minecraft Account</h1>
+    {/if}
+  </div>
 </div>
 
 <style lang="scss">
