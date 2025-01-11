@@ -9,6 +9,7 @@
   export let item: Cape = new Cape();
   export let crop: boolean = true;
   export let selected: boolean = false;
+  export let readonly = false;
 
   const normalizeCape = async function (cape: Cape) {
     if (!crop) return cape.texture;
@@ -19,7 +20,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-missing-attribute -->
-<a class="cape-list-item" class:selected title={item.name} on:click>
+<a class="cape-list-item" class:selected title={item.name} on:click class:readonly>
   {#if item.id}
     {#await normalizeCape(item) then texture}
       <img src={texture} alt={item.name} />

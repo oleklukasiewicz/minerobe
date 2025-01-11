@@ -22,17 +22,33 @@
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import SocialInfo from "$lib/components/social/SocialInfo.svelte";
   import StatusCard from "$lib/components/other/StatusCard/StatusCard.svelte";
+  import { GetAccount } from "$src/api/integration/minecraft";
+  import CapeListItem from "$lib/components/outfit/CapeListItem/CapeListItem.svelte";
+  import { Cape } from "$src/data/models/integration/minecraft";
+  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+  import { MODEL_TYPE } from "$src/data/enums/model";
 
   const profileUser: Writable<MinerobeUserProfile> = writable(null);
+  const minecraftIntegration: Writable<any> = writable(null);
 
   onMount(async () => {
     CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
       $profileUser = await GetUserProfile($CURRENT_USER.id);
+      if ($profileUser.settings.integrations.includes("minecraft")) {
+        $minecraftIntegration = await GetAccount(true);
+        if ($profileUser.settings.currentCapeId != null) {
+          currentCape = $minecraftIntegration.capes.find(
+            (x) => x.id == $profileUser.settings.currentCapeId
+          );
+        }
+      }
+
       loaded = true;
     });
   });
 
+  let currentCape: Cape = new Cape();
   let menuOpened = true;
   let selectedView = "overview";
   let loaded = false;
@@ -119,8 +135,26 @@
         <div id="overview-status">
           <StatusCard label={"minecraft account"} />
           <StatusCard label={"current skin"} />
-          <StatusCard label={"base texture"} />
-          <StatusCard label={"cape"} />
+          <StatusCard label={"base texture"}>
+            <div  style="width: 100%;">
+              {#if $profileUser?.settings?.baseTexture != null}
+                <OutfitPackageRender
+                  source={$profileUser?.settings?.baseTexture}
+                  model={"source"}
+                />
+              {/if}
+            </div>
+          </StatusCard>
+          {#if currentCape != null}
+            <StatusCard label={"cape"}>
+              <div>
+                <CapeListItem item={currentCape} readonly />
+                <br />
+                <br />
+                <div class="mc-font">{currentCape.name || "No Cape"}</div>
+              </div>
+            </StatusCard>
+          {/if}
         </div>
       </div>
     {/if}

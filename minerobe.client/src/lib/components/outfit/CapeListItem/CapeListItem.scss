@@ -21,6 +21,10 @@
     background-color: var(--color-theme-D6);
     color: var(--color-accent-font);
   }
+  &.readonly {
+    user-select: none;
+    pointer-events: none;
+  }
   &.selected {
     color: var(--color-accent-font);
     box-shadow: var(--shadow-button);

@@ -6,7 +6,7 @@
 
 <!-- svelte-ignore a11y_consider_explicit_label -->
 <!-- svelte-ignore a11y_missing_attribute -->
-<a class="status-card">
+<div class="status-card">
   <div>
     <SectionTitle {label} />
   </div>
@@ -15,10 +15,9 @@
   </div>
   <div>
     <slot name="actions">
-      <Button label="action" />
     </slot>
   </div>
-</a>
+</div>
 
 <style lang="scss">
   .status-card {
@@ -27,6 +26,8 @@
     display: grid;
     grid-template-rows: auto 1fr auto;
     padding: 8px;
+    gap:8px;
+    aspect-ratio: 5/8;
     box-sizing: border-box;
     background-color: var(--color-theme-D1);
     div {
