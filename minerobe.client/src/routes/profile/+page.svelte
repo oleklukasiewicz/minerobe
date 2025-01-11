@@ -21,7 +21,7 @@
   import { GetUserProfile } from "$src/api/user";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import SocialInfo from "$lib/components/social/SocialInfo.svelte";
-  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
+  import StatusCard from "$lib/components/other/StatusCard/StatusCard.svelte";
 
   const profileUser: Writable<MinerobeUserProfile> = writable(null);
 
@@ -115,6 +115,12 @@
               <SocialInfo data={$profileUser.social} />
             </Placeholder>
           </div>
+        </div>
+        <div id="overview-status">
+          <StatusCard label={"minecraft account"} />
+          <StatusCard label={"current skin"} />
+          <StatusCard label={"base texture"} />
+          <StatusCard label={"cape"} />
         </div>
       </div>
     {/if}

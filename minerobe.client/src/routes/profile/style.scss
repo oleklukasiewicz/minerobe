@@ -37,6 +37,12 @@
           }
         }
       }
+      #overview-status {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        margin-top: 8px;
+      }
     }
   }
 }
