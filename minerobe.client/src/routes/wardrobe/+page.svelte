@@ -37,6 +37,9 @@
   import Search from "$lib/components/base/Search/Search.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import OutfitFiltersDialog from "$lib/components/dialog/OutfitFiltersDialog.svelte";
+  import OutfitPackageCollectionList from "$lib/components/outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
+  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
+  import OutfitPackageTypePickerDialog from "$lib/components/dialog/OutfitPackageTypePickerDialog.svelte";
   //icons
   import MenuIcon from "$src/icons/menu.svg?raw";
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
@@ -44,10 +47,7 @@
   import ListIcon from "$icons/list.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
   import Sliders2Icon from "$icons/sliders-2.svg?raw";
-  import OutfitPackageCollectionList from "$lib/components/outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
-  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
-  import OutfitPackageTypePickerDialog from "$lib/components/dialog/OutfitPackageTypePickerDialog.svelte";
-
+  
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
   const pageCollections: Writable<
     PagedResponse<OutfitPackageCollectionWithPackageContext>[]
