@@ -183,3 +183,6 @@ export const GetImageArea = function (
     img.src = base64Image;
   });
 };
+export const GetImageFaceArea = function (base64Image): Promise<string> {
+  return GetImageArea(base64Image, 8, 8, 8, 8);
+};

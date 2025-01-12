@@ -27,6 +27,8 @@
   import { Cape } from "$src/data/models/integration/minecraft";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import { MODEL_TYPE } from "$src/data/enums/model";
+  import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
+  import Label from "$lib/components/base/Label/Label.svelte";
 
   const profileUser: Writable<MinerobeUserProfile> = writable(null);
   const minecraftIntegration: Writable<any> = writable(null);
@@ -133,17 +135,32 @@
           </div>
         </div>
         <div id="overview-status">
-          <StatusCard label={"minecraft account"} />
+          <StatusCard label={"minecraft account"}>
+            <Placeholder {loaded} height="100%" width="100%">
+              {#await GetImageFaceArea($profileUser?.settings?.currentTexture?.texture) then skin}
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <img
+                  src={skin}
+                  style="width:100%;image-rendering: pixelated; "
+                />
+              {/await}
+              <br />
+              <br />
+              {#if $minecraftIntegration != null}
+                <Label variant="unique" text={$minecraftIntegration.username} />
+              {:else}
+                <div class="mc-font">No account linked</div>
+              {/if}
+            </Placeholder>
+          </StatusCard>
           <StatusCard label={"current skin"} />
           <StatusCard label={"base texture"}>
-            <div  style="width: 100%;">
-              {#if $profileUser?.settings?.baseTexture != null}
-                <OutfitPackageRender
-                  source={$profileUser?.settings?.baseTexture}
-                  model={"source"}
-                />
-              {/if}
-            </div>
+            <Placeholder {loaded} height="100%" width="100%">
+              <OutfitPackageRender
+                source={$profileUser?.settings?.baseTexture}
+                model={"source"}
+              />
+            </Placeholder>
           </StatusCard>
           {#if currentCape != null}
             <StatusCard label={"cape"}>

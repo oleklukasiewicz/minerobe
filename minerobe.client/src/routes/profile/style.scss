@@ -38,7 +38,8 @@
         }
       }
       #overview-status {
-        display: flex;
+        display: grid;
+        grid-template-columns:  repeat(auto-fit, minmax(180px, 1fr));
         flex-direction: row;
         gap: 8px;
         margin-top: 8px;
