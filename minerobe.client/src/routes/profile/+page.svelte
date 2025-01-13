@@ -12,6 +12,7 @@
   import ZapIcon from "$icons/zap.svg?raw";
   import AvatarIcon from "$icons/avatar.svg?raw";
   import LoginIcon from "$icons/login.svg?raw";
+  import UsersIcon from "$icons/users.svg?raw";
   import DashboardIcon from "$icons/dashboard.svg?raw";
   import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
   import { onMount } from "svelte";
@@ -26,7 +27,6 @@
   import CapeListItem from "$lib/components/outfit/CapeListItem/CapeListItem.svelte";
   import { Cape } from "$src/data/models/integration/minecraft";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import { MODEL_TYPE } from "$src/data/enums/model";
 
   const profileUser: Writable<MinerobeUserProfile> = writable(null);
   const minecraftIntegration: Writable<any> = writable(null);
@@ -82,12 +82,20 @@
         on:click={() => (selectedView = "data")}
       />
       <MenuItem
-        label="Your Skin"
+        label="Current Skin"
+        {opened}
+        {top}
+        icon={UsersIcon}
+        selected={selectedView == "skin"}
+        on:click={() => (selectedView = "skin")}
+      />
+      <MenuItem
+        label="Base Texture"
         {opened}
         {top}
         icon={AvatarIcon}
-        selected={selectedView == "skin"}
-        on:click={() => (selectedView = "skin")}
+        selected={selectedView == "baseskin"}
+        on:click={() => (selectedView = "baseskin")}
       />
       <MenuSeparator />
       <MenuItem
@@ -136,7 +144,7 @@
           <StatusCard label={"minecraft account"} />
           <StatusCard label={"current skin"} />
           <StatusCard label={"base texture"}>
-            <div  style="width: 100%;">
+            <div style="width: 100%;">
               {#if $profileUser?.settings?.baseTexture != null}
                 <OutfitPackageRender
                   source={$profileUser?.settings?.baseTexture}
@@ -163,6 +171,18 @@
     {/if}
     {#if selectedView == "minecraft-account"}
       <h1>Minecraft Account</h1>
+    {/if}
+    {#if selectedView == "skin"}
+      <h1>Current Skin</h1>
+    {/if}
+    {#if selectedView == "baseskin"}
+      <div id="base-skin">
+        <OutfitPackageRender
+          source={$profileUser?.settings?.baseTexture}
+          isDynamic={true}
+        />
+        <Placeholder {loaded}></Placeholder>
+      </div>
     {/if}
   </div>
 </div>
