@@ -20,7 +20,14 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-missing-attribute -->
-<a class="cape-list-item" class:selected title={item.name} on:click class:readonly>
+<a
+  class="cape-list-item"
+  class:selected
+  title={item.name}
+  on:click
+  class:readonly
+  draggable="false"
+>
   {#if item.id}
     {#await normalizeCape(item) then texture}
       <img src={texture} alt={item.name} />

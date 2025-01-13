@@ -13,6 +13,7 @@
   }
   #profile-content {
     display: flex;
+    margin-top: 8px;
     #overview {
       flex: 1;
       #overview-header {
@@ -39,10 +40,32 @@
       }
       #overview-status {
         display: grid;
-        grid-template-columns:  repeat(auto-fit, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         flex-direction: row;
         gap: 8px;
         margin-top: 8px;
+      }
+    }
+    #base-skin {
+      display: grid;
+      max-width: 100%;
+      grid-template-columns: 33vw 1fr;
+      flex: 1;
+      gap: 16px;
+      .render {
+        aspect-ratio: 1;
+      }
+      .data {
+        max-width: 500px;
+        width: 100%;
+        margin: 0px auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        h1 {
+          margin: 0px;
+          margin: 16px 0px;
+        }
       }
     }
   }

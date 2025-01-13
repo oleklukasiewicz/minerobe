@@ -1,13 +1,21 @@
 import type { OUTFIT_TYPE } from "$src/data/enums/outfit";
-import { FindColorTitle, GetDominantColorFromImageContext } from "$src/helpers/image/colorHelper";
-import { GetContextFromBase64, GetOutfitType } from "$src/helpers/image/imageDataHelpers";
+import {
+  FindColorTitle,
+  GetDominantColorFromImageContext,
+} from "$src/helpers/image/colorHelper";
+import {
+  GetContextFromBase64,
+  GetOutfitType,
+} from "$src/helpers/image/imageDataHelpers";
 import { FileData, OutfitLayer } from "$data/models/package";
 
-export let ImportImages = async function (): Promise<OutfitLayer[]> {
+export let ImportImages = async function (
+  multiple = true
+): Promise<OutfitLayer[]> {
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
-  input.multiple = true;
+  input.multiple = multiple;
   input.click();
 
   const inputPromise = new Promise<any[]>((resolve) => {

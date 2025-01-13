@@ -30,6 +30,11 @@
   import { MODEL_TYPE } from "$src/data/enums/model";
   import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
   import Label from "$lib/components/base/Label/Label.svelte";
+  import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
+  import { ImportImages, ImportImagesFromFiles } from "$src/data/import";
+  import ImportPackageIcon from "$icons/upload.svg?raw";
 
   const profileUser: Writable<MinerobeUserProfile> = writable(null);
   const minecraftIntegration: Writable<any> = writable(null);
@@ -55,6 +60,17 @@
   let menuOpened = true;
   let selectedView = "overview";
   let loaded = false;
+
+  const DropBaseTexture = async function (e) {
+    const files = e.detail.items;
+    const textures = await ImportImagesFromFiles(files);
+    $profileUser.settings.baseTexture.layers = [textures[0]];
+  };
+
+  const ImportBaseTexture = async function () {
+    const files = await ImportImages(false);
+    $profileUser.settings.baseTexture.layers = [files[0]];
+  };
 </script>
 
 <div id="profile-view">
@@ -197,11 +213,29 @@
     {/if}
     {#if selectedView == "baseskin"}
       <div id="base-skin">
-        <OutfitPackageRender
-          source={$profileUser?.settings?.baseTexture}
-          isDynamic={true}
-        />
-        <Placeholder {loaded}></Placeholder>
+        <div class="render">
+          <Placeholder {loaded}>
+            <DragAndDrop on:drop={DropBaseTexture}>
+              <OutfitPackageRender
+                resizable
+                resizeDebounce={10}
+                source={$profileUser?.settings?.baseTexture}
+                isDynamic={true}
+              /></DragAndDrop
+            >
+          </Placeholder>
+        </div>
+        <div class="data">
+          <h1>Base Texture</h1>
+          <Placeholder {loaded} height="43px">
+            <ModelRadioGroup
+              bind:selectedValue={$profileUser.settings.baseTexture.model}
+            /></Placeholder
+          >
+          <div>
+            <Button label="Import texture" size="large" on:click={ImportBaseTexture} icon={ImportPackageIcon} />
+          </div>
+        </div>
       </div>
     {/if}
   </div>
