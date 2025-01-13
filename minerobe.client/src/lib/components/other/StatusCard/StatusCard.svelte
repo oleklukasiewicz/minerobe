@@ -22,7 +22,7 @@
 <style lang="scss">
   .status-card {
     flex:1;
-    max-width: 25vw;
+    min-width: 150px;
     display: grid;
     grid-template-rows: auto 1fr auto;
     padding: 8px;
