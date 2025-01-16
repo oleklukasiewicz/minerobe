@@ -250,6 +250,9 @@ textarea {
 .mc-font-simple {
   font-family: minecraft-simple;
 }
+.font-center {
+  text-align: center;
+}
 .horizontal-list {
   display: flex;
   flex-wrap: wrap;

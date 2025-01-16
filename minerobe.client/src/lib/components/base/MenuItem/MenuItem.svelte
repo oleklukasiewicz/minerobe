@@ -10,7 +10,7 @@
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
-<a class="menu-item" class:disabled {href} class:selected on:click class:top>
+<a class="menu-item" class:disabled {href} class:selected on:click class:top title="{label}">
   {#if icon}
     <div class="icon b-icon-medium">
       {@html icon}

@@ -3,6 +3,7 @@
   import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
   import MenuItemHeader from "$lib/components/base/MenuItemHeader/MenuItemHeader.svelte";
   import {
+    BASE_TEXTURE,
     CURRENT_APP_STATE,
     CURRENT_USER,
     IS_MOBILE_VIEW,
@@ -35,6 +36,12 @@
   import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
   import { ImportImages, ImportImagesFromFiles } from "$src/data/import";
   import ImportPackageIcon from "$icons/upload.svg?raw";
+  import OutfitLayerListItem from "$lib/components/outfit/OutfitLayerListItem/OutfitLayerListItem.svelte";
+  import { OUTFIT_TYPE } from "$src/data/enums/outfit";
+  import * as THREE from "three";
+  import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
+  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
+  import { OutfitPackage } from "$src/data/models/package";
 
   const profileUser: Writable<MinerobeUserProfile> = writable(null);
   const minecraftIntegration: Writable<any> = writable(null);
@@ -42,6 +49,11 @@
   onMount(async () => {
     CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
+      dynamicRenderer = new THREE.WebGLRenderer({
+        alpha: true,
+      });
+      dynamicRenderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
       $profileUser = await GetUserProfile($CURRENT_USER.id);
       if ($profileUser.settings.integrations.includes("minecraft")) {
         $minecraftIntegration = await GetAccount(true);
@@ -60,7 +72,12 @@
   let menuOpened = true;
   let selectedView = "overview";
   let loaded = false;
+  let dynamicRenderer = null;
 
+  //base texture dialogs
+  let isBaseTextureEditDialogOpen = false;
+
+  //base texture
   const DropBaseTexture = async function (e) {
     const files = e.detail.items;
     const textures = await ImportImagesFromFiles(files);
@@ -71,67 +88,84 @@
     const files = await ImportImages(false);
     $profileUser.settings.baseTexture.layers = [files[0]];
   };
+  const EditBaseTexture = function (e) {
+    const layer = e.detail.item;
+    $profileUser.settings.baseTexture.layers[0] = layer;
+    isBaseTextureEditDialogOpen = true;
+  };
+  const RemoveBaseTexture = function () {
+    $profileUser.settings.baseTexture = new OutfitPackage(
+      "base",
+      MODEL_TYPE.STEVE,
+      []
+    );
+  };
+  const OpenEditBaseTetxureDialog = function () {
+    isBaseTextureEditDialogOpen = true;
+  };
 </script>
 
 <div id="profile-view">
   <div id="profile-navigation">
-    <Menu let:opened let:top opened={menuOpened} top={$IS_MOBILE_VIEW}>
-      {#if !$IS_MOBILE_VIEW}
-        <MenuItemHeader
-          label="Profile"
-          icon={MenuIcon}
+    <div>
+      <Menu let:opened let:top opened={menuOpened} top={$IS_MOBILE_VIEW}>
+        {#if !$IS_MOBILE_VIEW}
+          <MenuItemHeader
+            label="Profile"
+            icon={MenuIcon}
+            {opened}
+            on:click={() => (menuOpened = !menuOpened)}
+          />
+        {/if}
+        <MenuItem
+          label="Overview"
           {opened}
-          on:click={() => (menuOpened = !menuOpened)}
+          {top}
+          icon={DashboardIcon}
+          selected={selectedView == "overview"}
+          on:click={() => (selectedView = "overview")}
         />
-      {/if}
-      <MenuItem
-        label="Overview"
-        {opened}
-        {top}
-        icon={DashboardIcon}
-        selected={selectedView == "overview"}
-        on:click={() => (selectedView = "overview")}
-      />
-      <MenuItem
-        label="Profile Data"
-        {opened}
-        {top}
-        icon={ContactIcon}
-        selected={selectedView == "data"}
-        on:click={() => (selectedView = "data")}
-      />
-      <MenuItem
-        label="Current Skin"
-        {opened}
-        {top}
-        icon={UsersIcon}
-        selected={selectedView == "skin"}
-        on:click={() => (selectedView = "skin")}
-      />
-      <MenuItem
-        label="Base Texture"
-        {opened}
-        {top}
-        icon={AvatarIcon}
-        selected={selectedView == "baseskin"}
-        on:click={() => (selectedView = "baseskin")}
-      />
-      <MenuSeparator />
-      <MenuItem
-        label="Minecraft Account"
-        {opened}
-        {top}
-        icon={ZapIcon}
-        selected={selectedView == "minecraft-account"}
-        on:click={() => (selectedView = "minecraft-account")}
-      />
-      <MenuItem
-        slot="footer"
-        opened={menuOpened}
-        label="Sign Out"
-        icon={LoginIcon}
-      />
-    </Menu>
+        <MenuItem
+          label="Profile Data"
+          {opened}
+          {top}
+          icon={ContactIcon}
+          selected={selectedView == "data"}
+          on:click={() => (selectedView = "data")}
+        />
+        <MenuItem
+          label="Current Skin"
+          {opened}
+          {top}
+          icon={UsersIcon}
+          selected={selectedView == "skin"}
+          on:click={() => (selectedView = "skin")}
+        />
+        <MenuItem
+          label="Base Texture"
+          {opened}
+          {top}
+          icon={AvatarIcon}
+          selected={selectedView == "base-skin"}
+          on:click={() => (selectedView = "base-skin")}
+        />
+        <MenuSeparator />
+        <MenuItem
+          label="Minecraft Account"
+          {opened}
+          {top}
+          icon={ZapIcon}
+          selected={selectedView == "minecraft-account"}
+          on:click={() => (selectedView = "minecraft-account")}
+        />
+        <MenuItem
+          slot="footer"
+          opened={menuOpened}
+          label="Sign Out"
+          icon={LoginIcon}
+        />
+      </Menu>
+    </div>
   </div>
   <div id="profile-content">
     {#if selectedView == "overview"}
@@ -180,23 +214,39 @@
           </StatusCard>
           <StatusCard label={"current skin"} />
           <StatusCard label={"base texture"}>
-            <div style="width: 100%;">
-              {#if $profileUser?.settings?.baseTexture != null}
-                <OutfitPackageRender
-                  source={$profileUser?.settings?.baseTexture}
-                  model={"source"}
-                />
+            <Placeholder
+              {loaded}
+              height="100%"
+              width="100%"
+              loadedStyle="width:100%;"
+            >
+              {#if $profileUser?.settings?.baseTexture?.layers.length > 0}
+                <div style="width: 100%;">
+                  <OutfitPackageRender
+                    source={$profileUser?.settings?.baseTexture}
+                    model={"source"}
+                  />
+                </div>
+              {:else}
+                <div class="mc-font">No texture</div>
               {/if}
-            </div>
+            </Placeholder>
           </StatusCard>
           {#if currentCape != null}
             <StatusCard label={"cape"}>
-              <div>
-                <CapeListItem item={currentCape} readonly />
-                <br />
-                <br />
-                <div class="mc-font">{currentCape.name || "No Cape"}</div>
-              </div>
+              <Placeholder
+                {loaded}
+                height="100%"
+                width="100%"
+                loadedStyle="width:100%;"
+              >
+                <div class="font-center">
+                  <CapeListItem item={currentCape} readonly />
+                  <br />
+                  <br />
+                  <div class="mc-font">{currentCape.name || "No Cape"}</div>
+                </div>
+              </Placeholder>
             </StatusCard>
           {/if}
         </div>
@@ -208,15 +258,14 @@
     {#if selectedView == "minecraft-account"}
       <h1>Minecraft Account</h1>
     {/if}
-    {#if selectedView == "skin"}
-      <h1>Current Skin</h1>
-    {/if}
-    {#if selectedView == "baseskin"}
+    {#if selectedView == "base-skin"}
       <div id="base-skin">
         <div class="render">
           <Placeholder {loaded}>
             <DragAndDrop on:drop={DropBaseTexture}>
               <OutfitPackageRender
+                baseTexture={$BASE_TEXTURE}
+                renderer={dynamicRenderer}
                 resizable
                 resizeDebounce={10}
                 source={$profileUser?.settings?.baseTexture}
@@ -226,19 +275,51 @@
           </Placeholder>
         </div>
         <div class="data">
-          <h1>Base Texture</h1>
-          <Placeholder {loaded} height="43px">
-            <ModelRadioGroup
-              bind:selectedValue={$profileUser.settings.baseTexture.model}
-            /></Placeholder
-          >
+          {#if $profileUser?.settings?.baseTexture.layers.length > 0 || !loaded}
+            <div>
+              <SectionTitle placeholder={!loaded} label="base Texture" />
+              <Placeholder {loaded} height="68px">
+                <OutfitLayerListItem
+                  item={$profileUser.settings.baseTexture.layers[0]}
+                  model={$profileUser.settings.baseTexture.model}
+                  movable={false}
+                  labels={false}
+                  removable={true}
+                  on:edit={OpenEditBaseTetxureDialog}
+                  on:delete={RemoveBaseTexture}
+                /></Placeholder
+              >
+            </div>
+          {:else}
+            <h3 class="mc-font font-center">No base texture</h3>
+          {/if}
           <div>
-            <Button label="Import texture" size="large" on:click={ImportBaseTexture} icon={ImportPackageIcon} />
+            <SectionTitle placeholder={!loaded} label="Model" />
+            <Placeholder {loaded} height="43px">
+              <ModelRadioGroup
+                bind:selectedValue={$profileUser.settings.baseTexture.model}
+              /></Placeholder
+            >
           </div>
+          <Placeholder {loaded} height="46px">
+            <Button
+              label="Import base texture"
+              size="large"
+              on:click={ImportBaseTexture}
+              icon={ImportPackageIcon}
+            />
+          </Placeholder>
         </div>
       </div>
     {/if}
   </div>
+  <!-- Dialogs -->
+  <EditLayerDialog
+    onlyTextures
+    on:edit={EditBaseTexture}
+    bind:open={isBaseTextureEditDialogOpen}
+    item={$profileUser?.settings?.baseTexture?.layers[0]}
+  />
 </div>
 
 <style lang="scss">

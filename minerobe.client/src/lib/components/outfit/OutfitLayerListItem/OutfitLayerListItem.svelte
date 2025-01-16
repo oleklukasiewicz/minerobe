@@ -14,10 +14,12 @@
   import DeleteIcon from "$src/icons/close.svg?raw";
   import EditIcon from "$src/icons/edit.svg?raw";
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
+  import type { OUTFIT_TYPE } from "$src/data/enums/outfit";
 
   const dispatch = createEventDispatcher();
 
   export let item: OutfitLayer;
+  export let outfitType: OUTFIT_TYPE = null;
   export let model: MODEL_TYPE;
   export let readonly = false;
   export let movable = true;
@@ -29,6 +31,7 @@
   export let selected = false;
   export let packageId: string = null;
   export let dense = false;
+  export let labels = true;
 
   const onMoveUp = function () {
     dispatch("moveUp", { item: item });
@@ -62,15 +65,17 @@
     <OutfitPackageRender
       source={item[model].content}
       {model}
-      outfitType={item.outfitType}
+      outfitType={outfitType || item.outfitType}
     />
   </div>
   {#if !dense}
     <div class="data">
       <span class="name">{item.name}</span>
-      <Label variant="common">{item.outfitType}</Label>
-      {#if item.sourcePackageId == packageId}
-        <Label variant={"rare"}>Image</Label>
+      {#if labels}
+        <Label variant="common">{item.outfitType}</Label>
+        {#if item.sourcePackageId == packageId}
+          <Label variant={"rare"}>Image</Label>
+        {/if}
       {/if}
     </div>
 
@@ -83,6 +88,7 @@
             whiteText={selected}
             size="large"
             type="quaternary"
+            label="Edit"
             on:click={onEdit}
           />
         {/if}
@@ -93,6 +99,7 @@
           <Button
             onlyIcon
             icon={UpIcon}
+            label="Move up"
             size="large"
             type="quaternary"
             disabled={!canUp}
@@ -101,6 +108,7 @@
           />
           <Button
             onlyIcon
+            label="Move down"
             icon={DownIcon}
             size="large"
             type="quaternary"
@@ -118,6 +126,7 @@
             icon={DeleteIcon}
             whiteText={selected}
             size="large"
+            label="Delete"
             type="quaternary"
             on:click={onDelete}
           />
@@ -132,6 +141,7 @@
           whiteText={selected}
           icon={ExternalLinkIcon}
           size="large"
+          label="Open"
           type="tertiary"
           href={link}
         />

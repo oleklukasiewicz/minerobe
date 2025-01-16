@@ -22,6 +22,7 @@
 
   export let open = false;
   export let item: OutfitLayer;
+  export let onlyTextures = false;
 
   const onEdit = () => {
     dispatch("edit", { item: item });
@@ -41,25 +42,27 @@
 
 <Dialog bind:open label="Edit layer">
   <div class="editItemDialog">
-    <SectionTitle label="Name" />
-    <TextBox bind:value={item.name} on:input={onEdit} />
-    <SectionTitle label="Outfit type" />
-    <Select
-      items={OUTFIT_TYPE_ARRAY}
-      bind:selectedItem={item.outfitType}
-      itemText="normalizedName"
-      itemValue="name"
-      on:select={onEdit}
-    />
-    <SectionTitle label="color" />
-    <Select
-      items={COLORS_ARRAY}
-      bind:selectedItem={item.colorName}
-      itemText="normalizedName"
-      itemValue="name"
-      dropDownStyle="max-height: 275px"
-      on:select={onEdit}
-    />
+    {#if !onlyTextures}
+      <SectionTitle label="Name" />
+      <TextBox bind:value={item.name} on:input={onEdit} />
+      <SectionTitle label="Outfit type" />
+      <Select
+        items={OUTFIT_TYPE_ARRAY}
+        bind:selectedItem={item.outfitType}
+        itemText="normalizedName"
+        itemValue="name"
+        on:select={onEdit}
+      />
+      <SectionTitle label="color" />
+      <Select
+        items={COLORS_ARRAY}
+        bind:selectedItem={item.colorName}
+        itemText="normalizedName"
+        itemValue="name"
+        dropDownStyle="max-height: 275px"
+        on:select={onEdit}
+      />
+    {/if}
     <div class="textures">
       <div class="model-selection">
         <SectionTitle label="Classic" />

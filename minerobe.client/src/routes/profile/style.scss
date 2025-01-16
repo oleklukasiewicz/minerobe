@@ -7,9 +7,16 @@
   grid-template-columns: auto 1fr;
   gap: 16px;
   #profile-navigation {
-    max-width: 250px;
-    height: 100%;
-    display: flex;
+    display: block;
+    max-width: 300px;
+    div {
+     height: calc(100vh - 78px);
+      position: sticky;
+      flex:1;
+      display: flex;
+      max-height: 100vh;
+      top: 68px;
+    }
   }
   #profile-content {
     display: flex;
@@ -49,7 +56,8 @@
     #base-skin {
       display: grid;
       max-width: 100%;
-      grid-template-columns: 33vw 1fr;
+      margin: 0 auto;
+      grid-template-columns:50% calc(50% - 16px);
       flex: 1;
       gap: 16px;
       .render {
@@ -58,14 +66,11 @@
       .data {
         max-width: 500px;
         width: 100%;
+        min-width: 10px;
         margin: 0px auto;
         display: flex;
         flex-direction: column;
         gap: 8px;
-        h1 {
-          margin: 0px;
-          margin: 16px 0px;
-        }
       }
     }
   }

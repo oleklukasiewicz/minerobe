@@ -7,7 +7,6 @@ import { DEFAULT_RENDERER } from "./static";
 import type { OutfitLayer, OutfitPackage } from "$data/models/package";
 import type { OutfitPackageRenderConfig } from "$data/models/render";
 import { MODEL_TYPE } from "./enums/model";
-import { t } from "svelte-i18n";
 export class CameraConfig {
   rotation: THREE.Vector3;
   position: THREE.Vector3;
@@ -657,7 +656,8 @@ export class OutfitPackageToTextureConverter {
     return texture;
   };
   ConvertAsyncWithFlattenSettingsAsync = async function (): Promise<string> {
-    await this.ConvertAsync();
+    const texture = await this.ConvertAsync();
+    if (texture == null) return null;
     if (this.isFlatten) await this.AsFlattenAsync();
     else await this.AsNotFlatten();
     return this.texture;

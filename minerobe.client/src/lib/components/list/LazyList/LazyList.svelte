@@ -32,7 +32,7 @@
 
 <div class="lazy-list">
   {#if itemsList.length == 0 && !loading}
-    <slot name="noitems">No items</slot>
+    <slot name="noitems"><h3 class="font-center">No Items</h3></slot>
   {:else if !loading}
     <slot items={itemsList} />
   {/if}
