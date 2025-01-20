@@ -31,7 +31,7 @@
 		"gltf-loader": "^1.0.0",
 		"path": "^0.12.7",
 		"pixelmatch": "^6.0.0",
-		"sass": "^1.80.3",
+		"sass": "^1.83.4",
 		"svelte-i18n": "^4.0.1",
 		"svelte-intersection-observer": "^1.0.0",
 		"svelte-persisted-store": "^0.11.0",
