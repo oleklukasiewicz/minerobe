@@ -8,9 +8,11 @@
     grid-template-rows: 50px 1fr;
     margin: 0px;
     #content {
+      max-width: 100%;
+      width: 100%;
       #content-header {
         margin-top: 16px;
-        grid-template-columns:32px 1fr;
+        grid-template-columns: 32px 1fr;
         top: 0px;
         padding: 8px 8px 8px;
         box-sizing: border-box;
@@ -19,16 +21,24 @@
         }
       }
       #content-list {
-        margin: 8px;
-        width: 100vw;
+        margin: 0;
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
       }
     }
     #navigation {
       max-width: 100%;
       margin-top: 8px;
+      width: 100%;
+      max-width: 100%;
       div {
         top: 8px;
         margin: 0px 8px;
+      }
+      &.opened {
+        width: 100vw;
+        max-width: 100%;
       }
     }
   }
@@ -61,6 +71,10 @@
     div {
       position: sticky;
       top: 68px;
+    }
+    &.opened {
+      width: 25vw;
+      max-width: 250px;
     }
   }
 }

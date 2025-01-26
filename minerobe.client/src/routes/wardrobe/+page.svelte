@@ -166,7 +166,7 @@
 </script>
 
 <div id="wardrobe-view" class:mobile={$IS_MOBILE_VIEW}>
-  <div id="navigation">
+  <div id="navigation" class:opened={menuOpened}>
     <div>
       <Menu let:opened let:top opened={menuOpened} top={$IS_MOBILE_VIEW}>
         {#if !$IS_MOBILE_VIEW}

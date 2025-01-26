@@ -76,9 +76,12 @@
       &.icon {
         padding: 6px;
       }
-      & > .icon {
-        transform: translateY(-3px);
+      &.with-label {
+        & > .icon {
+          transform: translateY(-3px);
+        }
       }
+
       & > span {
         line-height: 17px;
         font-size: var(--size-font-base);
@@ -147,8 +150,7 @@
           margin-right: 12px;
           transform: translateY(-2px);
         }
-        span
-        {
+        span {
           transform: translateY(2px);
         }
       }
@@ -294,10 +296,10 @@
     }
     &.fab-dynamic {
       &.large {
-       padding: 12px 12px 12px;
-       aspect-ratio: 1;
-       width: 52px;
-       height: 52px;
+        padding: 12px 12px 12px;
+        aspect-ratio: 1;
+        width: 52px;
+        height: 52px;
       }
       &.small {
         padding: 2px 3px 6px 7px;

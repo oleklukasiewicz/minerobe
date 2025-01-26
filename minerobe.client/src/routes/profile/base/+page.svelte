@@ -3,6 +3,7 @@
     BASE_TEXTURE,
     CURRENT_APP_STATE,
     CURRENT_USER,
+    IS_MOBILE_VIEW,
   } from "$src/data/static";
   import { onDestroy, onMount } from "svelte";
   import { APP_STATE } from "$src/data/enums/app";
@@ -86,7 +87,7 @@
   };
 </script>
 
-<div id="profile-base">
+<div id="profile-base" class:mobile={$IS_MOBILE_VIEW}>
   <div class="render">
     <Placeholder {loaded}>
       <DragAndDrop on:drop={DropBaseTexture}>

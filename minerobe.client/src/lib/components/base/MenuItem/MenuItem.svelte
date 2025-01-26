@@ -16,7 +16,7 @@
       {@html icon}
     </div>
   {/if}
-  {#if opened}
+  {#if opened || top}
     <span class="label">{label}</span>
     {#if badgelabel}
       <div class="badge">{badgelabel}</div>

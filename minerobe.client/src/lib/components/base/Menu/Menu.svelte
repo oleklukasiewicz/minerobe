@@ -29,7 +29,7 @@
       gap: 4px;
     }
     &.left.opened {
-      width: 25vw;
+      width: 100%;
     }
     &.top {
       width: 100vw;

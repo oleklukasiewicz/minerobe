@@ -18,4 +18,10 @@
       flex-direction: column;
       gap: 8px;
     }
+    &.mobile {
+      grid-template-columns: 100%;
+      .data {
+        max-width: 100%;
+      }
+    }
 }
