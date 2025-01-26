@@ -143,6 +143,7 @@
           size="large"
           label="Open"
           type="tertiary"
+          target="_blank"
           href={link}
         />
       {/if}

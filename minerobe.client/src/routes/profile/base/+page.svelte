@@ -41,7 +41,7 @@
     });
   });
   onDestroy(() => {
-    stateSub();
+    if (stateSub) stateSub();
   });
 
   let loaded = false;

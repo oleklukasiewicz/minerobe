@@ -38,7 +38,7 @@
     });
   });
   onDestroy(() => {
-    stateSub();
+    if (stateSub) stateSub();
   });
 
   let currentCape: Cape = new Cape();

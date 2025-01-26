@@ -37,6 +37,7 @@
     padding: 7px 8px;
     color: var(--color-theme-font);
     gap: 8px;
+    min-height: 40px;
     &.top {
       flex: 1;
       text-align: center;

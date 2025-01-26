@@ -136,7 +136,7 @@
     });
   });
   onDestroy(() => {
-    stateSub();
+    if (stateSub) stateSub();
   });
 
   //layers

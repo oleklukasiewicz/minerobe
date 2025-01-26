@@ -19,7 +19,7 @@
     });
   });
   onDestroy(() => {
-    stateSub();
+    if (stateSub) stateSub();
   });
   const loadNewpage = async (e) => {
     const lastPage = e.detail.options;

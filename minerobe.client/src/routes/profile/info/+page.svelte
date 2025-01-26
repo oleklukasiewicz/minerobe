@@ -17,6 +17,7 @@
   import AvatarIcon from "$icons/avatar.svg?raw";
   import { FetchSettings } from "$src/api/settings";
   import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
+  import { on } from "svelte/events";
 
   const profileUser: Writable<MinerobeUser> = writable(null);
 
@@ -25,14 +26,16 @@
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
       $profileUser = await GetMinerobeUser($CURRENT_USER.id);
+      inputProfileUsername = $profileUser.name;
       loaded = true;
     });
   });
   onDestroy(() => {
-    stateSub();
+    if (stateSub) stateSub();
   });
 
   let loaded = false;
+  let inputProfileUsername = "";
 
   const DownloadAvatar = async () => {
     await ExportImage($profileUser.avatar, "avatar.png");
@@ -84,7 +87,7 @@
     <div id="profile-name">
       <div id="profile-name-input">
         <Placeholder {loaded}>
-          <TextBox placeholder="Username" bind:value={$profileUser.name} />
+          <TextBox placeholder="Username" bind:value={inputProfileUsername} />
         </Placeholder>
       </div>
       <div>
@@ -94,7 +97,10 @@
           width="100%"
           loadedStyle={"max-width:412px;"}
         >
-          <Button label={"Change username"} />
+          <Button
+            label={"Change username"}
+            disabled={$profileUser.name == inputProfileUsername || inputProfileUsername.length == 0}
+          />
         </Placeholder>
       </div>
     </div>

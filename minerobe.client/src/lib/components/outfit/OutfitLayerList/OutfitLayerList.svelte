@@ -101,6 +101,7 @@
     display: flex;
     .outfit-layer-list-items {
       flex: 1;
+      max-width: 100%;
       display: flex;
       flex-direction: column;
       gap: 4px;
