@@ -37,7 +37,7 @@ export const SetMinerobeUser = async function (user: MinerobeUser) {
     return await PutRequest("/api/User/" + user.id, user);
   }
 };
-export const GetMinerobeUser = async function (id: string) {
+export const GetMinerobeUser = async function (id: string):Promise<MinerobeUser> {
   if (id == get(currentUserWritable)?.id) return get(currentUserWritable);
   return await GetRequest("/api/User/" + id);
 };

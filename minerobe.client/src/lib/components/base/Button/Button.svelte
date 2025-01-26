@@ -13,7 +13,7 @@
   export let textAlign: "left" | "center" | "right" = "center";
   export let style = null;
   export let iconStyle = null;
-  export let target: "_blank" | "_self" = "_blank";
+  export let target: "_blank" | "_self" = null;
   export let fab: "static" | "dynamic" | "expanded" | null = null;
   export let dark = false;
   export let noTextOverflow = false;

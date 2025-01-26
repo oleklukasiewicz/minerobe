@@ -4,18 +4,22 @@
   import { GetWadrobePackagesSingleLayer } from "$src/api/wardrobe";
   import { APP_STATE } from "$src/data/enums/app";
   import { CURRENT_APP_STATE } from "$src/data/static";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
 
   let pages = [];
   let loaded = false;
+  let stateSub=null;
   onMount(() => {
-    CURRENT_APP_STATE.subscribe(async (state) => {
+    stateSub= CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
       const items = await GetWadrobePackagesSingleLayer(undefined, 0, 10);
       pages.push(items);
       console.log(pages);
       loaded = true;
     });
+  });
+  onDestroy(() => {
+    stateSub();
   });
   const loadNewpage = async (e) => {
     const lastPage = e.detail.options;

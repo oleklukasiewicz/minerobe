@@ -133,6 +133,11 @@
       &.icon {
         padding: 6px;
       }
+      &.with-label {
+        .icon {
+          transform: translateY(-4px);
+        }
+      }
     }
     &.large {
       padding: 10px 14px 10px;
@@ -140,7 +145,11 @@
       &.with-label {
         .icon {
           margin-right: 12px;
-          transform: translateY(4px);
+          transform: translateY(-2px);
+        }
+        span
+        {
+          transform: translateY(2px);
         }
       }
       &.icon {

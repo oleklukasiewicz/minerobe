@@ -2,6 +2,7 @@ import * as THREE from "three";
 
 import baseModelTextureRaw from "$src/texture/base_skin.png?url";
 import {
+  get,
   readable,
   readonly,
   writable,
@@ -101,7 +102,7 @@ export const Initialize = async function () {
     renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     return renderer;
   });
-  CURRENT_USER.subscribe(async (user) => {
+  CURRENT_USER.subscribe((user) => {
     appStateWritable.set(user ? APP_STATE.READY : APP_STATE.GUEST_READY);
   });
 };

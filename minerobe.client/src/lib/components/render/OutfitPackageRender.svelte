@@ -361,7 +361,6 @@
   $: setCape(cape);
 
   const onResize = async function () {
-    console.log("resize");
     if (!initialized) return;
     textureRenderer.Resize();
     renderReady = true;

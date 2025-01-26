@@ -17,6 +17,7 @@
   import TextBox from "../base/TextBox/TextBox.svelte";
   import DragAndDrop from "../draganddrop/DragAndDrop/DragAndDrop.svelte";
   import OutfitPackageRender from "../render/OutfitPackageRender.svelte";
+  import ImportPackageIcon from "$icons/upload.svg?raw";
 
   const dispatch = createEventDispatcher();
 
@@ -66,7 +67,7 @@
     <div class="textures">
       <div class="model-selection">
         <SectionTitle label="Classic" />
-        <div>
+        <div class="render">
           <DragAndDrop on:drop={(e) => onDrop(e, MODEL_TYPE.STEVE)}>
             <OutfitPackageRender
               resizable
@@ -76,14 +77,17 @@
             />
           </DragAndDrop>
         </div>
-        <Button
-          label="Upload image"
-          on:click={(e) => onUpload(e, MODEL_TYPE.STEVE)}
-        />
+        <div>
+          <Button
+            icon={ImportPackageIcon}
+            label="Upload image"
+            on:click={(e) => onUpload(e, MODEL_TYPE.STEVE)}
+          />
+        </div>
       </div>
       <div class="model-selection">
         <SectionTitle label="Slim" />
-        <div>
+        <div class="render">
           <DragAndDrop on:drop={(e) => onDrop(e, MODEL_TYPE.ALEX)}>
             <OutfitPackageRender
               resizable
@@ -93,10 +97,13 @@
             />
           </DragAndDrop>
         </div>
-        <Button
-          label="Upload image"
-          on:click={(e) => onUpload(e, MODEL_TYPE.ALEX)}
-        />
+        <div>
+          <Button
+            icon={ImportPackageIcon}
+            label="Upload image"
+            on:click={(e) => onUpload(e, MODEL_TYPE.ALEX)}
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -116,7 +123,7 @@
         flex: 1;
         display: flex;
         text-align: center;
-        div {
+        .render {
           padding: 4px;
           box-sizing: border-box;
           display: flex;

@@ -1,0 +1,46 @@
+#profile-info {
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  & > div {
+    gap: 8px;
+    background-color: var(--color-theme-D1);
+    padding: 8px 22px 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+  #profile-avatar-section {
+    #profile-avatar {
+      width: 96px;
+      image-rendering: pixelated;
+    }
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    #profile-avatar-actions {
+      max-width: 340px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+  #profile-avatar-skin {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 452px;
+  }
+  #profile-name {
+    display: flex;
+    flex-direction: row;
+    gap:16px;
+    max-width: 452px;
+    #profile-name-input {
+      flex:1;
+      max-width: 452px;
+    }
+  }
+}

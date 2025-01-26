@@ -27,6 +27,7 @@
 <style lang="scss">
   .menu-item {
     user-select: none;
+    text-decoration: none;
     cursor: pointer;
     display: flex;
     box-sizing: border-box;
@@ -34,6 +35,7 @@
     font-family: minecraft-simple;
     box-sizing: border-box;
     padding: 7px 8px;
+    color: var(--color-theme-font);
     gap: 8px;
     &.top {
       flex: 1;

@@ -2,7 +2,7 @@
   //main imports
   import { _ } from "svelte-i18n";
   import { writable, type Writable } from "svelte/store";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { propertyStore } from "svelte-writable-derived";
   import * as THREE from "three";
   //api
@@ -148,8 +148,9 @@
     force: boolean = false
   ) {};
 
+  let stateSub = null;
   onMount(async () => {
-    CURRENT_APP_STATE.subscribe(async (state) => {
+    stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
       renderer = new THREE.WebGLRenderer({
         alpha: true,
@@ -179,6 +180,9 @@
         await UpdatePackageDebounced();
       });
     });
+  });
+  onDestroy(() => {
+    stateSub();
   });
 
   //layers
