@@ -134,7 +134,7 @@
     if (cachedtexture != null)
       await textureRenderer.SetTextureAsync(cachedtexture);
   };
-  const setSource = async (v, oldModel, newModel, oldLayerId, newLayerId) => {
+  const setSource = async (v, oldModel, newModel, oldLayerId, newLayerId,oldCape,newCape) => {
     if (!initialized) return;
     if (_source == null || _source == "") return;
 
@@ -146,7 +146,7 @@
       typeof v !== "string" &&
       _source != null &&
       oldModel != null &&
-      newLayerId != oldLayerId
+      (newLayerId != oldLayerId || oldCape != newCape)
     ) {
       isReRender = isReRenderNeeded(_source, v, oldModel, newModel);
       isLayersModified = isLayersChanged(_source, v);
@@ -166,7 +166,6 @@
         .ConvertAsyncWithFlattenSettingsAsync();
       await textureRenderer.SetTextureAsync(cachedtexture);
     } else {
-
       cachedtexture = _source;
       await textureRenderer.SetTextureAsync(cachedtexture);
     }
@@ -305,14 +304,17 @@
     }
     await textureRenderer.SetModelScene(modelScene.Clone());
   };
-  const syncModelSource = async function (vModel, vSource, vLayerId) {
+  const syncModelSource = async function (vModel, vSource, vLayerId, vCape) {
     const oldModel = merger.GetModel();
     await setModel(vModel);
     const newModel = merger.GetModel();
     const oldLayerId = merger.GetLayerId();
     await setLayerId(vLayerId);
     const newLayerId = merger.GetLayerId();
-    await setSource(vSource, oldModel, newModel, oldLayerId, newLayerId);
+    const oldCape = _cape;
+    await setCape(vCape);
+    const newCape = vCape;
+    await setSource(vSource, oldModel, newModel, oldLayerId, newLayerId,oldCape,newCape);
   };
 
   const isReRenderNeeded = function (
@@ -351,14 +353,13 @@
     return false;
   };
 
-  $: syncModelSource(model, source, layerId);
+  $: syncModelSource(model, source, layerId, cape);
   $: setBaseTexture(baseTexture);
   $: setOutfitType(outfitType);
 
   $: setFlatten(isFlatten);
   $: setLayerId(layerId);
   $: setCameraOptions(cameraOptions);
-  $: setCape(cape);
 
   const onResize = async function () {
     if (!initialized) return;
