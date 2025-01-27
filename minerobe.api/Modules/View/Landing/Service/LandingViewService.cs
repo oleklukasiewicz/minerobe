@@ -1,8 +1,9 @@
 ﻿using minerobe.api.Database;
-using minerobe.api.Entity.Summary;
-using minerobe.api.Services.Interface;
+using minerobe.api.Entity.Agregation;
+using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.View.Landing.Interface;
 
-namespace minerobe.api.Services.View
+namespace minerobe.api.Modules.View.Landing.Service
 {
     public class LandingViewService : ILandingViewService
     {

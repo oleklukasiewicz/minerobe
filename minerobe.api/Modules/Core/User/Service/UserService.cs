@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
-using minerobe.api.Entity.User;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Settings.Entity;
+using minerobe.api.Modules.Core.User.Entity;
+using minerobe.api.Modules.Core.User.Interface;
 using System.Security.Claims;
 
-namespace minerobe.api.Services
+namespace minerobe.api.Modules.Core.User.Service
 {
     public class UserService : IUserService
     {
@@ -116,7 +117,7 @@ namespace minerobe.api.Services
             await _context.MinerobeUserLinks.AddAsync(link);
 
             //creating settings
-            var settings = new Entity.Settings.UserSettings
+            var settings = new UserSettings
             {
                 Id = Guid.NewGuid(),
                 OwnerId = newUser.Id,

@@ -1,8 +1,10 @@
-﻿using minerobe.api.Entity.Summary;
-using minerobe.api.Entity.User;
+﻿using minerobe.api.Entity.Agregation;
 using minerobe.api.Helpers.Model;
-using minerobe.api.ResponseModel.Package;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.Package.ResponseModel;
+using minerobe.api.Modules.Core.User.Entity;
+using minerobe.api.Modules.Core.User.Interface;
+using minerobe.api.Modules.Core.Wardrobe.Interface;
 using minerobe.api.ServicesHelpers.Interface;
 
 namespace minerobe.api.ServicesHelpers
@@ -23,7 +25,7 @@ namespace minerobe.api.ServicesHelpers
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
-                var package = await _packageService.GetById(item.Id, null, true);
+                var package = await _packageService.GetById(item.Id, null);
 
                 var isInwadrobe = false;
                 if (user != null)
@@ -37,7 +39,7 @@ namespace minerobe.api.ServicesHelpers
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
-                var package = await _packageService.GetById(item.Id, null, true);
+                var package = await _packageService.GetById(item.Id, null);
                 items.Add(package.ToListItemResponseModel(maxLayerCount, 1, false));
             }
             return items;

@@ -1,16 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
-using minerobe.api.Entity;
-using minerobe.api.Entity.Collection;
-using minerobe.api.Entity.Package;
-using minerobe.api.Entity.Summary;
-using minerobe.api.Entity.Wardrobe;
+using minerobe.api.Entity.Agregation;
 using minerobe.api.Helpers.Filter;
 using minerobe.api.Helpers.Wardrobe;
-using minerobe.api.Helpers.WardrobeHelpers;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Collection.Entity;
+using minerobe.api.Modules.Core.Collection.Interface;
+using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.Social.Entity;
+using minerobe.api.Modules.Core.Social.Interface;
+using minerobe.api.Modules.Core.User.Interface;
+using minerobe.api.Modules.Core.Wardrobe.Entity;
+using minerobe.api.Modules.Core.Wardrobe.Interface;
 
-namespace minerobe.api.Services
+namespace minerobe.api.Modules.Core.Wardrobe.Service
 {
     public class WardrobeService : IWardrobeService
     {
@@ -27,13 +30,13 @@ namespace minerobe.api.Services
             _collectionService = collectionService;
             _userService = userService;
         }
-        public async Task<Wardrobe> Get(Guid id)
+        public async Task<Helpers.Wardrobe.Wardrobe> Get(Guid id)
         {
             var user = await _userService.GetUserOfWardrobe(id);
             if (user == null)
                 return null;
 
-            var wardrobe = new Wardrobe();
+            var wardrobe = new Helpers.Wardrobe.Wardrobe();
             if (wardrobe.Outfits == null)
                 wardrobe.Outfits = new List<OutfitPackage>();
             if (wardrobe.Collections == null)
@@ -80,7 +83,7 @@ namespace minerobe.api.Services
 
             //add matching
 
-            var metching = new WardrobeMatching()
+            var metching = new Entity.WardrobeMatching()
             {
                 OutfitPackageId = outfitref.Id,
                 WardrobeId = wardrobeId

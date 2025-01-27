@@ -1,6 +1,6 @@
 ﻿using minerobe.api.Helpers.Integration;
 
-namespace minerobe.api.ResponseModel.Integration.JavaXbox
+namespace minerobe.api.Modules.Integration.Minecraft.ResponseModel
 {
     public class JavaXboxProfileSimpleResponseModel
     {

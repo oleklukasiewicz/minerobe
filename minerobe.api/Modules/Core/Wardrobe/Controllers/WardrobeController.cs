@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using minerobe.api.Helpers;
 using minerobe.api.Helpers.Filter;
 using minerobe.api.Helpers.Model;
-using minerobe.api.ResponseModel.Collection;
-using minerobe.api.ResponseModel.Package;
-using minerobe.api.ResponseModel.Wardrobe;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Collection.ResponseModel;
+using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.User.Interface;
+using minerobe.api.Modules.Core.Wardrobe.Interface;
+using minerobe.api.Modules.Core.Wardrobe.ResponseModel;
 using minerobe.api.ServicesHelpers.Interface;
 
-namespace minerobe.api.Controllers
+namespace minerobe.api.Modules.Core.Wardrobe.Controllers
 {
     [Route("Wardrobe")]
     [Authorize]

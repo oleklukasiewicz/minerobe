@@ -1,7 +1,7 @@
-﻿using minerobe.api.Entity.Settings;
-using minerobe.api.ResponseModel.Package;
+﻿using minerobe.api.Modules.Core.Package.ResponseModel;
+using minerobe.api.Modules.Core.Settings.Entity;
 
-namespace minerobe.api.ResponseModel.User
+namespace minerobe.api.Modules.Core.Settings.ResponseModel
 {
     public class UserSettingsSimpleResponseModel
     {
@@ -10,7 +10,7 @@ namespace minerobe.api.ResponseModel.User
         public Guid? CurrentTexturePackageId { get; set; }
         public TextureConfigResponseModel CurrentTextureConfig { get; set; }
         public Guid? CurrentCapeId { get; set; }
-        public OutfitPackageListItemResponseModel? BaseTexture { get; set; }
+        public OutfitPackageListItemResponseModel BaseTexture { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public List<string> Integrations { get; set; }

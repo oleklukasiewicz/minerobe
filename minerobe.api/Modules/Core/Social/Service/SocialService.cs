@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
-using minerobe.api.Entity;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Social.Entity;
+using minerobe.api.Modules.Core.Social.Interface;
 
-namespace minerobe.api.Services
+namespace minerobe.api.Modules.Core.Social.Service
 {
     public class SocialService : ISocialService
     {

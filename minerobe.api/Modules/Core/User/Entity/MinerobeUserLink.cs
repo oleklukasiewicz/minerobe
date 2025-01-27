@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace minerobe.api.Entity.User
+namespace minerobe.api.Modules.Core.User.Entity
 {
     public class MinerobeUserLink
     {

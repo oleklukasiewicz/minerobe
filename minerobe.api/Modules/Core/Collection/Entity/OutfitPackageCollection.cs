@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using minerobe.api.Entity.Package;
-using minerobe.api.Entity.User;
 using minerobe.api.Extensions;
+using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.Social.Entity;
+using minerobe.api.Modules.Core.User.Entity;
 
-namespace minerobe.api.Entity.Collection
+namespace minerobe.api.Modules.Core.Collection.Entity
 {
     public class OutfitPackageCollection
     {

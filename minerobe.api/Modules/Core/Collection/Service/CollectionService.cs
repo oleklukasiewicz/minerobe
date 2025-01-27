@@ -1,11 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
-using minerobe.api.Entity.Collection;
-using minerobe.api.Entity.Package;
 using minerobe.api.Helpers.Model;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Collection.Entity;
+using minerobe.api.Modules.Core.Collection.Interface;
+using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.Social.Interface;
+using minerobe.api.Modules.Core.User.Interface;
 
-namespace minerobe.api.Services
+namespace minerobe.api.Modules.Core.Collection.Service
 {
     public class CollectionService : ICollectionService
     {

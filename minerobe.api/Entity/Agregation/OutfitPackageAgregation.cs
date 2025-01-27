@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace minerobe.api.Entity.Summary
+namespace minerobe.api.Entity.Agregation
 {
     public class OutfitPackageAgregation
     {

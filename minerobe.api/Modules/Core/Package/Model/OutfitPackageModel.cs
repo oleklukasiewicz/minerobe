@@ -1,7 +1,7 @@
-﻿using minerobe.api.Entity.Package;
-using minerobe.api.Helpers;
+﻿using minerobe.api.Helpers;
+using minerobe.api.Modules.Core.Package.Entity;
 
-namespace minerobe.api.Model.Package
+namespace minerobe.api.Modules.Core.Package.Model
 {
     public class OutfitPackageModel
     {
@@ -12,14 +12,13 @@ namespace minerobe.api.Model.Package
         public Guid PublisherId { get; set; }
         public string Description { get; set; }
         public string OutfitType { get; set; }
-        public Guid? PrimaryLayerId { get; set; }
 
     }
     public static class OutfitPackageModelExtensions
     {
         public static OutfitPackage ToEntity(this OutfitPackageModel model)
         {
-            var layers = model.Layers.Select(x => x.ToEntity()).ToList();
+            var layers = model?.Layers.Select(x => x.ToEntity()).ToList();
 
             return new OutfitPackage
             {
@@ -30,7 +29,6 @@ namespace minerobe.api.Model.Package
                 PublisherId = model.PublisherId,
                 Description = model.Description,
                 OutfitType = Enum.Parse<OutfitType>(model.OutfitType.ToFirstCapitalLetter()),
-                PrimaryLayerId = model.PrimaryLayerId
             };
         }
     }

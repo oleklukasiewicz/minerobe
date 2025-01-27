@@ -1,13 +1,12 @@
-﻿using minerobe.api.Entity;
+﻿using minerobe.api.Modules.Core.Package.Entity;
 using System.Text;
 
-namespace minerobe.api.Model
+namespace minerobe.api.Modules.Core.Package.Model
 {
     public class FileDataModel
     {
         public string FileName { get; set; }
         public string Content { get; set; }
-        public string ContentSnapshot { get; set; }
     }
     public static class FileDataModelExtensions
     {
@@ -17,7 +16,6 @@ namespace minerobe.api.Model
             {
                 FileName = model.FileName,
                 Content = Encoding.UTF8.GetBytes(model.Content),
-                ContentSnapshot = model.ContentSnapshot == null || model.ContentSnapshot.Length == 0 ? Encoding.UTF8.GetBytes(model.Content) : Encoding.UTF8.GetBytes(model.ContentSnapshot)
             };
         }
     }

@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.ResponseModel.Integration.JavaXbox;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.User.Interface;
+using minerobe.api.Modules.Integration.Minecraft.Interface;
+using minerobe.api.Modules.Integration.Minecraft.ResponseModel;
 
-namespace minerobe.api.Controllers.Integration
+namespace minerobe.api.Modules.Integration.Minecraft.Controllers
 {
     [Route("JavaXboxAuth")]
     public class JavaXboxAuthController : Controller

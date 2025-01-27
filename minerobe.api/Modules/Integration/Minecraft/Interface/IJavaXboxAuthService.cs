@@ -1,9 +1,9 @@
-﻿using minerobe.api.Entity.Package;
-using minerobe.api.Entity.User;
-using minerobe.api.Helpers.Integration;
-using static minerobe.api.Services.Integration.JavaXboxAuthService;
+﻿using minerobe.api.Helpers.Integration;
+using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.User.Entity;
+using static minerobe.api.Modules.Integration.Minecraft.Service.JavaXboxAuthService;
 
-namespace minerobe.api.Services.Interface
+namespace minerobe.api.Modules.Integration.Minecraft.Interface
 {
     public interface IJavaXboxAuthService
     {

@@ -1,7 +1,7 @@
-﻿using minerobe.api.Entity.Collection;
-using minerobe.api.Helpers.Model;
+﻿using minerobe.api.Helpers.Model;
+using minerobe.api.Modules.Core.Collection.Entity;
 
-namespace minerobe.api.Services.Interface
+namespace minerobe.api.Modules.Core.Collection.Interface
 {
     public interface ICollectionService
     {

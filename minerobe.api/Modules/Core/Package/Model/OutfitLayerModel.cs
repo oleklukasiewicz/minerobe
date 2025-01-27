@@ -1,7 +1,7 @@
-﻿using minerobe.api.Entity.Package;
-using minerobe.api.Helpers;
+﻿using minerobe.api.Helpers;
+using minerobe.api.Modules.Core.Package.Entity;
 
-namespace minerobe.api.Model.Package
+namespace minerobe.api.Modules.Core.Package.Model
 {
     public class OutfitLayerModel
     {

@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using minerobe.api.Entity.Package;
 using minerobe.api.Extensions;
+using minerobe.api.Modules.Core.Package.Entity;
 
-namespace minerobe.api.Entity.Settings
+namespace minerobe.api.Modules.Core.Settings.Entity
 {
     public class UserSettings
     {
@@ -12,7 +12,7 @@ namespace minerobe.api.Entity.Settings
         public string Theme { get; set; }
         public Guid? CurrentTexturePackageId { get; set; }
         public TextureRenderConfig CurrentTexture { get; set; }
-        public OutfitPackage? BaseTexture { get; set; }
+        public OutfitPackage BaseTexture { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public List<IntegrationMatching> Integrations { get; set; }

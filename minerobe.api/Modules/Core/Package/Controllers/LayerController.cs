@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.Model.Package;
-using minerobe.api.ResponseModel.Package;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.Package.Model;
+using minerobe.api.Modules.Core.Package.ResponseModel;
+using minerobe.api.Modules.Core.User.Interface;
 
-namespace minerobe.api.Controllers
+namespace minerobe.api.Modules.Core.Package.Controllers
 {
     [Route("Layers")]
     [Authorize]
@@ -33,23 +34,6 @@ namespace minerobe.api.Controllers
                 return Unauthorized();
 
             return Ok(layer.ToResponseModel(layer.SourcePackageId.Value, false));
-        }
-        [HttpGet("{id}/snapshot")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetSnapshot(Guid id)
-        {
-            var user = await _userService.GetFromExternalUser(User);
-
-            var layer = await _packageService.GetLayerById(id);
-            if (layer == null)
-                return NotFound();
-
-
-            var canAccess = await _packageService.CanAccessPackage(layer.SourcePackageId.Value, user.Id);
-            if (canAccess == false)
-                return Unauthorized();
-
-            return Ok(layer.ToResponseModel(layer.SourcePackageId.Value, true));
         }
         [HttpPost("")]
         public async Task<IActionResult> Add([FromBody] OutfitLayerModel layer)

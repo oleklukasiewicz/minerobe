@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.Model;
-using minerobe.api.ResponseModel.Collection;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Collection.Interface;
+using minerobe.api.Modules.Core.Collection.Model;
+using minerobe.api.Modules.Core.Collection.ResponseModel;
+using minerobe.api.Modules.Core.User.Interface;
 
-namespace minerobe.api.Controllers
+namespace minerobe.api.Modules.Core.Collection.Controllers
 {
     [Route("Collections")]
     [Authorize]

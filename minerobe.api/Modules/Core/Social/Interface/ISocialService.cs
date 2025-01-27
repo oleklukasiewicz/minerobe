@@ -1,6 +1,6 @@
-﻿using minerobe.api.Entity;
+﻿using minerobe.api.Modules.Core.Social.Entity;
 
-namespace minerobe.api.Services.Interface
+namespace minerobe.api.Modules.Core.Social.Interface
 {
     public interface ISocialService
     {

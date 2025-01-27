@@ -1,6 +1,6 @@
-﻿using minerobe.api.Entity.Collection;
+﻿using minerobe.api.Modules.Core.Collection.Entity;
 
-namespace minerobe.api.Model
+namespace minerobe.api.Modules.Core.Collection.Model
 {
     public class OutfitPackageCollectionModel
     {

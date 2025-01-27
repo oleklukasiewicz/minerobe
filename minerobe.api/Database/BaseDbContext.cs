@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using minerobe.api.Entity;
-using minerobe.api.Entity.Collection;
-using minerobe.api.Entity.Package;
-using minerobe.api.Entity.Settings;
-using minerobe.api.Entity.Summary;
-using minerobe.api.Entity.User;
-using minerobe.api.Entity.Wardrobe;
+using minerobe.api.Entity.Agregation;
+using minerobe.api.Modules.Core.Collection.Entity;
+using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.Settings.Entity;
+using minerobe.api.Modules.Core.Social.Entity;
+using minerobe.api.Modules.Core.User.Entity;
+using minerobe.api.Modules.Core.Wardrobe.Entity;
 using System.Reflection;
 
 namespace minerobe.api.Database

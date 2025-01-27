@@ -1,9 +1,9 @@
-﻿using minerobe.api.Entity;
-using minerobe.api.Entity.Package;
-using minerobe.api.Helpers.Model;
-using minerobe.api.ResponseModel.User;
+﻿using minerobe.api.Helpers.Model;
+using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.Social.Entity;
+using minerobe.api.Modules.Core.User.ResponseModel;
 
-namespace minerobe.api.ResponseModel.Package
+namespace minerobe.api.Modules.Core.Package.ResponseModel
 {
 
     public class OutfitPackageListItemResponseModel
@@ -18,7 +18,6 @@ namespace minerobe.api.ResponseModel.Package
         public int TotalLayersCount { get; set; }
         public MinerobePackageUserResponseModel Publisher { get; set; }
         public bool IsInWardrobe { get; set; }
-        public OutfitPackagePresentationConfigModel PresentationConfig { get; set; }
     }
     public static class OutfitPackageListItemResponseModelExtensions
     {
@@ -28,22 +27,17 @@ namespace minerobe.api.ResponseModel.Package
             if (layersCount > entity.Layers.Count)
                 layersCount = entity.Layers.Count;
             var mergedLayers = entity.Layers.Where(x => x.IsMerged).FirstOrDefault();
-            var presentationMode = new OutfitPackagePresentationConfigModel();
             if (entity.Type == PackageType.Set && mergedLayers != null)
             {
-                presentationMode.IsMerged = true;
-                presentationMode.IsSnapshot = false;
-                layers.Add(mergedLayers.ToResponseModel(entity, false));
+                layers.Add(mergedLayers.ToResponseModel(entity));
             }
             else
             {
-                presentationMode.IsMerged = false;
-                presentationMode.IsSnapshot = true;
                 if (entity.Layers?.Count > 0)
                 {
                     for (int i = 0; i < layersCount; i++)
                     {
-                        layers.Add(entity.Layers[i].ToResponseModel(entity, false, i < loadedCount));
+                        layers.Add(entity.Layers[i].ToResponseModel(entity, i < loadedCount));
                     }
                 }
             }
@@ -59,8 +53,7 @@ namespace minerobe.api.ResponseModel.Package
                 IsInWardrobe = isInWardrobe,
                 Layers = layers,
                 Publisher = entity.Publisher.ToPackageResponseModel(),
-                TotalLayersCount = entity.Layers != null ? entity.Layers.Count : 0,
-                PresentationConfig = presentationMode
+                TotalLayersCount = entity.Layers != null ? entity.Layers.Count : 0
             };
         }
         public static List<OutfitPackageListItemResponseModel> ToListItemResponseModel(this List<OutfitPackage> entity, int layersCount = 2, int loadedCount = 1)

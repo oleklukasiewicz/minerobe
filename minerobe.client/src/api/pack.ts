@@ -12,7 +12,7 @@ export const GetPackage = async function (id: string) {
 };
 export const UpdatePackage = async function (packageData: OutfitPackage) {
   const data = Object.assign({}, packageData);
-  delete data.layers;
+  data.layers = [];
   const res = await PutRequest("/api/Package/" + packageData.id, data);
   return res;
 };
@@ -68,10 +68,6 @@ export const AddRemoteLayerToPackage = async function (
 };
 export const GetLayer = async function (id: string) {
   const res = await GetRequest("/api/Layers/" + id);
-  return res;
-};
-export const GetLayerSnapshot = async function (id: string) {
-  const res = await GetRequest("/api/Layers/" + id + "/snapshot");
   return res;
 };
 export const RemoveRemoteLayerFromPackage = async function (

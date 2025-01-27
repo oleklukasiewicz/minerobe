@@ -1,5 +1,5 @@
-﻿using minerobe.api.Entity.Collection;
-using minerobe.api.Entity.Package;
+﻿using minerobe.api.Modules.Core.Collection.Entity;
+using minerobe.api.Modules.Core.Package.Entity;
 
 namespace minerobe.api.Helpers.Wardrobe
 {

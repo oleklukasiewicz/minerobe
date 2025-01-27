@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
-using minerobe.api.Entity.Package;
 using minerobe.api.Helpers.Model;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.Social.Interface;
+using minerobe.api.Modules.Core.User.Interface;
 
-namespace minerobe.api.Services
+namespace minerobe.api.Modules.Core.Package.Service
 {
     public class PackageService : IPackageService
     {
@@ -19,54 +21,29 @@ namespace minerobe.api.Services
         }
 
         //package
-        public async Task<OutfitPackage?> GetById(Guid id, Guid? layerId = null, bool isSnapshot = false)
+        public async Task<OutfitPackage> GetById(Guid id, Guid? layerId = null)
         {
             var package = await _context.OutfitPackages.FindAsync(id);
             if (package == null)
                 return null;
 
-            //layers - snapshot,single for set
+            var layers = GetLayersOfPackage(id);
+
+            // specific layerId
             if (layerId != null)
-            {
-                package.Layers = new List<OutfitLayer>() { await GetLayerById(layerId.Value) };
-            }
-            else
-            {
-                if (isSnapshot == true)
-                {
-                    var query = package.Type == PackageType.Set ?
-                        _context.Set<OutfitLayerSimple>()
-                           .Where(x => x.PackageId == id && x.IsMerged == true) :
-                        _context.Set<OutfitLayerSimple>()
-                            .Where(x => x.PackageId == id)
-                            .OrderBy(x => x.Order);
+                layers = layers.Where(x => x.Id == layerId);
 
-                    package.Layers = query.Select(x => x.ToLayer()).ToList();
-
-                    //load first only
-                    if (package.Layers.Count > 0)
-                    {
-                        package.Layers[0] = await GetLayerById(package.Layers[0].Id);
-                    }
-                }
-                else
-                {
-                    package.Layers = await GetLayersOfPackage(id);
-                }
-            }
+            package.Layers = await layers.ToListAsync();
 
             //type
             if (package.Type == PackageType.Outfit && package.Layers.Count > 0)
-            {
                 package.OutfitType = package.Layers[0].OutfitType;
-            }
 
             //publisher
             var user = await _userService.GetById(package.PublisherId);
             if (user != null)
-            {
                 package.Publisher = user;
-            }
+
             //social
             var social = await _socialService.GetById(package.SocialDataId);
             package.Social = social;
@@ -113,9 +90,9 @@ namespace minerobe.api.Services
 
             return await GetById(packageId);
         }
-        public async Task<OutfitPackage?> Update(OutfitPackage package)
+        public async Task<OutfitPackage> Update(OutfitPackage package)
         {
-            OutfitPackage? outfitPackage = await GetById(package.Id);
+            OutfitPackage outfitPackage = await GetById(package.Id);
 
             if (outfitPackage == null)
                 return null;
@@ -346,18 +323,14 @@ namespace minerobe.api.Services
         }
 
         //helpers
-        private async Task<List<OutfitLayer>> GetLayersOfPackage(Guid packageId)
+        private IQueryable<OutfitLayer> GetLayersOfPackage(Guid packageId)
         {
-            var matchings = await _context.PackageLayerMatchings.Where(x => x.PackageId == packageId).OrderBy(x => x.Order).ToListAsync();
-            var layers = new List<OutfitLayer>();
-            foreach (var matching in matchings)
-            {
-                var layer = await _context.OutfitLayers.FindAsync(matching.LayerId);
-
-                if (layer == null) continue;
-
-                layers.Add(layer);
-            }
+            var layers = from layer in _context.OutfitLayers
+                         join matching in _context.PackageLayerMatchings
+                         on layer.Id equals matching.LayerId
+                         where matching.PackageId == packageId
+                         orderby matching.Order
+                         select layer;
             return layers;
         }
         private async Task<int> GetLayersCount(Guid packageId)
@@ -367,7 +340,7 @@ namespace minerobe.api.Services
         }
         private async Task<bool> FillLayerOrder(Guid packageId)
         {
-            var layers = await GetLayersOfPackage(packageId);
+            var layers = await GetLayersOfPackage(packageId).ToListAsync();
             int i = 0;
             foreach (var layer in layers)
             {

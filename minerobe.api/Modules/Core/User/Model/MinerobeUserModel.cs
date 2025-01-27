@@ -1,6 +1,6 @@
-using minerobe.api.Entity.User;
+using minerobe.api.Modules.Core.User.Entity;
 
-namespace minerobe.api.Model
+namespace minerobe.api.Modules.Core.User.Model
 {
     public class MinerobeUserModel
     {

@@ -1,6 +1,6 @@
-using minerobe.api.Entity.User;
+using minerobe.api.Modules.Core.User.Entity;
 
-namespace minerobe.api.ResponseModel.User
+namespace minerobe.api.Modules.Core.User.ResponseModel
 {
     public class MinerobePackageUserResponseModel
     {

@@ -1,4 +1,4 @@
-﻿namespace minerobe.api.Helpers.WardrobeHelpers
+﻿namespace minerobe.api.Helpers.Wardrobe
 {
     public class WadrobeSummary
     {

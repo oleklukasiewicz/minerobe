@@ -1,7 +1,7 @@
-﻿using minerobe.api.Entity.Package;
-using minerobe.api.Helpers.Model;
+﻿using minerobe.api.Helpers.Model;
+using minerobe.api.Modules.Core.Package.Entity;
 
-namespace minerobe.api.Services.Interface
+namespace minerobe.api.Modules.Core.Package.Interface
 {
     public interface IPackageService
     {
@@ -11,9 +11,9 @@ namespace minerobe.api.Services.Interface
         Task<bool> Delete(Guid id);
         Task<OutfitLayer> GetLayerById(Guid id);
         Task<bool> DeleteLayer(Guid id);
-        Task<OutfitPackage?> GetById(Guid id, Guid? layerId = null, bool isSnapshot = false);
+        Task<OutfitPackage> GetById(Guid id, Guid? layerId = null);
         Task<bool> RemoveLayerFromPackage(Guid layerId, Guid packageId);
-        Task<OutfitPackage?> Update(OutfitPackage package);
+        Task<OutfitPackage> Update(OutfitPackage package);
         Task<OutfitLayer> UpdateLayer(OutfitLayer layer);
         Task<PackageAccessModel> GetPackageAccess(Guid packageId);
         Task<bool> CanEditPackage(Guid packageId, Guid userId);

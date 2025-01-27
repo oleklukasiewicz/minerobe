@@ -1,5 +1,5 @@
 ﻿using Hangfire;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Integration.Minecraft.Interface;
 
 namespace minerobe.api.Jobs
 {

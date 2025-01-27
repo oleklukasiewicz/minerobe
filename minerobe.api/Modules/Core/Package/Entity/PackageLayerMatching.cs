@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace minerobe.api.Entity.Package
+namespace minerobe.api.Modules.Core.Package.Entity
 {
     public class PackageLayerMatching
     {

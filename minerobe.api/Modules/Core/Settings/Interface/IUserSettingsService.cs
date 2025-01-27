@@ -1,7 +1,7 @@
-﻿using minerobe.api.Entity.Package;
-using minerobe.api.Entity.Settings;
+﻿using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.Settings.Entity;
 
-namespace minerobe.api.Services.Interface
+namespace minerobe.api.Modules.Core.Settings.Interface
 {
     public interface IUserSettingsService
     {

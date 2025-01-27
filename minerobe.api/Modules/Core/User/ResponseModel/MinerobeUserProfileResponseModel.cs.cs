@@ -1,8 +1,10 @@
-﻿using minerobe.api.Entity;
-using minerobe.api.Entity.Settings;
-using minerobe.api.Entity.User;
+﻿using minerobe.api.Modules.Core.Settings.Entity;
+using minerobe.api.Modules.Core.Settings.ResponseModel;
+using minerobe.api.Modules.Core.Social.Entity;
+using minerobe.api.Modules.Core.User.Entity;
+using minerobe.api.Modules.Core.User.ResponseModel;
 
-namespace minerobe.api.ResponseModel.User
+namespace minerobe.api.Modules.Core.User.ResponseModel
 {
     public class MinerobeUserProfileResponseModel
     {

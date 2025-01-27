@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using minerobe.api.Helpers;
 using minerobe.api.Helpers.Filter;
 using minerobe.api.Helpers.Model;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.User.Interface;
+using minerobe.api.Modules.View.Landing.Interface;
 using minerobe.api.ServicesHelpers.Interface;
 
-namespace minerobe.api.Controllers.View
+namespace minerobe.api.Modules.View.Landing.Controllers
 {
     [AllowAnonymous]
     [Route("LandingView")]

@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.Model.Package;
-using minerobe.api.ResponseModel.Package;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.Package.Model;
+using minerobe.api.Modules.Core.Package.ResponseModel;
+using minerobe.api.Modules.Core.User.Interface;
+using minerobe.api.Modules.Core.Wardrobe.Interface;
 
-namespace minerobe.api.Controllers
+namespace minerobe.api.Modules.Core.Package.Controllers
 {
     [Route("Package")]
     [Authorize]
@@ -43,7 +45,7 @@ namespace minerobe.api.Controllers
             return Ok(res.ToResponseModel());
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] OutfitPackageSimpleModel package, Guid id)
+        public async Task<IActionResult> Update([FromBody] OutfitPackageModel package, Guid id)
         {
             var ent = package.ToEntity();
             ent.Id = id;
@@ -59,7 +61,7 @@ namespace minerobe.api.Controllers
                 return NotFound();
 
             var isInWardrobe = await _wardrobeService.IsPackageInWardrobe(user.Id, id);
-            return Ok(res.ToSimpleResponseModel(isInWardrobe));
+            return Ok(res.ToResponseModel(isInWardrobe, false));
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)

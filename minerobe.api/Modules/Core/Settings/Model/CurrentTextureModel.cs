@@ -1,10 +1,9 @@
-
-using minerobe.api.Entity.Package;
-using minerobe.api.Entity.Settings;
 using minerobe.api.Helpers;
+using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.Settings.Entity;
 using System.Text;
 
-namespace minerobe.api.Model
+namespace minerobe.api.Modules.Core.Settings.Model
 {
     public class TextureRenderConfigModel
     {

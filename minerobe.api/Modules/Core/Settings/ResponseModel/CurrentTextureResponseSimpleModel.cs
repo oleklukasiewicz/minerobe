@@ -1,6 +1,6 @@
-﻿using minerobe.api.Entity.Settings;
+﻿using minerobe.api.Modules.Core.Settings.Entity;
 
-namespace minerobe.api.ResponseModel.User
+namespace minerobe.api.Modules.Core.Settings.ResponseModel
 {
     public class TextureConfigResponseModel
     {

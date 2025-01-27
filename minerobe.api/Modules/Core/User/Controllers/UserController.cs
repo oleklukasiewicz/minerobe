@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.Model;
-using minerobe.api.ResponseModel.User;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Settings.Interface;
+using minerobe.api.Modules.Core.Social.Interface;
+using minerobe.api.Modules.Core.User.Interface;
+using minerobe.api.Modules.Core.User.Model;
+using minerobe.api.Modules.Core.User.ResponseModel;
 
-namespace minerobe.api.Controllers
+namespace minerobe.api.Modules.Core.User.Controllers
 {
     [Route("User")]
     [Authorize]

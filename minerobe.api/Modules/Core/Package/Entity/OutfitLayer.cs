@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using minerobe.api.Extensions;
 
-namespace minerobe.api.Entity.Package
+namespace minerobe.api.Modules.Core.Package.Entity
 {
     public enum LayerType
     {

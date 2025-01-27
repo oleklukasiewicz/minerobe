@@ -1,7 +1,8 @@
-﻿using minerobe.api.ResponseModel.Collection;
-using minerobe.api.ResponseModel.Package;
+﻿using minerobe.api.Modules.Core.Collection.ResponseModel;
+using minerobe.api.Modules.Core.Package.ResponseModel;
+using minerobe.api.Modules.Core.Wardrobe.ResponseModel;
 
-namespace minerobe.api.ResponseModel.Wardrobe
+namespace minerobe.api.Modules.Core.Wardrobe.ResponseModel
 {
     public class WardrobeResponseModel
     {
@@ -11,7 +12,7 @@ namespace minerobe.api.ResponseModel.Wardrobe
     }
     public static class WardrobeResponseModelExtensions
     {
-        public static WardrobeResponseModel ToResponseModel(this api.Helpers.Wardrobe.Wardrobe entity)
+        public static WardrobeResponseModel ToResponseModel(this Helpers.Wardrobe.Wardrobe entity)
         {
             var outfits = entity.Outfits?.Select(x => x?.ToListItemResponseModel(2, 1, true)).ToList();
             var collections = entity.Collections?.Select(x => x.ToResponseModel()).ToList();

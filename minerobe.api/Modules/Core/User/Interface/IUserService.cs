@@ -1,7 +1,7 @@
-﻿using minerobe.api.Entity.User;
+﻿using minerobe.api.Modules.Core.User.Entity;
 using System.Security.Claims;
 
-namespace minerobe.api.Services.Interface
+namespace minerobe.api.Modules.Core.User.Interface
 {
     public interface IUserService
     {

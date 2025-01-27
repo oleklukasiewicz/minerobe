@@ -4,19 +4,20 @@ using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
 using minerobe.api.Configuration;
 using minerobe.api.Database;
-using minerobe.api.Entity.Package;
-using minerobe.api.Entity.Settings;
-using minerobe.api.Entity.User;
 using minerobe.api.Helpers;
 using minerobe.api.Helpers.Integration;
 using minerobe.api.Hubs;
+using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.Settings.Entity;
+using minerobe.api.Modules.Core.Settings.Interface;
+using minerobe.api.Modules.Core.User.Entity;
 using minerobe.api.Modules.Integration.Minecraft.Entity;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Integration.Minecraft.Interface;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text;
-namespace minerobe.api.Services.Integration
+namespace minerobe.api.Modules.Integration.Minecraft.Service
 {
     public enum JavaXboxAuthStatus
     {
@@ -178,7 +179,7 @@ namespace minerobe.api.Services.Integration
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return profile;
             }
@@ -211,7 +212,7 @@ namespace minerobe.api.Services.Integration
                 _ctx.UserSettings.Update(settings);
                 await _ctx.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return data;
             }
@@ -248,7 +249,7 @@ namespace minerobe.api.Services.Integration
             var url = "https://api.minecraftservices.com/minecraft/profile/capes/active";
             var body = new
             {
-                capeId = capeId
+                capeId
             };
             var request = new HttpRequestMessage(HttpMethod.Put, url);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -326,7 +327,7 @@ namespace minerobe.api.Services.Integration
                 {
                     status.Status = JavaXboxAuthStatus.AwaitingUserInput;
 
-                    var message = new { UserCode = fallback.UserCode, VerificationUrl = fallback.VerificationUrl };
+                    var message = new { fallback.UserCode, fallback.VerificationUrl };
                     _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status, message).ToResponseModel());
 
                     return Task.FromResult(0);
@@ -360,7 +361,7 @@ namespace minerobe.api.Services.Integration
 
                 return new FlowAuthentication() { Token = accessToken, MsalToken = msalToken, RetrievedAt = DateTime.Now, AccountId = accountId, Status = status };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 status.IsSuccess = false;
                 await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
@@ -413,7 +414,7 @@ namespace minerobe.api.Services.Integration
 
             var uhs = xstsTokenJson["DisplayClaims"]["xui"][0]["uhs"].ToString();
 
-            return new { token = xstsAuthorizeToken, uhs = uhs };
+            return new { token = xstsAuthorizeToken, uhs };
         }
         private async Task<string> AuthorizeToMinecraftServices(string token, string uhs)
         {

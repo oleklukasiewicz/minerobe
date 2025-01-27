@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.Entity.Settings;
-using minerobe.api.Model;
-using minerobe.api.Model.Package;
-using minerobe.api.ResponseModel.User;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Package.Model;
+using minerobe.api.Modules.Core.Settings.Entity;
+using minerobe.api.Modules.Core.Settings.Interface;
+using minerobe.api.Modules.Core.Settings.Model;
+using minerobe.api.Modules.Core.Settings.ResponseModel;
+using minerobe.api.Modules.Core.User.Interface;
+using minerobe.api.Modules.Integration.Minecraft.Interface;
 
-namespace minerobe.api.Controllers
+namespace minerobe.api.Modules.Core.Settings.Controllers
 {
 
     [Route("UserSettings")]

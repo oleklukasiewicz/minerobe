@@ -1,5 +1,5 @@
-﻿using minerobe.api.Entity.Package;
-using minerobe.api.Entity.Summary;
+﻿using minerobe.api.Entity.Agregation;
+using minerobe.api.Modules.Core.Package.Entity;
 
 namespace minerobe.api.Helpers.Filter
 {

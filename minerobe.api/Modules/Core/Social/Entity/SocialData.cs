@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace minerobe.api.Entity
+namespace minerobe.api.Modules.Core.Social.Entity
 {
     public class SocialData
     {

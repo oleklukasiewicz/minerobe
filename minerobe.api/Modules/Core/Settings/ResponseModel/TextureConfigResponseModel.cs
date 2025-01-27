@@ -1,7 +1,7 @@
-using minerobe.api.Entity.Settings;
+using minerobe.api.Modules.Core.Settings.Entity;
 using System.Text;
 
-namespace minerobe.api.ResponseModel.User
+namespace minerobe.api.Modules.Core.Settings.ResponseModel
 {
     public class TextureRenderConfigResponseModel
     {

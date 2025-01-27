@@ -1,7 +1,7 @@
-﻿using minerobe.api.Entity.Summary;
-using minerobe.api.Entity.User;
+﻿using minerobe.api.Entity.Agregation;
 using minerobe.api.Helpers.Model;
-using minerobe.api.ResponseModel.Package;
+using minerobe.api.Modules.Core.Package.ResponseModel;
+using minerobe.api.Modules.Core.User.Entity;
 
 namespace minerobe.api.ServicesHelpers.Interface
 {

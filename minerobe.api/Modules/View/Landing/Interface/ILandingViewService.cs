@@ -1,6 +1,6 @@
-﻿using minerobe.api.Entity.Summary;
+﻿using minerobe.api.Entity.Agregation;
 
-namespace minerobe.api.Services.Interface
+namespace minerobe.api.Modules.View.Landing.Interface
 {
     public interface ILandingViewService
     {

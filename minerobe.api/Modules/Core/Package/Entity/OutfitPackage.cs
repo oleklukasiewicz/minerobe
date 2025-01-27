@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using minerobe.api.Entity.User;
+using minerobe.api.Modules.Core.Social.Entity;
+using minerobe.api.Modules.Core.User.Entity;
 
-namespace minerobe.api.Entity.Package
+namespace minerobe.api.Modules.Core.Package.Entity
 {
     public enum PackageType
     {
@@ -42,7 +43,6 @@ namespace minerobe.api.Entity.Package
         public DateTime? ModifiedAt { get; set; }
         public List<OutfitLayer> Layers { get; set; }
         public MinerobeUser Publisher { get; set; }
-        public Guid? PrimaryLayerId { get; set; }
     }
     public class OutfitPackageConfig : IEntityTypeConfiguration<OutfitPackage>
     {

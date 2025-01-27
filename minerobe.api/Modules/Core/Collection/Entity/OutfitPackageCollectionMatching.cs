@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace minerobe.api.Entity.Collection
+namespace minerobe.api.Modules.Core.Collection.Entity
 {
     public class OutfitPackageCollectionMatching
     {

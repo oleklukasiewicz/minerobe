@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using minerobe.api.Services.Interface;
+using minerobe.api.Modules.Core.Social.Interface;
 
-namespace minerobe.api.Controllers
+namespace minerobe.api.Modules.Core.Social.Controllers
 {
     [Route("Social")]
     [Authorize]

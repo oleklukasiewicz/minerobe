@@ -1,14 +1,9 @@
-﻿using minerobe.api.Entity;
-using minerobe.api.Entity.Package;
-using minerobe.api.ResponseModel.User;
+﻿using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.Social.Entity;
+using minerobe.api.Modules.Core.User.ResponseModel;
 
-namespace minerobe.api.ResponseModel.Package
+namespace minerobe.api.Modules.Core.Package.ResponseModel
 {
-    public class OutfitPackagePresentationConfigModel
-    {
-        public bool IsMerged { get; set; }
-        public bool IsSnapshot { get; set; }
-    }
     public class OutfitPackageResponseModel
     {
         public Guid Id { get; set; }
@@ -24,18 +19,16 @@ namespace minerobe.api.ResponseModel.Package
         public int TotalLayersCount { get; set; }
         public MinerobePackageUserResponseModel Publisher { get; set; }
         public bool IsInWardrobe { get; set; }
-        public OutfitPackagePresentationConfigModel PresentationConfig { get; set; }
-        public Guid? PrimaryLayerId { get; set; }
     }
     public static class OutfitPackageResponseModelExtensions
     {
         public static OutfitPackageResponseModel ToResponseModel(this OutfitPackage entity)
         {
-            return ToResponseModel(entity, false);
+            return entity.ToResponseModel(false);
         }
-        public static OutfitPackageResponseModel ToResponseModel(this OutfitPackage entity, bool isInWardrobe)
+        public static OutfitPackageResponseModel ToResponseModel(this OutfitPackage entity, bool isInWardrobe, bool loadLayers = true)
         {
-            var layers = entity.Layers?.Where(x => x.IsMerged == false).Select(x => x.ToResponseModel(entity, false)).ToList();
+            var layers = loadLayers ? entity.Layers?.Where(x => x.IsMerged == false).Select(x => x.ToResponseModel(entity, true)).ToList() : new List<OutfitLayerResponseModel>();
             return new OutfitPackageResponseModel
             {
                 Id = entity.Id,
@@ -64,7 +57,7 @@ namespace minerobe.api.ResponseModel.Package
             foreach (var layer in entity.Layers)
             {
                 var outfit = entity.ToListItemResponseModel(1, 1, isInWardrobe);
-                outfit.Layers = new List<OutfitLayerResponseModel> { layer.ToResponseModel(entity, true) };
+                outfit.Layers = new List<OutfitLayerResponseModel> { layer.ToResponseModel(entity) };
                 layers.Add(outfit);
             }
             return layers;
