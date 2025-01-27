@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Modules\Core\Collection\Controllers\**" />
+    <Content Remove="Modules\Core\Collection\Controllers\**" />
+    <EmbeddedResource Remove="Modules\Core\Collection\Controllers\**" />
+    <None Remove="Modules\Core\Collection\Controllers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.14" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.14" />
     <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.4.3" />
@@ -22,6 +29,19 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Modules\Core\Collection\Interface\" />
+    <Folder Include="Modules\Core\Collection\Model\" />
+    <Folder Include="Modules\Core\Collection\Entity\" />
+    <Folder Include="Modules\Core\Collection\ResponseModel\" />
+    <Folder Include="Modules\View\" />
+    <Folder Include="Modules\Core\Settings\" />
+    <Folder Include="Modules\Core\Social\" />
+    <Folder Include="Modules\Core\Wardrobe\" />
+    <Folder Include="Modules\Core\User\" />
+    <Folder Include="Modules\Core\Package\" />
   </ItemGroup>
 
 </Project>
