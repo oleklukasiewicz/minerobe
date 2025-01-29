@@ -1,0 +1,47 @@
+#wardrobe-view {
+  width: 100%;
+  margin: 0px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  &.mobile {
+    grid-template-columns: 1fr;
+    grid-template-rows: 50px 1fr;
+    margin: 0px;
+    #content {
+      max-width: 100%;
+      width: 100%;
+    }
+    #navigation {
+      max-width: 100%;
+      margin-top: 8px;
+      width: 100%;
+      max-width: 100%;
+      div {
+        top: 8px;
+        margin: 0px 8px;
+      }
+      &.opened {
+        width: 100vw;
+        max-width: 100%;
+      }
+    }
+  }
+  #navigation {
+    margin-top: 8px;
+    display: block;
+    max-width: 250px;
+    min-width: none;
+    div {
+      position: sticky;
+      top: 68px;
+    }
+    &.opened {
+      width: 25vw;
+      max-width: 250px;
+    }
+  }
+  #content
+  {
+    margin: 0px 0px 8px 16px;
+  }
+}

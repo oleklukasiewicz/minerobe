@@ -1,8 +1,8 @@
-#wardrobe-sets {
-  max-width: 100%;
-  display: grid;
-  grid-template-columns: 1fr;
+#wardrobe-collections {
   &.mobile {
+    grid-template-columns: 1fr;
+    grid-template-rows: 50px 1fr;
+    margin: 0px;
     max-width: 100%;
     width: 100%;
     #content-header {
@@ -32,7 +32,6 @@
     display: grid;
     grid-template-columns: 1fr auto 300px;
     gap: 8px;
-    width: 100%;
     #content-filters {
       display: grid;
       min-width: 120px;

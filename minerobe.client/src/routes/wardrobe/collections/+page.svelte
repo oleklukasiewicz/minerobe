@@ -1,11 +1,15 @@
 <script lang="ts">
   //main imports
-  import { onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
   //api
   import { AddPackage } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
-  import { AddPackageToWardrobe, GetWardrobePackages } from "$src/api/wardrobe";
+  import {
+    AddPackageToWardrobe,
+    GetWadrobeCollections,
+    GetWardrobePackages,
+  } from "$src/api/wardrobe";
   //services
   import { ShowToast } from "$src/data/toast";
   import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
@@ -21,6 +25,7 @@
   import type { PagedResponse } from "$src/data/models/base";
   import { MODEL_TYPE } from "$src/data/enums/model";
   import { OutfitPackage } from "$src/data/models/package";
+  import type { OutfitPackageCollectionWithPackageContext } from "$src/data/models/collection";
   import { OutfitFilter } from "$src/data/models/filter";
   import type { MinerobeUserSettingsSimple } from "$src/data/models/user";
   //components
@@ -29,12 +34,15 @@
   import Search from "$lib/components/base/Search/Search.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import OutfitFiltersDialog from "$lib/components/dialog/OutfitFiltersDialog.svelte";
+  import OutfitPackageCollectionList from "$lib/components/outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
   import OutfitPackageTypePickerDialog from "$lib/components/dialog/OutfitPackageTypePickerDialog.svelte";
   //icons
   import AddIcon from "$icons/plus.svg?raw";
   import Sliders2Icon from "$icons/sliders-2.svg?raw";
 
-  const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
+  const pageCollections: Writable<
+    PagedResponse<OutfitPackageCollectionWithPackageContext>[]
+  > = writable([]);
 
   let userSettings: MinerobeUserSettingsSimple = null;
   let loaded = false;
@@ -42,15 +50,14 @@
   let isFilterDialogOpen = false;
   let isTypePickerDialogOpen = false;
   let isCreating = false;
-  let stateSub = null;
 
   let filter: OutfitFilter = new OutfitFilter();
-  filter.type = PACKAGE_TYPE.OUTFIT_SET;
+  filter.type = PACKAGE_TYPE.OUTFIT_COLLECTION;
   let abortController = new AbortController();
 
   onMount(async () => {
-    filter.type = PACKAGE_TYPE.OUTFIT_SET;
-    stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
+    filter.type = PACKAGE_TYPE.OUTFIT_COLLECTION;
+    CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
 
       userSettings = await FetchSettings();
@@ -59,23 +66,21 @@
       await updateFilter({});
     });
   });
-  onDestroy(() => {
-    if (stateSub) stateSub();
-  });
 
   const goToEdit = function (e) {
     const item = e.detail.item;
     navigateToOutfitPackageEdit(item.id);
   };
-  const fetchItems = async (e) => {
+  const goToCollection = function (e) {};
+  const fetchCollections = async (e) => {
     const options = e?.detail?.options;
-    const pagedItems = await GetWardrobePackages(
-      filter,
+    const pagedCollections = (await GetWadrobeCollections(
+      filter.phrase,
       options?.page || 0,
-      options?.pageSize || 36,
+      options?.pageSize || 24,
       abortController
-    );
-    pageItems.update((items) => [...items, pagedItems]);
+    )) as any;
+    pageCollections.update((items) => [...items, pagedCollections]);
   };
   const updateFilter = async (e) => {
     try {
@@ -87,10 +92,21 @@
         filter = newFilter;
       }
       itemsLoaded = false;
-      pageItems.set([]);
-      await fetchItems(null);
+
+      pageCollections.set([]);
+      await fetchCollections(null);
+
       itemsLoaded = true;
     } catch (e) {}
+  };
+  const setPage = function (pageType) {
+    if (filter.type === pageType) return;
+    filter.type = pageType;
+    filter.colors = [];
+    filter.outfitType = [];
+    filter.isShared = null;
+    window.scrollTo(0, 0);
+    updateFilter({});
   };
   const openFilterDialog = function () {
     isFilterDialogOpen = true;
@@ -126,7 +142,7 @@
   };
 </script>
 
-<div id="wardrobe-sets" class:mobile={$IS_MOBILE_VIEW}>
+<div id="wardrobe-collections" class:mobile={$IS_MOBILE_VIEW}>
   <div id="content-header">
     {#if !$IS_MOBILE_VIEW}
       <div></div>
@@ -148,27 +164,26 @@
   </div>
   <div id="content-list">
     <LazyList
-      let:items={pagedItems}
-      on:loading={fetchItems}
-      itemsPages={$pageItems}
+      let:items={pagedCollections}
+      on:loading={fetchCollections}
+      itemsPages={$pageCollections}
       rootMargin={"100px"}
       loading={!itemsLoaded}
     >
-      <OutfitPackageList
-        resizable
-        on:select={goToEdit}
-        resizeDebounce={10}
-        currentPackageId={userSettings.currentTexturePackageId}
-        baseTexture={userSettings?.baseTexture.layers[0]}
-        items={pagedItems}
-        columns={$IS_MOBILE_VIEW ? 3 : 6}
+      <OutfitPackageCollectionList
+        items={pagedCollections}
+        loading={!itemsLoaded}
+        on:select={goToCollection}
+        dense={false}
+        columns={$IS_MOBILE_VIEW ? 2 : 4}
       />
-      <OutfitPackageList
+      <OutfitPackageCollectionList
+        pageSize={36}
         loading
         items={[]}
-        pageSize={36}
         slot="loading"
-        columns={$IS_MOBILE_VIEW ? 3 : 6}
+        dense={false}
+        columns={$IS_MOBILE_VIEW ? 2 : 4}
       />
     </LazyList>
   </div>
@@ -186,6 +201,7 @@
     bind:open={isFilterDialogOpen}
     hideType
     hideOutfitType
+    hideColor
     {filter}
     on:filter={updateFilter}
   />

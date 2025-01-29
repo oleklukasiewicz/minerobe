@@ -45,11 +45,11 @@
   let stateSub = null;
 
   let filter: OutfitFilter = new OutfitFilter();
-  filter.type = PACKAGE_TYPE.OUTFIT_SET;
+  filter.type = PACKAGE_TYPE.OUTFIT;
   let abortController = new AbortController();
 
   onMount(async () => {
-    filter.type = PACKAGE_TYPE.OUTFIT_SET;
+    filter.type = PACKAGE_TYPE.OUTFIT;
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
 
@@ -126,7 +126,7 @@
   };
 </script>
 
-<div id="wardrobe-sets" class:mobile={$IS_MOBILE_VIEW}>
+<div id="wardrobe-outfits" class:mobile={$IS_MOBILE_VIEW}>
   <div id="content-header">
     {#if !$IS_MOBILE_VIEW}
       <div></div>
@@ -185,7 +185,6 @@
   <OutfitFiltersDialog
     bind:open={isFilterDialogOpen}
     hideType
-    hideOutfitType
     {filter}
     on:filter={updateFilter}
   />
