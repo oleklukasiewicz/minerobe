@@ -16,10 +16,8 @@
       }
     }
     #content-list {
-      margin: 0;
-      width: 100%;
-      padding: 8px;
-      box-sizing: border-box;
+      width: calc(100vw - 16px);
+      margin: 8px;
     }
   }
   #content-header {
