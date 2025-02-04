@@ -56,7 +56,7 @@
   import { OutfitLayer, type OutfitPackage } from "$model/package";
   import DefaultAnimation from "$src/animation/default.js";
   import { OutfitPackageRenderConfig } from "$data/models/render";
-  import { MinerobeUserSettingsSimple } from "$data/models/user";
+  import { MinerobeUserSettings } from "$data/models/user";
   import HandsUpAnimation from "$src/animation/handsup";
   import NewOutfitBottomAnimation from "$src/animation/bottom.js";
   import NewOutfitBottomAltAnimation from "$src/animation/bottomAlt.js";
@@ -107,7 +107,7 @@
   let loaded = false;
   let isOutfitSet = false;
   let isMinecraftIntegrated = false;
-  let userSettings: MinerobeUserSettingsSimple = null;
+  let userSettings: MinerobeUserSettings = null;
   let integrationSettings: MinecraftIntegrationSettings = null;
   let renderer: any = null;
 
@@ -397,8 +397,9 @@
   };
   const setSkin = async function () {
     isSkinSetting = true;
-    addAnimation(HandsUpAnimation);
     await SetMinecraftSkin($renderConfiguration);
+    addAnimation(HandsUpAnimation);
+    ShowToast("Skin set successfully");
     isSkinSetting = false;
   };
   const setCape = function (e) {
@@ -455,7 +456,7 @@
           <Label variant="rare">Shared</Label>
         {/if}
       </Placeholder>
-      {#if loaded && userSettings?.currentTexturePackageId == $itemPackage.id}
+      {#if loaded && userSettings?.currentTexture?.packageId == $itemPackage.id}
         <Placeholder {loaded} height="24px" width="120px">
           <Label variant="ancient">Current skin</Label>
         </Placeholder>

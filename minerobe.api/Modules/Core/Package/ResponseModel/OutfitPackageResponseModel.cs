@@ -26,9 +26,10 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
         {
             return entity.ToResponseModel(false);
         }
-        public static OutfitPackageResponseModel ToResponseModel(this OutfitPackage entity, bool isInWardrobe, bool loadLayers = true)
+        public static OutfitPackageResponseModel ToResponseModel(this OutfitPackage entity, bool isInWardrobe, bool loadLayers = true, bool allowmergedLayers = false)
         {
-            var layers = loadLayers ? entity.Layers?.Where(x => x.IsMerged == false).Select(x => x.ToResponseModel(entity, true)).ToList() : new List<OutfitLayerResponseModel>();
+            var layers = loadLayers ? entity.Layers?.Where(x => allowmergedLayers ? true : x.IsMerged == false)
+               .Select(x => x.ToResponseModel(entity, true)).ToList() : new List<OutfitLayerResponseModel>();
             return new OutfitPackageResponseModel
             {
                 Id = entity.Id,

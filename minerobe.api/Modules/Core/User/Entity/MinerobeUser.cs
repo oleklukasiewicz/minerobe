@@ -10,7 +10,7 @@ namespace minerobe.api.Modules.Core.User.Entity
         public string Avatar { get; set; }
         public Guid WardrobeId { get; set; }
     }
-    public class MinerobeUserConfig : IEntityTypeConfiguration<MinerobeUser>
+    public class MinerobeUserEntityConfig : IEntityTypeConfiguration<MinerobeUser>
     {
         public void Configure(EntityTypeBuilder<MinerobeUser> builder)
         {

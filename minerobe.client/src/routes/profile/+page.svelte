@@ -15,6 +15,9 @@
   import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
   import Label from "$lib/components/base/Label/Label.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
+  import { GetMergedPackage } from "$src/api/pack";
+  import { OUTFIT_TYPE } from "$src/data/enums/outfit";
+  import type { OutfitPackage } from "$src/data/models/package";
 
   const profileUser: Writable<MinerobeUserProfile> = writable(null);
   const minecraftIntegration: Writable<any> = writable(null);
@@ -25,16 +28,21 @@
       if (state != APP_STATE.READY) return;
 
       $profileUser = await GetUserProfile($CURRENT_USER.id);
+      if ($profileUser.settings.currentTexture != null) {
+        currentTexture = await GetMergedPackage(
+          $profileUser.settings.currentTexture.packageId,
+          $profileUser.settings.currentTexture.isFlatten
+        );
+      }
       if ($profileUser.settings.integrations.includes("minecraft")) {
         $minecraftIntegration = await GetAccount(true);
-        if ($profileUser.settings.currentCapeId != null) {
+        if ($profileUser.settings.currentTexture?.capeId != null) {
           currentCape = $minecraftIntegration.capes.find(
-            (x) => x.id == $profileUser.settings.currentCapeId
+            (x) => x.id == $profileUser.settings.currentTexture?.capeId
           );
         }
       }
-
-      loaded = true;
+      if ($profileUser.settings.currentTexture) loaded = true;
     });
   });
   onDestroy(() => {
@@ -42,6 +50,7 @@
   });
 
   let currentCape: Cape = new Cape();
+  let currentTexture: OutfitPackage;
   let loaded = false;
 </script>
 
@@ -69,6 +78,25 @@
   <div id="overview-status">
     <!-- Current skin card-->
     <StatusCard label={"current skin"}>
+      <Placeholder
+        {loaded}
+        height="100%"
+        width="100%"
+        loadedStyle="width:100%;"
+      >
+        {#if $profileUser?.settings?.currentTexture?.packageId != null}
+          <div style="width: 100%;">
+            <OutfitPackageRender
+              source={currentTexture}
+              baseTexture={$profileUser?.settings?.baseTexture?.layers[0]}
+              model={$profileUser?.settings.currentTexture.model}
+              outfitType={OUTFIT_TYPE.DEFAULT}
+            />
+          </div>
+        {:else}
+          <div class="mc-font">No skin setted</div>
+        {/if}
+      </Placeholder>
       <Button
         slot="actions"
         href={"/profile/skin"}
@@ -103,10 +131,12 @@
     <!-- Minecraft account card-->
     <StatusCard label={"minecraft account"}>
       <Placeholder {loaded} height="100%" width="100%">
-        {#await GetImageFaceArea($profileUser?.settings?.currentTexture?.texture) then skin}
-          <!-- svelte-ignore a11y-missing-attribute -->
-          <img src={skin} style="width:100%;image-rendering: pixelated; " />
-        {/await}
+        {#if $profileUser.settings.baseTexture != null}
+          {#await GetImageFaceArea($profileUser.settings.baseTexture.layers[0].steve.content) then skin}
+            <!-- svelte-ignore a11y-missing-attribute -->
+            <img src={skin} style="width:100%;image-rendering: pixelated; " />
+          {/await}
+        {/if}
         <br />
         <br />
         {#if $minecraftIntegration != null}

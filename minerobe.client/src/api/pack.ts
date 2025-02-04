@@ -10,6 +10,15 @@ export const GetPackage = async function (id: string) {
   const res = await GetRequest("/api/Package/" + id);
   return res;
 };
+export const GetMergedPackage = async function (
+  packageId: string,
+  isFlatten: Boolean
+): Promise<OutfitPackage> {
+  const res = await GetRequest(
+    "/api/Package/" + packageId + "/merged/" + isFlatten
+  );
+  return res;
+};
 export const UpdatePackage = async function (packageData: OutfitPackage) {
   const data = Object.assign({}, packageData);
   data.layers = [];

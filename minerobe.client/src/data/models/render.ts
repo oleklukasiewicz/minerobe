@@ -1,6 +1,7 @@
 import { DEFAULT_PACKAGE } from "$src/data/consts/outfit";
 import { OutfitLayer, type OutfitPackage } from "$data/models/package";
 import type { MODEL_TYPE } from "../enums/model";
+import type { PACKAGE_TYPE } from "../enums/outfit";
 
 export class ModelTextureArea {
   public constructor(
@@ -42,6 +43,7 @@ export class OutfitPackageRenderConfig {
   ToExportConfig(): OutfitPackageExportConfig {
     const config = new OutfitPackageExportConfig();
     config.packageId = this.item.id;
+    config.type = this.item.type;
     config.isFlatten = this.isFlatten;
     config.capeId = this.capeId;
     config.model = this.item.model;
@@ -50,6 +52,7 @@ export class OutfitPackageRenderConfig {
 }
 export class OutfitPackageExportConfig {
   public packageId: string;
+  public type: PACKAGE_TYPE;
   public isFlatten: boolean;
   public capeId: string;
   public model: MODEL_TYPE;

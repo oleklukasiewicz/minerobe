@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using minerobe.api.Modules.Core.Package.Model;
+using minerobe.api.Modules.Core.Package.ResponseModel;
 using minerobe.api.Modules.Core.Settings.Entity;
 using minerobe.api.Modules.Core.Settings.Interface;
 using minerobe.api.Modules.Core.Settings.Model;
@@ -35,17 +36,6 @@ namespace minerobe.api.Modules.Core.Settings.Controllers
 
             return Ok(settings.ToResponseModel());
         }
-        [HttpGet("Simple")]
-        public async Task<IActionResult> GetSimple()
-        {
-            var user = await _userService.GetFromExternalUser(User);
-
-            var settings = await _userSettingsService.GetSettings(user.Id);
-            if (settings == null)
-                return NotFound();
-
-            return Ok(settings.ToSimpleResponseModel());
-        }
         [HttpPost("BaseTexture")]
         public async Task<IActionResult> UpdateBaseTexture([FromBody] OutfitPackageModel baseTexture)
         {
@@ -55,16 +45,15 @@ namespace minerobe.api.Modules.Core.Settings.Controllers
             if (settings == null)
                 return NotFound();
 
-            return Ok(settings.ToSimpleResponseModel());
+            return Ok(settings.BaseTexture.ToResponseModel());
         }
-        [HttpPost("CurrentTexture/{id}")]
-        public async Task<IActionResult> UpdateCurrentTexture(Guid id, [FromBody] TextureRenderConfigModel currentTexture)
+        [HttpPost("CurrentTexture")]
+        public async Task<IActionResult> UpdateCurrentTexture([FromBody] OutfitPackageConfigModel currentTexture)
         {
             var user = await _userService.GetFromExternalUser(User);
 
+            var settings = await _userSettingsService.UpdateCurrentTexture(user.Id, currentTexture);
             var entity = currentTexture.ToEntity();
-            var settings = await _userSettingsService.UpdateCurrentTexture(user.Id, id, entity);
-
             //minecraft services integrations
             if (settings.ContainsIntegration("minecraft"))
             {
@@ -77,7 +66,7 @@ namespace minerobe.api.Modules.Core.Settings.Controllers
             if (settings == null)
                 return NotFound();
 
-            return Ok(settings.ToSimpleResponseModel());
+            return Ok(settings.CurrentTexture.ToResponseModel());
         }
     }
 }

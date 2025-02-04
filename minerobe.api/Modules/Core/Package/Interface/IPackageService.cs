@@ -20,5 +20,6 @@ namespace minerobe.api.Modules.Core.Package.Interface
         Task<bool> CanAccessPackage(Guid packageId, Guid userId);
         Task<bool> UpdateLayerOrder(Guid packageId, List<Guid> layersInOrder);
         Task<OutfitLayer> SetMergedLayer(OutfitLayer globalLayer);
+        Task<OutfitPackage> MergePackageLayers(Guid packageId, bool isFlatten = false, OutfitLayer basetexture = null);
     }
 }

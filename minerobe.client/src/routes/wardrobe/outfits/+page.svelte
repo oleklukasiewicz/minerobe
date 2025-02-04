@@ -22,7 +22,7 @@
   import { MODEL_TYPE } from "$src/data/enums/model";
   import { OutfitPackage } from "$src/data/models/package";
   import { OutfitFilter } from "$src/data/models/filter";
-  import type { MinerobeUserSettingsSimple } from "$src/data/models/user";
+  import type { MinerobeUserSettings } from "$src/data/models/user";
   //components
   import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
   import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
@@ -36,7 +36,7 @@
 
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
 
-  let userSettings: MinerobeUserSettingsSimple = null;
+  let userSettings: MinerobeUserSettings = null;
   let loaded = false;
   let itemsLoaded = false;
   let isFilterDialogOpen = false;

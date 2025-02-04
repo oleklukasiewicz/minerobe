@@ -9,7 +9,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Entity
         public Guid WardrobeId { get; set; }
         public Guid OutfitPackageCollectionId { get; set; }
     }
-    public class WadrobeCollectionMatchingConfig : IEntityTypeConfiguration<WadrobeCollectionMatching>
+    public class WadrobeCollectionMatchingEntityConfig : IEntityTypeConfiguration<WadrobeCollectionMatching>
     {
         public void Configure(EntityTypeBuilder<WadrobeCollectionMatching> builder)
         {

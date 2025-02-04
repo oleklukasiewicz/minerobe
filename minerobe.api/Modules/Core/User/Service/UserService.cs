@@ -121,8 +121,6 @@ namespace minerobe.api.Modules.Core.User.Service
             {
                 Id = Guid.NewGuid(),
                 OwnerId = newUser.Id,
-                CurrentTexturePackageId = null,
-                CreatedAt = DateTime.Now
             };
             _context.UserSettings.Add(settings);
 

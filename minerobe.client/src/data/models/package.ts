@@ -5,7 +5,7 @@ import type { MinerobeUserSimple } from "./user";
 export class OutfitPackage {
   name: string;
   model: MODEL_TYPE;
-  type: string;
+  type: PACKAGE_TYPE;
   layers: OutfitLayer[];
   publisher: MinerobeUserSimple;
   publisherId: string;
@@ -22,7 +22,7 @@ export class OutfitPackage {
     name: string,
     model: MODEL_TYPE,
     layers: OutfitLayer[],
-    type: string = PACKAGE_TYPE.OUTFIT
+    type: PACKAGE_TYPE = PACKAGE_TYPE.OUTFIT
   ) {
     this.name = name;
     this.model = model;

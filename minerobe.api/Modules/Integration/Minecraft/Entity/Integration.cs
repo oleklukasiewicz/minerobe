@@ -11,7 +11,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Entity
         public Guid OwnerId { get; set; }
         public dynamic Data { get; set; }
     }
-    public class IntegrationConfig : IEntityTypeConfiguration<IntegrationItem>
+    public class IntegrationEntityConfig : IEntityTypeConfiguration<IntegrationItem>
     {
         public void Configure(EntityTypeBuilder<IntegrationItem> builder)
         {

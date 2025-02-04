@@ -1,10 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
+using minerobe.api.Helpers;
 using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.Social.Interface;
 using minerobe.api.Modules.Core.User.Interface;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using System.Text;
 
 namespace minerobe.api.Modules.Core.Package.Service
 {
@@ -321,6 +325,43 @@ namespace minerobe.api.Modules.Core.Package.Service
             await _context.SaveChangesAsync();
             return mergedLayer;
         }
+
+        //merger
+
+        public async Task<OutfitPackage> MergePackageLayers(Guid packageId, bool isFlatten = false, OutfitLayer basetexture = null)
+        {
+            var layers = await GetLayersOfPackage(packageId).ToListAsync();
+            if (basetexture != null)
+            {
+                layers.Add(basetexture);
+            }
+            var steveMerged = await ImageMerger.Merge(layers.Select(x => x.Steve.Content).ToList(), ModelMaps.STEVE_MODEL, isFlatten);
+            var alexMerged = await ImageMerger.Merge(layers.Select(x => x.Alex.Content).ToList(), ModelMaps.ALEX_MODEL, isFlatten);
+
+            var package = await _context.OutfitPackages.FindAsync(packageId);
+            if (package == null)
+                return null;
+
+            var mergedLayer = new OutfitLayer()
+            {
+                Steve = new FileData()
+                {
+                    Content = Encoding.UTF8.GetBytes(steveMerged.ToBase64String(PngFormat.Instance)),
+                },
+                Alex = new FileData()
+                {
+                    Content = Encoding.UTF8.GetBytes(alexMerged.ToBase64String(PngFormat.Instance)),
+                },
+            };
+            mergedLayer.SourcePackageId = package.Id;
+            mergedLayer.Type = LayerType.Local;
+            mergedLayer.IsMerged = true;
+            mergedLayer.Name = "Merged";
+
+            package.Layers = new List<OutfitLayer> { mergedLayer };
+            return package;
+        }
+
 
         //helpers
         private IQueryable<OutfitLayer> GetLayersOfPackage(Guid packageId)

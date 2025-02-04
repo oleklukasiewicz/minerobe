@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using minerobe.api.Helpers;
 using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.Package.Model;
 using minerobe.api.Modules.Core.Package.ResponseModel;
+using minerobe.api.Modules.Core.Settings.Model;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Core.Wardrobe.Interface;
 
@@ -37,6 +39,18 @@ namespace minerobe.api.Modules.Core.Package.Controllers
             var isInWardrobe = await _wardrobeService.IsPackageInWardrobe(user.WardrobeId, id);
 
             return Ok(package.ToResponseModel(isInWardrobe));
+        }
+        [HttpGet("{id}/merged/{isFlatten}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetMerged(Guid id, bool isFlatten=false)
+        {
+            var user = await _userService.GetFromExternalUser(User);
+            var canAccess = await _packageService.CanAccessPackage(id, user.Id);
+            if (!canAccess)
+                return Unauthorized();
+
+            var mergedtetxure = await _packageService.MergePackageLayers(id,isFlatten);
+            return Ok(mergedtetxure.ToResponseModel(false,true,true));
         }
         [HttpPost("")]
         public async Task<IActionResult> Add([FromBody] OutfitPackageModel package)

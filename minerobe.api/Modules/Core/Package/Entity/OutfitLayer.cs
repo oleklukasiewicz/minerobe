@@ -22,7 +22,7 @@ namespace minerobe.api.Modules.Core.Package.Entity
         public OutfitType OutfitType { get; set; }
 
     }
-    public class OutfitLayerConfig : IEntityTypeConfiguration<OutfitLayer>
+    public class OutfitLayerEntityConfig : IEntityTypeConfiguration<OutfitLayer>
     {
         public void Configure(EntityTypeBuilder<OutfitLayer> builder)
         {

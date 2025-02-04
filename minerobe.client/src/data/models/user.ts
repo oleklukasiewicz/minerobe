@@ -1,5 +1,6 @@
 import { OutfitFilter } from "./filter";
 import type { OutfitPackage, PackageSocialData } from "./package";
+import type { OutfitPackageExportConfig } from "./render";
 
 export class MinerobeUserProfile {
   user: MinerobeUser;
@@ -11,7 +12,7 @@ export class MinerobeUser {
   name: string;
   avatar: string;
   wardrobeId: string;
-  constructor(id: string, name: string, avatar: string,wardrobeId: string) {
+  constructor(id: string, name: string, avatar: string, wardrobeId: string) {
     this.id = id;
     this.name = name;
     this.avatar = avatar;
@@ -26,26 +27,14 @@ export class MinerobeUserSimple {
 export class MinerobeUserSettings {
   id: string;
   ownerId: string;
-  currentTexture: CurrentTexture;
-  currentCapeId: string;
-  currentTexturePackageId: string;
+  currentTexture: OutfitPackageExportConfig;
   baseTexture: OutfitPackage;
   integrations: string[];
-  theme: string;
 }
 export class CurrentTexture {
   texture: string;
   model: string;
   isFlat: boolean;
-}
-export class MinerobeUserSettingsSimple {
-  id: string;
-  ownerId: string;
-  currentTextureConfig: any;
-  currentTexturePackageId: string;
-  currentCapeId: string;
-  baseTexture: OutfitPackage;
-  integrations: string[];
 }
 export class CurrentTextureConfig {
   texture: string;

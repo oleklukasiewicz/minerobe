@@ -21,7 +21,7 @@ namespace minerobe.api.Modules.Core.Collection.Entity
         public DateTime ModifiedAt { get; set; }
         public dynamic DisplayData { get; set; }
     }
-    public class OutfitPackageCollectionConfig : IEntityTypeConfiguration<OutfitPackageCollection>
+    public class OutfitPackageCollectionEntityConfig : IEntityTypeConfiguration<OutfitPackageCollection>
     {
         public void Configure(EntityTypeBuilder<OutfitPackageCollection> builder)
         {

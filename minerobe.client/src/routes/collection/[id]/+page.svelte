@@ -17,7 +17,7 @@
     navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper";
   import type { OutfitPackageCollection } from "$data/models/collection";
-  import type { MinerobeUserSettingsSimple } from "$data/models/user";
+  import type { MinerobeUserSettings } from "$data/models/user";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
 
@@ -29,7 +29,7 @@
   export let data: any;
   let loaded = false;
   let isDeleteDialogOpen = false;
-  const userSettings: Writable<MinerobeUserSettingsSimple> = writable(null);
+  const userSettings: Writable<MinerobeUserSettings> = writable(null);
   const localCollection: Writable<OutfitPackageCollection> = writable(
     {} as OutfitPackageCollection
   );

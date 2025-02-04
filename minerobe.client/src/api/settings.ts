@@ -1,13 +1,10 @@
 import { GetRequest, PostRequest } from "$src/data/api";
 import type { OutfitPackage } from "$data/models/package";
-import type {
-  CurrentTextureConfig,
-  MinerobeUserSettings,
-  MinerobeUserSettingsSimple,
-} from "$data/models/user";
+import type { MinerobeUserSettings } from "$data/models/user";
+import type { OutfitPackageExportConfig } from "$src/data/models/render";
 
-export const FetchSettings = async function ():Promise<MinerobeUserSettingsSimple> {
-  const res = await GetRequest("/api/UserSettings/Simple");
+export const FetchSettings = async function (): Promise<MinerobeUserSettings> {
+  const res = await GetRequest("/api/UserSettings");
   return res;
 };
 export const UpdateBaseTexture = async function (baseTexture: OutfitPackage) {
@@ -15,12 +12,8 @@ export const UpdateBaseTexture = async function (baseTexture: OutfitPackage) {
   return res;
 };
 export const SetCurrentTexture = async function (
-  packageId: string,
-  config: CurrentTextureConfig
+  config: OutfitPackageExportConfig
 ) {
-  const res = await PostRequest(
-    "/api/UserSettings/CurrentTexture/" + packageId,
-    config
-  );
-  return res as MinerobeUserSettingsSimple;
+  const res = await PostRequest("/api/UserSettings/CurrentTexture/", config);
+  return res as MinerobeUserSettings;
 };

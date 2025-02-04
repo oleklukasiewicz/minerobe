@@ -44,7 +44,7 @@ namespace minerobe.api.Modules.Core.Package.Entity
         public List<OutfitLayer> Layers { get; set; }
         public MinerobeUser Publisher { get; set; }
     }
-    public class OutfitPackageConfig : IEntityTypeConfiguration<OutfitPackage>
+    public class OutfitPackageEntityConfig : IEntityTypeConfiguration<OutfitPackage>
     {
         public void Configure(EntityTypeBuilder<OutfitPackage> builder)
         {

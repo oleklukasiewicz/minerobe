@@ -9,27 +9,16 @@ namespace minerobe.api.Modules.Core.Settings.Entity
     {
         public Guid Id { get; set; }
         public Guid OwnerId { get; set; }
-        public string Theme { get; set; }
-        public Guid? CurrentTexturePackageId { get; set; }
-        public TextureRenderConfig CurrentTexture { get; set; }
+        public OutfitPackageConfig CurrentTexture { get; set; }
         public OutfitPackage BaseTexture { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? ModifiedAt { get; set; }
         public List<IntegrationMatching> Integrations { get; set; }
-    }
-    public class TextureRenderConfig
-    {
-        public byte[] Texture { get; set; }
-        public ModelType Model { get; set; }
-        public bool IsFlat { get; set; }
-        public Guid? CapeId { get; set; }
     }
     public class IntegrationMatching
     {
         public Guid Id { get; set; }
         public string Type { get; set; }
     }
-    public class UserSettingsConfig : IEntityTypeConfiguration<UserSettings>
+    public class UserSettingsEntityConfig : IEntityTypeConfiguration<UserSettings>
     {
         public void Configure(EntityTypeBuilder<UserSettings> builder)
         {
@@ -37,7 +26,6 @@ namespace minerobe.api.Modules.Core.Settings.Entity
             builder.HasKey(x => x.Id);
             builder.Property(x => x.BaseTexture).StoreAsJSON();
             builder.Property(x => x.OwnerId).IsRequired();
-            builder.Property(x => x.CreatedAt).HasDefaultValueSql("getdate()");
             builder.Property(x => x.CurrentTexture).StoreAsJSON();
             builder.Property(x => x.Integrations).StoreAsJSON();
         }

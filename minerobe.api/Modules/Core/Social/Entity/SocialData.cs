@@ -11,7 +11,7 @@ namespace minerobe.api.Modules.Core.Social.Entity
         public int Downloads { get; set; }
         public bool IsFeatured { get; set; }
     }
-    public class SocialDataConfig : IEntityTypeConfiguration<SocialData>
+    public class SocialDataEntityConfig : IEntityTypeConfiguration<SocialData>
     {
         public void Configure(EntityTypeBuilder<SocialData> builder)
         {

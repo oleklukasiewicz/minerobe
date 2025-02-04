@@ -124,7 +124,7 @@
 
     if (cameraOptions == "auto") {
       let options: CameraConfig;
-      if (typeof _source !== "string") {
+      if (typeof _source !== "string" && outfitType == null) {
         options = CAMERA_CONFIG.getForOutfit(_source.outfitType);
       } else {
         options = CAMERA_CONFIG.getForOutfit(outfitType);
@@ -134,7 +134,15 @@
     if (cachedtexture != null)
       await textureRenderer.SetTextureAsync(cachedtexture);
   };
-  const setSource = async (v, oldModel, newModel, oldLayerId, newLayerId,oldCape,newCape) => {
+  const setSource = async (
+    v,
+    oldModel,
+    newModel,
+    oldLayerId,
+    newLayerId,
+    oldCape,
+    newCape
+  ) => {
     if (!initialized) return;
     if (_source == null || _source == "") return;
 
@@ -290,8 +298,9 @@
     let modelScene: ModelScene = null;
     if (
       (typeof _source !== "string" &&
+        outfitType == null &&
         baseModelTypesList.includes(_source.outfitType as OUTFIT_TYPE)) ||
-      (typeof _source === "string" &&
+      ((typeof _source === "string" || outfitType != null) &&
         baseModelTypesList.includes(outfitType as OUTFIT_TYPE))
     ) {
       modelScene =
@@ -314,7 +323,15 @@
     const oldCape = _cape;
     await setCape(vCape);
     const newCape = vCape;
-    await setSource(vSource, oldModel, newModel, oldLayerId, newLayerId,oldCape,newCape);
+    await setSource(
+      vSource,
+      oldModel,
+      newModel,
+      oldLayerId,
+      newLayerId,
+      oldCape,
+      newCape
+    );
   };
 
   const isReRenderNeeded = function (

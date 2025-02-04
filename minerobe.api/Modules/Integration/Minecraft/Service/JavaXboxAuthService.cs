@@ -224,7 +224,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
             var settings = await _ctx.UserSettings.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
             if (settings == null)
                 return null;
-            var texture = settings.CurrentTexture.Texture;
+            var texture = new byte[0];
             return Encoding.UTF8.GetString(texture);
         }
         public async Task<bool> SetUserSkin(Guid userId, ModelType model)
