@@ -12,7 +12,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.ResponseModel
     }
     public static class WardrobeResponseModelExtensions
     {
-        public static WardrobeResponseModel ToResponseModel(this Helpers.Wardrobe.Wardrobe entity)
+        public static WardrobeResponseModel ToResponseModel(this Helpers.Wardrobe entity)
         {
             var outfits = entity.Outfits?.Select(x => x?.ToListItemResponseModel(2, 1, true)).ToList();
             var collections = entity.Collections?.Select(x => x.ToResponseModel()).ToList();

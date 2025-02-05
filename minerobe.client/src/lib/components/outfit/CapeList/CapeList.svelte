@@ -27,11 +27,13 @@
       on:click={() => onSelect(item)}
     />
   {/each}
-  <CapeListItem
-    {readonly}
-    selected={selectedCapeId === undefined || selectedCapeId === null}
-    on:click={() => onSelect(null)}
-  />
+  {#if !readonly}
+    <CapeListItem
+      {readonly}
+      selected={selectedCapeId === undefined || selectedCapeId === null}
+      on:click={() => onSelect(null)}
+    />
+  {/if}
 </div>
 
 <style lang="scss">

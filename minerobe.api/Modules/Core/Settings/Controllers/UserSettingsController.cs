@@ -18,8 +18,8 @@ namespace minerobe.api.Modules.Core.Settings.Controllers
     {
         private readonly IUserSettingsService _userSettingsService;
         private readonly IUserService _userService;
-        private readonly IJavaXboxAuthService _javaXboxAuthService;
-        public UserSettingsController(IUserSettingsService userSettingsService, IUserService userService, IJavaXboxAuthService javaXboxAuthService)
+        private readonly IMinecraftService _javaXboxAuthService;
+        public UserSettingsController(IUserSettingsService userSettingsService, IUserService userService, IMinecraftService javaXboxAuthService)
         {
             _userSettingsService = userSettingsService;
             _userService = userService;
@@ -36,6 +36,18 @@ namespace minerobe.api.Modules.Core.Settings.Controllers
 
             return Ok(settings.ToResponseModel());
         }
+        [HttpGet("Integrations")]
+        public async Task<IActionResult> GetIntegrations()
+        {
+            var user = await _userService.GetFromExternalUser(User);
+
+            var settings = await _userSettingsService.GetSettings(user.Id);
+            if (settings == null)
+                return NotFound();
+
+            return Ok(new { integrations = settings.Integrations.Select(x=>x.Type) });
+        }
+
         [HttpPost("BaseTexture")]
         public async Task<IActionResult> UpdateBaseTexture([FromBody] OutfitPackageModel baseTexture)
         {

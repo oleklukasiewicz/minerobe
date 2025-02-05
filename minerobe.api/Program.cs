@@ -51,7 +51,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddTransient<IDefaultHub, DefaultHub>();
 
 //integrations
-builder.Services.AddTransient<IJavaXboxAuthService, JavaXboxAuthService>();
+builder.Services.AddTransient<IMinecraftService, MinecraftService>();
 
 //jobs
 builder.Services.AddTransient<IXboxJavaAuthRefresh, XboxJavaAuthRefresh>();

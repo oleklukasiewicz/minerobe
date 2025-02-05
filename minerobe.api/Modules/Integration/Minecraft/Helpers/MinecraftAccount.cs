@@ -1,32 +1,32 @@
 ﻿using minerobe.api.Modules.Core.Package.Entity;
 
-namespace minerobe.api.Helpers.Integration
+namespace minerobe.api.Modules.Integration.Minecraft.Helpers
 {
-    public class JavaXboxProfile
+    public class MinecraftAccount
     {
         public Guid Id { get; set; }
         public string AccountId { get; set; }
-        public ProfileData Profile { get; set; }
+        public MinecraftProfile Profile { get; set; }
     }
-    public class JavaXboxCape
+    public class MinecraftCape
     {
         public Guid? Id { get; set; }
         public string Texture { get; set; }
         public string Name { get; set; }
     }
-    public class JavaXboxSkin
+    public class MinecraftSkin
     {
         public Guid? Id { get; set; }
         public string Texture { get; set; }
         public string Name { get; set; }
-        public string Variant { get; set; }
+        public string Model { get; set; }
     }
-    public class ProfileData
+    public class MinecraftProfile
     {
         public string UUID { get; set; }
         public string Username { get; set; }
-        public List<JavaXboxSkin> Skins { get; set; }
-        public List<JavaXboxCape> Capes { get; set; }
+        public List<MinecraftSkin> Skins { get; set; }
+        public List<MinecraftCape> Capes { get; set; }
         public Guid? CurrentSkinId { get; set; }
         public Guid? CurrentCapeId { get; set; }
     }

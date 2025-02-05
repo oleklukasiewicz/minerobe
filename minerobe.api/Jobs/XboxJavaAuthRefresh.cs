@@ -10,8 +10,8 @@ namespace minerobe.api.Jobs
     }
     public class XboxJavaAuthRefresh : IXboxJavaAuthRefresh
     {
-        IJavaXboxAuthService _javaXboxAuthService;
-        public XboxJavaAuthRefresh(IJavaXboxAuthService javaXboxAuthService)
+        IMinecraftService _javaXboxAuthService;
+        public XboxJavaAuthRefresh(IMinecraftService javaXboxAuthService)
         {
             _javaXboxAuthService = javaXboxAuthService;
         }

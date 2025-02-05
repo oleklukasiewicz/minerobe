@@ -121,13 +121,5 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
 
             return Ok(paged.MapResponseOptions(items));
         }
-        [HttpGet("summary")]
-        public async Task<IActionResult> GetSummary()
-        {
-            var user = await _userService.GetFromExternalUser(User);
-
-            var res = await _wardrobeService.GetWadrobeSummary(user.WardrobeId);
-            return Ok(res);
-        }
     }
 }

@@ -2,7 +2,6 @@
 using minerobe.api.Database;
 using minerobe.api.Entity.Agregation;
 using minerobe.api.Helpers.Filter;
-using minerobe.api.Helpers.Wardrobe;
 using minerobe.api.Modules.Core.Collection.Entity;
 using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Package.Entity;
@@ -30,13 +29,13 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             _collectionService = collectionService;
             _userService = userService;
         }
-        public async Task<Helpers.Wardrobe.Wardrobe> Get(Guid id)
+        public async Task<Helpers.Wardrobe> Get(Guid id)
         {
             var user = await _userService.GetUserOfWardrobe(id);
             if (user == null)
                 return null;
 
-            var wardrobe = new Helpers.Wardrobe.Wardrobe();
+            var wardrobe = new Helpers.Wardrobe();
             if (wardrobe.Outfits == null)
                 wardrobe.Outfits = new List<OutfitPackage>();
             if (wardrobe.Collections == null)
@@ -186,34 +185,6 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             var matching = await _context.WardrobeMatchings.Where(x => x.OutfitPackageId == outfitId && x.WardrobeId == wardrobeId).FirstOrDefaultAsync();
             return matching != null;
         }
-
-        public async Task<WadrobeSummary> GetWadrobeSummary(Guid wardrobeId)
-        {
-            var matchings = await _context.WardrobeMatchings.Where(x => x.WardrobeId == wardrobeId).ToListAsync();
-            var outfits = await GetWardrobeOutfits(wardrobeId, null);
-
-            var summary = new WadrobeSummary();
-            summary.OutfitTypes = new List<WadrobeSummaryOutfitType>();
-            foreach (var outfit in outfits)
-            {
-                var type = summary.OutfitTypes.Where(x => x.OutfitType == ((OutfitType)outfit.OutfitType).ToString()).FirstOrDefault();
-                if (type == null)
-                {
-                    type = new WadrobeSummaryOutfitType()
-                    {
-                        OutfitType = ((OutfitType)outfit.OutfitType).ToString(),
-                        Count = 1
-                    };
-                    summary.OutfitTypes.Add(type);
-                }
-                else
-                {
-                    type.Count++;
-                }
-            }
-            return summary;
-        }
-
         public async Task<IQueryable<OutfitPackageAgregation>> GetWardrobeOutfits(Guid wardrobeId, OutfitFilter filter)
         {
             var outfits = _context.Set<OutfitPackageAgregation>().FromSqlInterpolated($"SELECT * FROM fGetWardrobeOutfits({wardrobeId})");

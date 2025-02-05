@@ -7,6 +7,10 @@ export const FetchSettings = async function (): Promise<MinerobeUserSettings> {
   const res = await GetRequest("/api/UserSettings");
   return res;
 };
+export const GetIntegrationsList = async function () {
+  const res = await GetRequest("/api/UserSettings/Integrations");
+  return res;
+}
 export const UpdateBaseTexture = async function (baseTexture: OutfitPackage) {
   const res = await PostRequest("/api/UserSettings/BaseTexture", baseTexture);
   return res;

@@ -1,14 +1,14 @@
-﻿using minerobe.api.Helpers.Integration;
-using minerobe.api.Modules.Core.Package.Entity;
+﻿using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.User.Entity;
-using static minerobe.api.Modules.Integration.Minecraft.Service.JavaXboxAuthService;
+using minerobe.api.Modules.Integration.Minecraft.Helpers;
+using static minerobe.api.Modules.Integration.Minecraft.Service.MinecraftService;
 
 namespace minerobe.api.Modules.Integration.Minecraft.Interface
 {
-    public interface IJavaXboxAuthService
+    public interface IMinecraftService
     {
-        Task<JavaXboxProfile> GetProfile(MinerobeUser user, bool keepFresh = true);
-        Task<JavaXboxProfile> LinkAccount(MinerobeUser user);
+        Task<MinecraftAccount> GetProfile(MinerobeUser user, bool keepFresh = true);
+        Task<MinecraftAccount> LinkAccount(MinerobeUser user);
         Task<string> GetUserCurrentSkin(Guid userId);
         Task<bool> UnLinkAccount(MinerobeUser user);
         Task<bool> SetUserSkin(Guid userId, ModelType model);

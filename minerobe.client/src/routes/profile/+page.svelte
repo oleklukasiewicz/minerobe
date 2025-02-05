@@ -4,7 +4,7 @@
   import { writable, type Writable } from "svelte/store";
   //api
   import { GetUserProfile } from "$src/api/user";
-  import { GetAccount, GetFullAccount } from "$src/api/integration/minecraft";
+  import { GetAccount, GetCurrentSkin } from "$src/api/integration/minecraft";
   import { GetMergedPackage } from "$src/api/pack";
   //services
   import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
@@ -13,7 +13,7 @@
   //model
   import type { MinerobeUserProfile } from "$src/data/models/user";
   import { APP_STATE } from "$src/data/enums/app";
-  import { Cape, MinecraftAccount } from "$src/data/models/integration/minecraft";
+  import { Cape, MinecraftAccount, MinecraftSkin } from "$src/data/models/integration/minecraft";
   import { OUTFIT_TYPE } from "$src/data/enums/outfit";
   import type { OutfitPackage } from "$src/data/models/package";
   //components
@@ -43,7 +43,8 @@
         );
       }
       if ($profileUser.settings.integrations.includes("minecraft")) {
-        $minecraftIntegration = await GetFullAccount(true);
+        $minecraftIntegration = await GetAccount(false);
+        currentMinecraftSkin=await GetCurrentSkin(false);
         if ($profileUser.settings.currentTexture?.capeId != null) {
           currentCape = $minecraftIntegration.capes.find(
             (x) => x.id == $profileUser.settings.currentTexture?.capeId
@@ -59,6 +60,7 @@
 
   let currentCape: Cape = new Cape();
   let currentTexture: OutfitPackage;
+  let currentMinecraftSkin:MinecraftSkin=null;
   let loaded = false;
 </script>
 
@@ -154,15 +156,15 @@
         <Button
           slot="actions"
           label={"Change cape"}
-          href="/profile/minecraft"
+          href="/profile/skin"
         />
       </StatusCard>
     {/if}
     <!-- Minecraft account card-->
     <StatusCard label={"minecraft account"}>
       <Placeholder {loaded} height="100%" width="100%">
-        {#if $minecraftIntegration?.skin?.texture != null}
-          {#await GetImageFaceArea($minecraftIntegration?.skin?.texture) then skin}
+        {#if currentMinecraftSkin?.texture != null}
+          {#await GetImageFaceArea(currentMinecraftSkin?.texture) then skin}
             <!-- svelte-ignore a11y-missing-attribute -->
             <img src={skin} style="width:100%;image-rendering: pixelated; " />
           {/await}

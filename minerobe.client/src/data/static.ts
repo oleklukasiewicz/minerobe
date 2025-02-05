@@ -13,6 +13,7 @@ import type { MinerobeUser } from "$data/models/user";
 import { ModelScene } from "./render";
 import { ALEX_MODEL, STEVE_MODEL } from "./consts/model";
 import { APP_STATE } from "./enums/app";
+import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 
 //steve modelscene
 const steveModelSceneWritable: Writable<ModelScene> = writable(null);
@@ -93,6 +94,26 @@ export const Initialize = async function () {
       .Create()
       .then((x) => x.ResetPosition())
   );
+
+  //setup SignalR
+  serverWsConnectionWritable.set(
+    new HubConnectionBuilder()
+      .withUrl(
+        "/api/ws?userId=" + get(CURRENT_USER).id,
+        HttpTransportType.ServerSentEvents
+      )
+      .withKeepAliveInterval(15000)
+      .withAutomaticReconnect()
+      .build()
+  );
+  get(serverWsConnectionWritable)
+    .start()
+    .then(() => {
+      console.log("Connection started!");
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 
   //setup default renderer
   defaultRendererWritable.update((renderer: any) => {

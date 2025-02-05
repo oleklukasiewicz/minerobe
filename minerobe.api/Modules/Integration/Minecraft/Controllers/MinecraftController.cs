@@ -6,12 +6,12 @@ using minerobe.api.Modules.Integration.Minecraft.ResponseModel;
 
 namespace minerobe.api.Modules.Integration.Minecraft.Controllers
 {
-    [Route("JavaXboxAuth")]
-    public class JavaXboxAuthController : Controller
+    [Route("McIntegration")]
+    public class MinecraftController : Controller
     {
         private readonly IUserService _userService;
-        private readonly IJavaXboxAuthService _javaXboxAuthService;
-        public JavaXboxAuthController(IUserService userService, IJavaXboxAuthService javaXboxAuthService)
+        private readonly IMinecraftService _javaXboxAuthService;
+        public MinecraftController(IUserService userService, IMinecraftService javaXboxAuthService)
         {
             _userService = userService;
             _javaXboxAuthService = javaXboxAuthService;
@@ -31,15 +31,16 @@ namespace minerobe.api.Modules.Integration.Minecraft.Controllers
             var user = await _userService.GetFromToken(User);
 
             var profile = await _javaXboxAuthService.GetProfile(user, keepFresh);
-            return Ok(profile.ToSimpleResponseModel());
+            return Ok(profile.ToResponseModel());
         }
-        [HttpGet("FullProfile")]
-        public async Task<IActionResult> GetFullProfile([FromQuery] bool keepFresh)
+        [HttpGet("Skin")]
+        public async Task<IActionResult> GetSkin([FromQuery] bool keepFresh)
         {
             var user = await _userService.GetFromToken(User);
 
             var profile = await _javaXboxAuthService.GetProfile(user);
-            return Ok(profile.ToResponseModel());
+            var skin = profile?.Profile?.Skins?.FirstOrDefault(x => x.Id == profile?.Profile?.CurrentSkinId);
+            return Ok(skin);
         }
         [HttpGet("RefreshProfile")]
         public async Task<IActionResult> RefreshData()

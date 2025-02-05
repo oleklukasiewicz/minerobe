@@ -1,7 +1,7 @@
 ﻿using minerobe.api.Modules.Core.Collection.Entity;
 using minerobe.api.Modules.Core.Package.Entity;
 
-namespace minerobe.api.Helpers.Wardrobe
+namespace minerobe.api.Modules.Core.Wardrobe.Helpers
 {
     public class Wardrobe
     {

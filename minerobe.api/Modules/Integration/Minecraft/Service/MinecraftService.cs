@@ -5,13 +5,13 @@ using Microsoft.Identity.Client.Extensions.Msal;
 using minerobe.api.Configuration;
 using minerobe.api.Database;
 using minerobe.api.Helpers;
-using minerobe.api.Helpers.Integration;
 using minerobe.api.Hubs;
 using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Settings.Entity;
 using minerobe.api.Modules.Core.Settings.Interface;
 using minerobe.api.Modules.Core.User.Entity;
 using minerobe.api.Modules.Integration.Minecraft.Entity;
+using minerobe.api.Modules.Integration.Minecraft.Helpers;
 using minerobe.api.Modules.Integration.Minecraft.Interface;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,7 +19,7 @@ using System.Net.Http.Headers;
 using System.Text;
 namespace minerobe.api.Modules.Integration.Minecraft.Service
 {
-    public enum JavaXboxAuthStatus
+    public enum MojangAuthStatus
     {
         Failed,
         Success,
@@ -29,7 +29,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
         ConnectingToMs,
         AwaitingUserInput
     }
-    public class JavaXboxAuthService : IJavaXboxAuthService
+    public class MinecraftService : IMinecraftService
     {
         private readonly MicrosoftAuthConfig _config;
         private readonly IUserSettingsService _userSettingsService;
@@ -37,7 +37,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
         private readonly IDefaultHub _defaultHub;
         private readonly HttpClient _http;
         private const string authMessageHeader = "linkToMc";
-        public JavaXboxAuthService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx, IUserSettingsService userSettingsService, IDefaultHub defaultHub, IHttpClientFactory httpClientFactory)
+        public MinecraftService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx, IUserSettingsService userSettingsService, IDefaultHub defaultHub, IHttpClientFactory httpClientFactory)
         {
             _config = options.Value;
             _ctx = ctx;
@@ -45,14 +45,14 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
             _defaultHub = defaultHub;
             _http = httpClientFactory.CreateClient();
         }
-        public async Task<JavaXboxProfile> LinkAccount(MinerobeUser user)
+        public async Task<MinecraftAccount> LinkAccount(MinerobeUser user)
         {
             await UnLinkAccount(user);
             var auth = await Authenticate(user.Id);
 
             if (auth != null)
             {
-                var profile = new JavaXboxProfile();
+                var profile = new MinecraftAccount();
                 profile.Id = Guid.NewGuid();
                 profile.AccountId = auth.AccountId;
                 profile.Profile = await GetProfileData(auth.Token);
@@ -85,7 +85,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
             if (profile == null)
                 return false;
 
-            var profileData = ((object)profile.Data).ToClass<JavaXboxProfile>();
+            var profileData = ((object)profile.Data).ToClass<MinecraftAccount>();
             if (profile != null)
                 _ctx.Set<IntegrationItem>().Remove(profile);
 
@@ -115,9 +115,9 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
         }
 
         //requests
-        private async Task<ProfileData> GetProfileData(string token)
+        private async Task<MinecraftProfile> GetProfileData(string token)
         {
-            var profile = new ProfileData();
+            var profile = new MinecraftProfile();
             try
             {
                 var url = "https://api.minecraftservices.com/minecraft/profile";
@@ -134,15 +134,15 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
 
                 profile.UUID = json["id"].ToString();
                 profile.Username = json["name"].ToString();
-                profile.Skins = new List<JavaXboxSkin>();
-                profile.Capes = new List<JavaXboxCape>();
+                profile.Skins = new List<MinecraftSkin>();
+                profile.Capes = new List<MinecraftCape>();
 
                 if (json["skins"] != null)
                 {
                     for (var i = 0; i < json["skins"].Count(); i++)
                     {
                         var skin = json["skins"][i];
-                        var skinData = new JavaXboxSkin();
+                        var skinData = new MinecraftSkin();
                         //get texture from url
                         var textureUrl = skin["url"].ToString();
                         var textureRequest = new HttpRequestMessage(HttpMethod.Get, textureUrl);
@@ -151,7 +151,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
                         var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
                         skinData.Texture = "data:image/png;base64," + Convert.ToBase64String(textureContent);
                         skinData.Id = Guid.Parse(skin["id"].ToString());
-                        skinData.Variant = (skin["variant"].ToString().ToUpper() == "CLASSIC" ? ModelType.Steve : ModelType.Alex).ToString();
+                        skinData.Model = (skin["variant"].ToString().ToUpper() == "CLASSIC" ? ModelType.Steve : ModelType.Alex).ToString();
                         profile.Skins.Add(skinData);
                         if (skin["state"].ToString().ToUpper() == "ACTIVE")
                         {
@@ -164,7 +164,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
                     for (var i = 0; i < json["capes"].Count(); i++)
                     {
                         var cape = json["capes"][i];
-                        var capeData = new JavaXboxCape();
+                        var capeData = new MinecraftCape();
                         //get texture from url
                         var textureUrl = cape["url"].ToString();
                         var textureResponse = await _http.GetAsync(textureUrl);
@@ -186,13 +186,13 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
             }
             return profile;
         }
-        public async Task<JavaXboxProfile> GetProfile(MinerobeUser user, bool keepFresh = true)
+        public async Task<MinecraftAccount> GetProfile(MinerobeUser user, bool keepFresh = true)
         {
             var integrationprofile = await _ctx.Set<IntegrationItem>().Where(x => x.OwnerId == user.Id && x.Type == "minecraft").FirstOrDefaultAsync();
             if (integrationprofile == null)
                 return null;
 
-            var data = ((object)integrationprofile.Data).ToClass<JavaXboxProfile>();
+            var data = ((object)integrationprofile.Data).ToClass<MinecraftAccount>();
 
             if (!keepFresh)
                 return data;
@@ -280,7 +280,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
         }
         public class FlowStatus
         {
-            public JavaXboxAuthStatus Status { get; set; }
+            public MojangAuthStatus Status { get; set; }
             public bool IsSuccess { get; set; }
         }
         public class FlowStep
@@ -317,7 +317,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
         //authorize flow
         public async Task<FlowAuthentication> Authenticate(Guid userId)
         {
-            var status = new FlowStatus() { Status = JavaXboxAuthStatus.ConnectingToMs, IsSuccess = true };
+            var status = new FlowStatus() { Status = MojangAuthStatus.ConnectingToMs, IsSuccess = true };
             try
             {
                 //connecting to ms
@@ -326,7 +326,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
 
                 var msalTokenRequest = await pca.AcquireTokenWithDeviceCode(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" }, fallback =>
                 {
-                    status.Status = JavaXboxAuthStatus.AwaitingUserInput;
+                    status.Status = MojangAuthStatus.AwaitingUserInput;
 
                     var message = new { fallback.UserCode, fallback.VerificationUrl };
                     _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status, message).ToResponseModel());
@@ -341,7 +341,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
                     throw new Exception("Failed to authorize to ms");
 
                 //connecting to xbox
-                status.Status = JavaXboxAuthStatus.ConnectingToXbox;
+                status.Status = MojangAuthStatus.ConnectingToXbox;
                 await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
                 var xstsToken = await AuthorizeToXbox(msalToken);
                 if (xstsToken == null)
@@ -351,13 +351,13 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
                 var uhs = xstsToken.uhs.ToString();
 
                 //connecting to mojang
-                status.Status = JavaXboxAuthStatus.ConnectingToMojang;
+                status.Status = MojangAuthStatus.ConnectingToMojang;
                 await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
                 var accessToken = await AuthorizeToMinecraftServices(token, uhs);
                 if (accessToken == null)
                     throw new Exception("Failed to authorize to mojang");
 
-                status.Status = JavaXboxAuthStatus.Success;
+                status.Status = MojangAuthStatus.Success;
                 await _defaultHub.SendMessage(userId, authMessageHeader, new FlowStep(status).ToResponseModel());
 
                 return new FlowAuthentication() { Token = accessToken, MsalToken = msalToken, RetrievedAt = DateTime.Now, AccountId = accountId, Status = status };
@@ -474,7 +474,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
             var profile = await _ctx.Set<IntegrationItem>().Where(x => x.OwnerId == userId && x.Type == "minecraft").FirstOrDefaultAsync();
             if (profile == null)
                 return null;
-            var profileData = ((object)profile.Data).ToClass<JavaXboxProfile>();
+            var profileData = ((object)profile.Data).ToClass<MinecraftAccount>();
             return await GetTokenFromCache(profileData.AccountId);
         }
 
