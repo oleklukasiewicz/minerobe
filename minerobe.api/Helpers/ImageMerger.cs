@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using minerobe.api.Modules.Core.Package.Entity;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
@@ -13,12 +14,12 @@ namespace minerobe.api.Helpers
 {
     public static class ImageMerger
     {
-        public static async Task<Image<Rgba32>> Merge(List<byte[]> textures, Dictionary<string, ModelMapPart> modelMap, bool flatten = false, List<string> excludedPartsFromFlatten = null)
+        public static async Task<Image<Rgba32>> Merge(List<byte[]> textures, ModelType type, bool flatten = false, List<string> excludedPartsFromFlatten = null)
         {
             if (excludedPartsFromFlatten == null)
-            {
                 excludedPartsFromFlatten = new List<string> { "head" };
-            }
+
+            var modelMap = type == ModelType.Steve ? ModelMaps.STEVE_MODEL : ModelMaps.ALEX_MODEL;
 
             List<Image<Rgba32>> images = new List<Image<Rgba32>>();
             foreach (var image in textures)

@@ -10,6 +10,7 @@
 
   export let items: Cape[];
   export let selectedCapeId: string;
+  export let readonly: boolean = false;
 
   const onSelect = function (item: Cape) {
     selectedCapeId = item?.id;
@@ -20,12 +21,14 @@
 <div class="cape-list">
   {#each items as item}
     <CapeListItem
+      {readonly}
       {item}
       selected={item.id === selectedCapeId}
       on:click={() => onSelect(item)}
     />
   {/each}
   <CapeListItem
+    {readonly}
     selected={selectedCapeId === undefined || selectedCapeId === null}
     on:click={() => onSelect(null)}
   />

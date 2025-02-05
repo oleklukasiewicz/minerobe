@@ -335,8 +335,8 @@ namespace minerobe.api.Modules.Core.Package.Service
             {
                 layers.Insert(0,basetexture);
             }
-            var steveMerged = await ImageMerger.Merge(layers.Select(x => x.Steve.Content).ToList(), ModelMaps.STEVE_MODEL, isFlatten);
-            var alexMerged = await ImageMerger.Merge(layers.Select(x => x.Alex.Content).ToList(), ModelMaps.ALEX_MODEL, isFlatten);
+            var steveMerged = await ImageMerger.Merge(layers.Select(x => x.Steve.Content).ToList(),ModelType.Steve, isFlatten);
+            var alexMerged = await ImageMerger.Merge(layers.Select(x => x.Alex.Content).ToList(), ModelType.Alex, isFlatten);
 
             var package = await _context.OutfitPackages.FindAsync(packageId);
             if (package == null)

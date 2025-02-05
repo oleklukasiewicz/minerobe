@@ -151,6 +151,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
                         var textureContent = await textureResponse.Content.ReadAsByteArrayAsync();
                         skinData.Texture = "data:image/png;base64," + Convert.ToBase64String(textureContent);
                         skinData.Id = Guid.Parse(skin["id"].ToString());
+                        skinData.Variant = (skin["variant"].ToString().ToUpper() == "CLASSIC" ? ModelType.Steve : ModelType.Alex).ToString();
                         profile.Skins.Add(skinData);
                         if (skin["state"].ToString().ToUpper() == "ACTIVE")
                         {

@@ -10,6 +10,7 @@
   export let crop: boolean = true;
   export let selected: boolean = false;
   export let readonly = false;
+  export let autoSize = false;
 
   const normalizeCape = async function (cape: Cape) {
     if (!crop) return cape.texture;
@@ -23,6 +24,7 @@
 <a
   class="cape-list-item"
   class:selected
+  class:autoSize
   title={item.name}
   on:click
   class:readonly

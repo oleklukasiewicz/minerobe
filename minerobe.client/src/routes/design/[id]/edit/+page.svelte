@@ -49,7 +49,7 @@
   import type { RenderAnimation } from "$src/data/animation.js";
   import type {
     Cape,
-    MinecraftIntegrationSettings,
+    MinecraftAccountSimple,
   } from "$data/models/integration/minecraft";
   import type { PagedResponse } from "$data/models/base";
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
@@ -90,6 +90,7 @@
   import ListIcon from "$icons/list.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
+  import { text } from "@sveltejs/kit";
 
   export let data;
 
@@ -108,7 +109,7 @@
   let isOutfitSet = false;
   let isMinecraftIntegrated = false;
   let userSettings: MinerobeUserSettings = null;
-  let integrationSettings: MinecraftIntegrationSettings = null;
+  let integrationSettings: MinecraftAccountSimple = null;
   let renderer: any = null;
 
   // dialog data
@@ -171,14 +172,15 @@
       isMinecraftIntegrated = userSettings?.integrations.includes("minecraft");
       if (isMinecraftIntegrated && isOutfitSet) {
         integrationSettings = await GetAccount(false);
-        $renderConfiguration.capeId = integrationSettings.currentCapeId;
+        $renderConfiguration.cape = integrationSettings.capes.find(
+          (c) => c.id == userSettings?.currentTexture?.capeId
+        );
       }
-
-      loaded = true;
-      setTimeout(() => addAnimation(null), 0);
       itemPackage.subscribe(async (item) => {
         await UpdatePackageDebounced();
       });
+      loaded = true;
+      setTimeout(() => addAnimation(null), 0);
     });
   });
   onDestroy(() => {
@@ -404,8 +406,7 @@
   };
   const setCape = function (e) {
     const item = e.detail.item as Cape;
-    $renderConfiguration.capeId = item?.id;
-    $renderConfiguration.capeTexture = item?.texture;
+    $renderConfiguration.cape = item;
   };
 </script>
 
@@ -420,7 +421,7 @@
               bind:addAnimation={__addAnimation}
               source={$renderConfiguration.item}
               isDynamic
-              cape={$renderConfiguration.capeTexture}
+              cape={$renderConfiguration?.cape?.texture}
               layerId={$renderConfiguration.selectedLayerId}
               isFlatten={$renderConfiguration.isFlatten}
               resizable
@@ -514,7 +515,7 @@
         <SectionTitle label="Capes" />
         <CapeList
           items={integrationSettings.capes}
-          selectedCapeId={$renderConfiguration.capeId}
+          selectedCapeId={$renderConfiguration?.cape?.id}
           on:select={setCape}
         />
       </div>

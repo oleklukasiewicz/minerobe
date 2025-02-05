@@ -1,0 +1,34 @@
+#profile-minecraft
+{
+    display: grid;
+    max-width: 100%;
+    margin: 0 auto;
+    grid-template-columns:50% calc(50% - 16px);
+    flex: 1;
+    gap: 16px;
+    .render {
+      aspect-ratio: 1;
+    }
+    .data {
+      max-width: 500px;
+      width: 100%;
+      min-width: 10px;
+      margin: 16px auto 0px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      .username
+      {
+        font-size: var(--size-font-subheader);
+        line-height: var(--size-font-subheader);
+        font-family: minecraft;
+        margin: 0;
+      }
+    }
+    &.mobile {
+      grid-template-columns: 100%;
+      .data {
+        max-width: 100%;
+      }
+    }
+}

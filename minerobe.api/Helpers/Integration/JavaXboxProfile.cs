@@ -1,4 +1,6 @@
-﻿namespace minerobe.api.Helpers.Integration
+﻿using minerobe.api.Modules.Core.Package.Entity;
+
+namespace minerobe.api.Helpers.Integration
 {
     public class JavaXboxProfile
     {
@@ -17,6 +19,7 @@
         public Guid? Id { get; set; }
         public string Texture { get; set; }
         public string Name { get; set; }
+        public string Variant { get; set; }
     }
     public class ProfileData
     {

@@ -1,16 +1,25 @@
 .cape-list-item {
   aspect-ratio: 1;
-  display: inline-block;
+  display: inline-flex;
   background-color: var(--color-theme-D1);
   border: 2px solid transparent;
   padding: 6px;
-  max-height: 64px;
+  height: 64px;
+  width: 64px;
+  aspect-ratio: 1;
   box-sizing: border-box;
   user-select: none;
   img {
-    height: 48px;
-    width: 48px;
+    flex: 1;
     image-rendering: pixelated;
+  }
+  &.autoSize {
+    img {
+      height: auto;
+      width: auto;
+    }
+    height: auto;
+    width: auto;
   }
   div {
     margin: 12px;

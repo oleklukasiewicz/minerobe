@@ -82,7 +82,7 @@
   const RemoveBaseTexture = async function () {
     $userSettings.baseTexture = DEFAULT_PACKAGE;
     await UpdateBaseTexture($userSettings.baseTexture);
-    ShowToast("Base texture updated");
+    ShowToast("Base texture removed");
   };
   const OpenEditBaseTextureDialog = function () {
     isBaseTextureEditDialogOpen = true;

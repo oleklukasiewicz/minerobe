@@ -37,4 +37,11 @@
     gap: 8px;
     margin-top: 8px;
   }
+  #cape-item
+  {
+    display: flex;
+    flex-direction: column;
+    max-width: 128px;
+    margin: 0 auto;
+  }
 }

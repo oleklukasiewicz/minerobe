@@ -34,7 +34,7 @@
   import type { RenderAnimation } from "$src/data/animation.js";
   import type {
     Cape,
-    MinecraftIntegrationSettings,
+    MinecraftAccountSimple,
   } from "$data/models/integration/minecraft";
   import type { PagedResponse } from "$data/models/base";
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
@@ -43,6 +43,7 @@
   import { OutfitPackageRenderConfig } from "$data/models/render";
   import { MinerobeUserSettings } from "$data/models/user";
   import HandsUpAnimation from "$src/animation/handsup";
+  import type { MODEL_TYPE } from "$src/data/enums/model.js";
   //components
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
@@ -54,14 +55,13 @@
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
   import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
   import CollectionsDialog from "$lib/components/dialog/CollectionsDialog.svelte";
+  import SocialInfo from "$lib/components/social/SocialInfo.svelte";
   //icons
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
   import DownloadIcon from "$icons/download.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
-  import SocialInfo from "$lib/components/social/SocialInfo.svelte";
   import EditIcon from "$src/icons/edit.svg?raw";
-  import type { MODEL_TYPE } from "$src/data/enums/model.js";
 
   export let data;
 
@@ -80,7 +80,7 @@
   let isOutfitSet = false;
   let isMinecraftIntegrated = false;
   let userSettings: MinerobeUserSettings = null;
-  let integrationSettings: MinecraftIntegrationSettings = null;
+  let integrationSettings: MinecraftAccountSimple = null;
   let renderer: any = null;
 
   // dialog data
@@ -127,7 +127,9 @@
           userSettings?.integrations.includes("minecraft");
         if (isMinecraftIntegrated && isOutfitSet) {
           integrationSettings = await GetAccount(false);
-          $renderConfiguration.capeId = integrationSettings.currentCapeId;
+          $renderConfiguration.cape = integrationSettings.capes.find(
+            (c) => c.id == userSettings?.currentTexture?.capeId
+          );
         }
       } else $renderConfiguration.baseTexture = $BASE_TEXTURE;
 
@@ -220,8 +222,7 @@
   };
   const setCape = function (e) {
     const item = e.detail.item as Cape;
-    $renderConfiguration.capeId = item?.id;
-    $renderConfiguration.capeTexture = item?.texture;
+    $renderConfiguration.cape = item;
   };
 </script>
 
@@ -234,7 +235,7 @@
             bind:addAnimation={__addAnimation}
             source={$renderConfiguration.item}
             isDynamic
-            cape={$renderConfiguration.capeTexture}
+            cape={$renderConfiguration?.cape?.texture}
             layerId={$renderConfiguration.selectedLayerId}
             isFlatten={$renderConfiguration.isFlatten}
             resizable
@@ -296,7 +297,7 @@
         <SectionTitle label="Capes" />
         <CapeList
           items={integrationSettings.capes}
-          selectedCapeId={$renderConfiguration.capeId}
+          selectedCapeId={$renderConfiguration.cape?.id}
           on:select={setCape}
         />
       </div>

@@ -4,7 +4,7 @@
   import { writable, type Writable } from "svelte/store";
   //api
   import { GetUserProfile } from "$src/api/user";
-  import { GetAccount } from "$src/api/integration/minecraft";
+  import { GetAccount, GetFullAccount } from "$src/api/integration/minecraft";
   import { GetMergedPackage } from "$src/api/pack";
   //services
   import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
@@ -13,7 +13,7 @@
   //model
   import type { MinerobeUserProfile } from "$src/data/models/user";
   import { APP_STATE } from "$src/data/enums/app";
-  import { Cape } from "$src/data/models/integration/minecraft";
+  import { Cape, MinecraftAccount } from "$src/data/models/integration/minecraft";
   import { OUTFIT_TYPE } from "$src/data/enums/outfit";
   import type { OutfitPackage } from "$src/data/models/package";
   //components
@@ -27,7 +27,7 @@
   //icons
 
   const profileUser: Writable<MinerobeUserProfile> = writable(null);
-  const minecraftIntegration: Writable<any> = writable(null);
+  const minecraftIntegration: Writable<MinecraftAccount> = writable(null);
 
   let stateSub = null;
   onMount(async () => {
@@ -43,7 +43,7 @@
         );
       }
       if ($profileUser.settings.integrations.includes("minecraft")) {
-        $minecraftIntegration = await GetAccount(true);
+        $minecraftIntegration = await GetFullAccount(true);
         if ($profileUser.settings.currentTexture?.capeId != null) {
           currentCape = $minecraftIntegration.capes.find(
             (x) => x.id == $profileUser.settings.currentTexture?.capeId
@@ -135,11 +135,34 @@
         href="/profile/base"
       />
     </StatusCard>
+    <!-- Cape card-->
+    {#if currentCape != null}
+      <StatusCard label={"cape"}>
+        <Placeholder
+          {loaded}
+          height="100%"
+          width="100%"
+          loadedStyle="width:100%;"
+        >
+          <div class="font-center">
+            <div id="cape-item">
+              <CapeListItem item={currentCape} readonly autoSize />
+              <div class="mc-font">{currentCape.name || "No Cape"}</div>
+            </div>
+          </div>
+        </Placeholder>
+        <Button
+          slot="actions"
+          label={"Change cape"}
+          href="/profile/minecraft"
+        />
+      </StatusCard>
+    {/if}
     <!-- Minecraft account card-->
     <StatusCard label={"minecraft account"}>
       <Placeholder {loaded} height="100%" width="100%">
-        {#if $profileUser.settings.baseTexture?.layers[0] != null}
-          {#await GetImageFaceArea($profileUser.settings.baseTexture.layers[0].steve.content) then skin}
+        {#if $minecraftIntegration?.skin?.texture != null}
+          {#await GetImageFaceArea($minecraftIntegration?.skin?.texture) then skin}
             <!-- svelte-ignore a11y-missing-attribute -->
             <img src={skin} style="width:100%;image-rendering: pixelated; " />
           {/await}
@@ -158,29 +181,6 @@
         href="/profile/minecraft"
       />
     </StatusCard>
-    <!-- Cape card-->
-    {#if currentCape != null}
-      <StatusCard label={"cape"}>
-        <Placeholder
-          {loaded}
-          height="100%"
-          width="100%"
-          loadedStyle="width:100%;"
-        >
-          <div class="font-center">
-            <CapeListItem item={currentCape} readonly />
-            <br />
-            <br />
-            <div class="mc-font">{currentCape.name || "No Cape"}</div>
-          </div>
-        </Placeholder>
-        <Button
-          slot="actions"
-          label={"Change cape"}
-          href="/profile/minecraft"
-        />
-      </StatusCard>
-    {/if}
   </div>
 </div>
 

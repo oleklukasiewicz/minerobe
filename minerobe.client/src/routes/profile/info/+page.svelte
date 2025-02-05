@@ -12,7 +12,10 @@
   //consts
   import { CURRENT_APP_STATE, CURRENT_USER } from "$src/data/static";
   //model
-  import type { MinerobeUser } from "$src/data/models/user";
+  import type {
+    MinerobeUser,
+    MinerobeUserSettings,
+  } from "$src/data/models/user";
   import { APP_STATE } from "$src/data/enums/app";
   //components
   import Button from "$lib/components/base/Button/Button.svelte";
@@ -26,14 +29,17 @@
   import AvatarIcon from "$icons/avatar.svg?raw";
   import { ResetUserAvatar, UpdateUser } from "$src/api/user";
   import { ShowToast } from "$src/data/toast";
+  import { GetMergedPackage } from "$src/api/pack";
 
   const profileUser: Writable<MinerobeUser> = writable(null);
+  const userSettings: Writable<MinerobeUserSettings> = writable(null);
 
   let stateSub = null;
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
       $profileUser = await GetMinerobeUser($CURRENT_USER.id);
+      $userSettings = await FetchSettings();
       inputProfileUsername = $profileUser.name;
       loaded = true;
     });
@@ -57,10 +63,13 @@
     ShowToast("Avatar uploaded", "success");
   };
   const GenerateAvatarFromCurrentSkin = async () => {
-    let settings = await FetchSettings();
-    const basetexture = settings.baseTexture;
+    let mergedTexture = await GetMergedPackage(
+      $userSettings?.currentTexture?.packageId,
+      false,
+      true
+    );
     var image = await GetImageFaceArea(
-      basetexture.layers[0][basetexture.model].content
+      mergedTexture.layers[0][$userSettings?.currentTexture?.model].content
     );
     $profileUser.avatar = image;
     await UpdateUser($profileUser);
@@ -104,7 +113,7 @@
             width="100%"
             loadedStyle={"flex:1;"}
           >
-            <Button label="Reset" on:click={ResetAvatar} />
+            <Button label="Reset" type="tertiary" on:click={ResetAvatar} />
           </Placeholder>
         </div>
         <Placeholder {loaded} height="36px" width="100%">
@@ -149,6 +158,7 @@
       <Placeholder {loaded} height="36px" width="100%" loadedStyle={"flex:1;"}>
         <Button
           icon={AvatarIcon}
+          disabled={$userSettings?.currentTexture?.packageId==null}
           label={"Generate from current skin"}
           on:click={GenerateAvatarFromCurrentSkin}
         />

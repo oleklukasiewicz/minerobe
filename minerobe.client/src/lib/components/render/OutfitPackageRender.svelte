@@ -72,6 +72,9 @@
     await setRenderMode(isDynamic);
     initialized = true;
     renderReady = true;
+
+    if (_cape != null) await textureRenderer.SetCapeAsync(_cape);
+    else textureRenderer.RemoveCape();
   });
   onDestroy(() => {
     textureRenderer.StopRendering();
