@@ -1,23 +1,31 @@
 <script lang="ts">
+  //main imports
+  import { writable, type Writable } from "svelte/store";
+  import { onDestroy, onMount } from "svelte";
+  //api
+  import { GetMinerobeUser } from "$src/api/auth";
+  import { FetchSettings } from "$src/api/settings";
+  //services
+  import { ImportImages } from "$src/data/import";
+  import { ExportImage } from "$src/data/export";
+  import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
+  //consts
+  import { CURRENT_APP_STATE, CURRENT_USER } from "$src/data/static";
+  //model
+  import type { MinerobeUser } from "$src/data/models/user";
+  import { APP_STATE } from "$src/data/enums/app";
+  //components
   import Button from "$lib/components/base/Button/Button.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
   import TextBox from "$lib/components/base/TextBox/TextBox.svelte";
-  import { GetMinerobeUser } from "$src/api/auth";
-  import { APP_STATE } from "$src/data/enums/app";
-  import type { MinerobeUser } from "$src/data/models/user";
-  import { CURRENT_APP_STATE, CURRENT_USER } from "$src/data/static";
-  import { onDestroy, onMount } from "svelte";
-  import { writable, type Writable } from "svelte/store";
+  //icons
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import DownloadIcon from "$icons/download.svg?raw";
-  import { ExportImage } from "$src/data/export";
-  import { ImportImages } from "$src/data/import";
   import AvatarIcon from "$icons/avatar.svg?raw";
-  import { FetchSettings } from "$src/api/settings";
-  import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
-  import { on } from "svelte/events";
+  import { ResetUserAvatar, UpdateUser } from "$src/api/user";
+  import { ShowToast } from "$src/data/toast";
 
   const profileUser: Writable<MinerobeUser> = writable(null);
 
@@ -45,6 +53,8 @@
     if (image) {
       $profileUser.avatar = image[0].steve.content;
     }
+    await UpdateUser($profileUser);
+    ShowToast("Avatar uploaded", "success");
   };
   const GenerateAvatarFromCurrentSkin = async () => {
     let settings = await FetchSettings();
@@ -53,6 +63,17 @@
       basetexture.layers[0][basetexture.model].content
     );
     $profileUser.avatar = image;
+    await UpdateUser($profileUser);
+    ShowToast("Avatar generated", "success");
+  };
+  const UpdateUsername = async () => {
+    $profileUser.name = inputProfileUsername;
+    await UpdateUser($profileUser);
+    ShowToast("Username updated", "success");
+  };
+  const ResetAvatar = async () => {
+    $profileUser = await ResetUserAvatar();
+    ShowToast("Avatar reseted", "success");
   };
 </script>
 
@@ -64,13 +85,28 @@
         <img src={$profileUser.avatar} id="profile-avatar" alt="avatar" />
       </Placeholder>
       <div id="profile-avatar-actions">
-        <Placeholder {loaded} height="36px" width="100%">
-          <Button
-            icon={ImportPackageIcon}
-            label={"Upload"}
-            on:click={UploadAvatar}
-          />
-        </Placeholder>
+        <div id="profile-avatar-actions-primary">
+          <Placeholder
+            {loaded}
+            height="36px"
+            width="100%"
+            loadedStyle={"flex:1;"}
+          >
+            <Button
+              icon={ImportPackageIcon}
+              label={"Upload"}
+              on:click={UploadAvatar}
+            />
+          </Placeholder>
+          <Placeholder
+            {loaded}
+            height="36px"
+            width="100%"
+            loadedStyle={"flex:1;"}
+          >
+            <Button label="Reset" on:click={ResetAvatar} />
+          </Placeholder>
+        </div>
         <Placeholder {loaded} height="36px" width="100%">
           <Button
             icon={DownloadIcon}
@@ -99,7 +135,9 @@
         >
           <Button
             label={"Change username"}
-            disabled={$profileUser.name == inputProfileUsername || inputProfileUsername.length == 0}
+            on:click={UpdateUsername}
+            disabled={$profileUser.name == inputProfileUsername ||
+              inputProfileUsername.length == 0}
           />
         </Placeholder>
       </div>

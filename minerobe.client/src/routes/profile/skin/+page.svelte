@@ -1,31 +1,38 @@
 <script lang="ts">
+  //main imports
+  import { onDestroy, onMount } from "svelte";
+  import { writable, type Writable } from "svelte/store";
+  import * as THREE from "three";
+  //api
+  import { GetPackage } from "$src/api/pack";
+  import { FetchSettings, SetCurrentTexture } from "$src/api/settings";
+  //services
+  import { ExportImage } from "$src/data/export";
+  import { OutfitPackageToTextureConverter } from "$src/data/render";
+  import { debounce } from "$src/data/base";
+  //consts
+  import DefaultAnimation from "$src/animation/default";
   import {
     BASE_TEXTURE,
     CURRENT_APP_STATE,
-    CURRENT_USER,
     IS_MOBILE_VIEW,
   } from "$src/data/static";
-  import { onDestroy, onMount } from "svelte";
+  //model
   import { APP_STATE } from "$src/data/enums/app";
-  import type { MinerobeUserProfile } from "$src/data/models/user";
-  import { writable, type Writable } from "svelte/store";
-  import { GetUserProfile } from "$src/api/user";
+  import type { MinerobeUserSettings } from "$src/data/models/user";
+  import type { RenderAnimation } from "$src/data/animation";
+  import { OutfitPackageRenderConfig } from "$src/data/models/render";
+  //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import * as THREE from "three";
   import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
+  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
   import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
+  //icons
   import DownloadIcon from "$icons/download.svg?raw";
-  import { ExportImage } from "$src/data/export";
-  import { OutfitPackageToTextureConverter } from "$src/data/render";
-  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
-  import { OutfitPackageRenderConfig } from "$src/data/models/render";
-  import {  GetPackage } from "$src/api/pack";
-  import type { RenderAnimation } from "$src/data/animation";
-  import DefaultAnimation from "$src/animation/default";
 
-  const profileUser: Writable<MinerobeUserProfile> = writable(null);
+  const userSettings: Writable<MinerobeUserSettings> = writable(null);
   const renderConfiguration: Writable<OutfitPackageRenderConfig> = writable(
     new OutfitPackageRenderConfig()
   );
@@ -38,22 +45,23 @@
       });
       dynamicRenderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 
-      $profileUser = await GetUserProfile($CURRENT_USER.id);
+      $userSettings = await FetchSettings();
 
-      $renderConfiguration.isFlatten= $profileUser.settings.currentTexture.isFlatten;
-      if ($profileUser.settings.currentTexture != null) {
+      $renderConfiguration.isFlatten = $userSettings.currentTexture.isFlatten;
+      if ($userSettings.currentTexture != null) {
         $renderConfiguration.item = await GetPackage(
-          $profileUser.settings.currentTexture.packageId
+          $userSettings.currentTexture.packageId
         );
-        $renderConfiguration.item.model =
-          $profileUser.settings.currentTexture.model;
+        $renderConfiguration.item.model = $userSettings.currentTexture.model;
       }
-      if ($profileUser.settings.baseTexture != null) {
-        $renderConfiguration.baseTexture =
-          $profileUser.settings.baseTexture.layers[0];
-      }
+      if ($userSettings.baseTexture != null)
+        $renderConfiguration.baseTexture = $userSettings.baseTexture.layers[0];
+
       loaded = true;
       setTimeout(() => addAnimation(null), 0);
+      renderConfiguration.subscribe(async (value) => {
+        await UpdateCurrentSkinDebouced(value);
+      });
     });
   });
   onDestroy(() => {
@@ -67,7 +75,11 @@
     animation: RenderAnimation,
     force: boolean = false
   ) {};
-  
+
+  const UpdateCurrentSkinDebouced = debounce(async (value) => {
+    if (loaded) await SetCurrentTexture($renderConfiguration.ToExportConfig());
+  }, 500);
+
   const addAnimation = (animation: RenderAnimation) => {
     if (animation) __addAnimation(animation, false);
     __addAnimation(DefaultAnimation, true);
@@ -86,9 +98,8 @@
   <div class="render">
     <Placeholder {loaded}>
       <OutfitPackageRender
-      bind:addAnimation={__addAnimation}
-        baseTexture={$profileUser?.settings?.baseTexture.layers[0] ||
-          $BASE_TEXTURE}
+        bind:addAnimation={__addAnimation}
+        baseTexture={$userSettings?.baseTexture.layers[0] || $BASE_TEXTURE}
         source={$renderConfiguration.item}
         isFlatten={$renderConfiguration.isFlatten}
         renderer={dynamicRenderer}

@@ -8,7 +8,7 @@ namespace minerobe.api.Modules.Core.Settings.ResponseModel
         public Guid Id { get; set; }
         public Guid OwnerId { get; set; }
         public OutfitPackageConfigResponseModel CurrentTexture { get; set; }
-        public OutfitPackageListItemResponseModel BaseTexture { get; set; }
+        public OutfitPackageResponseModel BaseTexture { get; set; }
         public List<string> Integrations { get; set; }
     }
     public static class UserSettingsResponseModelExtensions
@@ -19,7 +19,7 @@ namespace minerobe.api.Modules.Core.Settings.ResponseModel
             {
                 Id = entity.Id,
                 OwnerId = entity.OwnerId,
-                BaseTexture = entity.BaseTexture?.ToListItemResponseModel(),
+                BaseTexture = entity.BaseTexture?.ToResponseModel(),
                 CurrentTexture = entity.CurrentTexture.ToResponseModel(),
                 Integrations = entity.Integrations?.Select(x => x.Type).ToList(),
 

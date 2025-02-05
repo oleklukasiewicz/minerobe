@@ -3,8 +3,6 @@ import TopIcon from "$icons/clothes/top.svg?raw";
 import BottomIcon from "$icons/clothes/bottom.svg?raw";
 import ShoesIcon from "$icons/clothes/shoes.svg?raw";
 import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
-import { ConvertColor } from "./colorHelper";
-import type { OutfitLayer, OutfitPackage } from "$data/models/package";
 import { OUTFIT_TYPE } from "$src/data/enums/outfit";
 
 export const GetOutfitType = function (imageContext: any) {
@@ -89,7 +87,7 @@ export const GetContextFromBase64 = async function (base64) {
       const canvas = document.createElement("canvas");
       canvas.width = img.width;
       canvas.height = img.height;
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
       ctx.drawImage(img, 0, 0);
       resolve(ctx);
     };
@@ -131,7 +129,9 @@ export const GetFaceOfRemoteSkin = async function (skinUrl) {
   const canvas = document.createElement("canvas");
   canvas.width = bitmap.width;
   canvas.height = bitmap.height;
-  const context = canvas.getContext("2d");
+  const context = canvas.getContext("2d", {
+    willReadFrequently: true,
+  });
   context.drawImage(bitmap, 0, 0);
 
   const scale = 10;
@@ -139,7 +139,9 @@ export const GetFaceOfRemoteSkin = async function (skinUrl) {
   const faceCanvas = document.createElement("canvas");
   faceCanvas.width = face.width * scale;
   faceCanvas.height = face.height * scale;
-  const faceContext = faceCanvas.getContext("2d");
+  const faceContext = faceCanvas.getContext("2d", {
+    willReadFrequently: true,
+  });
   faceContext.imageSmoothingEnabled = false; // Keep the image sharp when scaling
   faceContext.drawImage(
     canvas,
@@ -169,7 +171,9 @@ export const GetImageArea = function (
       const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", {
+        willReadFrequently: true,
+      });
       if (ctx) {
         ctx.drawImage(img, x, y, width, height, 0, 0, width, height);
         resolve(canvas.toDataURL());

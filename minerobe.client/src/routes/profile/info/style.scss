@@ -25,6 +25,12 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      #profile-avatar-actions-primary
+      {
+        display: flex;
+        gap:8px;
+        flex-direction: row;
+      }
     }
   }
   #profile-avatar-skin {

@@ -17,6 +17,7 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
         public DateTime? ModifiedAt { get; set; }
         public List<OutfitLayerResponseModel> Layers { get; set; }
         public int TotalLayersCount { get; set; }
+        public Guid PublisherId { get; set; }
         public MinerobePackageUserResponseModel Publisher { get; set; }
         public bool IsInWardrobe { get; set; }
     }
@@ -42,6 +43,7 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
                 CreatedAt = entity.CreatedAt,
                 ModifiedAt = entity.ModifiedAt,
                 Layers = layers,
+                PublisherId = entity.PublisherId,
                 Publisher = entity.Publisher.ToPackageResponseModel(),
                 TotalLayersCount = entity.Layers != null ? entity.Layers.Count : 0,
                 IsInWardrobe = isInWardrobe

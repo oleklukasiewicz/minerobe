@@ -12,10 +12,11 @@ export const GetPackage = async function (id: string) {
 };
 export const GetMergedPackage = async function (
   packageId: string,
-  isFlatten: Boolean
+  isFlatten: Boolean=false,
+  useBasetexture: Boolean=false
 ): Promise<OutfitPackage> {
   const res = await GetRequest(
-    "/api/Package/" + packageId + "/merged/" + isFlatten
+    "/api/Package/" + packageId + "/merged/" + isFlatten+"/"+useBasetexture
   );
   return res;
 };

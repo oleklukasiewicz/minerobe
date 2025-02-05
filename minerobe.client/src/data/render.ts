@@ -573,7 +573,9 @@ export class OutfitPackageToTextureConverter {
   AsFlattenAsync = async function (): Promise<string> {
     this.isFlatten = true;
     const modelMap = this.modelMap;
-    const ctx = document.createElement("canvas").getContext("2d");
+    const ctx = document.createElement("canvas").getContext("2d", {
+      willReadFrequently: true,
+    });
     if (this.texture == null) return null;
     //create image
     var Image = window.Image;

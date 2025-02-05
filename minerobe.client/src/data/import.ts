@@ -54,7 +54,7 @@ const ConvertFileToLayer = async function (file: any): Promise<OutfitLayer> {
   const layerName = file.name.replace(/\.[^/.]+$/, "");
   const newLayer = new OutfitLayer();
 
-  newLayer.id = layerName + Math.random(); //only for testing
+  newLayer.id = null;
   newLayer.name = layerName;
   newLayer.alex = new FileData(layerName, base64Data);
   newLayer.steve = new FileData(layerName, base64Data);

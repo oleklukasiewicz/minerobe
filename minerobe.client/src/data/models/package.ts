@@ -13,7 +13,6 @@ export class OutfitPackage {
   id: string;
   social: PackageSocialData;
   outfitType: string;
-  local: any;
   createdAt: Date;
   modifiedAt: Date;
   isInWardrobe: boolean;

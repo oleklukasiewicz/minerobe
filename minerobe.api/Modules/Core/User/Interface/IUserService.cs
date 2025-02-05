@@ -14,6 +14,7 @@ namespace minerobe.api.Modules.Core.User.Interface
         Task<MinerobeUser> GetFromExternalUser(ClaimsPrincipal externalUser);
 
         Task<MinerobeUser> GetUserOfWardrobe(Guid wardrobeId);
+        Task<MinerobeUser> ResetAvatar(ClaimsPrincipal externalUser);
         // alias
         Task<MinerobeUser> GetFromToken(ClaimsPrincipal externalUser);
     }

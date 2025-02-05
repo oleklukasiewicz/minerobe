@@ -10,6 +10,12 @@
     padding: 32px;
     gap: 32px;
     box-sizing: border-box;
+    #profile-avatar
+    {
+      width: 96px;
+      aspect-ratio: 1/1;
+      image-rendering: pixelated;
+    }
     #profile-data {
       flex: 1;
       display: flex;

@@ -106,3 +106,10 @@ export const Initialize = async function () {
     appStateWritable.set(user ? APP_STATE.READY : APP_STATE.GUEST_READY);
   });
 };
+//main imports
+//api
+//services
+//consts
+//model
+//components
+//icons

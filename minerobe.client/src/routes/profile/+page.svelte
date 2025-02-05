@@ -1,23 +1,30 @@
 <script lang="ts">
-  import { CURRENT_APP_STATE, CURRENT_USER } from "$src/data/static";
+  //main imports
   import { onDestroy, onMount } from "svelte";
-  import { APP_STATE } from "$src/data/enums/app";
-  import type { MinerobeUserProfile } from "$src/data/models/user";
   import { writable, type Writable } from "svelte/store";
+  //api
   import { GetUserProfile } from "$src/api/user";
+  import { GetAccount } from "$src/api/integration/minecraft";
+  import { GetMergedPackage } from "$src/api/pack";
+  //services
+  import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
+  //consts
+  import { CURRENT_APP_STATE, CURRENT_USER } from "$src/data/static";
+  //model
+  import type { MinerobeUserProfile } from "$src/data/models/user";
+  import { APP_STATE } from "$src/data/enums/app";
+  import { Cape } from "$src/data/models/integration/minecraft";
+  import { OUTFIT_TYPE } from "$src/data/enums/outfit";
+  import type { OutfitPackage } from "$src/data/models/package";
+  //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import SocialInfo from "$lib/components/social/SocialInfo.svelte";
   import StatusCard from "$lib/components/other/StatusCard/StatusCard.svelte";
-  import { GetAccount } from "$src/api/integration/minecraft";
   import CapeListItem from "$lib/components/outfit/CapeListItem/CapeListItem.svelte";
-  import { Cape } from "$src/data/models/integration/minecraft";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
   import Label from "$lib/components/base/Label/Label.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import { GetMergedPackage } from "$src/api/pack";
-  import { OUTFIT_TYPE } from "$src/data/enums/outfit";
-  import type { OutfitPackage } from "$src/data/models/package";
+  //icons
 
   const profileUser: Writable<MinerobeUserProfile> = writable(null);
   const minecraftIntegration: Writable<any> = writable(null);
@@ -31,7 +38,8 @@
       if ($profileUser.settings.currentTexture != null) {
         currentTexture = await GetMergedPackage(
           $profileUser.settings.currentTexture.packageId,
-          $profileUser.settings.currentTexture.isFlatten
+          $profileUser.settings.currentTexture.isFlatten,
+          true
         );
       }
       if ($profileUser.settings.integrations.includes("minecraft")) {
@@ -88,7 +96,6 @@
           <div style="width: 100%;">
             <OutfitPackageRender
               source={currentTexture}
-              baseTexture={$profileUser?.settings?.baseTexture?.layers[0]}
               model={$profileUser?.settings.currentTexture.model}
               outfitType={OUTFIT_TYPE.DEFAULT}
             />
@@ -119,7 +126,7 @@
             />
           </div>
         {:else}
-          <div class="mc-font">No texture</div>
+          <div class="mc-font font-center">No texture</div>
         {/if}
       </Placeholder>
       <Button
@@ -131,7 +138,7 @@
     <!-- Minecraft account card-->
     <StatusCard label={"minecraft account"}>
       <Placeholder {loaded} height="100%" width="100%">
-        {#if $profileUser.settings.baseTexture != null}
+        {#if $profileUser.settings.baseTexture?.layers[0] != null}
           {#await GetImageFaceArea($profileUser.settings.baseTexture.layers[0].steve.content) then skin}
             <!-- svelte-ignore a11y-missing-attribute -->
             <img src={skin} style="width:100%;image-rendering: pixelated; " />

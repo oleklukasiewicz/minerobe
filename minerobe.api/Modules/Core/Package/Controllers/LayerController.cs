@@ -33,7 +33,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
             if (canAccess == false)
                 return Unauthorized();
 
-            return Ok(layer.ToResponseModel(layer.SourcePackageId.Value, false));
+            return Ok(layer.ToResponseModel(layer.SourcePackageId.Value, true));
         }
         [HttpPost("")]
         public async Task<IActionResult> Add([FromBody] OutfitLayerModel layer)

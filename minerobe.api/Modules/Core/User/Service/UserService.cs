@@ -76,7 +76,24 @@ namespace minerobe.api.Modules.Core.User.Service
             var user = await _context.MinerobeUsers.Where(x => x.WardrobeId == wardrobeId).FirstOrDefaultAsync();
             return user;
         }
-
+        public async Task<MinerobeUser> ResetAvatar(ClaimsPrincipal externalUser)
+        {
+            var user = await GetFromExternalUser(externalUser);
+            var avatar = externalUser.FindFirst("picture").Value;
+            //downloading image
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(avatar);
+                if (response.IsSuccessStatusCode)
+                {
+                    var bytes = await response.Content.ReadAsByteArrayAsync();
+                    avatar = "data:image/png;base64," + Convert.ToBase64String(bytes);
+                }
+            }
+            user.Avatar = avatar;
+            await _context.SaveChangesAsync();
+            return user;
+        }
 
         //alias
         public async Task<MinerobeUser> GetFromToken(ClaimsPrincipal externalUser)
@@ -127,6 +144,5 @@ namespace minerobe.api.Modules.Core.User.Service
             await _context.SaveChangesAsync();
             return newUser;
         }
-
     }
 }

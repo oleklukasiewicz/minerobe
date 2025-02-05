@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using minerobe.api.Helpers;
+using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.Package.Model;
 using minerobe.api.Modules.Core.Package.ResponseModel;
+using minerobe.api.Modules.Core.Settings.Interface;
 using minerobe.api.Modules.Core.Settings.Model;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Core.Wardrobe.Interface;
@@ -17,11 +19,13 @@ namespace minerobe.api.Modules.Core.Package.Controllers
         private readonly IPackageService _packageService;
         private readonly IUserService _userService;
         private readonly IWardrobeService _wardrobeService;
-        public PackageController(IPackageService packageService, IUserService userService, IWardrobeService wardrobeService)
+        private readonly IUserSettingsService _userSettingsService;
+        public PackageController(IPackageService packageService, IUserService userService, IWardrobeService wardrobeService, IUserSettingsService userSettingsService)
         {
             _packageService = packageService;
             _userService = userService;
             _wardrobeService = wardrobeService;
+            _userSettingsService = userSettingsService;
         }
         [HttpGet("{id}")]
         [AllowAnonymous]
@@ -40,17 +44,28 @@ namespace minerobe.api.Modules.Core.Package.Controllers
 
             return Ok(package.ToResponseModel(isInWardrobe));
         }
-        [HttpGet("{id}/merged/{isFlatten}")]
+        [HttpGet("{id}/merged/{isFlatten}/{useBaseTexture}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetMerged(Guid id, bool isFlatten=false)
+        public async Task<IActionResult> GetMerged(Guid id, bool isFlatten = false, bool useBaseTexture = false)
         {
             var user = await _userService.GetFromExternalUser(User);
             var canAccess = await _packageService.CanAccessPackage(id, user.Id);
             if (!canAccess)
                 return Unauthorized();
 
-            var mergedtetxure = await _packageService.MergePackageLayers(id,isFlatten);
-            return Ok(mergedtetxure.ToResponseModel(false,true,true));
+            OutfitLayer baseTexture = null;
+
+            if (useBaseTexture)
+            {
+                var settings = await _userSettingsService.GetSettings(user.Id);
+                if (settings.BaseTexture != null)
+                {
+                    baseTexture = settings.BaseTexture.Layers.FirstOrDefault();
+                }
+            }
+
+            var mergedtetxure = await _packageService.MergePackageLayers(id, isFlatten, baseTexture);
+            return Ok(mergedtetxure.ToResponseModel(false, true, true));
         }
         [HttpPost("")]
         public async Task<IActionResult> Add([FromBody] OutfitPackageModel package)

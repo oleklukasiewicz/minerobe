@@ -37,11 +37,12 @@ namespace minerobe.api.Modules.Core.User.Controllers
                 return NotFound();
             return Ok(user.ToResponseModel());
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put([FromBody] MinerobeUserModel user, Guid id)
+        [HttpPut()]
+        public async Task<IActionResult> Put([FromBody] MinerobeUserModel user)
         {
+            var tokenuser= await _userService.GetFromExternalUser(User);
             var ent = user.ToEntity();
-            ent.Id = id;
+            ent.Id = tokenuser.Id;
 
             var updated = await _userService.Update(ent);
             if (updated == null)
@@ -65,6 +66,15 @@ namespace minerobe.api.Modules.Core.User.Controllers
             if (user == null)
                 return NotFound();
             return Ok(user.ToProfileResponseModel(settings, social));
+        }
+        [HttpPost("ResetAvatar")]
+        public async Task<IActionResult> ResetAvatar()
+        {
+            var user = await _userService.GetFromExternalUser(User);
+            if (user == null)
+                return NotFound();
+            var updated = await _userService.ResetAvatar(User);
+            return Ok(updated.ToResponseModel());
         }
 
     }

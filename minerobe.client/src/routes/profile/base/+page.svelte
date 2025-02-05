@@ -1,43 +1,49 @@
 <script lang="ts">
+  //main imports
+  import { onDestroy, onMount } from "svelte";
+  import { writable, type Writable } from "svelte/store";
+  import * as THREE from "three";
+  //api
+  import { FetchSettings, UpdateBaseTexture } from "$src/api/settings";
+  //services
+  import { ImportImages, ImportImagesFromFiles } from "$src/data/import";
+  import { ExportImage } from "$src/data/export";
+  //consts
   import {
     BASE_TEXTURE,
     CURRENT_APP_STATE,
-    CURRENT_USER,
     IS_MOBILE_VIEW,
   } from "$src/data/static";
-  import { onDestroy, onMount } from "svelte";
+  //model
   import { APP_STATE } from "$src/data/enums/app";
-  import type { MinerobeUserProfile } from "$src/data/models/user";
-  import { writable, type Writable } from "svelte/store";
-  import { GetUserProfile } from "$src/api/user";
+  import type { MinerobeUserSettings } from "$src/data/models/user";
+  //components
+  import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import * as THREE from "three";
-  import { ImportImages, ImportImagesFromFiles } from "$src/data/import";
-  import { OutfitPackage } from "$src/data/models/package";
-  import { MODEL_TYPE } from "$src/data/enums/model";
-  import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
   import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
   import OutfitLayerListItem from "$lib/components/outfit/OutfitLayerListItem/OutfitLayerListItem.svelte";
   import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
+  //icons
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import DownloadIcon from "$icons/download.svg?raw";
-  import { ExportImage } from "$src/data/export";
+  import { DEFAULT_PACKAGE } from "$src/data/consts/outfit";
+  import { ShowToast } from "$src/data/toast";
 
-  const profileUser: Writable<MinerobeUserProfile> = writable(null);
+  const userSettings: Writable<MinerobeUserSettings> = writable(null);
 
   let stateSub = null;
   onMount(async () => {
-    stateSub=CURRENT_APP_STATE.subscribe(async (state) => {
+    stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
       dynamicRenderer = new THREE.WebGLRenderer({
         alpha: true,
       });
       dynamicRenderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 
-      $profileUser = await GetUserProfile($CURRENT_USER.id);
+      $userSettings = await FetchSettings();
       loaded = true;
     });
   });
@@ -55,33 +61,36 @@
   const DropBaseTexture = async function (e) {
     const files = e.detail.items;
     const textures = await ImportImagesFromFiles(files);
-    $profileUser.settings.baseTexture.layers = [textures[0]];
+    $userSettings.baseTexture.layers = [textures[0]];
+    await UpdateBaseTexture($userSettings.baseTexture);
+    ShowToast("Base texture updated");
   };
 
   const ImportBaseTexture = async function () {
     const files = await ImportImages(false);
-    $profileUser.settings.baseTexture.layers = [files[0]];
+    $userSettings.baseTexture.layers = [files[0]];
+    await UpdateBaseTexture($userSettings.baseTexture);
+    ShowToast("Base texture updated");
   };
-  const EditBaseTexture = function (e) {
+  const EditBaseTexture = async function (e) {
     const layer = e.detail.item;
-    $profileUser.settings.baseTexture.layers[0] = layer;
+    $userSettings.baseTexture.layers[0] = layer;
+    await UpdateBaseTexture($userSettings.baseTexture);
+    ShowToast("Base texture updated");
     isBaseTextureEditDialogOpen = true;
   };
-  const RemoveBaseTexture = function () {
-    $profileUser.settings.baseTexture = new OutfitPackage(
-      "base",
-      MODEL_TYPE.STEVE,
-      []
-    );
+  const RemoveBaseTexture = async function () {
+    $userSettings.baseTexture = DEFAULT_PACKAGE;
+    await UpdateBaseTexture($userSettings.baseTexture);
+    ShowToast("Base texture updated");
   };
-  const OpenEditBaseTetxureDialog = function () {
+  const OpenEditBaseTextureDialog = function () {
     isBaseTextureEditDialogOpen = true;
   };
   const DownloadBaseTexture = async function () {
     await ExportImage(
-      $profileUser.settings.baseTexture.layers[0][
-        $profileUser.settings.baseTexture.model
-      ].content,
+      $userSettings.baseTexture.layers[0][$userSettings.baseTexture.model]
+        .content,
       "Base"
     );
   };
@@ -96,24 +105,24 @@
           renderer={dynamicRenderer}
           resizable
           resizeDebounce={10}
-          source={$profileUser?.settings?.baseTexture}
+          source={$userSettings?.baseTexture}
           isDynamic={true}
         /></DragAndDrop
       >
     </Placeholder>
   </div>
   <div class="data">
-    {#if $profileUser?.settings?.baseTexture.layers.length > 0 || !loaded}
+    {#if $userSettings?.baseTexture.layers.length > 0 || !loaded}
       <div>
         <SectionTitle placeholder={!loaded} label="base Texture" />
         <Placeholder {loaded} height="68px">
           <OutfitLayerListItem
-            item={$profileUser.settings.baseTexture.layers[0]}
-            model={$profileUser.settings.baseTexture.model}
+            item={$userSettings.baseTexture.layers[0]}
+            model={$userSettings.baseTexture.model}
             movable={false}
             labels={false}
             removable={true}
-            on:edit={OpenEditBaseTetxureDialog}
+            on:edit={OpenEditBaseTextureDialog}
             on:delete={RemoveBaseTexture}
           /></Placeholder
         >
@@ -125,7 +134,7 @@
       <SectionTitle placeholder={!loaded} label="Model" />
       <Placeholder {loaded} height="43px">
         <ModelRadioGroup
-          bind:selectedValue={$profileUser.settings.baseTexture.model}
+          bind:selectedValue={$userSettings.baseTexture.model}
         /></Placeholder
       >
     </div>
@@ -153,7 +162,7 @@
     onlyTextures
     on:edit={EditBaseTexture}
     bind:open={isBaseTextureEditDialogOpen}
-    item={$profileUser?.settings?.baseTexture?.layers[0]}
+    item={$userSettings?.baseTexture?.layers[0]}
   />
 </div>
 
