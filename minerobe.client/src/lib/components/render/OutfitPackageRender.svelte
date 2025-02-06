@@ -167,10 +167,13 @@
         oldLayerId,
         newLayerId
       );
-      isLayersModified = isLayersChanged(_source, v);
       if (!isReRender) return;
     }
-    _source = structuredClone(v);
+    
+    if (typeof _source !== "string" && typeof v !== "string")
+      isLayersModified = isLayersChanged(_source, v);
+    
+      _source = structuredClone(v);
     cachedtexture = _source as string;
     if (typeof _source !== "string") {
       if (cameraOptions == "auto") {
@@ -247,7 +250,6 @@
           );
       }
     }
-    onTextureUpdate();
     return true;
   };
   const setCameraOptions = async (v) => {

@@ -130,7 +130,7 @@
   const UpdatePackageDebounced = debounce(async () => {
     await UpdatePackage($itemPackage);
   }, 500);
-  const UpdatePackageLayersOrder = async function () {
+  const UpdatePackageLayersOrder = debounce(async function () {
     const layers = $itemPackage.layers;
     if (layers.length == 0) return;
     await SetPackageLayerOrder(
@@ -141,7 +141,7 @@
       const merged = await MergePackageLayersToSingleLayer($itemPackage);
       await SetMergedLayer(merged);
     }
-  };
+  }, 500);
 
   let __addAnimation = function (
     animation: RenderAnimation,

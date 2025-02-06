@@ -287,6 +287,10 @@ namespace minerobe.api.Modules.Core.Package.Service
                 var matching = layersmatchings.FirstOrDefault(x => x.LayerId == layerId);
                 if (matching == null)
                     return false;
+
+                if(matching.Order == i)
+                    continue;
+                
                 matching.Order = i;
                 _context.PackageLayerMatchings.Update(matching);
             }
