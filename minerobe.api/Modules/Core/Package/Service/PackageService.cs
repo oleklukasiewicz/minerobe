@@ -294,8 +294,27 @@ namespace minerobe.api.Modules.Core.Package.Service
         }
         public async Task<OutfitLayer> SetMergedLayer(OutfitLayer mergedLayer)
         {
-            var layer = await _context.OutfitLayers.FirstOrDefaultAsync(x => x.SourcePackageId == mergedLayer.SourcePackageId && x.IsMerged == true);
-
+            var layers = await _context.OutfitLayers.Where(x => x.SourcePackageId == mergedLayer.SourcePackageId && x.IsMerged == true).OrderBy(x => x.Id).ToListAsync();
+            var layer = layers.FirstOrDefault();
+            if (layers.Count > 1)
+            {
+                //remove all merged layers
+                foreach (var additionallayers in layers)
+                {
+                    if(additionallayers.Id == mergedLayer.Id)
+                    {
+                        continue;
+                    }
+                    var matching = await _context.PackageLayerMatchings.FirstOrDefaultAsync(x => x.LayerId == additionallayers.Id);
+                    if (matching != null)
+                    {
+                        _context.PackageLayerMatchings.Remove(matching);
+                    }
+                    _context.OutfitLayers.Remove(additionallayers);
+                }
+                await _context.SaveChangesAsync();
+            }
+           
             mergedLayer.IsMerged = true;
 
             if (layer != null)
