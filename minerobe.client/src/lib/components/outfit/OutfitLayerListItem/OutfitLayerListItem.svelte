@@ -33,17 +33,25 @@
   export let dense = false;
   export let labels = true;
 
-  const onMoveUp = function () {
+  const onMoveUp = function (e) {
+    e.stopPropagation();
     dispatch("moveUp", { item: item });
   };
-  const onMoveDown = function () {
+  const onMoveDown = function (e) {
+    e.stopPropagation();
     dispatch("moveDown", { item: item });
   };
-  const onEdit = function () {
+  const onEdit = function (e) {
+    e.stopPropagation();
     dispatch("edit", { item: item });
   };
-  const onDelete = function () {
+  const onDelete = function (e) {
+    e.stopPropagation();
     dispatch("delete", { item: item });
+  };
+  const onSelect = function (e) {
+    e.stopPropagation();
+    dispatch("select", { item: item });
   };
 </script>
 
@@ -59,7 +67,7 @@
   class:readonly
   class:dense
   title={item.name}
-  on:click
+  on:click={onSelect}
 >
   <div class="render">
     <OutfitPackageRender

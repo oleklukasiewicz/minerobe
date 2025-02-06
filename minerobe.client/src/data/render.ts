@@ -642,8 +642,10 @@ export class OutfitPackageToTextureConverter {
       const layer: OutfitLayer = this.outfitPackage.layers.find(
         (x) => x.id == this.layerId
       );
-      const content = layer[this.model]?.content;
-      if (content != null) layers.push(content);
+      if (layer != null) {
+        const content = layer[this.model]?.content;
+        if (content != null) layers.push(content);
+      }
     }
     if (layers.length == 0) {
       this.texture = null;

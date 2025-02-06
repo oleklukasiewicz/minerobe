@@ -159,7 +159,14 @@
       oldModel != null &&
       (newLayerId != oldLayerId || oldCape != newCape)
     ) {
-      isReRender = isReRenderNeeded(_source, v, oldModel, newModel);
+      isReRender = isReRenderNeeded(
+        _source,
+        v,
+        oldModel,
+        newModel,
+        oldLayerId,
+        newLayerId
+      );
       isLayersModified = isLayersChanged(_source, v);
       if (!isReRender) return;
     }
@@ -234,9 +241,10 @@
       await textureRenderer.SetTextureAsync(cachedtexture);
       if (typeof _source !== "string") {
         const layer = _source.layers.find((x) => x.id == layerId);
-        textureRenderer.SetCameraOptions(
-          CAMERA_CONFIG.getForOutfit(layer.outfitType)
-        );
+        if (layer != null)
+          textureRenderer.SetCameraOptions(
+            CAMERA_CONFIG.getForOutfit(layer.outfitType)
+          );
       }
     }
     onTextureUpdate();
@@ -341,8 +349,11 @@
     aSource: OutfitPackage,
     bSource: OutfitPackage,
     oldModel: MODEL_TYPE,
-    newModel: MODEL_TYPE
+    newModel: MODEL_TYPE,
+    oldLayerId: string,
+    newLayerId: string
   ) {
+    if (oldLayerId != newLayerId) return true;
     const aLayers = aSource.layers;
     const bLayers = bSource.layers;
     if (aLayers.length != bLayers.length) return true;
@@ -378,7 +389,6 @@
   $: setOutfitType(outfitType);
 
   $: setFlatten(isFlatten);
-  $: setLayerId(layerId);
   $: setCameraOptions(cameraOptions);
 
   const onResize = async function () {

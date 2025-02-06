@@ -46,7 +46,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
                 return Unauthorized();
 
             var res = await _packageService.AddLayer(layer.ToEntity(), layer.SourcePackageId.Value);
-            return Ok(res.ToResponseModel(layer.SourcePackageId.Value, false));
+            return Ok(res.ToResponseModel(layer.SourcePackageId.Value, true));
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update([FromBody] OutfitLayerModel layer, Guid id)
@@ -62,7 +62,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
             if (res == null)
                 return NotFound();
 
-            return Ok(res.ToResponseModel(layerInDb.SourcePackageId.Value, false));
+            return Ok(res.ToResponseModel(layerInDb.SourcePackageId.Value, true));
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
@@ -91,7 +91,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
             var res = await _packageService.AddLayerToPackage(id, packageId);
             if (res == null)
                 return NotFound();
-            return Ok(res.ToResponseModel(packageId, false));
+            return Ok(res.ToResponseModel(packageId, true));
         }
         [HttpDelete("remove/{id}/{packageId}")]
         public async Task<IActionResult> RemoveLayerFromPackage(Guid id, Guid packageId)

@@ -216,21 +216,23 @@
   };
   const removeLayer = async (e) => {
     const layer = e.detail.item;
+    await RemovePackageLayerWithPackageContext(layer, $itemPackage.id);
     itemPackage.update((item) => {
       item.layers = item.layers.filter((l) => l.id !== layer.id);
+      if (!isOutfitSet && layer.id == $renderConfiguration.selectedLayerId)
+        $renderConfiguration.selectedLayerId = item.layers[0]?.id;
       return item;
     });
-    await RemovePackageLayerWithPackageContext(layer, $itemPackage.id);
   };
   const editLayer = async function (e) {
     const item = e.detail.item;
+    await UpdatePackageLayer(item);
 
     itemPackageLayers.update((layers) => {
       const index = layers.findIndex((x) => x.id == item.id);
       layers[index] = item;
       return layers;
     });
-    await UpdatePackageLayer(item);
   };
   const dropLayer = async (e) => {
     const layer = e.detail.item;
@@ -238,11 +240,12 @@
     const file = e.detail.file;
 
     const index = $itemPackageLayers.findIndex((x) => x.id == layer.id);
+    await UpdatePackageLayer($itemPackageLayers[index]);
+
     itemPackage.update((item) => {
       item.layers[index][option] = file;
       return item;
     });
-    await UpdatePackageLayer($itemPackageLayers[index]);
   };
 
   //imports
@@ -255,9 +258,10 @@
         return await AddPackageLayer(layer);
       })
     );
-    itemPackage.update((item) => {
-      item.layers.push(...addedlayers);
-      return item;
+    renderConfiguration.update((config) => {
+      config.item.layers.push(...addedlayers);
+      if (!isOutfitSet) config.selectedLayerId = addedlayers[0].id;
+      return config;
     });
   };
   const importLayerFromDrop = async (e) => {
@@ -270,9 +274,10 @@
         return await AddPackageLayer(layer);
       })
     );
-    itemPackage.update((item) => {
-      item.layers.push(...addedlayers);
-      return item;
+    renderConfiguration.update((config) => {
+      config.item.layers.push(...addedlayers);
+      if (!isOutfitSet) config.selectedLayerId = addedlayers[0].id;
+      return config;
     });
   };
 
@@ -389,17 +394,17 @@
   const addPackageLayer = async function (e) {
     const newPack = e.detail.item;
     const layer = newPack.layers[0];
+    await AddRemoteLayerToPackage(layer.id, $itemPackage.id);
     itemPackage.update((pack) => {
       pack.layers.push(layer);
       return pack;
     });
-    await AddRemoteLayerToPackage(layer.id, $itemPackage.id);
     isOutfitPickerDialogOpen = false;
   };
   const setSkin = async function () {
     isSkinSetting = true;
     await SetMinecraftSkin($renderConfiguration);
-    userSettings=await FetchSettings();
+    userSettings = await FetchSettings();
     addAnimation(HandsUpAnimation);
     ShowToast("Skin set successfully");
     isSkinSetting = false;

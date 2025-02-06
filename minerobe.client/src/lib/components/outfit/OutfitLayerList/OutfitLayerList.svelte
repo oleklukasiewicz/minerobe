@@ -66,7 +66,7 @@
         ]}
       >
         <OutfitLayerListItem
-          on:click={() => onSelect(item)}
+          on:select={() => onSelect(item)}
           link={item.sourcePackageId != packageId && link != null
             ? link + item.sourcePackageId + "/" + item.id
             : null}

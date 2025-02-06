@@ -280,10 +280,11 @@ namespace minerobe.api.Modules.Core.Package.Service
         // update layers order
         public async Task<bool> UpdateLayerOrder(Guid packageId, List<Guid> layersInOrder)
         {
+            var layersmatchings = await _context.PackageLayerMatchings.Where(x => x.PackageId == packageId).ToListAsync();
             for (int i = 0; i < layersInOrder.Count; i++)
             {
                 var layerId = layersInOrder[i];
-                var matching = await _context.PackageLayerMatchings.FirstOrDefaultAsync(x => x.LayerId == layerId && x.PackageId == packageId);
+                var matching = layersmatchings.FirstOrDefault(x => x.LayerId == layerId);
                 if (matching == null)
                     return false;
                 matching.Order = i;
