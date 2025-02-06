@@ -16,7 +16,7 @@
     </div>
   {/if}
   {#if opened}
-    <span class="label">{label}</span>
+    <span class="menu-item-label">{label}</span>
     {#if badgelabel}
       <div class="badge">{badgelabel}</div>
     {/if}
