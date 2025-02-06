@@ -57,8 +57,9 @@ Optionally you can add parameters for integration with minecraft services using 
 
 ## Screeenshots
 
-![image](https://github.com/oleklukasiewicz/minerobe/assets/69370471/732eea4e-ada1-49b4-a5b1-182452f6d801)
-![image](https://github.com/oleklukasiewicz/minerobe/assets/69370471/380e42e3-a743-45be-b4ff-f07bf3d7cc81)
+![image](https://github.com/user-attachments/assets/eb087265-e79f-4fb7-9de2-ccca09647e02)
+![image](https://github.com/user-attachments/assets/f4adb2ba-608b-4917-b499-cf825418ef27)
+![image](https://github.com/user-attachments/assets/1d33f47a-ead1-4cd5-9b2d-3bd5ca70daea)
 
 
 
