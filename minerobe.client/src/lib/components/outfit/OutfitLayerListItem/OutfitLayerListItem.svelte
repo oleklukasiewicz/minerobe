@@ -152,5 +152,5 @@
 </a>
 
 <style lang="scss">
-  @use "OutfitlayerListItem.scss";
+  @use "OutfitLayerListItem.scss";
 </style>
