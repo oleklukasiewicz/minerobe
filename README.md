@@ -35,6 +35,7 @@ VITE_STORAGE_BUCKET=<value>
 VITE_MESSAGING_SENDER_ID=<value>
 VITE_APP_ID=<value>
 VITE_MEASUREMENT_ID=<value>
+VITE_API_URL=<url to backend>
 ```
 Add appsettings file in minerobe.api project and add connection to your firebase app for user authentication.
 ```
