@@ -7,11 +7,17 @@
   import {
     FetchSettings,
     GetIntegrationsList,
-    UpdateBaseTexture,
+    SetCurrentTexture,
   } from "$src/api/settings";
+  import {
+    GetAccount,
+    GetCurrentSkin,
+    LinkAccount,
+    UnLinkAccount,
+  } from "$src/api/integration/minecraft";
   //services
-  import { ImportImages, ImportImagesFromFiles } from "$src/data/import";
-  import { ExportImage } from "$src/data/export";
+  import { ShowToast } from "$src/data/toast";
+  import { goto } from "$app/navigation";
   //consts
   import {
     BASE_TEXTURE,
@@ -21,27 +27,22 @@
   } from "$src/data/static";
   //model
   import { APP_STATE } from "$src/data/enums/app";
-  //components
-  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
-  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
-  //icons
-  import {
-    GetAccount,
-    GetCurrentSkin,
-    LinkAccount,
-    UnLinkAccount,
-  } from "$src/api/integration/minecraft";
   import type {
     Cape,
     MinecraftAccount,
     MinecraftSkin,
   } from "$src/data/models/integration/minecraft";
+  //components
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
   import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import LinkToMinecraftDialog from "$lib/components/dialog/LinkToMinecraftDialog/LinkToMinecraftDialog.svelte";
-  import { goto } from "$app/navigation";
-  import { ShowToast } from "$src/data/toast";
+  //icons
+  import SyncIcon from "$icons/sync.svg?raw";
+  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
+  import CloseIcon from "$icons/close.svg?raw";
 
   const minecraftAccount: Writable<MinecraftAccount> = writable(null);
 
@@ -85,6 +86,7 @@
   let currentMinecraftSkin: MinecraftSkin = null;
   let accountInProgress = false;
   let isAccountLinked = true;
+  let skinIsSyncing = false;
 
   //linking account data
   let isLinkToMcDialogOpen = false;
@@ -117,9 +119,20 @@
     accountInProgress = false;
     isLinkToMcDialogOpen = false;
   };
+  const SyncCurrentSkin = async function () {
+    skinIsSyncing = true;
+    var settings = await FetchSettings();
+    await SetCurrentTexture(settings.currentTexture);
+    skinIsSyncing = false;
+    ShowToast("Skin synced successfully");
+  };
 </script>
 
-<div id="profile-minecraft" class:mobile={$IS_MOBILE_VIEW} class:linked={isAccountLinked}>
+<div
+  id="profile-minecraft"
+  class:mobile={$IS_MOBILE_VIEW}
+  class:linked={isAccountLinked}
+>
   {#if isAccountLinked}
     <div class="render">
       <Placeholder {loaded}>
@@ -155,11 +168,23 @@
       <div class="actions">
         <Placeholder {loaded} height="46px">
           <Button
+            label={skinIsSyncing ? "Syncing skin..." : "Sync Skin"}
+            size="large"
+            type="primary"
+            disabled={skinIsSyncing}
+            icon={SyncIcon}
+            on:click={SyncCurrentSkin}
+          />
+        </Placeholder>
+        <br />
+        <Placeholder {loaded} height="46px">
+          <Button
             label={accountInProgress ? "Unlinking..." : "Unlink Account"}
             size="large"
             type="secondary"
             disabled={accountInProgress}
             on:click={UnlinkMinecraftAccount}
+            icon={CloseIcon}
           />
         </Placeholder>
       </div>
@@ -168,7 +193,7 @@
     <div id="to-link-account">
       <h1>Link your Minecraft account</h1>
       <p>
-        Link to your minecraft account for easy skin management and automatis
+        Link to your minecraft account for easy skin management and automatic
         skin updates.
       </p>
       <Button
@@ -177,6 +202,7 @@
         type="primary"
         disabled={accountInProgress}
         on:click={StartLinkMinecraftAccount}
+        icon={HumanHandsUpIcon}
       />
     </div>
   {/if}

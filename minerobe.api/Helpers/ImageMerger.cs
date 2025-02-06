@@ -1,4 +1,5 @@
 ﻿using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.Settings.Entity;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Png;
@@ -65,7 +66,7 @@ namespace minerobe.api.Helpers
 
             return canvas;
         }
-        public static async Task<Image<Rgba32>> ReplaceLowerPart(Image<Rgba32> image, Image<Rgba32> lowerLayer, ModelMapPart modelMap)
+        private static async Task<Image<Rgba32>> ReplaceLowerPart(Image<Rgba32> image, Image<Rgba32> lowerLayer, ModelMapPart modelMap)
         {
             //get source image inner and outer parts
             var upperOuter = image.Clone();
@@ -95,7 +96,7 @@ namespace minerobe.api.Helpers
 
         }
 
-        public static async Task<Image<Rgba32>> FlatPart(Image<Rgba32> image, ModelMapPart modelMap)
+        private static async Task<Image<Rgba32>> FlatPart(Image<Rgba32> image, ModelMapPart modelMap)
         {
             var outer = image.Clone();
             outer.Mutate(x => x.Crop(modelMap.OuterTextureArea));
@@ -111,17 +112,35 @@ namespace minerobe.api.Helpers
             return image;
 
         }
-    }
-    public class ModelMapPart
-    {
-        public string Name { get; set; }
-        public Rectangle TextureArea { get; set; }
-        public Rectangle OuterTextureArea { get; set; }
-    }
 
-    public static class ModelMaps
-    {
-        public static readonly Dictionary<string, ModelMapPart> STEVE_MODEL = new Dictionary<string, ModelMapPart>
+        public static async Task<Image<Rgba32>> MergeFromConfig(OutfitPackage outfit, OutfitPackageConfig config, OutfitLayer basetexture)
+        {
+            var textures = new List<byte[]>();
+            if (config.Model == ModelType.Steve)
+                textures = outfit.Layers.Select(x => x.Steve.Content).ToList();
+            else
+                textures = outfit.Layers.Select(x => x.Alex.Content).ToList();
+
+            if (basetexture != null)
+            {
+                if (config.Model == ModelType.Steve)
+                    textures.Insert(0, basetexture.Steve.Content);
+                else
+                    textures.Insert(0, basetexture.Alex.Content);
+            }
+
+            return await Merge(textures, outfit.Model, config.IsFlatten);
+        }
+        public class ModelMapPart
+        {
+            public string Name { get; set; }
+            public Rectangle TextureArea { get; set; }
+            public Rectangle OuterTextureArea { get; set; }
+        }
+
+        public static class ModelMaps
+        {
+            public static readonly Dictionary<string, ModelMapPart> STEVE_MODEL = new Dictionary<string, ModelMapPart>
         {
             { "head", new ModelMapPart { Name = "head", TextureArea = new Rectangle(0, 0, 32, 16), OuterTextureArea = new Rectangle(32, 0, 32, 16) } },
             { "body", new ModelMapPart { Name = "body", TextureArea = new Rectangle(16, 16, 24, 16), OuterTextureArea = new Rectangle(16, 32, 24, 16) } },
@@ -131,7 +150,7 @@ namespace minerobe.api.Helpers
             { "rightArm", new ModelMapPart { Name = "rightArm", TextureArea = new Rectangle(40, 16, 16, 16), OuterTextureArea = new Rectangle(40, 32, 16, 16) } }
         };
 
-        public static readonly Dictionary<string, ModelMapPart> ALEX_MODEL = new Dictionary<string, ModelMapPart>
+            public static readonly Dictionary<string, ModelMapPart> ALEX_MODEL = new Dictionary<string, ModelMapPart>
         {
             { "head", STEVE_MODEL["head"] },
             { "body", STEVE_MODEL["body"] },
@@ -140,5 +159,6 @@ namespace minerobe.api.Helpers
             { "leftArm", new ModelMapPart { Name = "leftArm", TextureArea = new Rectangle(32, 48, 14, 16), OuterTextureArea = new Rectangle(48, 48, 14, 16) } },
             { "rightArm", new ModelMapPart { Name = "rightArm", TextureArea = new Rectangle(40, 16, 14, 16), OuterTextureArea = new Rectangle(40, 32, 14, 16) } }
         };
+        }
     }
 }

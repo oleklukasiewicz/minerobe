@@ -22,6 +22,7 @@
     width: auto;
   }
   div {
+    transform: translateY(2px);
     margin: auto;
   }
   &:hover {
@@ -34,6 +35,12 @@
   &.readonly {
     user-select: none;
     pointer-events: none;
+    background-color: transparent;
+    &.selected
+    {
+      box-shadow: none;
+      border-color: var(--color-accent-D1);
+    }
   }
   &.selected {
     color: var(--color-accent-font);

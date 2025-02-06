@@ -7,6 +7,7 @@ using minerobe.api.Database;
 using minerobe.api.Helpers;
 using minerobe.api.Hubs;
 using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.Settings.Entity;
 using minerobe.api.Modules.Core.Settings.Interface;
 using minerobe.api.Modules.Core.User.Entity;
@@ -15,6 +16,8 @@ using minerobe.api.Modules.Integration.Minecraft.Helpers;
 using minerobe.api.Modules.Integration.Minecraft.Interface;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 using System.Net.Http.Headers;
 using System.Text;
 namespace minerobe.api.Modules.Integration.Minecraft.Service
@@ -33,15 +36,17 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
     {
         private readonly MicrosoftAuthConfig _config;
         private readonly IUserSettingsService _userSettingsService;
+        private readonly IPackageService _packageService;
         private readonly BaseDbContext _ctx;
         private readonly IDefaultHub _defaultHub;
         private readonly HttpClient _http;
         private const string authMessageHeader = "linkToMc";
-        public MinecraftService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx, IUserSettingsService userSettingsService, IDefaultHub defaultHub, IHttpClientFactory httpClientFactory)
+        public MinecraftService(IOptions<MicrosoftAuthConfig> options, BaseDbContext ctx, IUserSettingsService userSettingsService, IPackageService packageService, IDefaultHub defaultHub, IHttpClientFactory httpClientFactory)
         {
             _config = options.Value;
             _ctx = ctx;
             _userSettingsService = userSettingsService;
+            _packageService = packageService;
             _defaultHub = defaultHub;
             _http = httpClientFactory.CreateClient();
         }
@@ -219,29 +224,39 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
             }
             return data;
         }
-
-        public async Task<string> GetUserCurrentSkin(Guid userId)
-        {
-            var settings = await _ctx.UserSettings.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
-            if (settings == null)
-                return null;
-            var texture = new byte[0];
-            return Encoding.UTF8.GetString(texture);
-        }
-        public async Task<bool> SetUserSkin(Guid userId, ModelType model)
+        public async Task<bool> SetUserSkin(Guid userId, OutfitPackageConfig config)
         {
             var token = await GetTokenFromCacheByUserId(userId);
             var url = "https://api.minecraftservices.com/minecraft/profile/skins";
-            var body = new
+            var settings = await _userSettingsService.GetSettings(userId);
+            if (settings.CurrentTexture == null)
+                return false;
+
+            var currentpackage = await _packageService.GetById(settings.CurrentTexture.PackageId);
+            var mergedtexture = await ImageMerger.MergeFromConfig(currentpackage, settings.CurrentTexture, settings.BaseTexture.Layers[0]);
+            //convert into bytes
+            byte[] mergedTextureBytes;
+            using (var ms = new MemoryStream())
             {
-                variant = model == ModelType.Steve ? "classic" : "slim",
-                url = _config.OriginUri + "/JavaXboxAuth/SkinTexture/" + userId
-            };
+                await mergedtexture.SaveAsPngAsync(ms);
+                mergedTextureBytes = ms.ToArray();
+            }
+
+            var form = new MultipartFormDataContent();
+
+            var file = new ByteArrayContent(mergedTextureBytes);
+            file.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+
+            form.Add(file, "file", currentpackage.Name + ".png");
+            form.Add(new StringContent(config.Model == ModelType.Steve ? "classic" : "slim"), "variant");
+
             var request = new HttpRequestMessage(HttpMethod.Post, url);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+            request.Content = form;
 
             var response = await _http.SendAsync(request);
+            var responseString = await response.Content.ReadAsStringAsync();
+
             return response.IsSuccessStatusCode;
         }
         public async Task<bool> SetUserCape(Guid userId, Guid capeId)

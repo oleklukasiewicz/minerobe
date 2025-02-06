@@ -49,7 +49,7 @@
   import type { RenderAnimation } from "$src/data/animation.js";
   import type {
     Cape,
-    MinecraftAccountSimple,
+    MinecraftAccount,
   } from "$data/models/integration/minecraft";
   import type { PagedResponse } from "$data/models/base";
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
@@ -90,7 +90,6 @@
   import ListIcon from "$icons/list.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
-  import { text } from "@sveltejs/kit";
 
   export let data;
 
@@ -109,7 +108,7 @@
   let isOutfitSet = false;
   let isMinecraftIntegrated = false;
   let userSettings: MinerobeUserSettings = null;
-  let integrationSettings: MinecraftAccountSimple = null;
+  let integrationSettings: MinecraftAccount = null;
   let renderer: any = null;
 
   // dialog data
@@ -400,6 +399,7 @@
   const setSkin = async function () {
     isSkinSetting = true;
     await SetMinecraftSkin($renderConfiguration);
+    userSettings=await FetchSettings();
     addAnimation(HandsUpAnimation);
     ShowToast("Skin set successfully");
     isSkinSetting = false;

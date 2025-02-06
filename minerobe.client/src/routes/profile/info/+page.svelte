@@ -5,10 +5,13 @@
   //api
   import { GetMinerobeUser } from "$src/api/auth";
   import { FetchSettings } from "$src/api/settings";
+  import { GetMergedPackage } from "$src/api/pack";
   //services
   import { ImportImages } from "$src/data/import";
   import { ExportImage } from "$src/data/export";
   import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
+  import { ResetUserAvatar, UpdateUser } from "$src/api/user";
+  import { ShowToast } from "$src/data/toast";
   //consts
   import { CURRENT_APP_STATE, CURRENT_USER } from "$src/data/static";
   //model
@@ -27,9 +30,6 @@
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import DownloadIcon from "$icons/download.svg?raw";
   import AvatarIcon from "$icons/avatar.svg?raw";
-  import { ResetUserAvatar, UpdateUser } from "$src/api/user";
-  import { ShowToast } from "$src/data/toast";
-  import { GetMergedPackage } from "$src/api/pack";
 
   const profileUser: Writable<MinerobeUser> = writable(null);
   const userSettings: Writable<MinerobeUserSettings> = writable(null);

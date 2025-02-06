@@ -8,12 +8,14 @@
   //services
   import { ImportImages, ImportImagesFromFiles } from "$src/data/import";
   import { ExportImage } from "$src/data/export";
+  import { ShowToast } from "$src/data/toast";
   //consts
   import {
     BASE_TEXTURE,
     CURRENT_APP_STATE,
     IS_MOBILE_VIEW,
   } from "$src/data/static";
+  import { DEFAULT_PACKAGE } from "$src/data/consts/outfit";
   //model
   import { APP_STATE } from "$src/data/enums/app";
   import type { MinerobeUserSettings } from "$src/data/models/user";
@@ -29,8 +31,6 @@
   //icons
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import DownloadIcon from "$icons/download.svg?raw";
-  import { DEFAULT_PACKAGE } from "$src/data/consts/outfit";
-  import { ShowToast } from "$src/data/toast";
 
   const userSettings: Writable<MinerobeUserSettings> = writable(null);
 

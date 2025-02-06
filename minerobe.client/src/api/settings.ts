@@ -18,6 +18,6 @@ export const UpdateBaseTexture = async function (baseTexture: OutfitPackage) {
 export const SetCurrentTexture = async function (
   config: OutfitPackageExportConfig
 ) {
-  const res = await PostRequest("/api/UserSettings/CurrentTexture/", config);
+  const res = await PostRequest("/api/UserSettings/CurrentSkin/", config);
   return res as MinerobeUserSettings;
 };

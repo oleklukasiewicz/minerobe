@@ -59,7 +59,7 @@ namespace minerobe.api.Modules.Core.Settings.Controllers
 
             return Ok(settings.BaseTexture.ToResponseModel());
         }
-        [HttpPost("CurrentTexture")]
+        [HttpPost("CurrentSkin")]
         public async Task<IActionResult> UpdateCurrentTexture([FromBody] OutfitPackageConfigModel currentTexture)
         {
             var user = await _userService.GetFromExternalUser(User);
@@ -69,7 +69,7 @@ namespace minerobe.api.Modules.Core.Settings.Controllers
             //minecraft services integrations
             if (settings.ContainsIntegration("minecraft"))
             {
-                await _javaXboxAuthService.SetUserSkin(user.Id, entity.Model);
+                await _javaXboxAuthService.SetUserSkin(user.Id, entity);
                 if (currentTexture.CapeId != null)
                     await _javaXboxAuthService.SetUserCape(user.Id, currentTexture.CapeId.Value);
                 else

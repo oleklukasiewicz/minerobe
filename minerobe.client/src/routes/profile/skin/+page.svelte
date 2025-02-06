@@ -25,7 +25,7 @@
   import { OutfitPackageRenderConfig } from "$src/data/models/render";
   import type {
     Cape,
-    MinecraftAccountSimple,
+    MinecraftAccount,
   } from "$src/data/models/integration/minecraft";
   //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
@@ -47,7 +47,7 @@
 
   let loaded = false;
   let dynamicRenderer = null;
-  let integrationSettings: MinecraftAccountSimple = null;
+  let integrationSettings: MinecraftAccount = null;
   let isSkinSetting = false;
 
   let stateSub = null;

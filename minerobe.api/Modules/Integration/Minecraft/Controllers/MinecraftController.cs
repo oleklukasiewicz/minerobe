@@ -57,13 +57,5 @@ namespace minerobe.api.Modules.Integration.Minecraft.Controllers
             var result = await _javaXboxAuthService.UnLinkAccount(user);
             return Ok(result);
         }
-        [HttpGet("SkinTexture/{id}"), AllowAnonymous]
-        public async Task<IActionResult> GetSkinTexture(Guid id)
-        {
-            var skin = await _javaXboxAuthService.GetUserCurrentSkin(id);
-            byte[] skinBytes = Convert.FromBase64String(skin.Substring(skin.LastIndexOf(',') + 1));
-            return File(skinBytes, "image/png");
-
-        }
     }
 }
