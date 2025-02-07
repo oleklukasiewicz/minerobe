@@ -128,12 +128,25 @@ namespace minerobe.api.Modules.Core.Package.Service
 
             foreach (var layer in package.Layers)
             {
-                var matchingsForLayer = await _context.PackageLayerMatchings.Where(x => x.LayerId == layer.Id && x.PackageId==id).ToListAsync();
-                foreach (var matching in matchingsForLayer)
+                //if layer is from package
+                if (layer.SourcePackageId == id)
                 {
-                    _context.PackageLayerMatchings.Remove(matching);
+                    var matchingsForLayer = await _context.PackageLayerMatchings.Where(x => x.LayerId == layer.Id).ToListAsync();
+                    foreach (var matching in matchingsForLayer)
+                    {
+                        _context.PackageLayerMatchings.Remove(matching);
+                    }
+                    _context.OutfitLayers.Remove(layer);
                 }
-                _context.OutfitLayers.Remove(layer);
+                else
+                {
+                    var matchingsForLayer = await _context.PackageLayerMatchings.Where(x => x.LayerId == layer.Id && x.PackageId == id).ToListAsync();
+                    foreach (var matching in matchingsForLayer)
+                    {
+                        _context.PackageLayerMatchings.Remove(matching);
+                    }
+                }
+
             }
 
             _context.OutfitPackages.Remove(package);
@@ -288,9 +301,9 @@ namespace minerobe.api.Modules.Core.Package.Service
                 if (matching == null)
                     return false;
 
-                if(matching.Order == i)
+                if (matching.Order == i)
                     continue;
-                
+
                 matching.Order = i;
                 _context.PackageLayerMatchings.Update(matching);
             }
@@ -306,7 +319,7 @@ namespace minerobe.api.Modules.Core.Package.Service
                 //remove all merged layers
                 foreach (var additionallayers in layers)
                 {
-                    if(additionallayers.Id == mergedLayer.Id)
+                    if (additionallayers.Id == mergedLayer.Id)
                     {
                         continue;
                     }
@@ -319,7 +332,7 @@ namespace minerobe.api.Modules.Core.Package.Service
                 }
                 await _context.SaveChangesAsync();
             }
-           
+
             mergedLayer.IsMerged = true;
 
             if (layer != null)
@@ -357,9 +370,9 @@ namespace minerobe.api.Modules.Core.Package.Service
             var layers = await GetLayersOfPackage(packageId).ToListAsync();
             if (basetexture != null)
             {
-                layers.Insert(0,basetexture);
+                layers.Insert(0, basetexture);
             }
-            var steveMerged = await ImageMerger.Merge(layers.Select(x => x.Steve.Content).ToList(),ModelType.Steve, isFlatten);
+            var steveMerged = await ImageMerger.Merge(layers.Select(x => x.Steve.Content).ToList(), ModelType.Steve, isFlatten);
             var alexMerged = await ImageMerger.Merge(layers.Select(x => x.Alex.Content).ToList(), ModelType.Alex, isFlatten);
 
             var package = await _context.OutfitPackages.FindAsync(packageId);
