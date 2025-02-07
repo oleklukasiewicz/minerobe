@@ -128,7 +128,7 @@ namespace minerobe.api.Modules.Core.Package.Service
 
             foreach (var layer in package.Layers)
             {
-                var matchingsForLayer = await _context.PackageLayerMatchings.Where(x => x.LayerId == layer.Id).ToListAsync();
+                var matchingsForLayer = await _context.PackageLayerMatchings.Where(x => x.LayerId == layer.Id && x.PackageId==id).ToListAsync();
                 foreach (var matching in matchingsForLayer)
                 {
                     _context.PackageLayerMatchings.Remove(matching);
