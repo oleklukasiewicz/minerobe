@@ -26,7 +26,7 @@ namespace minerobe.api.Modules.Core.Collection.Service
         public async Task<OutfitPackageCollection> Add(OutfitPackageCollection collection)
         {
             collection.Id = Guid.NewGuid();
-            collection.SocialDataId = await _socialService.CreateSocialEntry();
+            collection.SocialDataId = await _socialService.Add();
             collection.Items = collection.Items ?? new List<OutfitPackage>();
 
             await _context.OutfitPackageCollections.AddAsync(collection);

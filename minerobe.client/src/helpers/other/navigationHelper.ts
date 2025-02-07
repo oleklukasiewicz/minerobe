@@ -2,10 +2,10 @@ import { goto } from "$app/navigation";
 import type { OutfitPackage } from "$data/models/package";
 
 export const navigateToWardrobe = function (
-  page: string = "all",
+  page: string = "",
   params?: string
 ) {
-  goto(`/wardrobe/${page}/${params || ""}`);
+  goto(`/wardrobe/${page}`);
 };
 export const navigateToOutfitPackage = function (
   packag: OutfitPackage,

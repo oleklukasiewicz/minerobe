@@ -64,7 +64,7 @@ namespace minerobe.api.Modules.Core.Social.Service
             await _context.SaveChangesAsync();
             return social;
         }
-        public async Task<Guid> CreateSocialEntry()
+        public async Task<Guid> Add()
         {
             var social = new SocialData();
             social.Id = Guid.NewGuid();

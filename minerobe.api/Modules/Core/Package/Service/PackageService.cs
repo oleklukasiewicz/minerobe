@@ -31,22 +31,20 @@ namespace minerobe.api.Modules.Core.Package.Service
             if (package == null)
                 return null;
 
-            var layers = GetLayersOfPackage(id);
+            var layersQuery = GetLayersOfPackage(id);
 
             // specific layerId
             if (layerId != null)
-                layers = layers.Where(x => x.Id == layerId);
+                layersQuery = layersQuery.Where(x => x.Id == layerId);
 
-            package.Layers = await layers.ToListAsync();
+            package.Layers = await layersQuery.ToListAsync();
 
             //type
             if (package.Type == PackageType.Outfit && package.Layers.Count > 0)
                 package.OutfitType = package.Layers[0].OutfitType;
 
             //publisher
-            var user = await _userService.GetById(package.PublisherId);
-            if (user != null)
-                package.Publisher = user;
+            package.Publisher = await _userService.GetById(package.PublisherId);
 
             //social
             var social = await _socialService.GetById(package.SocialDataId);
@@ -57,37 +55,40 @@ namespace minerobe.api.Modules.Core.Package.Service
         public async Task<OutfitPackage> Add(OutfitPackage package)
         {
             package.Id = Guid.NewGuid();
-            package.SocialDataId = await _socialService.CreateSocialEntry();
+            package.SocialDataId = await _socialService.Add();
 
             var res = await _context.OutfitPackages.AddAsync(package);
             var packageId = res.Entity.Id;
 
-            int i = 0;
-            foreach (var layer in package.Layers)
+            for (int i = 0; i < package.Layers.Count; i++)
             {
+                var layer = package.Layers[i];
+                var newLayer = false;
+
                 if (layer.Id == Guid.Empty)
                 {
-                    layer.Id = Guid.NewGuid();
-                    layer.SourcePackageId = packageId;
-                    await _context.OutfitLayers.AddAsync(layer);
+                    newLayer = true;
                 }
                 else
                 {
                     var layerInDb = await _context.OutfitLayers.FindAsync(layer.Id);
                     if (layerInDb == null)
-                    {
-                        layer.Id = Guid.NewGuid();
-                        layer.SourcePackageId = packageId;
-                        await _context.OutfitLayers.AddAsync(layer);
-                    }
+                        newLayer = true;
+
                 }
+                if (newLayer)
+                {
+                    layer.Id = Guid.NewGuid();
+                    layer.SourcePackageId = packageId;
+                    await _context.OutfitLayers.AddAsync(layer);
+                }
+
                 await _context.PackageLayerMatchings.AddAsync(new PackageLayerMatching
                 {
                     LayerId = layer.Id,
                     PackageId = package.Id,
                     Order = i
                 });
-                i++;
             }
 
             await _context.SaveChangesAsync();
@@ -128,24 +129,19 @@ namespace minerobe.api.Modules.Core.Package.Service
 
             foreach (var layer in package.Layers)
             {
+                var matchingsForLayerQuery = _context.PackageLayerMatchings.Where(x => x.LayerId == layer.Id);
                 //if layer is from package
+                if (layer.SourcePackageId != id)
+                    matchingsForLayerQuery = matchingsForLayerQuery.Where(x => x.PackageId == id);
+
+                var matchingsForLayer = await matchingsForLayerQuery.ToListAsync();
+                foreach (var matching in matchingsForLayer)
+                {
+                    _context.PackageLayerMatchings.Remove(matching);
+                }
+                //if layer is from package - remove layer
                 if (layer.SourcePackageId == id)
-                {
-                    var matchingsForLayer = await _context.PackageLayerMatchings.Where(x => x.LayerId == layer.Id).ToListAsync();
-                    foreach (var matching in matchingsForLayer)
-                    {
-                        _context.PackageLayerMatchings.Remove(matching);
-                    }
                     _context.OutfitLayers.Remove(layer);
-                }
-                else
-                {
-                    var matchingsForLayer = await _context.PackageLayerMatchings.Where(x => x.LayerId == layer.Id && x.PackageId == id).ToListAsync();
-                    foreach (var matching in matchingsForLayer)
-                    {
-                        _context.PackageLayerMatchings.Remove(matching);
-                    }
-                }
 
             }
 
@@ -176,7 +172,7 @@ namespace minerobe.api.Modules.Core.Package.Service
                 Order = order
             });
             await _context.SaveChangesAsync();
-            return await GetLayerById(layer.Id);
+            return layer;
         }
         public async Task<OutfitLayer> UpdateLayer(OutfitLayer layer)
         {
@@ -242,7 +238,7 @@ namespace minerobe.api.Modules.Core.Package.Service
             });
             await _context.SaveChangesAsync();
 
-            return await GetLayerById(layerId);
+            return layer;
         }
         public async Task<bool> RemoveLayerFromPackage(Guid layerId, Guid packageId)
         {
@@ -337,12 +333,16 @@ namespace minerobe.api.Modules.Core.Package.Service
 
             if (layer != null)
             {
-                layer.Alex = mergedLayer.Alex;
-                layer.Steve = mergedLayer.Steve;
-                layer.Type = mergedLayer.Type;
-                layer.Name = mergedLayer.Name;
-                layer.ColorName = mergedLayer.ColorName;
-                layer.OutfitType = mergedLayer.OutfitType;
+                //ignored props
+                mergedLayer.Id = layer.Id;
+                mergedLayer.SourcePackageId = layer.SourcePackageId;
+
+                Type type = typeof(OutfitLayer);
+                var properties = type.GetProperties();
+                foreach (var property in properties)
+                {
+                    property.SetValue(layer, property.GetValue(mergedLayer));
+                }
 
                 _context.OutfitLayers.Update(layer);
             }

@@ -63,6 +63,7 @@
   import {
     navigateToHome,
     navigateToOutfitPackage,
+    navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper.js";
   //components
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
@@ -176,7 +177,7 @@
         );
       }
       itemPackage.subscribe(async (item) => {
-        await UpdatePackageDebounced();
+        if (loaded) await UpdatePackageDebounced();
       });
       loaded = true;
       setTimeout(() => addAnimation(null), 0);
@@ -348,7 +349,7 @@
   //actions
   const deletePackage = async () => {
     await RemovePackage($itemPackage.id);
-    navigateToHome();
+    navigateToWardrobe();
   };
   const addToCollection = async function (e) {
     const collection = e.detail.item;
