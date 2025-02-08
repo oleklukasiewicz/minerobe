@@ -169,16 +169,20 @@
       );
       if (!isReRender) return;
     }
-    
+
     if (typeof _source !== "string" && typeof v !== "string")
       isLayersModified = isLayersChanged(_source, v);
-    
-      _source = structuredClone(v);
+
+    _source = structuredClone(v);
     cachedtexture = _source as string;
     if (typeof _source !== "string") {
-      if (cameraOptions == "auto") {
+      if (cameraOptions == "auto" && outfitType == null) {
         textureRenderer.SetCameraOptions(
           CAMERA_CONFIG.getForOutfit(_source.outfitType)
+        );
+      } else {
+        textureRenderer.SetCameraOptions(
+          CAMERA_CONFIG.getForOutfit(outfitType)
         );
       }
 
@@ -217,7 +221,6 @@
   };
   const setOutfitType = async (v) => {
     if (!initialized) return;
-
     await setCameraOptions(v);
   };
   const setFlatten = async (v) => {
@@ -257,7 +260,7 @@
 
     let targetCameraOptions = cameraOptions;
     if (cameraOptions == "auto") {
-      if (typeof _source !== "string")
+      if (typeof _source !== "string" && outfitType == null)
         targetCameraOptions = CAMERA_CONFIG.getForOutfit(_source.outfitType);
       else targetCameraOptions = CAMERA_CONFIG.getForOutfit(outfitType);
     }

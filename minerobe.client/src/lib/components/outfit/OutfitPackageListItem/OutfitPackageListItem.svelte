@@ -65,9 +65,9 @@
       <OutfitPackageRender
         bind:resize
         source={item}
+        outfitType={currentLayer?.outfitType || item.outfitType}
         layerId={currentLayer?.id}
         isDynamic={false}
-        isFlatten={true}
         {baseTexture}
       />
     {/if}
