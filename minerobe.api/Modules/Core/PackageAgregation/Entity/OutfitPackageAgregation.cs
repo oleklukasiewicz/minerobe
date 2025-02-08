@@ -28,12 +28,4 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Entity
         public Guid? WardrobeId { get; set; }
 
     }
-    public class OutfitPackageAgregationConfiguration : IEntityTypeConfiguration<OutfitPackageAgregation>
-    {
-        public void Configure(EntityTypeBuilder<OutfitPackageAgregation> builder)
-        {
-            builder.HasNoKey();
-            builder.ToView("vPackagesView");
-        }
-    }
 }
