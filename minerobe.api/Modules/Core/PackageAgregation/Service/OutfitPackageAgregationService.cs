@@ -91,7 +91,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                                Description = p.Description,
                                SocialDataId = p.SocialDataId,
                                Social = s,
-                               OutfitType = p.OutfitType,
+                               OutfitType = l.OutfitType,
                                CreatedAt = p.CreatedAt,
                                ModifiedAt = p.ModifiedAt,
                                Layers = new List<OutfitLayer> { l },
