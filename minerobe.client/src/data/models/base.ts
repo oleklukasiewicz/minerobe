@@ -1,14 +1,16 @@
 export class PagedResponse<Type> {
+  options: PageOptions;
+  items: Type[];
+  sort: SortOption[] = [];
+}
+export class SortOption {
+  value: string;
+  isDesc: Boolean;
+}
+export class PageOptions {
   page: number;
   pageSize: number;
   total: number;
-  items: Type[];
-  constructor(page: number, pageSize: number, total: number, items: Type[]) {
-    this.page = page;
-    this.pageSize = pageSize;
-    this.total = total;
-    this.items = items;
-  }
 }
 export class ValueData {
   value: any;

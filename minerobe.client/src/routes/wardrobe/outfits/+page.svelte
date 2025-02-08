@@ -18,7 +18,7 @@
   } from "$src/data/static";
   import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
   //models
-  import type { PagedResponse } from "$src/data/models/base";
+  import type { PagedResponse, PageOptions } from "$src/data/models/base";
   import { MODEL_TYPE } from "$src/data/enums/model";
   import { OutfitPackage } from "$src/data/models/package";
   import { OutfitFilter } from "$src/data/models/filter";
@@ -68,11 +68,11 @@
     navigateToOutfitPackageEdit(item.id);
   };
   const fetchItems = async (e) => {
-    const options = e?.detail?.options;
+    const options: PagedResponse<OutfitPackage> = e?.detail?.options;
     const pagedItems = await GetWardrobePackages(
       filter,
-      options?.page || 0,
-      options?.pageSize || 36,
+      options?.options.page || 0,
+      options?.options.pageSize || 36,
       abortController
     );
     pageItems.update((items) => [...items, pagedItems]);
@@ -158,7 +158,7 @@
         resizable
         on:select={goToEdit}
         resizeDebounce={10}
-        currentPackageId={userSettings.currentTexturePackageId}
+        currentPackageId={userSettings.currentTexture?.packageId}
         baseTexture={userSettings?.baseTexture.layers[0]}
         items={pagedItems}
         columns={$IS_MOBILE_VIEW ? 3 : 6}

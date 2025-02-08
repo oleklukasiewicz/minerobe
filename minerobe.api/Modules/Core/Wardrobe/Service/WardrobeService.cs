@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
-using minerobe.api.Entity.Agregation;
 using minerobe.api.Helpers.Filter;
 using minerobe.api.Modules.Core.Collection.Entity;
 using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.PackageAgregation.Entity;
+using minerobe.api.Modules.Core.PackageAgregation.Interface;
 using minerobe.api.Modules.Core.Social.Entity;
 using minerobe.api.Modules.Core.Social.Interface;
 using minerobe.api.Modules.Core.User.Interface;
@@ -21,13 +22,15 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
         private readonly ISocialService _socialService;
         private readonly ICollectionService _collectionService;
         private readonly IUserService _userService;
-        public WardrobeService(BaseDbContext context, IPackageService packageService, ISocialService socialService, ICollectionService collectionService, IUserService userService)
+        private readonly IOutfitPackageAgregationService _packageAgregationService;
+        public WardrobeService(BaseDbContext context, IPackageService packageService, ISocialService socialService, ICollectionService collectionService, IUserService userService, IOutfitPackageAgregationService packageAgregationService)
         {
             _context = context;
             _packageService = packageService;
             _socialService = socialService;
             _collectionService = collectionService;
             _userService = userService;
+            _packageAgregationService = packageAgregationService;
         }
         public async Task<Helpers.Wardrobe> Get(Guid id)
         {
@@ -161,21 +164,34 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
 
             return resp;
         }
-        public async Task<List<OutfitPackageCollection>> GetWardrobeCollections(Guid wardrobeId, SimpleFilter filter)
+        public async Task<IQueryable<OutfitPackageCollection>> GetWardrobeCollections(Guid wardrobeId, SimpleFilter filter)
         {
-            var matchings = await _context.WardrobeCollectionMatchings.Where(x => x.WardrobeId == wardrobeId).ToListAsync();
-            var collections = new List<OutfitPackageCollection>();
-            foreach (var matching in matchings)
-            {
-                var collection = await _collectionService.GetById(matching.OutfitPackageCollectionId);
-                if (collection != null)
-                    collections.Add(collection);
-            }
+            var collections = from c in _context.OutfitPackageCollections
+                              join m in _context.WardrobeCollectionMatchings on c.Id equals m.OutfitPackageCollectionId
+                              join pub in _context.MinerobeUsers on c.PublisherId equals pub.Id
+                              join soc in _context.SocialDatas on c.SocialDataId equals soc.Id
+                              join p in _context.OutfitPackageCollectionMatchings on c.Id equals p.CollectionId into matchings
+                              where m.WardrobeId == wardrobeId
+                              select new OutfitPackageCollection
+                              {
+                                  Id = c.Id,
+                                  Name = c.Name,
+                                  PublisherId = c.PublisherId,
+                                  SocialDataId = c.SocialDataId,
+                                  Items = matchings.Select(x => new OutfitPackage() { Id = x.PackageId }).ToList(),
+                                  Social = soc,
+                                  Publisher = pub,
+                                  ModifiedAt = c.ModifiedAt,
+                                  CreatedAt = c.CreatedAt,
+                                  Description = c.Description
+                              };
+
+
 
             if (filter != null)
             {
                 if (!string.IsNullOrEmpty(filter.Phrase))
-                    collections = collections.Where(x => x.Name.Contains(filter.Phrase)).ToList();
+                    collections = collections.Where(x => x.Name.Contains(filter.Phrase));
             }
 
             return collections;
@@ -185,24 +201,28 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             var matching = await _context.WardrobeMatchings.Where(x => x.OutfitPackageId == outfitId && x.WardrobeId == wardrobeId).FirstOrDefaultAsync();
             return matching != null;
         }
-        public async Task<IQueryable<OutfitPackageAgregation>> GetWardrobeOutfits(Guid wardrobeId, OutfitFilter filter)
+        public async Task<IQueryable<OutfitPackage>> GetWardrobeOutfits(Guid wardrobeId, OutfitFilter filter)
         {
-            var outfits = _context.Set<OutfitPackageAgregation>().FromSqlInterpolated($"SELECT * FROM fGetWardrobeOutfits({wardrobeId})");
+            var outfits = _packageAgregationService.GetAgregation();
+            outfits = outfits.Where(x => x.WardrobeId == wardrobeId);
+
             if (filter != null)
             {
                 outfits = filter.Filter(outfits);
             }
-            return outfits;
+            var packages = _packageAgregationService.FromAgregation(outfits);
+            return packages;
         }
-        public async Task<IQueryable<OutfitPackageAgregation>> GetWardrobeOutfitsSingleLayer(Guid wardrobeId, OutfitFilter filter)
+        public async Task<IQueryable<OutfitPackage>> GetWardrobeOutfitsSingleLayer(Guid wardrobeId, OutfitFilter filter)
         {
-            var outfits = _context.Set<OutfitPackageAgregation>().FromSqlInterpolated($"SELECT * FROM fGetWardrobeOutfitsSingleLayer({wardrobeId})");
-            outfits = outfits.OrderBy(x => x.Id);
+            var outfits = _packageAgregationService.GetAgregation(); outfits = outfits.OrderBy(x => x.Id);
+            outfits = outfits.Where(x => x.WardrobeId == wardrobeId);
             if (filter != null)
             {
                 outfits = filter.Filter(outfits);
             }
-            return outfits;
+            var packages = _packageAgregationService.FromAgregationSingleLayer(outfits);
+            return packages;
         }
     }
 }

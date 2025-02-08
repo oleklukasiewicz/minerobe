@@ -6,37 +6,43 @@ namespace minerobe.api.Helpers
     public static class ModelConverter
     {
 
-        public static PagedResponse<T> ToPagedResponse<T>(this List<T> entity, int page, int pageSize)
+        public static PagedResponse<T> ToPagedResponse<T,TI>(this List<T> entity, PagedModel<TI> pagedOptions)
         {
-            if (pageSize == -1)
-                pageSize = entity.Count;
-            var items = entity.Skip(pageSize * (page)).Take(pageSize).ToList();
+            if (pagedOptions.PageSize == -1)
+                pagedOptions.PageSize = entity.Count;
+            var items = entity.Skip(pagedOptions.PageSize * (pagedOptions.Page)).Take(pagedOptions.PageSize).ToList();
             return new PagedResponse<T>
             {
                 Items = items,
-                Page = page,
-                PageSize = pageSize,
-                Total = entity.Count
+                Options = new PagedOptions
+                {
+                    Page = pagedOptions.Page,
+                    PageSize = pagedOptions.PageSize,
+                    Total = entity.Count
+                }
             };
         }
-        public static PagedResponse<T> ToPagedResponse<T>(this IQueryable<T> entity, int page, int pageSize)
+        public static PagedResponse<T> ToPagedResponse<T,TI>(this IQueryable<T> entity, PagedModel<TI> pagedOptions)
         {
             int count = entity.Count();
-            if (pageSize == -1)
-                pageSize = count;
+            if (pagedOptions.PageSize == -1)
+                pagedOptions.PageSize = count;
 
             if (TypeExtension.HasIdProperty<T>())
             {
                 entity = entity.OrderBy("Id");
             }
 
-            var items = entity.Skip(pageSize * (page)).Take(pageSize).ToList();
+            var items = entity.Skip(pagedOptions.PageSize * (pagedOptions.Page)).Take(pagedOptions.PageSize).ToList();
             return new PagedResponse<T>
             {
                 Items = items,
-                Page = page,
-                PageSize = pageSize,
-                Total = count
+                 Options = new PagedOptions
+                {
+                    Page = pagedOptions.Page,
+                    PageSize = pagedOptions.PageSize,
+                    Total = count
+                }
             };
         }
         public static PagedResponse<TDestination> MapResponseOptions<T, TDestination>(this PagedResponse<T> response, List<TDestination> items)
@@ -44,9 +50,12 @@ namespace minerobe.api.Helpers
             var pagedResponse = new PagedResponse<TDestination>
             {
                 Items = items,
-                Page = response.Page,
-                PageSize = response.PageSize,
-                Total = response.Total
+                Options = new PagedOptions
+                {
+                    Page = response.Options.Page,
+                    PageSize = response.Options.PageSize,
+                    Total = response.Options.Total
+                },
             };
             return pagedResponse;
         }

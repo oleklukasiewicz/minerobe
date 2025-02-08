@@ -23,9 +23,9 @@
     if (e.detail.isIntersecting == false) return;
     const lastPage = itemsPages[itemsPages.length - 1];
     if (lastPage != null) {
-      lastPage.page += 1;
+      lastPage.options.page += 1;
     }
-    if (lastPage?.items?.length < lastPage?.pageSize) return;
+    if (lastPage?.items?.length < lastPage?.options.pageSize) return;
     dispatch("loading", { options: lastPage });
   };
 </script>
@@ -38,7 +38,7 @@
   {/if}
   <IntersectionObserver {element} on:observe={onNewPageNeeded} {rootMargin}>
     <div bind:this={element}>
-      {#if itemsPages[itemsPages.length - 1]?.items?.length == itemsPages[itemsPages.length - 1]?.pageSize}
+      {#if itemsPages[itemsPages.length - 1]?.items?.length == itemsPages[itemsPages.length - 1]?.options.pageSize}
         <slot name="loading">loading...</slot>
       {/if}
     </div>

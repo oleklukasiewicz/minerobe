@@ -311,13 +311,12 @@
   const openOverviewDialog = () => (isOverviewDialogOpen = true);
   const openRemoveDialog = () => (isRemoveDialogOpen = true);
   const openCollectionsDialog = async (e) => {
-    let options = e?.detail?.options;
-    if (!options) options = { page: 0, pageSize: 6 };
+    let options = e?.detail?.options?.options;
+    if (!options) options = { page: 0, pageSize: 6, total: 0 };
     dialogCollections = {
       items: null,
-      page: options.page,
-      pageSize: options.pageSize,
-      total: 0,
+      options: options.page,
+      sort: [],
     };
     isCollectionsDialogOpen = true;
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
@@ -328,14 +327,13 @@
     );
   };
   const openOutfitPickerDialog = async (e) => {
-    let options = e?.detail?.options;
+    let options = e?.detail?.options?.options;
     if (!options)
-      options = { page: 0, pageSize: dialogOutfits?.pageSize || 12 };
+      options = { page: 0, pageSize: dialogOutfits?.options.pageSize || 12,total:0 };
     dialogOutfits = {
       items: null,
-      page: options.page,
-      pageSize: options.pageSize,
-      total: 0,
+      options: options,
+      sort: [],
     };
     dialogOutfitsFilter.type = PACKAGE_TYPE.OUTFIT;
     isOutfitPickerDialogOpen = true;
@@ -358,8 +356,8 @@
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
       $itemPackage.id,
       undefined,
-      dialogCollections.page,
-      dialogCollections.pageSize
+      dialogCollections.options.page,
+      dialogCollections.options.pageSize
     );
   };
   const removeFromCollection = async function (e) {
@@ -369,8 +367,8 @@
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
       $itemPackage.id,
       undefined,
-      dialogCollections.page,
-      dialogCollections.pageSize
+      dialogCollections.options.page,
+      dialogCollections.options.pageSize
     );
   };
   const sharePackage = async function () {

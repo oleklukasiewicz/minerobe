@@ -1,11 +1,13 @@
-﻿using minerobe.api.Entity.Agregation;
+﻿using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.PackageAgregation.Entity;
+using minerobe.api.Modules.Core.User.Entity;
 
 namespace minerobe.api.Modules.View.Landing.Interface
 {
     public interface ILandingViewService
     {
-        Task<IQueryable<OutfitPackageAgregation>> GetMostDownloaded();
-        Task<IQueryable<OutfitPackageAgregation>> GetMostLiked();
-        Task<IQueryable<OutfitPackageAgregation>> GetMostRecent();
+        Task<IQueryable<OutfitPackageAgregationResponse>> GetMostDownloaded(MinerobeUser? user);
+        Task<IQueryable<OutfitPackageAgregationResponse>> GetMostLiked(MinerobeUser? user);
+        Task<IQueryable<OutfitPackageAgregationResponse>> GetMostRecent(MinerobeUser? user);
     }
 }

@@ -1,25 +1,32 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using minerobe.api.Modules.Core.Package.Entity;
 
-namespace minerobe.api.Entity.Agregation
+namespace minerobe.api.Modules.Core.PackageAgregation.Entity
 {
     public class OutfitPackageAgregation
     {
+        //package
         public Guid Id { get; set; }
-        public Guid? VariantId { get; set; }
         public string Name { get; set; }
+        public PackageType Type { get; set; }
+        public string PublisherName { get; set; }
+        public Guid PublisherId { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public DateTime CreatedAt { get; set; }
-        public string Publisher { get; set; }
-        public int Type { get; set; }
-        public int OutfitType { get; set; }
-        public int LayersCount { get; set; }
-        public Guid SocialDataId { get; set; }
+        //layer
+        public Guid? LayerId { get; set; }
+        public string ColorName { get; set; }
+        public OutfitType OutfitType { get; set; }
+        //social
         public int Downloads { get; set; }
         public bool IsFeatured { get; set; }
         public int Likes { get; set; }
         public bool IsShared { get; set; }
-        public string Colors { get; set; }
+
+        //wardrobe
+        public Guid? WardrobeId { get; set; }
+
     }
     public class OutfitPackageAgregationConfiguration : IEntityTypeConfiguration<OutfitPackageAgregation>
     {

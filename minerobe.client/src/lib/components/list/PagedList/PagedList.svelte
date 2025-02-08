@@ -17,25 +17,25 @@
   export let pageSizes: number[] = [10, 20, 50, 100];
 
   let totalPages = 0;
-  $: totalPages = Math.ceil(items?.total / items?.pageSize);
+  $: totalPages = Math.ceil(items?.options.total / items?.options.pageSize);
 
   const onOptionsChanged = function () {
     dispatch("optionsChanged", { options: items });
   };
   const onPrevious = function (event) {
-    items.page--;
+    items.options.page--;
     onOptionsChanged();
   };
   const onNext = function (event) {
-    items.page++;
+    items.options.page++;
     onOptionsChanged();
   };
   const onPageSizeChanged = function (event) {
     const pageSize = event.detail.item;
-    items.pageSize = pageSize;
+    items.options.pageSize = pageSize;
     //check if the current page is valid
-    if (items.page >= Math.ceil(items?.total / items?.pageSize)) {
-      items.page = 0;
+    if (items.options.page >= Math.ceil(items?.options.total / items?.options.pageSize)) {
+      items.options.page = 0;
     }
     onOptionsChanged();
   };
@@ -45,8 +45,8 @@
   <div class="list-items">
     <slot
       items={items?.items}
-      pageSize={items?.pageSize}
-      page={items.page}
+      pageSize={items?.options.pageSize}
+      page={items.options.page}
       {loading}
     ></slot>
   </div>
@@ -56,25 +56,25 @@
       onlyIcon
       iconSize="large"
       icon={ChevronLeftIcon}
-      disabled={items?.page == 0 || items == null || loading}
+      disabled={items?.options.page == 0 || items == null || loading}
       on:click={onPrevious}
     />
     <div class="page">
-      {items?.page + 1 || 0} of {totalPages || 0}
+      {items?.options.page + 1 || 0} of {totalPages || 0}
     </div>
     <Button
       label="Next"
       onlyIcon
       icon={ChevronRightIcon}
       iconSize="large"
-      disabled={items?.page == totalPages - 1 || items == null || loading}
+      disabled={items?.options.page == totalPages - 1 || items == null || loading}
       on:click={onNext}
     />
     <div>
       <Select
         disabled={loading}
         items={pageSizes}
-        selectedItem={items?.pageSize}
+        selectedItem={items?.options.pageSize}
         on:select={onPageSizeChanged}
       />
     </div>

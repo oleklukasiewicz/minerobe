@@ -36,7 +36,7 @@
     Cape,
     MinecraftAccount,
   } from "$data/models/integration/minecraft";
-  import type { PagedResponse } from "$data/models/base";
+  import type { PagedResponse, PageOptions } from "$data/models/base";
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
   import { OutfitLayer, type OutfitPackage } from "$model/package";
   import DefaultAnimation from "$src/animation/default.js";
@@ -173,13 +173,12 @@
 
   //dialogs
   const openCollectionsDialog = async (e) => {
-    let options = e?.detail?.options;
-    if (!options) options = { page: 0, pageSize: 6 };
+    let options: PageOptions = e?.detail?.options?.options;
+    if (!options) options = { page: 0, pageSize: 6, total: 0 };
     dialogCollections = {
       items: null,
-      page: options.page,
-      pageSize: options.pageSize,
-      total: 0,
+      options: options,
+      sort: null,
     };
     isCollectionsDialogOpen = true;
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
@@ -198,8 +197,8 @@
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
       $itemPackage.id,
       undefined,
-      dialogCollections.page,
-      dialogCollections.pageSize
+      dialogCollections.options.page,
+      dialogCollections.options.pageSize
     );
   };
   const removeFromCollection = async function (e) {
@@ -209,8 +208,8 @@
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
       $itemPackage.id,
       undefined,
-      dialogCollections.page,
-      dialogCollections.pageSize
+      dialogCollections.options.page,
+      dialogCollections.options.pageSize
     );
   };
   const setSkin = async function () {

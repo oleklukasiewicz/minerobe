@@ -67,9 +67,12 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
             return new PagedResponse<OutfitPackageListItemResponseModel>
             {
                 Items = items,
-                Page = entity.Page,
-                PageSize = entity.PageSize,
-                Total = entity.Total
+                Options = new PagedOptions
+                {
+                    Page = entity.Options.Page,
+                    PageSize = entity.Options.PageSize,
+                    Total = entity.Options.Total
+                }
             };
         }
     }

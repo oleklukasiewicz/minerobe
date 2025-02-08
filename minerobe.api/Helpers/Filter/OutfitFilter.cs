@@ -1,5 +1,5 @@
-﻿using minerobe.api.Entity.Agregation;
-using minerobe.api.Modules.Core.Package.Entity;
+﻿using minerobe.api.Modules.Core.Package.Entity;
+using minerobe.api.Modules.Core.PackageAgregation.Entity;
 
 namespace minerobe.api.Helpers.Filter
 {
@@ -15,7 +15,7 @@ namespace minerobe.api.Helpers.Filter
             if (!string.IsNullOrEmpty(this.Type))
             {
                 var packageTypeEnum = Enum.Parse<PackageType>(this.Type.ToFirstCapitalLetter());
-                outfits = outfits.Where(x => x.Type == (int)packageTypeEnum);
+                outfits = outfits.Where(x => x.Type == packageTypeEnum);
             }
 
             if (!string.IsNullOrEmpty(this.Phrase))
@@ -23,14 +23,14 @@ namespace minerobe.api.Helpers.Filter
 
             if (this.OutfitType != null && this.OutfitType.Where(x => x.Length > 0).ToList().Count > 0)
             {
-                var outfitTypeEnum = this.OutfitType.Select(x => (int)Enum.Parse<OutfitType>(x.ToFirstCapitalLetter())).ToList();
+                var outfitTypeEnum = this.OutfitType.Select(x => Enum.Parse<OutfitType>(x.ToFirstCapitalLetter())).ToList();
                 outfits = outfits.Where(x => outfitTypeEnum.Contains(x.OutfitType));
             }
             if (this.IsShared != null)
                 outfits = outfits.Where(x => x.IsShared == this.IsShared);
             if (this.Colors != null && this.Colors.Count > 0)
             {
-                outfits = outfits.Where(outfit => this.Colors.Any(color => outfit.Colors.Contains(color)));
+                outfits = outfits.Where(outfit => this.Colors.Any(color => outfit.ColorName == color));
             }
 
             return outfits;

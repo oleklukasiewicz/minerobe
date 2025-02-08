@@ -4,12 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using minerobe.api;
 using minerobe.api.Configuration;
 using minerobe.api.Database;
+using minerobe.api.Helpers.Model;
 using minerobe.api.Hubs;
 using minerobe.api.Jobs;
 using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Collection.Service;
 using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.Package.Service;
+using minerobe.api.Modules.Core.PackageAgregation.Interface;
+using minerobe.api.Modules.Core.PackageAgregation.Service;
 using minerobe.api.Modules.Core.Settings.Interface;
 using minerobe.api.Modules.Core.Settings.Service;
 using minerobe.api.Modules.Core.Social.Interface;
@@ -22,8 +25,6 @@ using minerobe.api.Modules.Integration.Minecraft.Interface;
 using minerobe.api.Modules.Integration.Minecraft.Service;
 using minerobe.api.Modules.View.Landing.Interface;
 using minerobe.api.Modules.View.Landing.Service;
-using minerobe.api.ServicesHelpers;
-using minerobe.api.ServicesHelpers.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,10 +40,8 @@ builder.Services.AddTransient<IPackageService, PackageService>();
 builder.Services.AddTransient<ICollectionService, CollectionService>();
 builder.Services.AddTransient<IWardrobeService, WardrobeService>();
 builder.Services.AddTransient<IUserSettingsService, UserSettingsService>();
+builder.Services.AddTransient<IOutfitPackageAgregationService, OutfitPackageAgregationService>();
 builder.Services.AddTransient<ILandingViewService, LandingViewService>();
-
-// services helpers
-builder.Services.AddTransient<IOutfitPackageServiceHelper, OutfitPackageServiceHelper>();
 
 //default http client
 builder.Services.AddHttpClient();

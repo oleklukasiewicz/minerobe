@@ -8,7 +8,6 @@
   import {
     AddPackageToWardrobe,
     GetWadrobeCollections,
-    GetWardrobePackages,
   } from "$src/api/wardrobe";
   //services
   import { ShowToast } from "$src/data/toast";
@@ -30,7 +29,6 @@
   import type { MinerobeUserSettings } from "$src/data/models/user";
   //components
   import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
-  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
   import Search from "$lib/components/base/Search/Search.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import OutfitFiltersDialog from "$lib/components/dialog/OutfitFiltersDialog.svelte";
@@ -67,17 +65,13 @@
     });
   });
 
-  const goToEdit = function (e) {
-    const item = e.detail.item;
-    navigateToOutfitPackageEdit(item.id);
-  };
   const goToCollection = function (e) {};
   const fetchCollections = async (e) => {
     const options = e?.detail?.options;
     const pagedCollections = (await GetWadrobeCollections(
       filter.phrase,
       options?.page || 0,
-      options?.pageSize || 24,
+      options?.pageSize || 36,
       abortController
     )) as any;
     pageCollections.update((items) => [...items, pagedCollections]);
@@ -98,15 +92,6 @@
 
       itemsLoaded = true;
     } catch (e) {}
-  };
-  const setPage = function (pageType) {
-    if (filter.type === pageType) return;
-    filter.type = pageType;
-    filter.colors = [];
-    filter.outfitType = [];
-    filter.isShared = null;
-    window.scrollTo(0, 0);
-    updateFilter({});
   };
   const openFilterDialog = function () {
     isFilterDialogOpen = true;
@@ -178,7 +163,7 @@
         columns={$IS_MOBILE_VIEW ? 2 : 4}
       />
       <OutfitPackageCollectionList
-        pageSize={36}
+        pageSize={48}
         loading
         items={[]}
         slot="loading"

@@ -27,7 +27,7 @@
   }
 </script>
 
-<div use:mount />
+<div use:mount ></div>
 
 <style lang="scss">
   div {

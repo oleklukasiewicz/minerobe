@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using minerobe.api.Helpers;
 using minerobe.api.Helpers.Filter;
 using minerobe.api.Helpers.Model;
+using minerobe.api.Modules.Core.Collection.Entity;
 using minerobe.api.Modules.Core.Collection.ResponseModel;
 using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Core.Wardrobe.Interface;
 using minerobe.api.Modules.Core.Wardrobe.ResponseModel;
-using minerobe.api.ServicesHelpers.Interface;
 
 namespace minerobe.api.Modules.Core.Wardrobe.Controllers
 {
@@ -17,15 +17,13 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
     public class WardrobeController : Controller
     {
         private readonly IWardrobeService _wardrobeService;
-        private readonly IOutfitPackageServiceHelper _outfitHelper;
         private readonly IUserService _userService;
         private readonly IPackageService _packageService;
-        public WardrobeController(IWardrobeService wardrobeService, IUserService userService, IPackageService packageService, IOutfitPackageServiceHelper outfitHelper)
+        public WardrobeController(IWardrobeService wardrobeService, IUserService userService, IPackageService packageService)
         {
             _wardrobeService = wardrobeService;
             _userService = userService;
             _packageService = packageService;
-            _outfitHelper = outfitHelper;
         }
         [HttpGet("")]
         public async Task<IActionResult> Get()
@@ -82,42 +80,48 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
             return Ok(res);
         }
         [HttpPost("items")]
-        public async Task<IActionResult> GetItems([FromBody] PagedOptions<OutfitFilter> options)
+        public async Task<IActionResult> GetItems([FromBody] PagedModel<OutfitFilter> options)
         {
             var user = await _userService.GetFromExternalUser(User);
 
             var res = await _wardrobeService.GetWardrobeOutfits(user.WardrobeId, options?.Filter);
-            var paged = res.ToPagedResponse(options.Page, options.PageSize);
+            var paged = res.ToPagedResponse(options);
 
-            var items = await _outfitHelper.ToOutfitPackage(paged);
+            var items = paged.ToOutfitPackage();
             return Ok(paged.MapResponseOptions(items));
         }
         [HttpPost("collections")]
-        public async Task<IActionResult> GetCollections([FromBody] PagedOptions<OutfitFilter> options)
+        public async Task<IActionResult> GetCollections([FromBody] PagedModel<OutfitFilter> options)
         {
             var user = await _userService.GetFromExternalUser(User);
 
             var res = await _wardrobeService.GetWardrobeCollections(user.WardrobeId, options.Filter);
-            return Ok(res.ToListItemResponseModel().ToPagedResponse(options.Page, options.PageSize));
+            var paged = res.ToPagedResponse(options);
+
+            var mappedCollections = paged.Items.Select(x => x.ToListItemResponseModel()).ToList();
+            return Ok(paged.MapResponseOptions<OutfitPackageCollection, OutfitPackageCollectionListItemResponseModel>(mappedCollections));
         }
         [HttpPost("collections/context/{id}")]
-        public async Task<IActionResult> GetCollectionsWithPackageContext(Guid id, [FromBody] PagedOptions<OutfitFilter> options)
+        public async Task<IActionResult> GetCollectionsWithPackageContext(Guid id, [FromBody] PagedModel<OutfitFilter> options)
         {
             var user = await _userService.GetFromExternalUser(User);
 
             var res = await _wardrobeService.GetWardrobeCollections(user.WardrobeId, options.Filter);
-            return Ok(res.ToPackageResponseModel(id, true).ToPagedResponse(options.Page, options.PageSize));
+            var paged = res.ToPagedResponse(options);
+
+            var mappedCollections = paged.Items.Select(x => x.ToPackageResponseModel(id, true)).ToList();
+            return Ok(paged.MapResponseOptions<OutfitPackageCollection, OutfitPackageCollectionPackageResponseModel>(mappedCollections));
         }
 
         [HttpPost("items/singleLayer")]
-        public async Task<IActionResult> GetItemsSingleLayer([FromBody] PagedOptions<OutfitFilter> options)
+        public async Task<IActionResult> GetItemsSingleLayer([FromBody] PagedModel<OutfitFilter> options)
         {
             var user = await _userService.GetFromExternalUser(User);
 
             var res = await _wardrobeService.GetWardrobeOutfitsSingleLayer(user.WardrobeId, options.Filter);
-            var paged = res.ToPagedResponse(options.Page, options.PageSize);
+            var paged = res.ToPagedResponse(options);
 
-            var items = await _outfitHelper.ToOutfitPackageSingleLayer(paged, true);
+            var items = paged.ToOutfitPackageSingleLayer(true);
 
             return Ok(paged.MapResponseOptions(items));
         }

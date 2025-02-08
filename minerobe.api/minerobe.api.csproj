@@ -30,6 +30,8 @@
     <Folder Include="Modules\Core\Collection\Model\" />
     <Folder Include="Modules\Core\Collection\Entity\" />
     <Folder Include="Modules\Core\Collection\ResponseModel\" />
+    <Folder Include="Modules\Core\PackageAgregation\Model\" />
+    <Folder Include="ServicesHelpers\Interface\" />
   </ItemGroup>
 
 </Project>
