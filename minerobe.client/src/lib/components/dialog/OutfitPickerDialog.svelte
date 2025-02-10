@@ -31,6 +31,7 @@
     <div class="dialog-filters">
       <Select
         items={COLORS_ARRAY}
+        autocomplete
         bind:selectedItem={filters.colors}
         placeholder="Colors"
         itemText="normalizedName"
@@ -44,6 +45,7 @@
       <Select
         items={OUTFIT_TYPE_ARRAY}
         placeholder="Outfit type"
+        
         itemText="normalizedName"
         multiple
         clearable

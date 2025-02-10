@@ -27,7 +27,7 @@
   export let clearable = false;
   export let dropDownStyle = null;
   export let disabled = false;
-  // export let autocomplete = false;
+  export let autocomplete = false;
 
   export let sorter = function (a, b) {
     if (a < b) return -1;
@@ -51,6 +51,8 @@
   let menuWidth = 0;
   let menu = null;
   let itemsContainer = null;
+  let autocompleteInput = null;
+  let filteredItems = items;
 
   const select = (item) => {
     if (multiple) {
@@ -71,7 +73,7 @@
       if (multiple) selectedItem = selectedItemValue.map((i) => i[itemValue]);
       else selectedItem = selectedItemValue[itemValue];
     }
-
+    autocompleteInput = null;
     opened = false;
     dispatch("select", { item: selectedItemValue });
   };
@@ -89,6 +91,7 @@
     if (itemValue) {
       selectedItem = selectedItemValue;
     }
+    autocompleteInput = null;
     dispatch("clear");
   };
   const setMenuWidth = (op) => {
@@ -114,18 +117,37 @@
     if (itemValue) {
       if (multiple)
         selectedItemValue = items.filter((i) => value?.includes(i[itemValue]));
-      else selectedItemValue = items.find((i) => i[itemValue] == value);
+      else
+        selectedItemValue = items.find(
+          (i) =>
+            i[itemValue] == value ||
+            (value ? i[itemValue] == value[itemValue] : false)
+        );
     } else selectedItemValue = items.find((i) => i == value);
+  };
+  const filterByAutocomplete = (value) => {
+    if (autocomplete && autocompleteInput?.length > 0) {
+      filteredItems = items.filter((i) => {
+        if (itemText) {
+          return i[itemText].toLowerCase().includes(value.toLowerCase());
+        }
+        return i.toLowerCase().includes(value.toLowerCase());
+      });
+    }
   };
 
   $: setSelectedItemValue(selectedItem);
   $: setMenuWidth(opened);
+
+  $: filteredItems = items;
+  $: filterByAutocomplete(autocompleteInput);
 </script>
 
 <div
   class="select"
   class:opened
   class:disabled
+  class:autocomplete
   class:mobile={$IS_MOBILE_VIEW}
   bind:this={menu}
   use:clickOutside
@@ -143,7 +165,8 @@
               textAlign="left"
               size="small"
               type={clickable ? "primary" : "quaternary"}
-              >{itemText == null
+            >
+              {itemText == null
                 ? selectedItemValue
                 : selectedItemValue[itemText]}</Button
             >
@@ -161,10 +184,19 @@
             </div>
           {/if}
         </slot>
-      {:else}
+      {:else if !autocomplete}
         <div class="select-placeholder">{placeholder}</div>
       {/if}
     </div>
+    {#if autocomplete}
+      <input
+        type="text"
+        {placeholder}
+        bind:value={autocompleteInput}
+        class="autocomplete-input"
+        on:input={(e) => (opened = true)}
+      />
+    {/if}
     {#if clearable && selectedItemValue != null && (multiple ? selectedItemValue.length > 0 : true)}
       <Button
         onlyIcon
@@ -197,7 +229,7 @@
     class:hidden={!opened}
     bind:this={itemsContainer}
   >
-    {#each items.sort(sorter) as item}
+    {#each filteredItems.sort(sorter) as item}
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="selected item" on:click={() => select(item)}>

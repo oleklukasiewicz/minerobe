@@ -5,11 +5,11 @@ namespace minerobe.api.Helpers
 {
     public static class TypeExtension
     {
-        public static string ToFirstCapitalLetter(this string str)
+        public static string ToFirstCapitalLetter(this string str, bool preserveOldCapitals = true)
         {
             if (string.IsNullOrEmpty(str))
                 return str;
-            return char.ToUpper(str[0]) + str.Substring(1).ToLower();
+            return char.ToUpper(str[0]) + (preserveOldCapitals ? str.Substring(1) : str.Substring(1).ToLower());
         }
         public static T ToClass<T>(this object obj)
         {

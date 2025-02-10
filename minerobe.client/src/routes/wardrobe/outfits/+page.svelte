@@ -72,7 +72,7 @@
     const pagedItems = await GetWardrobePackages(
       filter,
       options?.options.page || 0,
-      options?.options.pageSize || 36,
+      options?.options.pageSize || 36,[],
       abortController
     );
     pageItems.update((items) => [...items, pagedItems]);

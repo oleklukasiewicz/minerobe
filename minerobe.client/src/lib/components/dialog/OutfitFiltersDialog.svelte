@@ -9,6 +9,8 @@
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
   import Select from "../base/Select/Select.svelte";
   import Sliders2Icon from "$icons/sliders-2.svg?raw";
+  import SortSelect from "../base/SortSelect/SortSelect.svelte";
+  import { SortOption, type ValueData } from "$src/data/models/base";
 
   const dispatch = createEventDispatcher();
 
@@ -18,14 +20,28 @@
   export let hideColor = false;
   export let hideIsShared = false;
   export let hideOutfitType = false;
+  export let hideSort = false;
+  export let sortItems: ValueData[] = [];
+  export let sortOptions: SortOption = new SortOption();
 
   const onFilter = () => {
-    dispatch("filter", { filter: filter });
+    dispatch("filter", {
+      filter: filter,
+      sort: sortOptions ? [sortOptions] : [],
+    });
   };
 </script>
 
 <Dialog bind:open label="Filters">
   <div id="outfit-filters-dialog">
+    {#if !hideSort && sortItems.length > 0}
+      <SectionTitle label="Sort" />
+      <SortSelect
+        items={sortItems}
+        bind:selectedItem={sortOptions}
+        bind:isDescending={sortOptions.isDesc}
+      />
+    {/if}
     {#if !hideType}
       <div>
         <SectionTitle label="Type" />

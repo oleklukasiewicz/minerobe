@@ -5,7 +5,7 @@ export class PagedResponse<Type> {
 }
 export class SortOption {
   value: string;
-  isDesc: Boolean;
+  isDesc: boolean;
 }
 export class PageOptions {
   page: number;

@@ -1,5 +1,5 @@
 import { DeleteRequest, GetRequest, PostRequest } from "$src/data/api";
-import type { PagedResponse } from "$data/models/base";
+import type { PagedResponse, SortOption } from "$data/models/base";
 import type {
   OutfitPackageCollection,
   OutfitPackageCollectionWithPackageContext,
@@ -25,6 +25,7 @@ export const GetWardrobePackages = async function (
   filter: OutfitFilter,
   page: number = 0,
   pageSize: number = -1,
+  sort:SortOption[] = [],
   abortController = null
 ) {
   const req = (await PostRequest(
@@ -33,6 +34,7 @@ export const GetWardrobePackages = async function (
       page,
       pageSize,
       filter,
+      sort,
     },
     abortController
   )) as PagedResponse<OutfitPackage>;

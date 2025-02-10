@@ -1,43 +1,44 @@
 ﻿using minerobe.api.Helpers.Model;
+using System.Linq;
 using System.Linq.Dynamic.Core;
 
 namespace minerobe.api.Helpers
 {
     public static class ModelConverter
     {
-
-        public static PagedResponse<T> ToPagedResponse<T,TI>(this List<T> entity, PagedModel<TI> pagedOptions)
+        public static PagedResponse<T> ToPagedResponse<T, TI>(this IQueryable<T> entity, PagedModel<TI> pagedOptions)
         {
+            if (pagedOptions.Sort?.Count > 0)
+            {
+                var type = typeof(T);
+                foreach (var sort in pagedOptions.Sort)
+                {
+                    if (sort.Value.Length > 0)
+                    {
+                        var propname = sort.Value.ToFirstCapitalLetter(true);
+                        var sortProperty = type.GetProperty(propname);
+                        entity = entity.OrderBy(sortProperty.Name + (sort.IsDesc ? " desc" : ""));
+                    }
+                }
+            }
+            else
+            {
+
+                if (TypeExtension.HasIdProperty<T>())
+                {
+                    entity = entity.OrderBy("Id");
+                }
+            }
+
+            int count = entity.Count();
             if (pagedOptions.PageSize == -1)
-                pagedOptions.PageSize = entity.Count;
+                pagedOptions.PageSize = count;
+
             var items = entity.Skip(pagedOptions.PageSize * (pagedOptions.Page)).Take(pagedOptions.PageSize).ToList();
             return new PagedResponse<T>
             {
                 Items = items,
                 Options = new PagedOptions
-                {
-                    Page = pagedOptions.Page,
-                    PageSize = pagedOptions.PageSize,
-                    Total = entity.Count
-                }
-            };
-        }
-        public static PagedResponse<T> ToPagedResponse<T,TI>(this IQueryable<T> entity, PagedModel<TI> pagedOptions)
-        {
-            int count = entity.Count();
-            if (pagedOptions.PageSize == -1)
-                pagedOptions.PageSize = count;
-
-            if (TypeExtension.HasIdProperty<T>())
-            {
-                entity = entity.OrderBy("Id");
-            }
-
-            var items = entity.Skip(pagedOptions.PageSize * (pagedOptions.Page)).Take(pagedOptions.PageSize).ToList();
-            return new PagedResponse<T>
-            {
-                Items = items,
-                 Options = new PagedOptions
                 {
                     Page = pagedOptions.Page,
                     PageSize = pagedOptions.PageSize,

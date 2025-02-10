@@ -6,7 +6,6 @@
   height: 36px;
   input {
     font-size: var(--size-font-subheaderalt);
-    transition: var(--time);
     background-color: var(--color-theme-D1);
     padding-left: 8px;
     padding-right: 8px;
@@ -15,7 +14,7 @@
     box-sizing: border-box;
     border-right: 2px solid var(--color-theme-D6);
     &:hover {
-      background-color: var(--color-theme-D3);
+      background-color: var(--color-theme-D2);
     }
     &:active {
       background-color: var(--color-theme-D1);
