@@ -141,7 +141,7 @@
     <div id="content-filters">
       <Button
         onlyIcon={$IS_MOBILE_VIEW}
-        label="Filters"
+        label="Sort & Filters"
         type="primary"
         icon={Sliders2Icon}
         on:click={openFilterDialog}

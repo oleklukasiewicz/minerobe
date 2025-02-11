@@ -14,12 +14,17 @@
   import { page } from "$app/stores";
   import { logoutUser } from "$src/api/auth";
   import { navigateToHome } from "$src/helpers/other/navigationHelper";
+  import { onMount } from "svelte";
 
   let selectedView = "overview";
 
   $: selectedView = $page.route.id.split("/")[2] || "overview";
 
-  let menuOpened = true;
+  let menuOpened = false;
+
+  onMount(() => {
+    menuOpened = !$IS_MOBILE_VIEW;
+  });
 
   const SignOut = async () => {
     await logoutUser();

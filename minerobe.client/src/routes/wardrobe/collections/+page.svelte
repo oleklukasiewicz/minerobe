@@ -1,6 +1,6 @@
 <script lang="ts">
   //main imports
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import { writable, type Writable } from "svelte/store";
   //api
   import { AddPackage } from "$src/api/pack";
@@ -11,7 +11,10 @@
   } from "$src/api/wardrobe";
   //services
   import { ShowToast } from "$src/data/toast";
-  import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
+  import {
+    navigateToCollection,
+    navigateToOutfitPackageEdit,
+  } from "$src/helpers/other/navigationHelper";
   //consts
   import { APP_STATE } from "$src/data/enums/app";
   import {
@@ -53,9 +56,10 @@
   filter.type = PACKAGE_TYPE.OUTFIT_COLLECTION;
   let abortController = new AbortController();
 
+  let stateSub = null;
   onMount(async () => {
     filter.type = PACKAGE_TYPE.OUTFIT_COLLECTION;
-    CURRENT_APP_STATE.subscribe(async (state) => {
+    stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
 
       userSettings = await FetchSettings();
@@ -64,8 +68,13 @@
       await updateFilter({});
     });
   });
+  onDestroy(() => {
+    if (stateSub) stateSub();
+  });
 
-  const goToCollection = function (e) {};
+  const goToCollection = function (e) {
+    navigateToCollection(e.detail.item.id);
+  };
   const fetchCollections = async (e) => {
     const options = e?.detail?.options;
     const pagedCollections = (await GetWadrobeCollections(
@@ -135,7 +144,7 @@
     <div id="content-filters">
       <Button
         onlyIcon={$IS_MOBILE_VIEW}
-        label="Filters"
+        label="Sort & Filters"
         type="primary"
         icon={Sliders2Icon}
         on:click={openFilterDialog}

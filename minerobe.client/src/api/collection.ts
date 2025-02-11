@@ -5,7 +5,7 @@ export const AddCollection = async function (collectionData: OutfitPackageCollec
     const res = await PostRequest("/api/Collections/", collectionData);
     return res;
 }
-export const GetCollection = async function (collectionId: string) {
+export const GetCollection = async function (collectionId: string):Promise<OutfitPackageCollection> {
     const res = await GetRequest(`/api/Collections/${collectionId}`);
     return res;
 }

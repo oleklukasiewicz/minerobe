@@ -32,7 +32,7 @@
   };
 </script>
 
-<Dialog bind:open label="Filters">
+<Dialog bind:open label="Sort & Filters">
   <div id="outfit-filters-dialog">
     {#if !hideSort && sortItems.length > 0}
       <SectionTitle label="Sort" />

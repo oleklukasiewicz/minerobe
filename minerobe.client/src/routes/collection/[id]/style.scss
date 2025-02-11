@@ -1,16 +1,27 @@
-.outfits {
-  padding: 8px;
-  box-sizing: border-box;
-}
-#header
-{
-  background-color: var(--color-theme-D1);
-  margin: 8px 8px 0px;
-  padding: 24px 16px 64px;
-}
-.collection-showcase {
-  display: grid;
-  grid-template-columns: auto auto auto auto auto;
-  grid-template-rows: auto auto auto;
-  gap: 8px;
+#collection-view {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  margin: 0px 16px 0px 16px;
+  #collection-header
+  {
+    background-color: var(--color-theme-D1);
+    margin: 8px 0px;
+    box-sizing: border-box;
+    padding: 32px;
+    h1
+    {
+      margin: 0px;
+      text-align: center;
+      font-size: var(--size-font-subheader);
+    }
+    p
+    {
+      font-size: var(--size-font-base);
+      text-align: center;
+      margin: 16px auto 0px;
+      max-width: 75%;
+    }
+  }
 }
