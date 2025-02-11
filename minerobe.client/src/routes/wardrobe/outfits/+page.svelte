@@ -18,7 +18,7 @@
   } from "$src/data/static";
   import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
   //models
-  import type { PagedResponse, PageOptions } from "$src/data/models/base";
+  import type { PagedResponse, PageOptions, SortOption } from "$src/data/models/base";
   import { MODEL_TYPE } from "$src/data/enums/model";
   import { OutfitPackage } from "$src/data/models/package";
   import { OutfitFilter } from "$src/data/models/filter";
@@ -33,6 +33,7 @@
   //icons
   import AddIcon from "$icons/plus.svg?raw";
   import Sliders2Icon from "$icons/sliders-2.svg?raw";
+  import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
 
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
 
@@ -45,6 +46,7 @@
   let stateSub = null;
 
   let filter: OutfitFilter = new OutfitFilter();
+  let sortOption: SortOption[] = [];
   filter.type = PACKAGE_TYPE.OUTFIT;
   let abortController = new AbortController();
 
@@ -72,7 +74,8 @@
     const pagedItems = await GetWardrobePackages(
       filter,
       options?.options.page || 0,
-      options?.options.pageSize || 36,[],
+      options?.options.pageSize || 36,
+      sortOption,
       abortController
     );
     pageItems.update((items) => [...items, pagedItems]);
@@ -85,6 +88,10 @@
       const newFilter = e?.detail?.filter;
       if (newFilter) {
         filter = newFilter;
+      }
+      const newSort = e?.detail?.sort;
+      if (newSort) {
+        sortOption = newSort;
       }
       itemsLoaded = false;
       pageItems.set([]);
@@ -184,6 +191,8 @@
   <!--Dialogs-->
   <OutfitFiltersDialog
     bind:open={isFilterDialogOpen}
+    sortItems={OUTFIT_PACKAGE_SORT_OPTIONS}
+    sortOptions={sortOption[0]}
     hideType
     {filter}
     on:filter={updateFilter}

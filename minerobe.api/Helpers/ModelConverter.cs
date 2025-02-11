@@ -10,15 +10,10 @@ namespace minerobe.api.Helpers
         {
             if (pagedOptions.Sort?.Count > 0)
             {
-                var type = typeof(T);
                 foreach (var sort in pagedOptions.Sort)
                 {
                     if (sort.Value.Length > 0)
-                    {
-                        var propname = sort.Value.ToFirstCapitalLetter(true);
-                        var sortProperty = type.GetProperty(propname);
-                        entity = entity.OrderBy(sortProperty.Name + (sort.IsDesc ? " desc" : ""));
-                    }
+                        entity = entity.OrderBy(sort.Value + (sort.IsDesc ? " desc" : ""));
                 }
             }
             else

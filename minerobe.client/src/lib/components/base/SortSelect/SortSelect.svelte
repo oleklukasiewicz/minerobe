@@ -50,14 +50,17 @@
       bind:dropDownStyle
       bind:disabled
       bind:autocomplete
-    ></Select>
-  </div>
-  <div class="direction">
-    <Button
-      onlyIcon
-      icon={isDescending ? ArrowDownIcon : ArrowUpIcon}
-      on:click={onDirectionClick}
-    ></Button>
+    >
+    <div class="direction" slot="actions">
+      <Button
+        onlyIcon
+        size="auto"
+        noBorder
+        icon={isDescending ? ArrowDownIcon : ArrowUpIcon}
+        on:click={onDirectionClick}
+      ></Button>
+    </div>
+  </Select>
   </div>
 </div>
 
@@ -68,6 +71,10 @@
     flex-direction: row;
     .select-container {
       flex: 1;
+    }
+    .direction {
+     border-left: 2px solid var(--color-theme-D6);
+     width: 32px;
     }
   }
 </style>
