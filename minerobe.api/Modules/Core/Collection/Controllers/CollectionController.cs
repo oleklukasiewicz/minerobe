@@ -7,6 +7,7 @@ using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Collection.Model;
 using minerobe.api.Modules.Core.Collection.ResponseModel;
 using minerobe.api.Modules.Core.User.Interface;
+using minerobe.api.Modules.Core.Wardrobe.Interface;
 
 namespace minerobe.api.Modules.Core.Collection.Controllers
 {
@@ -16,10 +17,12 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
     {
         private readonly ICollectionService _service;
         private readonly IUserService _userService;
-        public CollectionController(ICollectionService service, IUserService userService)
+        private readonly IWardrobeService _wardrobeService;
+        public CollectionController(ICollectionService service, IUserService userService,IWardrobeService wardrobeService)
         {
             _service = service;
             _userService = userService;
+            _wardrobeService = wardrobeService;
         }
         [HttpPost("")]
         public async Task<IActionResult> Add([FromBody] OutfitPackageCollectionModel collection)
@@ -71,6 +74,7 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
                 return Unauthorized();
 
             var result = await _service.Delete(id);
+            await _wardrobeService.RemoveCollectionFromAllWadrobes(id);
             if (!result)
                 return NotFound();
 
@@ -92,7 +96,7 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
                 return NotFound();
             return Ok(result.ToResponseModel());
         }
-        [HttpPost("add/{id}/{packageId}")]
+        [HttpPost("{id}/add/{packageId}")]
         public async Task<IActionResult> AddPackage(Guid id, Guid packageId)
         {
             var user = await _userService.GetFromExternalUser(User);
@@ -105,7 +109,7 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
                 return BadRequest();
             return Ok(result);
         }
-        [HttpDelete("remove/{id}/{packageId}")]
+        [HttpDelete("{id}/remove/{packageId}")]
         public async Task<IActionResult> RemovePackage(Guid id, Guid packageId)
         {
             var user = await _userService.GetFromExternalUser(User);

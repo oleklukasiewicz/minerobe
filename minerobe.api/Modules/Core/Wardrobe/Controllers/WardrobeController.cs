@@ -35,7 +35,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
                 return NotFound();
             return Ok(wardrobe.ToResponseModel());
         }
-        [HttpPost("{id}")]
+        [HttpPost("item/{id}")]
         public async Task<IActionResult> AddToWardrobe(Guid id)
         {
             var user = await _userService.GetFromExternalUser(User);
@@ -45,7 +45,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
                 return NotFound();
             return Ok(res);
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("item/{id}")]
         public async Task<IActionResult> RemoveFromWardrobe(Guid id)
         {
             var user = await _userService.GetFromExternalUser(User);
@@ -59,8 +59,8 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
                 return NotFound();
             return Ok(res);
         }
-        [HttpPost("{id}/collection")]
-        public async Task<IActionResult> AddToCollection(Guid id)
+        [HttpPost("collection/{id}")]
+        public async Task<IActionResult> AddCollection(Guid id)
         {
             var user = await _userService.GetFromExternalUser(User);
 
@@ -69,8 +69,8 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
                 return NotFound();
             return Ok(res);
         }
-        [HttpDelete("{id}/collection")]
-        public async Task<IActionResult> RemoveFromCollection(Guid id)
+        [HttpDelete("collection/{id}")]
+        public async Task<IActionResult> RemoveCollection(Guid id)
         {
             var user = await _userService.GetFromExternalUser(User);
 

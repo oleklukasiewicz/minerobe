@@ -12,7 +12,9 @@
   export let selectable = false;
   export let dense = true;
 
-  const onSelect = () => {
+  const onSelect = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     dispatch("select", item);
   };
   const onUnselect = () => {
@@ -24,7 +26,7 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<a class="outfit-package-collection-list-item" on:click={onSelect} class:dense>
+<a class="outfit-package-collection-list-item" class:dense>
   {#if selectable}
     <div class="items-actions">
       <Checkbox

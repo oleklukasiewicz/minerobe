@@ -12,11 +12,11 @@ export const GetPackage = async function (id: string) {
 };
 export const GetMergedPackage = async function (
   packageId: string,
-  isFlatten: Boolean=false,
-  useBasetexture: Boolean=false
+  isFlatten: Boolean = false,
+  useBasetexture: Boolean = false
 ): Promise<OutfitPackage> {
   const res = await GetRequest(
-    "/api/Package/" + packageId + "/merged/" + isFlatten+"/"+useBasetexture
+    "/api/Package/" + packageId + "/merged/" + isFlatten + "/" + useBasetexture
   );
   return res;
 };
@@ -71,7 +71,7 @@ export const AddRemoteLayerToPackage = async function (
   packageId: string
 ) {
   const res = await PostRequest(
-    "/api/Layers/add/" + layerId + "/" + packageId,
+    "/api/Layers/" + packageId + "/add/" + layerId,
     {}
   );
   return res;
@@ -85,7 +85,7 @@ export const RemoveRemoteLayerFromPackage = async function (
   packageId: string
 ) {
   const res = await DeleteRequest(
-    "/api/Layers/remove/" + layerId + "/" + packageId
+    "/api/Layers/" + packageId + "/remove/" + layerId
   );
   return res;
 };

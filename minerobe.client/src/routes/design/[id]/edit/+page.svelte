@@ -61,7 +61,6 @@
   import NewOutfitBottomAnimation from "$src/animation/bottom.js";
   import NewOutfitBottomAltAnimation from "$src/animation/bottomAlt.js";
   import {
-    navigateToHome,
     navigateToOutfitPackage,
     navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper.js";

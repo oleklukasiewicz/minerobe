@@ -81,7 +81,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
 
             return Ok(res);
         }
-        [HttpPost("add/{id}/{packageId}")]
+        [HttpPost("{packageId}/add/{id}")]
         public async Task<IActionResult> AddLayerToPackage(Guid id, Guid packageId)
         {
             var canEdit = await _packageService.CanEditPackage(packageId, (await _userService.GetFromExternalUser(User)).Id);
@@ -93,7 +93,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
                 return NotFound();
             return Ok(res.ToResponseModel(packageId, true));
         }
-        [HttpDelete("remove/{id}/{packageId}")]
+        [HttpDelete("{packageId}/remove/{id}")]
         public async Task<IActionResult> RemoveLayerFromPackage(Guid id, Guid packageId)
         {
             var canEdit = await _packageService.CanEditPackage(packageId, (await _userService.GetFromExternalUser(User)).Id);

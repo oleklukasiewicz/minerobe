@@ -59,7 +59,7 @@ export const AddPackageToCollection = async function (
   packageId: string
 ) {
   const res = await PostRequest(
-    `/api/Collections/add/${collectionId}/${packageId}`,
+    `/api/Collections/${collectionId}/add/${packageId}`,
     {}
   );
   return res;
@@ -69,7 +69,7 @@ export const RemovePackageFromCollection = async function (
   packageId: string
 ) {
   const res = await DeleteRequest(
-    `/api/Collections/remove/${collectionId}/${packageId}`
+    `/api/Collections/${collectionId}/remove/${packageId}`
   );
   return res;
 };

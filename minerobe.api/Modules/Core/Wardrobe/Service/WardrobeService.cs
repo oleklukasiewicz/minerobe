@@ -224,5 +224,19 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             var packages = _packageAgregationService.FromAgregationSingleLayer(outfits);
             return packages;
         }
+        public async Task<bool> RemovePackageFromAllWadrobes(Guid packageId)
+        {
+            var matchings = await _context.WardrobeMatchings.Where(x => x.OutfitPackageId == packageId).ToListAsync();
+            _context.WardrobeMatchings.RemoveRange(matchings);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> RemoveCollectionFromAllWadrobes(Guid collectionId)
+        {
+            var matchings = await _context.WardrobeCollectionMatchings.Where(x => x.OutfitPackageCollectionId == collectionId).ToListAsync();
+            _context.WardrobeCollectionMatchings.RemoveRange(matchings);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

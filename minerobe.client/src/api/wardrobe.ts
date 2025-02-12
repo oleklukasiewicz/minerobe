@@ -9,11 +9,11 @@ import type { OutfitPackage } from "$data/models/package";
 import type { WardrobePackage } from "$data/models/wadrobe";
 
 export const AddPackageToWardrobe = async function (packageId: string) {
-  const resp = await PostRequest("/api/Wardrobe/" + packageId, {});
+  const resp = await PostRequest("/api/Wardrobe/item/" + packageId, {});
   return resp;
 };
 export const RemovePackageFromWardrobe = async function (packageId: string) {
-  const resp = await DeleteRequest("/api/Wardrobe/" + packageId);
+  const resp = await DeleteRequest("/api/Wardrobe/item/" + packageId);
   return resp;
 };
 export const GetUserWardrobe = async function () {
@@ -80,10 +80,6 @@ export const GetWadrobeCollectionsWithPackageContext = async function (
   return req;
 };
 
-export const GetWadrobeSummary = async function () {
-  const req = await GetRequest("/api/Wardrobe/summary");
-  return req;
-};
 export const GetWadrobePackagesSingleLayer = async function (
   filter: OutfitFilter,
   page: number = 1,
@@ -98,7 +94,7 @@ export const GetWadrobePackagesSingleLayer = async function (
 };
 export const AddCollectionToWardrobe = async function (collectionId: string) {
   const resp = await PostRequest(
-    "/api/Wardrobe/" + collectionId + "/collection",
+    "/api/Wardrobe/collection/" + collectionId ,
     {}
   );
   return resp;
@@ -107,7 +103,7 @@ export const RemoveCollectionFromWardrobe = async function (
   collectionId: string
 ) {
   const resp = await DeleteRequest(
-    "/api/Wardrobe/" + collectionId + "/collection"
+    "/api/Wardrobe/collection" + collectionId
   );
   return resp;
 };

@@ -101,6 +101,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
                 return Unauthorized();
 
             var res = await _packageService.Delete(id);
+            await _wardrobeService.RemovePackageFromAllWadrobes(id);
             if (!res)
                 return NotFound();
             return Ok(res);
