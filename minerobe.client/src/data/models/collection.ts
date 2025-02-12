@@ -5,7 +5,6 @@ export class OutfitPackageCollection {
   id: string;
   name: string;
   itemsCount: number;
-  items: OutfitPackage[];
   displayData: string;
   publisherId: string;
   publisher: MinerobeUser;

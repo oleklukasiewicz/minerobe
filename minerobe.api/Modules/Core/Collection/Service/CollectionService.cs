@@ -5,6 +5,7 @@ using minerobe.api.Modules.Core.Collection.Entity;
 using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.PackageAgregation.Interface;
 using minerobe.api.Modules.Core.Social.Interface;
 using minerobe.api.Modules.Core.User.Interface;
 
@@ -16,12 +17,14 @@ namespace minerobe.api.Modules.Core.Collection.Service
         private readonly IPackageService _packageService;
         private readonly IUserService _userService;
         private readonly ISocialService _socialService;
-        public CollectionService(BaseDbContext context, IPackageService packageService, IUserService userService, ISocialService socialService)
+        private readonly IOutfitPackageAgregationService _agregationService;
+        public CollectionService(BaseDbContext context, IPackageService packageService, IUserService userService, ISocialService socialService, IOutfitPackageAgregationService outfitPackageAgregationService)
         {
             _context = context;
             _packageService = packageService;
             _userService = userService;
             _socialService = socialService;
+            _agregationService = outfitPackageAgregationService;
         }
         public async Task<OutfitPackageCollection> Add(OutfitPackageCollection collection)
         {
@@ -34,13 +37,14 @@ namespace minerobe.api.Modules.Core.Collection.Service
             return await GetById(collection.Id);
 
         }
-        public async Task<OutfitPackageCollection> GetById(Guid id)
+        public async Task<OutfitPackageCollection> GetById(Guid id, bool loadItems = true)
         {
             var collection = await _context.OutfitPackageCollections.FindAsync(id);
             if (collection == null)
                 return null;
+            if (loadItems)
+                collection.Items = await GetPackagesOfCollection(id).ToListAsync();
 
-            collection.Items = await GetPackagesOfCollection(id);
             collection.Social = await _socialService.GetById(collection.SocialDataId);
 
             var user = await _userService.GetById(collection.PublisherId);
@@ -134,21 +138,16 @@ namespace minerobe.api.Modules.Core.Collection.Service
             return true;
         }
 
-
-        //helpers
-        private async Task<List<OutfitPackage>> GetPackagesOfCollection(Guid collectionId)
+        public IQueryable<OutfitPackage> GetPackagesOfCollection(Guid collectionId)
         {
-            var packagesMatches = await _context.OutfitPackageCollectionMatchings
-                .Where(x => x.CollectionId == collectionId).ToListAsync();
-            var packages = new List<OutfitPackage>();
+            var packagesMatches = _context.OutfitPackageCollectionMatchings
+                .Where(x => x.CollectionId == collectionId).Select(x => x.PackageId).AsQueryable();
 
-            foreach (var package in packagesMatches)
-            {
-                packages.Add(await _packageService.GetById(package.PackageId));
-            }
+            var packages = _agregationService.FromIdList(packagesMatches);
 
             return packages;
         }
+
         //access
         public async Task<PackageAccessModel> GetAccess(Guid collectionId)
         {

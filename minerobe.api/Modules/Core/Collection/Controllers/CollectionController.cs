@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using minerobe.api.Helpers;
+using minerobe.api.Helpers.Filter;
+using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Collection.Model;
 using minerobe.api.Modules.Core.Collection.ResponseModel;
@@ -35,12 +38,30 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
             if (!canAccess)
                 return Unauthorized();
 
-            var result = await _service.GetById(id);
+            var result = await _service.GetById(id, false);
             if (result == null)
                 return NotFound();
 
             return Ok(result.ToResponseModel());
         }
+        [HttpPost("{id}/items")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetItems(Guid id, [FromBody] PagedModel<SimpleFilter> options)
+        {
+            var user = await _userService.GetFromExternalUser(User);
+            var canAccess = await _service.CanAccess(id, user.Id);
+            if (!canAccess)
+                return Unauthorized();
+            var query = _service.GetPackagesOfCollection(id);
+            var result = query.ToPagedResponse(options);
+            if (result == null)
+                return NotFound();
+
+            var items = result.ToOutfitPackage();
+
+            return Ok(result.MapResponseOptions(items));
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

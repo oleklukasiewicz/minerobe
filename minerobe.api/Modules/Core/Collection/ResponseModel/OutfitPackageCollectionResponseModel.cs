@@ -10,7 +10,6 @@ namespace minerobe.api.Modules.Core.Collection.ResponseModel
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<OutfitPackageListItemResponseModel> Items { get; set; }
         public MinerobePackageUserResponseModel Publisher { get; set; }
         public Guid PublisherId { get; set; }
         public dynamic DisplayData { get; set; }
@@ -23,13 +22,11 @@ namespace minerobe.api.Modules.Core.Collection.ResponseModel
     {
         public static OutfitPackageCollectionResponseModel ToResponseModel(this OutfitPackageCollection entity)
         {
-            var items = entity.Items.Select(x => x.ToListItemResponseModel()).ToList();
             return new OutfitPackageCollectionResponseModel
             {
                 Id = entity.Id,
                 Name = entity.Name,
                 Description = entity.Description,
-                Items = items,
                 PublisherId = entity.PublisherId,
                 Publisher = entity.Publisher.ToPackageResponseModel(),
                 DisplayData = entity.DisplayData,

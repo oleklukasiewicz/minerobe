@@ -10,5 +10,6 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Interface
         IQueryable<OutfitPackage> FromAgregationSingleLayer(IQueryable<OutfitPackageAgregation> agregations);
         IQueryable<OutfitPackageAgregationResponse> FromAgregationWithUserContext(IQueryable<OutfitPackageAgregation> agregations, Guid? wardobeId);
         IQueryable<OutfitPackageAgregation> GetAgregation();
+        IQueryable<OutfitPackage> FromIdList(IQueryable<Guid> ids);
     }
 }
