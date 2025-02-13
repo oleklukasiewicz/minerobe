@@ -100,7 +100,7 @@
       itemsContainer.style.minWidth = null;
       itemsContainer.style.maxWidth = null;
     } else {
-      menuWidth = menu?.offsetWidth;
+      menuWidth = menu?.offsetWidth -1;
       const menuCoords = menu?.getBoundingClientRect();
       const menuY = menuCoords?.top;
       const menuHeight = menuCoords?.height;

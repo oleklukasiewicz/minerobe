@@ -72,6 +72,6 @@ export const COLORS = {
   DUSTY_BROWN: { r: 151, g: 105, b: 79 },
   BLACK: { r: 0, g: 0, b: 0 },
 };
-export const COLORS_ARRAY = Object.keys(COLORS).sort().map((key) => {
+export const COLORS_ARRAY = Object.keys(COLORS).map((key) => {
   return { ...COLORS[key], name: key, normalizedName: key.replace(/_/g, " ") };
 });

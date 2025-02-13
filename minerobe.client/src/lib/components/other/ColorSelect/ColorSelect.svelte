@@ -53,6 +53,6 @@
     textAlign="left"
   >
   <div>
-  <ColorBadge color={item.name} colorName={item.name} /></div>
+  <ColorBadge color={item.name} colorName={item.name} style={"margin-right:4px;"}/></div>
 </Button>
 </Select>
