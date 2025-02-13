@@ -202,6 +202,7 @@
         onlyIcon
         style="height: 32px;"
         icon={CloseIcon}
+        size="small"
         type="secondary"
         iconSize="auto"
         noBorder
@@ -210,9 +211,9 @@
     {/if}
     <Button
       onlyIcon
-      iconStyle={"transform:translateY(1px);"}
-      style="height: 32px;"
+      style="height: 32px;width:32px;"
       iconSize="auto"
+      size="small"
       icon={opened ? ChevronUpIcon : ChevronDownIcon}
       type="primary"
       noBorder
@@ -234,7 +235,7 @@
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="selected item" on:click={() => select(item)}>
-        <slot {item} {multiple} {itemText} {selectedItemValue}>
+        <slot {item} {multiple} {itemText} {selectedItemValue} {comparer}>
           <Button
             size="small"
             flat

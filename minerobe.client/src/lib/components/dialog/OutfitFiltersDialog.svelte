@@ -11,6 +11,7 @@
   import Sliders2Icon from "$icons/sliders-2.svg?raw";
   import SortSelect from "../base/SortSelect/SortSelect.svelte";
   import { SortOption, type ValueData } from "$src/data/models/base";
+  import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -61,7 +62,7 @@
     {#if !hideColor}
       <div>
         <SectionTitle label="Color" />
-        <Select
+        <ColorSelect
           placeholder="Color"
           multiple
           items={COLORS_ARRAY}

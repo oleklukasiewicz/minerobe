@@ -1,287 +1,64 @@
 .button {
-  display: block;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
   text-decoration: none;
-  flex: 1;
-  transition: background-color var(--time), color var(--time),
-    border-color var(--time);
   box-sizing: border-box;
-  user-select: none;
   cursor: pointer;
-  border: 2px solid var(--color-theme-font);
-  box-shadow: var(--shadow-button);
-  .icon {
-    display: inline-grid;
+  &.text-center {
+    justify-content: center;
   }
-  span {
+  &.text-left {
+    justify-content: flex-start;
+  }
+  &.text-right {
+    justify-content: flex-end;
+  }
+  &.no-border {
+    border: none !important;
+  }
+  &.only-icon {
+    aspect-ratio: 1;
+    padding: 0px !important;
+  }
+  &.large {
+    height: 46px;
+    padding: 0px 12px;
+    font-size: var(--size-font-subtitle);
+  }
+  &.medium {
+    height: 36px;
+    padding: 0px 8px;
+  }
+  &.small {
+    height: 32px;
+    padding: 0px 6px;
+  }
+  &.flat {
+    box-shadow: none !important;
+  }
+  &.with-label {
+    flex: 1;
+  }
+  & > span {
     display: inline-block;
     vertical-align: top;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  &.flat {
-    box-shadow: none;
-  }
-  &.without-border {
-    border: none;
+  & > .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg {
+      width: 24px;
+      height: 24px;
+    }
   }
   &.white-text {
     color: var(--color-accent-font) !important;
-  }
-  &.medium {
-    height: 36px;
-  }
-  &.large {
-    height: 46px;
-  }
-  &.small {
-    height: 28px;
-  }
-  &.text-left {
-    text-align: left;
-  }
-  &.text-right {
-    text-align: right;
-  }
-  &.text-center {
-    text-align: center;
-  }
-  &.dark {
-    background-color: var(--color-theme-D5);
-    border-top: 2px solid var(--color-theme-D4);
-    border-bottom: 2px solid var(--color-theme-D6);
-    color: var(--color-accent-font);
-  }
-  &.no-text-overflow {
-    span {
-      white-space: nowrap;
-      overflow: visible;
-      text-overflow: unset;
-    }
-  }
-  &.primary {
-    background-color: var(--color-accent);
-    color: var(--color-accent-font);
-    font-family: minecraft;
-    &:hover {
-      color: var(--color-accent-font);
-      background-color: var(--color-hover);
-    }
-    &:active {
-      color: var(--color-accent-font);
-      background-color: var(--color-active);
-    }
-    &.medium {
-      padding: 7px 12px 8px;
-      &.icon {
-        padding: 6px;
-      }
-      &.with-label {
-        & > .icon {
-          transform: translateY(-3px);
-        }
-      }
-
-      & > span {
-        line-height: 17px;
-        font-size: var(--size-font-base);
-      }
-    }
-    &.large {
-      padding: 10px 14px 12px;
-      font-size: larger;
-      &.with-label {
-        .icon {
-          margin-right: 12px;
-          transform: translateY(0px);
-        }
-      }
-      &.icon {
-        padding: 10px 12px;
-      }
-    }
-    &.small {
-      padding: 1px 10px 6px 4px;
-      & > span {
-        transform: translateY(1px);
-      }
-      & > .icon {
-        transform: translateY(-1px);
-      }
-      &.flat {
-        & > span {
-          transform: translateY(2px);
-        }
-        & > .icon {
-          transform: translateY(1px);
-        }
-      }
-    }
-  }
-  &.secondary {
-    font-size: var(--size-font-subheaderalt);
-    color: var(--color-theme-font);
-    font-family: minecraft-simple;
-    background-color: var(--color-theme-D2);
-    &:hover {
-      color: var(--color-accent-font);
-      background-color: var(--color-hover);
-    }
-    &:active {
-      color: var(--color-accent-font);
-      background-color: var(--color-active);
-    }
-    &.medium {
-      padding: 8px 12px 6px;
-      &.icon {
-        padding: 6px;
-      }
-      &.with-label {
-        .icon {
-          transform: translateY(-4px);
-        }
-      }
-    }
-    &.large {
-      padding: 10px 14px 10px;
-      font-size: larger;
-      &.with-label {
-        .icon {
-          margin-right: 12px;
-          transform: translateY(-2px);
-        }
-        span {
-          transform: translateY(2px);
-        }
-      }
-      &.icon {
-        padding: 10px 12px;
-      }
-    }
-    &.small {
-      padding: 2px 6px 4px;
-      &.icon {
-        padding: 2px;
-      }
-    }
-  }
-  &.tertiary {
-    font-size: var(--size-font-subheaderalt);
-    border: none;
-    box-shadow: none;
-    background-color: transparent;
-    color: var(--color-accent);
-    font-family: minecraft-simple;
-    &:hover {
-      color: var(--color-accent-font);
-      background-color: var(--color-hover);
-    }
-    &:active {
-      color: var(--color-accent-font);
-      background-color: var(--color-active);
-    }
-    &.medium {
-      padding: 10px 12px 5px;
-      &.icon {
-        padding: 6px;
-        & > .icon {
-          transform: translateY(0px);
-        }
-      }
-      & > .icon {
-        transform: translateY(-4px);
-      }
-    }
-    &.large {
-      padding: 8px 14px 10px;
-      font-size: 15px;
-      &.with-label {
-        & span {
-          line-height: 30px;
-          vertical-align: middle;
-          display: inline-block;
-          transform: translateY(-4px);
-        }
-        .icon {
-          margin-right: 12px;
-          transform: translate(-6px, 4px);
-        }
-      }
-      &.icon {
-        padding: 12px 12px;
-      }
-    }
-    &.small {
-      padding: 2px 6px 4px;
-      &.icon {
-        padding: 2px;
-      }
-    }
-  }
-  &.quaternary {
-    font-size: var(--size-font-subheaderalt);
-    border: none;
-    box-shadow: none;
-    background-color: transparent;
-    color: var(--color-theme-font);
-    font-family: minecraft-simple;
-    &:hover {
-      color: var(--color-accent-font);
-      background-color: var(--color-hover);
-    }
-    &:active {
-      color: var(--color-accent-font);
-      background-color: var(--color-active);
-    }
-    &.medium {
-      padding: 8px 12px 7px;
-      &.icon {
-        padding: 6px 7px;
-      }
-    }
-    &.large {
-      padding: 8px 14px 10px;
-      font-size: larger;
-      &.with-label {
-        .icon {
-          margin-right: 12px;
-          transform: translate(-6px, 4px);
-        }
-      }
-      &.icon {
-        padding: 12px 12px;
-      }
-    }
-    &.small {
-      padding: 4px 6px 2px;
-      &.icon {
-        padding: 2px;
-      }
-      span {
-        transform: translateY(2px);
-      }
-    }
-  }
-  &.icon {
-    padding: 0px !important;
-    margin: 0px;
-    display: grid;
-    place-items: center;
-    flex: none;
-    aspect-ratio: 1;
-    .icon {
-      flex: 1;
-    }
-  }
-  &.with-icon {
-    & > span {
-      max-width: calc(100% - 32px);
-    }
-  }
-  &.without-icon {
-    & > span {
-      max-width: 100%;
-    }
   }
   &.fab {
     position: fixed;
@@ -290,15 +67,15 @@
     right: 8px;
     display: flex;
     overflow: hidden;
-    gap: 2px;
+    gap: 6px;
+    justify-content: flex-start;
     &.nav-fab {
       bottom: 62px;
     }
     &.fab-dynamic {
       &.large {
-        padding: 12px 12px 12px;
-        aspect-ratio: 1;
-        width: 52px;
+        padding: 12px;
+        min-width: 52px;
         height: 52px;
       }
       &.small {
@@ -312,6 +89,66 @@
         display: inline-table;
         margin-right: 8px;
       }
+    }
+  }
+  &.primary {
+    background-color: var(--color-accent);
+    color: var(--color-accent-font);
+    font-family: minecraft;
+    border: 2px solid var(--color-theme-font);
+    box-shadow: var(--shadow-button);
+    &:hover {
+      color: var(--color-accent-font);
+      background-color: var(--color-hover);
+    }
+    &:active {
+      color: var(--color-accent-font);
+      background-color: var(--color-active);
+    }
+  }
+  &.secondary {
+    background-color: var(--color-theme-D2);
+    color: var(--color-theme-font);
+    font-family: minecraft-simple;
+    border: 2px solid var(--color-theme-font);
+    box-shadow: var(--shadow-button);
+    &:hover {
+      color: var(--color-accent-font);
+      background-color: var(--color-hover);
+    }
+    &:active {
+      color: var(--color-accent-font);
+      background-color: var(--color-active);
+    }
+  }
+  &.tertiary {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    color: var(--color-accent);
+    font-family: minecraft-simple;
+    &:hover {
+      color: var(--color-accent-font);
+      background-color: var(--color-hover);
+    }
+    &:active {
+      color: var(--color-accent-font);
+      background-color: var(--color-active);
+    }
+  }
+  &.quaternary {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    color: var(--color-theme-font);
+    font-family: minecraft-simple;
+    &:hover {
+      color: var(--color-accent-font);
+      background-color: var(--color-hover);
+    }
+    &:active {
+      color: var(--color-accent-font);
+      background-color: var(--color-active);
     }
   }
 }

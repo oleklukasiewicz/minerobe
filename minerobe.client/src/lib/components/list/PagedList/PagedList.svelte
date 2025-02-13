@@ -91,6 +91,7 @@
     gap: 8px;
     justify-content: end;
     margin-top: 8px;
+    height: 36px;
     .page {
       margin-top: 12px;
       font-family: minecraft-simple;

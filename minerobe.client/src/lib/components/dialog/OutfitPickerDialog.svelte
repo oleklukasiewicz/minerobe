@@ -10,6 +10,7 @@
   import Select from "../base/Select/Select.svelte";
   import OutfitPackagePickerList from "../outfit/OutfitPackagePickerList/OutfitPackagePickerList.svelte";
   import { COLORS_ARRAY } from "$src/data/consts/color";
+  import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -29,7 +30,7 @@
 <Dialog bind:open {label}>
   <div id="outfit-picker-dialog">
     <div class="dialog-filters">
-      <Select
+      <ColorSelect
         items={COLORS_ARRAY}
         autocomplete
         bind:selectedItem={filters.colors}

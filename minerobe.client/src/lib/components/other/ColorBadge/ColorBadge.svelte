@@ -33,7 +33,7 @@
   title={colorName || color}
   class:selected
   class:selectable
-  style={`background-color: ${normalizedColor} ` + style}
+  style={`background-color: ${normalizedColor}; ` + style}
 ></span>
 
 <style lang="scss">

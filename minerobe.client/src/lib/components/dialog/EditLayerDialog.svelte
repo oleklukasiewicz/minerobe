@@ -18,6 +18,7 @@
   import DragAndDrop from "../draganddrop/DragAndDrop/DragAndDrop.svelte";
   import OutfitPackageRender from "../render/OutfitPackageRender.svelte";
   import ImportPackageIcon from "$icons/upload.svg?raw";
+  import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -55,7 +56,7 @@
         on:select={onEdit}
       />
       <SectionTitle label="color" />
-      <Select
+      <ColorSelect
         items={COLORS_ARRAY}
         bind:selectedItem={item.colorName}
         itemText="normalizedName"

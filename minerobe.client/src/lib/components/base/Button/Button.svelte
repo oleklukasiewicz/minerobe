@@ -12,11 +12,8 @@
   export let onlyIcon: boolean = false;
   export let textAlign: "left" | "center" | "right" = "center";
   export let style = null;
-  export let iconStyle = null;
   export let target: "_blank" | "_self" = null;
   export let fab: "static" | "dynamic" | "expanded" | null = null;
-  export let dark = false;
-  export let noTextOverflow = false;
   export let noBorder = false;
   export let whiteText = false;
   export let flat = false;
@@ -51,16 +48,14 @@
   {style}
   {href}
   {target}
-  class:dark
-  class:flat={flat}
-  class:no-text-overflow={noTextOverflow}
+  class:flat
   class:white-text={whiteText}
   class:link={href != null}
-  class:icon={onlyIcon && icon != null}
+  class:only-icon={onlyIcon}
   class:with-label={label != null && !onlyIcon}
   class:with-icon={icon != null}
   class:without-icon={!icon}
-  class:without-border={noBorder}
+  class:no-border={noBorder}
   class:primary={type === "primary"}
   class:secondary={type === "secondary"}
   class:tertiary={type === "tertiary"}
@@ -80,7 +75,6 @@
   {#if icon != null}
     <div
       class="icon"
-      style={iconStyle}
       class:b-icon-small={iconSize === "small"}
       class:b-icon-medium={iconSize === "medium"}
       class:b-icon-large={iconSize === "large"}
@@ -88,7 +82,11 @@
       {@html icon}
     </div>
   {/if}
-  <slot />
+  {#if !onlyIcon}
+    <div class="slot-container">
+      <slot />
+    </div>
+  {/if}
   {#if label != null && !onlyIcon}
     <span bind:this={componentLabel}>{label}</span>
   {/if}
