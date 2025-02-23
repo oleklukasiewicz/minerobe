@@ -70,6 +70,7 @@
           itemValue="name"
           dropDownStyle="max-height: 275px"
           clearable
+          autocomplete
           bind:selectedItem={filter.colors}
         />
       </div>
@@ -84,6 +85,7 @@
           itemValue="name"
           multiple
           clearable
+          autocomplete
           bind:selectedItem={filter.outfitType}
         />
       </div>

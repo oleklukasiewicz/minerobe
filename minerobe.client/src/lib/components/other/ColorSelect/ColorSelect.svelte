@@ -21,6 +21,7 @@
 
 <Select
   on:select
+  on:clear
   bind:items
   bind:placeholder
   bind:selectedItem

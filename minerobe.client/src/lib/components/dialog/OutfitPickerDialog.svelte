@@ -46,7 +46,7 @@
       <Select
         items={OUTFIT_TYPE_ARRAY}
         placeholder="Outfit type"
-        
+        autocomplete
         itemText="normalizedName"
         multiple
         clearable

@@ -52,6 +52,7 @@
   let menu = null;
   let itemsContainer = null;
   let autocompleteInput = null;
+  let inputComponent = null;
   let filteredItems = items;
 
   const select = (item) => {
@@ -73,6 +74,9 @@
       if (multiple) selectedItem = selectedItemValue.map((i) => i[itemValue]);
       else selectedItem = selectedItemValue[itemValue];
     }
+    if (autocomplete) {
+      inputComponent.focus();
+    }
     autocompleteInput = null;
     opened = false;
     dispatch("select", { item: selectedItemValue });
@@ -92,7 +96,8 @@
       selectedItem = selectedItemValue;
     }
     autocompleteInput = null;
-    dispatch("clear");
+    filteredItems = items;
+    dispatch("clear", { item: selectedItemValue });
   };
   const setMenuWidth = (op) => {
     if (!opened) return;
@@ -100,7 +105,7 @@
       itemsContainer.style.minWidth = null;
       itemsContainer.style.maxWidth = null;
     } else {
-      menuWidth = menu?.offsetWidth -1;
+      menuWidth = menu?.offsetWidth - 1;
       const menuCoords = menu?.getBoundingClientRect();
       const menuY = menuCoords?.top;
       const menuHeight = menuCoords?.height;
@@ -190,11 +195,13 @@
     </div>
     {#if autocomplete}
       <input
+        bind:this={inputComponent}
         type="text"
         {placeholder}
         bind:value={autocompleteInput}
         class="autocomplete-input"
         on:input={(e) => (opened = true)}
+        on:click={(e) => (opened = true)}
       />
     {/if}
     {#if clearable && selectedItemValue != null && (multiple ? selectedItemValue.length > 0 : true)}
