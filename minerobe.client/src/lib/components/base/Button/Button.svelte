@@ -17,6 +17,7 @@
   export let noBorder = false;
   export let whiteText = false;
   export let flat = false;
+  export let focused = false;
 
   let component = null;
   let componentLabel = null;
@@ -48,6 +49,7 @@
   {style}
   {href}
   {target}
+  class:focused={focused}
   class:flat
   class:white-text={whiteText}
   class:link={href != null}

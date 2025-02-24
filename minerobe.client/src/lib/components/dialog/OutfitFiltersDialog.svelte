@@ -38,9 +38,9 @@
     {#if !hideSort && sortItems.length > 0}
       <SectionTitle label="Sort" />
       <SortSelect
+        clearable
         items={sortItems}
         bind:selectedItem={sortOptions}
-        bind:isDescending={sortOptions.isDesc}
       />
     {/if}
     {#if !hideType}

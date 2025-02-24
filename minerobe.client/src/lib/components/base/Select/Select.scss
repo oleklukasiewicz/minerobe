@@ -1,6 +1,7 @@
 .select {
   position: relative;
   flex: 1;
+  outline: none;
   & .select-mobile-bg {
     position: fixed;
     top: 0;
@@ -32,7 +33,7 @@
   }
   .selected-item-container {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr auto auto auto;
     max-width: 100%;
     background-color: var(--color-theme-D1);
     border: 2px solid var(--color-theme-D6);

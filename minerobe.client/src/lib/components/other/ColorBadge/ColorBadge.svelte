@@ -8,7 +8,8 @@
   export let style: string = "";
 
   let normalizedColor;
-  const normalizeColor = function () {
+  const normalizeColor = function (v) {
+
     const colorFromArray = COLORS[color];
     if (colorFromArray)
       normalizedColor =
@@ -21,7 +22,7 @@
         ")";
     else normalizedColor = color;
   };
-  $: normalizeColor();
+  $: normalizeColor(color);
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->

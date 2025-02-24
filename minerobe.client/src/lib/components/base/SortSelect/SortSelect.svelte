@@ -9,7 +9,7 @@
   const dispatch = createEventDispatcher();
 
   export let items: any[] = [];
-  export let placeholder: string = "Select";
+  export let placeholder: string = "Sort by";
   export let selectedItem = null;
   export let opened = false;
   export let itemText = "label";
@@ -32,13 +32,21 @@
     var sortOption: SortOption = new SortOption();
     sortOption.value = selectedItem.value;
     sortOption.isDesc = isDescending;
+    selectedItem = sortOption;
     dispatch("select", { option: sortOption });
   };
+
+  const onSelectedUpdate = (v) => {
+    isDescending = v?.isDesc;
+  };
+
+  $: onSelectedUpdate(selectedItem);
 </script>
 
 <div class="sort-select">
   <div class="select-container">
     <Select
+      on:clear
       on:select={onSelect}
       bind:items
       bind:placeholder
@@ -50,17 +58,19 @@
       bind:dropDownStyle
       bind:disabled
       bind:autocomplete
+      defaultValue={new SortOption()}
     >
-    <div class="direction" slot="actions">
-      <Button
-        onlyIcon
-        size="auto"
-        noBorder
-        icon={isDescending ? ArrowDownIcon : ArrowUpIcon}
-        on:click={onDirectionClick}
-      ></Button>
-    </div>
-  </Select>
+      <div class="direction" slot="actions">
+        <Button
+          disabled={!selectedItem?.value}
+          onlyIcon
+          size="auto"
+          noBorder
+          icon={isDescending ? ArrowDownIcon : ArrowUpIcon}
+          on:click={onDirectionClick}
+        ></Button>
+      </div>
+    </Select>
   </div>
 </div>
 
@@ -73,8 +83,8 @@
       flex: 1;
     }
     .direction {
-     border-left: 2px solid var(--color-theme-D6);
-     width: 32px;
+      border-left: 2px solid var(--color-theme-D6);
+      width: 32px;
     }
   }
 </style>

@@ -5,6 +5,7 @@
   gap: 4px;
   text-decoration: none;
   box-sizing: border-box;
+  user-select: none;
   cursor: pointer;
   &.text-center {
     justify-content: center;
@@ -90,6 +91,11 @@
         margin-right: 8px;
       }
     }
+  }
+  &.focused {
+    color: var(--color-accent-font) !important;
+    background-color: var(--color-hover) !important;
+    font-family: minecraft-simple !important;
   }
   &.primary {
     background-color: var(--color-accent);

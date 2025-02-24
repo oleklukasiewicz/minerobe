@@ -28,6 +28,7 @@
   export let dropDownStyle = null;
   export let disabled = false;
   export let autocomplete = false;
+  export let defaultValue = null;
 
   export let sorter = function (a, b) {
     if (a < b) return -1;
@@ -40,20 +41,15 @@
     }
     return selectedItemValue == item;
   };
-  // export let filter = function (item, value) {
-  //   if (itemText) {
-  //     return item[itemText].toLowerCase().includes(value.toLowerCase());
-  //   }
-  //   return item.toLowerCase().includes(value.toLowerCase());
-  // };
 
-  let selectedItemValue = null;
+  let selectedItemValue = defaultValue;
   let menuWidth = 0;
   let menu = null;
   let itemsContainer = null;
   let autocompleteInput = null;
   let inputComponent = null;
   let filteredItems = items;
+  let focusedIndex = -1;
 
   const select = (item) => {
     if (multiple) {
@@ -90,7 +86,7 @@
   };
   const clear = () => {
     if (multiple) selectedItemValue = [];
-    else selectedItemValue = null;
+    else selectedItemValue = defaultValue;
 
     if (itemValue) {
       selectedItem = selectedItemValue;
@@ -105,7 +101,7 @@
       itemsContainer.style.minWidth = null;
       itemsContainer.style.maxWidth = null;
     } else {
-      menuWidth = menu?.offsetWidth - 1;
+      menuWidth = menu?.offsetWidth;
       const menuCoords = menu?.getBoundingClientRect();
       const menuY = menuCoords?.top;
       const menuHeight = menuCoords?.height;
@@ -141,6 +137,38 @@
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (!opened) return;
+
+    switch (event.key) {
+      case "ArrowDown":
+        event.preventDefault();
+        focusedIndex = (focusedIndex + 1) % filteredItems.length;
+        scrollToFocusedItem();
+        break;
+      case "ArrowUp":
+        event.preventDefault();
+        focusedIndex =
+          (focusedIndex - 1 + filteredItems.length) % filteredItems.length;
+        scrollToFocusedItem();
+        break;
+      case "Enter":
+        event.preventDefault();
+        if (focusedIndex >= 0 && focusedIndex < filteredItems.length) {
+          select(filteredItems[focusedIndex]);
+        }
+        break;
+      case "Escape":
+        event.preventDefault();
+        opened = false;
+        break;
+    }
+  };
+  const scrollToFocusedItem = () => {
+    const focusedItem = itemsContainer?.querySelectorAll(".item")[focusedIndex];
+    focusedItem?.scrollIntoView({ block: "nearest" });
+  };
+
   $: setSelectedItemValue(selectedItem);
   $: setMenuWidth(opened);
 
@@ -148,6 +176,8 @@
   $: filterByAutocomplete(autocompleteInput);
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="select"
   class:opened
@@ -156,6 +186,8 @@
   class:mobile={$IS_MOBILE_VIEW}
   bind:this={menu}
   use:clickOutside
+  tabindex="0"
+  on:keydown={handleKeyDown}
   on:click_outside={() => (opened = false)}
 >
   <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -238,16 +270,25 @@
     class:hidden={!opened}
     bind:this={itemsContainer}
   >
-    {#each filteredItems.sort(sorter) as item}
+    {#each filteredItems.sort(sorter) as item, index}
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="selected item" on:click={() => select(item)}>
-        <slot {item} {multiple} {itemText} {selectedItemValue} {comparer}>
+        <slot
+          {item}
+          {multiple}
+          {itemText}
+          {selectedItemValue}
+          {comparer}
+          {index}
+          {focusedIndex}
+        >
           <Button
             size="small"
             flat
             noBorder
-            type={comparer(selectedItemValue, item, multiple)
+            type={comparer(selectedItemValue, item, multiple) ||
+            index == focusedIndex
               ? "primary"
               : "quaternary"}
             icon={multiple
@@ -255,6 +296,7 @@
                 ? CheckBoxIcon
                 : CheckBoxOffIcon
               : null}
+            focused={index == focusedIndex}
             label={itemText == null ? item : item[itemText]}
             textAlign="left"
           ></Button>

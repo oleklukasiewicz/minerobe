@@ -25,7 +25,7 @@ export const GetWardrobePackages = async function (
   filter: OutfitFilter,
   page: number = 0,
   pageSize: number = -1,
-  sort:SortOption[] = [],
+  sort: SortOption[] = [],
   abortController = null
 ) {
   const req = (await PostRequest(
@@ -83,18 +83,20 @@ export const GetWadrobeCollectionsWithPackageContext = async function (
 export const GetWadrobePackagesSingleLayer = async function (
   filter: OutfitFilter,
   page: number = 1,
-  pageSize: number = -1
+  pageSize: number = -1,
+  sort: SortOption[] = []
 ) {
   const req = (await PostRequest("/api/Wardrobe/items/singleLayer", {
     page,
     pageSize,
     filter,
+    sort,
   })) as PagedResponse<OutfitPackage>;
   return req;
 };
 export const AddCollectionToWardrobe = async function (collectionId: string) {
   const resp = await PostRequest(
-    "/api/Wardrobe/collection/" + collectionId ,
+    "/api/Wardrobe/collection/" + collectionId,
     {}
   );
   return resp;
@@ -102,8 +104,6 @@ export const AddCollectionToWardrobe = async function (collectionId: string) {
 export const RemoveCollectionFromWardrobe = async function (
   collectionId: string
 ) {
-  const resp = await DeleteRequest(
-    "/api/Wardrobe/collection" + collectionId
-  );
+  const resp = await DeleteRequest("/api/Wardrobe/collection" + collectionId);
   return resp;
 };

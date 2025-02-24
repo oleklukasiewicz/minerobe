@@ -1,6 +1,10 @@
 <script lang="ts">
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
-  import type { PagedResponse } from "$src/data/models/base";
+  import {
+    PagedModel,
+    SortOption,
+    type PagedResponse,
+  } from "$src/data/models/base";
   import { OutfitFilter } from "$src/data/models/filter";
   import type { OutfitPackage } from "$src/data/models/package";
   import { createEventDispatcher } from "svelte";
@@ -11,29 +15,46 @@
   import OutfitPackagePickerList from "../outfit/OutfitPackagePickerList/OutfitPackagePickerList.svelte";
   import { COLORS_ARRAY } from "$src/data/consts/color";
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
+  import SortSelect from "../base/SortSelect/SortSelect.svelte";
+  import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
 
   const dispatch = createEventDispatcher();
 
   export let items: PagedResponse<OutfitPackage>;
   export let packageContext: OutfitPackage = null;
-  export let filters: OutfitFilter = new OutfitFilter();
+  export let options: PagedModel<OutfitFilter> = new PagedModel<OutfitFilter>();
   export let pageSizes = [5, 10, 15, 20];
   export let open = false;
   export let label = "Outfit Picker";
   export let loading = true;
 
   const onFiltersUpdate = function () {
-    dispatch("filter", { filters: filters });
+    if (options.sort[0] == null) options.sort = [];
+    options.page = 0;
+    dispatch("filter", { options: options });
+  };
+  const onPageChanged = function (e) {
+    const page = e.detail.options;
+    options.FromPagedResponse(page);
+    if (options.sort[0] == null) options.sort = [];
+    dispatch("optionsChanged", { options: options });
   };
 </script>
 
 <Dialog bind:open {label}>
   <div id="outfit-picker-dialog">
     <div class="dialog-filters">
+      <SortSelect
+        clearable
+        items={OUTFIT_PACKAGE_SORT_OPTIONS}
+        bind:selectedItem={options.sort[0]}
+        on:select={onFiltersUpdate}
+        on:clear={onFiltersUpdate}
+      />
       <ColorSelect
         items={COLORS_ARRAY}
         autocomplete
-        bind:selectedItem={filters.colors}
+        bind:selectedItem={options.filter.colors}
         placeholder="Colors"
         itemText="normalizedName"
         itemValue="name"
@@ -51,17 +72,21 @@
         multiple
         clearable
         itemValue="name"
-        bind:selectedItem={filters.outfitType}
+        bind:selectedItem={options.filter.outfitType}
         on:select={onFiltersUpdate}
         on:clear={onFiltersUpdate}
       />
-      <Search dense bind:value={filters.phrase} on:search={onFiltersUpdate} />
+      <Search
+        dense
+        bind:value={options.filter.phrase}
+        on:search={onFiltersUpdate}
+      />
     </div>
     <PagedList
       {items}
       {pageSizes}
       {loading}
-      on:optionsChanged
+      on:optionsChanged={onPageChanged}
       let:items={pagedItems}
       let:pageSize={pagedPageSize}
       let:loading={pagedLoading}
