@@ -35,7 +35,8 @@
   };
   const onPageChanged = function (e) {
     const page = e.detail.options;
-    options.FromPagedResponse(page);
+    options.page = page.options.page;
+    options.pageSize = page.options.pageSize;
     if (options.sort[0] == null) options.sort = [];
     dispatch("optionsChanged", { options: options });
   };

@@ -1,5 +1,5 @@
 import { DeleteRequest, GetRequest, PostRequest } from "$src/data/api";
-import type { PagedResponse, SortOption } from "$data/models/base";
+import type { PagedModel, PagedResponse, SortOption } from "$data/models/base";
 import type {
   OutfitPackageCollection,
   OutfitPackageCollectionWithPackageContext,
@@ -81,17 +81,12 @@ export const GetWadrobeCollectionsWithPackageContext = async function (
 };
 
 export const GetWadrobePackagesSingleLayer = async function (
-  filter: OutfitFilter,
-  page: number = 1,
-  pageSize: number = -1,
-  sort: SortOption[] = []
+  pagedModel: PagedModel<OutfitFilter>
 ) {
-  const req = (await PostRequest("/api/Wardrobe/items/singleLayer", {
-    page,
-    pageSize,
-    filter,
-    sort,
-  })) as PagedResponse<OutfitPackage>;
+  const req = (await PostRequest(
+    "/api/Wardrobe/items/singleLayer",
+    pagedModel
+  )) as PagedResponse<OutfitPackage>;
   return req;
 };
 export const AddCollectionToWardrobe = async function (collectionId: string) {

@@ -5,9 +5,6 @@ export class PagedResponse<Type> {
   constructor() {
     this.options = new PageOptions(0, -1);
   }
-  FromPagedModel(model: PagedModel<any>) {
-    this.options = new PageOptions(model.page, model.pageSize);
-  }
 }
 export class PagedModel<Type> {
   page: number;
@@ -16,10 +13,6 @@ export class PagedModel<Type> {
   sort: SortOption[] = [];
   constructor() {
     this.filter = {} as Type;
-  }
-  FromPagedResponse(response: PagedResponse<any>) {
-    this.page = response.options.page;
-    this.pageSize = response.options.pageSize;
   }
 }
 export class SortOption {

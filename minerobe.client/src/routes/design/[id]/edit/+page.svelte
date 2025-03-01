@@ -337,19 +337,13 @@
       options.pageSize = 12;
       options.total = 0;
     }
-
     dialogOutfitsPickerOptions = options;
-
+    dialogOutfitPickerItems.items = null;
     isOutfitPickerDialogOpen = true;
 
-    dialogOutfitPickerItems = (await GetWadrobePackagesSingleLayer(
-      dialogOutfitsPickerOptions.filter,
-      dialogOutfitsPickerOptions.page,
-      dialogOutfitsPickerOptions.pageSize,
-      dialogOutfitsPickerOptions.sort
-    )) as PagedResponse<OutfitPackage>;
-
-    dialogOutfitsPickerOptions.FromPagedResponse(dialogOutfitPickerItems);
+    dialogOutfitPickerItems = await GetWadrobePackagesSingleLayer(
+      dialogOutfitsPickerOptions
+    );
   };
 
   //actions
