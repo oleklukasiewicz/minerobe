@@ -20,7 +20,9 @@
     dispatch("select", { items: [item] });
   };
   const onRemoveFromSelected = (item: OutfitPackage) => {
-    selectedItems = selectedItems.filter((i) => i.id !== item.id);
+    selectedItems = selectedItems.filter(
+      (i) => i.id !== item.id || i.layers[0].id !== item.layers[0].id
+    );
     dispatch("select", { items: selectedItems });
   };
   const onAddToSelected = (item: OutfitPackage) => {
