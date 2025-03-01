@@ -3,30 +3,16 @@
   import { onMount, onDestroy } from "svelte";
   import { writable, type Writable } from "svelte/store";
   //api
-  import { AddPackage } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
-  import {
-    AddPackageToWardrobe,
-    GetWadrobeCollections,
-  } from "$src/api/wardrobe";
+  import { GetWadrobeCollections } from "$src/api/wardrobe";
   //services
-  import { ShowToast } from "$src/data/toast";
-  import {
-    navigateToCollection,
-    navigateToOutfitPackageEdit,
-  } from "$src/helpers/other/navigationHelper";
+  import { navigateToCollection } from "$src/helpers/other/navigationHelper";
   //consts
   import { APP_STATE } from "$src/data/enums/app";
-  import {
-    CURRENT_APP_STATE,
-    CURRENT_USER,
-    IS_MOBILE_VIEW,
-  } from "$src/data/static";
-  import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
+  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
   //models
   import type { PagedResponse } from "$src/data/models/base";
-  import { MODEL_TYPE } from "$src/data/enums/model";
-  import { OutfitPackage } from "$src/data/models/package";
   import type { OutfitPackageCollectionWithPackageContext } from "$src/data/models/collection";
   import { OutfitFilter } from "$src/data/models/filter";
   import type { MinerobeUserSettings } from "$src/data/models/user";
@@ -36,9 +22,7 @@
   import Button from "$lib/components/base/Button/Button.svelte";
   import OutfitFiltersDialog from "$lib/components/dialog/OutfitFiltersDialog.svelte";
   import OutfitPackageCollectionList from "$lib/components/outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
-  import OutfitPackageTypePickerDialog from "$lib/components/dialog/OutfitPackageTypePickerDialog.svelte";
   //icons
-  import AddIcon from "$icons/plus.svg?raw";
   import Sliders2Icon from "$icons/sliders-2.svg?raw";
 
   const pageCollections: Writable<
@@ -49,14 +33,12 @@
   let loaded = false;
   let itemsLoaded = false;
   let isFilterDialogOpen = false;
-  let isTypePickerDialogOpen = false;
-  let isCreating = false;
+  let stateSub = null;
 
   let filter: OutfitFilter = new OutfitFilter();
   filter.type = PACKAGE_TYPE.OUTFIT_COLLECTION;
   let abortController = new AbortController();
 
-  let stateSub = null;
   onMount(async () => {
     filter.type = PACKAGE_TYPE.OUTFIT_COLLECTION;
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
@@ -105,35 +87,6 @@
   const openFilterDialog = function () {
     isFilterDialogOpen = true;
   };
-  const openOutfitTypePickerDialog = function () {
-    isTypePickerDialogOpen = true;
-  };
-  const newOutfit = async function (e) {
-    const type = e.detail.type;
-    isCreating = true;
-    isTypePickerDialogOpen = false;
-    const name = type == PACKAGE_TYPE.OUTFIT_SET ? "New set" : "New outfit";
-    const newPack = new OutfitPackage(name, MODEL_TYPE.ALEX, [], type);
-    newPack.publisherId = $CURRENT_USER.id;
-    newPack.description = "";
-    newPack.outfitType =
-      type == PACKAGE_TYPE.OUTFIT
-        ? OUTFIT_TYPE.DEFAULT
-        : OUTFIT_TYPE.OUTFIT_SET;
-    try {
-      const resp = await AddPackage(newPack);
-      if (resp == null) {
-        isCreating = false;
-        return;
-      }
-      await AddPackageToWardrobe(resp.id);
-      isCreating = false;
-      navigateToOutfitPackageEdit(resp.id);
-    } catch (e) {
-      isCreating = false;
-      ShowToast("Error creating new outfit", "error");
-    }
-  };
 </script>
 
 <div id="wardrobe-collections" class:mobile={$IS_MOBILE_VIEW}>
@@ -168,6 +121,7 @@
         items={pagedCollections}
         loading={!itemsLoaded}
         on:select={goToCollection}
+        on:click={goToCollection}
         dense={false}
         columns={$IS_MOBILE_VIEW ? 2 : 4}
       />
@@ -181,15 +135,6 @@
       />
     </LazyList>
   </div>
-  {#if $IS_MOBILE_VIEW}
-    <Button
-      icon={AddIcon}
-      label={"Create new item"}
-      on:click={openOutfitTypePickerDialog}
-      fab={"dynamic"}
-      size={"large"}
-    />
-  {/if}
   <!--Dialogs-->
   <OutfitFiltersDialog
     bind:open={isFilterDialogOpen}
@@ -198,10 +143,6 @@
     hideColor
     {filter}
     on:filter={updateFilter}
-  />
-  <OutfitPackageTypePickerDialog
-    bind:open={isTypePickerDialogOpen}
-    on:select={newOutfit}
   />
 </div>
 

@@ -20,13 +20,19 @@
   const onUnselect = () => {
     dispatch("unselect", item);
   };
+  const onClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (selectable) return;
+    dispatch("click", item);
+  };
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
 <!-- svelte-ignore a11y-missing-attribute -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<a class="outfit-package-collection-list-item" class:dense>
+<a class="outfit-package-collection-list-item" class:dense on:click={onClick}>
   {#if selectable}
     <div class="items-actions">
       <Checkbox
@@ -52,6 +58,7 @@
 
 <style lang="scss">
   .outfit-package-collection-list-item {
+    cursor: pointer;
     padding: 8px 12px;
     box-sizing: border-box;
     background-color: var(--color-theme-D1);

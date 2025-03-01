@@ -3,23 +3,17 @@
   import { onDestroy, onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
   //api
-  import { AddPackage } from "$src/api/pack";
+
   import { FetchSettings } from "$src/api/settings";
-  import { AddPackageToWardrobe, GetWardrobePackages } from "$src/api/wardrobe";
+  import { GetWardrobePackages } from "$src/api/wardrobe";
   //services
-  import { ShowToast } from "$src/data/toast";
   import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
   //consts
   import { APP_STATE } from "$src/data/enums/app";
-  import {
-    CURRENT_APP_STATE,
-    CURRENT_USER,
-    IS_MOBILE_VIEW,
-  } from "$src/data/static";
-  import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
+  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
   //models
   import type { PagedResponse, SortOption } from "$src/data/models/base";
-  import { MODEL_TYPE } from "$src/data/enums/model";
   import { OutfitPackage } from "$src/data/models/package";
   import { OutfitFilter } from "$src/data/models/filter";
   import type { MinerobeUserSettings } from "$src/data/models/user";
@@ -29,9 +23,7 @@
   import Search from "$lib/components/base/Search/Search.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import OutfitFiltersDialog from "$lib/components/dialog/OutfitFiltersDialog.svelte";
-  import OutfitPackageTypePickerDialog from "$lib/components/dialog/OutfitPackageTypePickerDialog.svelte";
   //icons
-  import AddIcon from "$icons/plus.svg?raw";
   import Sliders2Icon from "$icons/sliders-2.svg?raw";
   import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
 
@@ -41,8 +33,6 @@
   let loaded = false;
   let itemsLoaded = false;
   let isFilterDialogOpen = false;
-  let isTypePickerDialogOpen = false;
-  let isCreating = false;
   let stateSub = null;
 
   let filter: OutfitFilter = new OutfitFilter();
@@ -102,35 +92,6 @@
   const openFilterDialog = function () {
     isFilterDialogOpen = true;
   };
-  const openOutfitTypePickerDialog = function () {
-    isTypePickerDialogOpen = true;
-  };
-  const newOutfit = async function (e) {
-    const type = e.detail.type;
-    isCreating = true;
-    isTypePickerDialogOpen = false;
-    const name = type == PACKAGE_TYPE.OUTFIT_SET ? "New set" : "New outfit";
-    const newPack = new OutfitPackage(name, MODEL_TYPE.ALEX, [], type);
-    newPack.publisherId = $CURRENT_USER.id;
-    newPack.description = "";
-    newPack.outfitType =
-      type == PACKAGE_TYPE.OUTFIT
-        ? OUTFIT_TYPE.DEFAULT
-        : OUTFIT_TYPE.OUTFIT_SET;
-    try {
-      const resp = await AddPackage(newPack);
-      if (resp == null) {
-        isCreating = false;
-        return;
-      }
-      await AddPackageToWardrobe(resp.id);
-      isCreating = false;
-      navigateToOutfitPackageEdit(resp.id);
-    } catch (e) {
-      isCreating = false;
-      ShowToast("Error creating new outfit", "error");
-    }
-  };
 </script>
 
 <div id="wardrobe-sets" class:mobile={$IS_MOBILE_VIEW}>
@@ -179,15 +140,6 @@
       />
     </LazyList>
   </div>
-  {#if $IS_MOBILE_VIEW}
-    <Button
-      icon={AddIcon}
-      label={"Create new item"}
-      on:click={openOutfitTypePickerDialog}
-      fab={"dynamic"}
-      size={"large"}
-    />
-  {/if}
   <!--Dialogs-->
   <OutfitFiltersDialog
     sortItems={OUTFIT_PACKAGE_SORT_OPTIONS}
@@ -197,10 +149,6 @@
     hideOutfitType
     {filter}
     on:filter={updateFilter}
-  />
-  <OutfitPackageTypePickerDialog
-    bind:open={isTypePickerDialogOpen}
-    on:select={newOutfit}
   />
 </div>
 

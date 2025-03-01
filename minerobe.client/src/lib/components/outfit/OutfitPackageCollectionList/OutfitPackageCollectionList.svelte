@@ -22,6 +22,9 @@
   const onUnselect = (item: OutfitPackageCollectionWithPackageContext) => {
     dispatch("unselect", { item: item });
   };
+  const onClick = (item: OutfitPackageCollectionWithPackageContext) => {
+    dispatch("click", { item: item });
+  };
 </script>
 
 <div
@@ -38,6 +41,7 @@
         {item}
         {dense}
         {selectable}
+        on:click={() => onClick(item)}
         on:select={() => onSelect(item)}
         on:unselect={() => onUnselect(item)}
       />

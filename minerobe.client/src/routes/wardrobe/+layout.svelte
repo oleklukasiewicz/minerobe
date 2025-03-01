@@ -27,7 +27,7 @@
 
   let selectedView = "sets";
 
-$: selectedView = $page.route.id.split("/")[2] || "sets";
+  $: selectedView = $page.route.id.split("/")[2] || "sets";
 
   const openOutfitTypePickerDialog = function () {
     isTypePickerDialogOpen = true;
@@ -113,7 +113,15 @@ $: selectedView = $page.route.id.split("/")[2] || "sets";
   <div id="content">
     <slot></slot>
   </div>
-
+  {#if $IS_MOBILE_VIEW}
+    <Button
+      icon={AddIcon}
+      label={"Create new item"}
+      on:click={openOutfitTypePickerDialog}
+      fab={"dynamic"}
+      size={"large"}
+    />
+  {/if}
   <OutfitPackageTypePickerDialog
     bind:open={isTypePickerDialogOpen}
     on:select={newOutfit}
