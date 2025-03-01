@@ -4,6 +4,9 @@
   color: var(--color-theme-font);
   display: flex;
   flex-direction: column;
+  &.selected {
+    border: 2px solid var(--color-accent);
+  }
   .render {
     background-color: var(--color-theme-L1);
     aspect-ratio: 1;
@@ -22,14 +25,18 @@
         color: inherit;
       }
     }
-    .current-item {
+    .render-flags {
       position: absolute;
       top: 4px;
       left: 4px;
-      height: 24px;
-      font-family: minecraft;
-      color: var(--color-accent-font);
-      background-color: var(--color-ancient-A1);
+      display: flex;
+      gap: 4px;
+      .current-item {
+        height: 24px;
+        font-family: minecraft;
+        color: var(--color-accent-font);
+        background-color: var(--color-ancient-A1);
+      }
     }
   }
   .data {

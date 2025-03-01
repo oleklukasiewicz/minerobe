@@ -31,7 +31,7 @@ a:active {
     color: var(--color-theme);
     background-color: var(--color-theme-font);
 }
-a.selected,:global(a.selected) {
+a.selected {
     background-color: var(--color-accent);
     color: var(--color-accent-font);
 }

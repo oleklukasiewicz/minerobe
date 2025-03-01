@@ -9,8 +9,11 @@
   import type { OutfitLayer, OutfitPackage } from "$data/models/package";
   import { normalizeNumber } from "$src/helpers/data/dataHelper";
 
-  import { onMount } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
+
+  const dispatch = createEventDispatcher();
 
   export let item: OutfitPackage;
   export let layerId: string = null;
@@ -19,6 +22,8 @@
   export let style = "";
   export let currentItem = false;
   export let moreLayersIndicator = true;
+  export let selectable = false;
+  export let selected = false;
 
   export let fetchLayer = async function (id, item): Promise<OutfitLayer> {
     return null;
@@ -49,14 +54,28 @@
     await setCurrentLayer(item);
     initialized = true;
   });
+
+  const onSelectionChange = async function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch("select", { value: selected });
+  };
 </script>
 
 <!-- svelte-ignore a11y-missing-attribute -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<a {style} class="outfit-package-list-item" on:click>
+<a
+  {style}
+  class="outfit-package-list-item"
+  on:click
+  class:selected={selectable && selected}
+>
   <div class="render">
     <div class="render-flags">
+      {#if selectable}
+        <Checkbox bind:value={selected} on:change={onSelectionChange} />
+      {/if}
       {#if currentItem}
         <span class="current-item icon">{@html LoaderIcon}</span>
       {/if}

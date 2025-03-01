@@ -1,10 +1,6 @@
 <script lang="ts">
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
-  import {
-    PagedModel,
-    SortOption,
-    type PagedResponse,
-  } from "$src/data/models/base";
+  import { PagedModel, type PagedResponse } from "$src/data/models/base";
   import { OutfitFilter } from "$src/data/models/filter";
   import type { OutfitPackage } from "$src/data/models/package";
   import { createEventDispatcher } from "svelte";
@@ -17,6 +13,7 @@
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
   import SortSelect from "../base/SortSelect/SortSelect.svelte";
   import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
+  import Button from "../base/Button/Button.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -27,6 +24,9 @@
   export let open = false;
   export let label = "Outfit Picker";
   export let loading = true;
+  export let multiple = true;
+
+  let selectedItems: OutfitPackage[] = [];
 
   const onFiltersUpdate = function () {
     if (options.sort[0] == null) options.sort = [];
@@ -39,6 +39,18 @@
     if (options.sort[0] == null) options.sort = [];
     dispatch("optionsChanged", { options: options });
   };
+  const onSelect = function (items) {
+    selectedItems = items;
+    if (!multiple) dispatch("select", { items: items });
+  };
+  const onSelectClick = function () {
+    dispatch("select", { items: selectedItems });
+  };
+
+  const onOpen = function (v) {
+    selectedItems = [];
+  };
+  $: onOpen(open);
 </script>
 
 <Dialog bind:open {label}>
@@ -92,15 +104,26 @@
       let:loading={pagedLoading}
     >
       <OutfitPackagePickerList
+        bind:selectedItems
+        selectable={multiple}
         {packageContext}
         items={pagedItems}
         pageSize={pagedPageSize}
         loading={pagedLoading}
-        on:select
+        on:select={(e) => onSelect(e.detail.items)}
       />
       {#if items?.items?.length === 0 && !loading}
         <div class="no-items-error">No items found</div>
       {/if}
+      <div slot="footer" id="select-footer">
+        {#if multiple}
+          <Button
+            on:click={onSelectClick}
+            label={"Add " + "(" + selectedItems.length + ")"}
+            disabled={selectedItems.length === 0}
+          />
+        {/if}
+      </div>
     </PagedList>
   </div>
 </Dialog>
@@ -109,6 +132,9 @@
   #outfit-picker-dialog {
     min-width: 50vw;
     max-width: 600px;
+    #select-footer {
+      max-width: 200px;
+    }
     .dialog-filters {
       display: grid;
       margin-left: auto;

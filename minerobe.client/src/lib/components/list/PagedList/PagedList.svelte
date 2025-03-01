@@ -34,7 +34,10 @@
     const pageSize = event.detail.item;
     items.options.pageSize = pageSize;
     //check if the current page is valid
-    if (items.options.page >= Math.ceil(items?.options.total / items?.options.pageSize)) {
+    if (
+      items.options.page >=
+      Math.ceil(items?.options.total / items?.options.pageSize)
+    ) {
       items.options.page = 0;
     }
     onOptionsChanged();
@@ -51,32 +54,39 @@
     ></slot>
   </div>
   <div class="list-actions">
-    <Button
-      label="Previous"
-      onlyIcon
-      iconSize="large"
-      icon={ChevronLeftIcon}
-      disabled={items?.options.page == 0 || items == null || loading}
-      on:click={onPrevious}
-    />
-    <div class="page">
-      {items?.options.page + 1 || 0} of {totalPages || 0}
-    </div>
-    <Button
-      label="Next"
-      onlyIcon
-      icon={ChevronRightIcon}
-      iconSize="large"
-      disabled={items?.options.page == totalPages - 1 || items == null || loading}
-      on:click={onNext}
-    />
     <div>
-      <Select
-        disabled={loading}
-        items={pageSizes}
-        selectedItem={items?.options.pageSize}
-        on:select={onPageSizeChanged}
+      <slot name="footer"></slot>
+    </div>
+    <div class="footer-actions">
+      <Button
+        label="Previous"
+        onlyIcon
+        iconSize="large"
+        icon={ChevronLeftIcon}
+        disabled={items?.options.page == 0 || items == null || loading}
+        on:click={onPrevious}
       />
+      <div class="page">
+        {items?.options.page + 1 || 0} of {totalPages || 0}
+      </div>
+      <Button
+        label="Next"
+        onlyIcon
+        icon={ChevronRightIcon}
+        iconSize="large"
+        disabled={items?.options.page == totalPages - 1 ||
+          items == null ||
+          loading}
+        on:click={onNext}
+      />
+      <div>
+        <Select
+          disabled={loading}
+          items={pageSizes}
+          selectedItem={items?.options.pageSize}
+          on:select={onPageSizeChanged}
+        />
+      </div>
     </div>
   </div>
 </div>
@@ -86,17 +96,24 @@
     overflow: auto;
   }
   .list-actions {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr auto;
     gap: 8px;
     justify-content: end;
     margin-top: 8px;
     height: 36px;
-    .page {
-      margin-top: 12px;
-      font-family: minecraft-simple;
-      font-size: var(--size-font-caption);
-      user-select: none;
+    .footer-actions {
+      display: flex;
+      gap: 8px;
+      flex-direction: row;
+      .page {
+        margin-top: 12px;
+        text-align: center;
+        min-width: 60px;
+        font-family: minecraft-simple;
+        font-size: var(--size-font-caption);
+        user-select: none;
+      }
     }
   }
 </style>

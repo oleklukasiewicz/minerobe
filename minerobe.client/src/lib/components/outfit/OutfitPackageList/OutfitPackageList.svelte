@@ -17,6 +17,7 @@
   export let currentPackageId: string = null;
   export let loading = false;
   export let pageSize: number = 10;
+  export let selectable = false;
 
   const selectOutfit = function (item) {
     dispatch("select", { item: item });
@@ -45,6 +46,7 @@
     {:else}
       {#each items as item, index (item.id + item?.layers[0]?.id)}
         <OutfitPackageListItem
+          {selectable}
           bind:resize={renderList[index]}
           currentItem={currentPackageId == item.id}
           {item}

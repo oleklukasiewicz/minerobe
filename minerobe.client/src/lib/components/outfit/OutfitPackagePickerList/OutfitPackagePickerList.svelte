@@ -13,9 +13,19 @@
   export let pageSize: number = 25;
   export let packageContext: OutfitPackage = null;
   export let loading = true;
+  export let selectable = false;
+  export let selectedItems: OutfitPackage[] = [];
 
   const onSelect = (item: OutfitPackage) => {
-    dispatch("select", { item: item });
+    dispatch("select", { items: [item] });
+  };
+  const onRemoveFromSelected = (item: OutfitPackage) => {
+    selectedItems = selectedItems.filter((i) => i.id !== item.id);
+    dispatch("select", { items: selectedItems });
+  };
+  const onAddToSelected = (item: OutfitPackage) => {
+    selectedItems = [...selectedItems, item];
+    dispatch("select", { items: selectedItems });
   };
 </script>
 
@@ -27,11 +37,17 @@
   {:else}
     {#each items as item (item.id + item.layers[0].id)}
       <OutfitPackageSingleLayerListItem
+        {selectable}
+        selected={selectedItems.find(
+          (i) => i.id === item.id && i.layers[0].id == item.layers[0].id
+        ) != null && selectable}
         disabled={packageContext?.layers.find(
           (layer) => layer.id === item.layers[0].id
         ) != null}
         {item}
         on:click={() => onSelect(item)}
+        on:unselect={() => onRemoveFromSelected(item)}
+        on:select={() => onAddToSelected(item)}
       />
     {/each}
   {/if}

@@ -51,11 +51,7 @@
     Cape,
     MinecraftAccount,
   } from "$data/models/integration/minecraft";
-  import {
-    PagedModel,
-    PageOptions,
-    type PagedResponse,
-  } from "$data/models/base";
+  import { PagedModel, PagedResponse, PageOptions } from "$data/models/base";
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
   import { OutfitLayer, type OutfitPackage } from "$model/package";
   import DefaultAnimation from "$src/animation/default.js";
@@ -119,7 +115,8 @@
   let dialogSelectedLayer: OutfitLayer = null;
   let dialogCollections: PagedResponse<OutfitPackageCollectionWithPackageContext> =
     null;
-  let dialogOutfitPickerItems: PagedResponse<OutfitPackage> = null;
+  let dialogOutfitPickerItems: PagedResponse<OutfitPackage> =
+    new PagedResponse<OutfitPackage>();
   let dialogOutfitsPickerOptions: PagedModel<OutfitFilter> =
     new PagedModel<OutfitFilter>();
   let isLayerEditDialogOpen = false;
@@ -317,11 +314,13 @@
   const openCollectionsDialog = async (e) => {
     let options = e?.detail?.options?.options;
     if (!options) options = { page: 0, pageSize: 6, total: 0 };
-    dialogCollections = {
-      items: null,
-      options: options.page,
-      sort: [],
-    };
+
+    dialogCollections =
+      new PagedResponse<OutfitPackageCollectionWithPackageContext>();
+    dialogCollections.options = options.page;
+    dialogCollections.items = null;
+    dialogCollections.sort = [];
+
     isCollectionsDialogOpen = true;
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
       $itemPackage.id,
@@ -333,6 +332,7 @@
   const openOutfitPickerDialog = async (e) => {
     let options = e?.detail?.options;
     if (!options) {
+      dialogOutfitPickerItems = new PagedResponse<OutfitPackage>();
       options = new PagedModel<OutfitFilter>();
       options.page = 0;
       options.pageSize = 12;
@@ -346,14 +346,19 @@
       dialogOutfitsPickerOptions.filter.type = PACKAGE_TYPE.OUTFIT;
     }
 
+    dialogOutfitPickerItems.options = new PageOptions(
+      dialogOutfitsPickerOptions.page,
+      dialogOutfitsPickerOptions.pageSize
+    );
+
     isOutfitPickerDialogOpen = true;
 
-    dialogOutfitPickerItems = await GetWadrobePackagesSingleLayer(
+    dialogOutfitPickerItems = (await GetWadrobePackagesSingleLayer(
       dialogOutfitsPickerOptions.filter,
       dialogOutfitsPickerOptions.page,
       dialogOutfitsPickerOptions.pageSize,
       dialogOutfitsPickerOptions.sort
-    );
+    )) as PagedResponse<OutfitPackage>;
     dialogOutfitsPickerOptions.FromPagedResponse(dialogOutfitPickerItems);
   };
 
@@ -404,13 +409,16 @@
     navigateToOutfitPackage($itemPackage);
   };
   const addPackageLayer = async function (e) {
-    const newPack = e.detail.item;
-    const layer = newPack.layers[0];
-    await AddRemoteLayerToPackage(layer.id, $itemPackage.id);
-    itemPackage.update((pack) => {
-      pack.layers.push(layer);
-      return pack;
-    });
+    const packs = e.detail.items;
+    for (let pack of packs) {
+      const newPack = pack;
+      const layer = newPack.layers[0];
+      await AddRemoteLayerToPackage(layer.id, $itemPackage.id);
+      itemPackage.update((pack) => {
+        pack.layers.push(layer);
+        return pack;
+      });
+    }
     isOutfitPickerDialogOpen = false;
   };
   const setSkin = async function () {
@@ -646,7 +654,7 @@
     items={dialogOutfitPickerItems}
     packageContext={$itemPackage}
     options={dialogOutfitsPickerOptions}
-    pageSizes={[12, 20, 28]}
+    pageSizes={[6, 12, 24]}
     bind:open={isOutfitPickerDialogOpen}
     loading={dialogOutfitPickerItems?.items == null}
     on:optionsChanged={openOutfitPickerDialog}

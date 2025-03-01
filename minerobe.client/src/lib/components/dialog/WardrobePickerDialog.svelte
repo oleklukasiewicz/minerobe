@@ -75,6 +75,7 @@
         let:loading={pagedLoading}
       >
         <OutfitPackageList
+          selectable
           columns={4}
           items={pagedItems}
           pageSize={pagedPageSize}

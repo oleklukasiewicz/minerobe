@@ -1,5 +1,8 @@
 <script lang="ts">
   import { COLORS } from "$src/data/consts/color";
+  import { createEventDispatcher } from "svelte";
+
+  const dispatch = createEventDispatcher();
 
   export let color: string;
   export let colorName: string;
@@ -9,7 +12,6 @@
 
   let normalizedColor;
   const normalizeColor = function (v) {
-
     const colorFromArray = COLORS[color];
     if (colorFromArray)
       normalizedColor =
@@ -23,13 +25,19 @@
     else normalizedColor = color;
   };
   $: normalizeColor(color);
+
+  const onClick = function (e) {
+    if (!selectable) return;
+    e.stopPropagation();
+    dispatch("click", { color: color });
+  };
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <span
-  on:click|stopPropagation
+  on:click={onClick}
   class="color-badge"
   title={colorName || color}
   class:selected
