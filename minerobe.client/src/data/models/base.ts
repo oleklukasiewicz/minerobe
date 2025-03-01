@@ -2,6 +2,9 @@ export class PagedResponse<Type> {
   options: PageOptions;
   items: Type[];
   sort: SortOption[] = [];
+  constructor() {
+    this.options = new PageOptions(0, -1);
+  }
 }
 export class PagedModel<Type> {
   page: number;

@@ -11,7 +11,6 @@
   import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
   import Button from "$lib/components/base/Button/Button.svelte";
   import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
-  import { OutfitFilter } from "$src/data/models/filter";
   import OutfitPackageTypePickerDialog from "$lib/components/dialog/OutfitPackageTypePickerDialog.svelte";
   import { OutfitPackage } from "$src/data/models/package";
   import { MODEL_TYPE } from "$src/data/enums/model";

@@ -1,5 +1,7 @@
 <script lang="ts">
+  import Button from "$lib/components/base/Button/Button.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import WardrobePickerDialog from "$lib/components/dialog/WardrobePickerDialog.svelte";
   import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
   import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
   import { GetCollection, GetCollectionsItems } from "$src/api/collection";
@@ -24,6 +26,9 @@
   let stateSub = null;
   let itemsLoaded = false;
   let loaded = false;
+
+  let isWadrobePickerDialogOpen = false;
+
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY && state != APP_STATE.GUEST_READY) return;
@@ -55,6 +60,10 @@
   <div id="collection-header">
     <Placeholder {loaded}><h1>{$itemCollection.name}</h1></Placeholder>
     <Placeholder {loaded}><p>{$itemCollection.description}</p></Placeholder>
+    <Button
+      label="Edi items"
+      on:click={() => (isWadrobePickerDialogOpen = true)}
+    />
   </div>
   <div id="collection-items">
     {#if loaded}
@@ -75,6 +84,7 @@
       >
     {/if}
   </div>
+  <WardrobePickerDialog bind:open={isWadrobePickerDialogOpen} />
 </div>
 
 <style lang="scss">

@@ -10,7 +10,15 @@
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
-<a class="menu-item" class:disabled {href} class:selected on:click class:top title="{label}">
+<a
+  class="menu-item"
+  class:disabled
+  {href}
+  class:selected
+  on:click
+  class:top
+  title={label}
+>
   {#if icon}
     <div class="icon b-icon-medium">
       {@html icon}
@@ -34,7 +42,7 @@
     font-size: var(--size-font-base);
     font-family: minecraft-simple;
     box-sizing: border-box;
-    padding: 7px 8px;
+    padding: 7px 16px 7px 8px;
     color: var(--color-theme-font);
     gap: 8px;
     min-height: 40px;
@@ -43,6 +51,7 @@
       text-align: center;
       display: block;
       height: 58px;
+      padding: 7px 8px;
     }
     &:hover {
       background: var(--color-theme-D2);
