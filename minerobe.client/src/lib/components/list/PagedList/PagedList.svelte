@@ -13,11 +13,14 @@
   const dispatch = createEventDispatcher();
 
   export let items: PagedResponse<any>;
+  export let pageSize = null;
   export let loading: boolean = false;
   export let pageSizes: number[] = [10, 20, 50, 100];
 
   let totalPages = 0;
-  $: totalPages = Math.ceil(items?.options.total / items?.options.pageSize);
+  $: totalPages = Math.ceil(
+    items?.options.total / (pageSize ?? items?.options.pageSize)
+  );
 
   const onOptionsChanged = function () {
     dispatch("optionsChanged", { options: items });
@@ -36,7 +39,7 @@
     //check if the current page is valid
     if (
       items.options.page >=
-      Math.ceil(items?.options.total / items?.options.pageSize)
+      Math.ceil(items?.options.total / (pageSize ?? items?.options.pageSize))
     ) {
       items.options.page = 0;
     }
@@ -48,7 +51,7 @@
   <div class="list-items">
     <slot
       items={items?.items}
-      pageSize={items?.options.pageSize}
+      pageSize={pageSize ?? items?.options.pageSize}
       page={items.options.page}
       {loading}
     ></slot>
@@ -83,7 +86,7 @@
         <Select
           disabled={loading}
           items={pageSizes}
-          selectedItem={items?.options.pageSize}
+          selectedItem={pageSize ?? items?.options.pageSize}
           on:select={onPageSizeChanged}
         />
       </div>

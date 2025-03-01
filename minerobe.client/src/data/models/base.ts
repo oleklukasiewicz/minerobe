@@ -14,6 +14,9 @@ export class PagedModel<Type> {
   pageSize: number;
   filter: Type;
   sort: SortOption[] = [];
+  constructor() {
+    this.filter = {} as Type;
+  }
   FromPagedResponse(response: PagedResponse<any>) {
     this.page = response.options.page;
     this.pageSize = response.options.pageSize;

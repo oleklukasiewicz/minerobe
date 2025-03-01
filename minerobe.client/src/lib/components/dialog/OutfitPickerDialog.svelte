@@ -96,6 +96,7 @@
     </div>
     <PagedList
       {items}
+      pageSize={options.pageSize}
       {pageSizes}
       {loading}
       on:optionsChanged={onPageChanged}

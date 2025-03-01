@@ -332,24 +332,13 @@
   const openOutfitPickerDialog = async (e) => {
     let options = e?.detail?.options;
     if (!options) {
-      dialogOutfitPickerItems = new PagedResponse<OutfitPackage>();
       options = new PagedModel<OutfitFilter>();
       options.page = 0;
       options.pageSize = 12;
       options.total = 0;
     }
+
     dialogOutfitsPickerOptions = options;
-
-    //sort and filters
-    if (dialogOutfitsPickerOptions.filter == null) {
-      dialogOutfitsPickerOptions.filter = new OutfitFilter();
-      dialogOutfitsPickerOptions.filter.type = PACKAGE_TYPE.OUTFIT;
-    }
-
-    dialogOutfitPickerItems.options = new PageOptions(
-      dialogOutfitsPickerOptions.page,
-      dialogOutfitsPickerOptions.pageSize
-    );
 
     isOutfitPickerDialogOpen = true;
 
@@ -359,6 +348,7 @@
       dialogOutfitsPickerOptions.pageSize,
       dialogOutfitsPickerOptions.sort
     )) as PagedResponse<OutfitPackage>;
+
     dialogOutfitsPickerOptions.FromPagedResponse(dialogOutfitPickerItems);
   };
 
