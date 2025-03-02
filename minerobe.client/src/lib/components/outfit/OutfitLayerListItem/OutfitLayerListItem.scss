@@ -40,6 +40,7 @@
     background-color: var(--color-accent);
     border-color: var(--color-theme-font);
     box-shadow: var(--shadow-button);
+    color: var(--color-accent-font);
     .actions {
       .separator {
         border-color: var(--color-accent-L1);
@@ -60,8 +61,7 @@
         }
       }
     }
-    &.dense
-    {
+    &.dense {
       .render {
         background-color: var(--color-accent);
       }
