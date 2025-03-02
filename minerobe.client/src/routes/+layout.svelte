@@ -22,8 +22,9 @@
   };
   onMount(async () => {
     await InitializeLayout();
-    await getCurrentUser();
     await Initialize();
+    //dont wait for user to load
+    getCurrentUser();
   });
 </script>
 
