@@ -99,7 +99,7 @@ export const Initialize = async function () {
   serverWsConnectionWritable.set(
     new HubConnectionBuilder()
       .withUrl(
-        "/api/ws?userId=" + get(CURRENT_USER).id,
+        "/api/ws?userId=" + get(CURRENT_USER)?.id,
         HttpTransportType.ServerSentEvents
       )
       .withKeepAliveInterval(15000)
