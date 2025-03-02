@@ -3,6 +3,7 @@
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import type { OutfitPackage } from "$data/models/package";
+  import CheckIcon from "$icons/check.svg?raw";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
@@ -39,7 +40,9 @@
   class:disabled
 >
   {#if selectable && selected}
-    <div class="item-selected" on:click={onUnSelect}>Selected</div>
+    <div class="item-selected" on:click={onUnSelect}>
+      <div>{@html CheckIcon}</div>
+    </div>
   {/if}
   <div class="render">
     <OutfitPackageRender source={item} />
