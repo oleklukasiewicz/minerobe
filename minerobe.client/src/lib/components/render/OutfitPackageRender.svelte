@@ -406,7 +406,13 @@
 <div class="outfit-render">
   {#if !isDynamic}
     <!-- svelte-ignore a11y-missing-attribute -->
-    <img bind:this={renderNode} class:renderReady draggable="false" />
+    <img
+      bind:this={renderNode}
+      class:renderReady
+      draggable="false"
+      fetchpriority="low"
+      loading="lazy"
+    />
   {:else}
     <div bind:this={renderNode}></div>
   {/if}

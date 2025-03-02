@@ -1,2 +1,2 @@
 //disable ssr
-export const ssr = true;
+export const ssr = false;

@@ -61,7 +61,8 @@ export class TextureRender {
   private _loadTexture = async function (targetTexture: string = null) {
     return new Promise((resolve) => {
       this.textureLoader.load(targetTexture, (texture) => {
-        resolve(texture);
+        const canvasTexture = new THREE.CanvasTexture(texture);
+        resolve(canvasTexture);
       });
     });
   };
@@ -214,7 +215,8 @@ export class TextureRender {
 
   constructor(renderer: any = DEFAULT_RENDERER) {
     this.renderer = renderer;
-    this.textureLoader = new THREE.TextureLoader();
+    this.textureLoader = new THREE.ImageBitmapLoader();
+    this.textureLoader.setOptions({ imageOrientation: "flipY" });
   }
   SetModelScene = async function (
     newModelScene: ModelScene
