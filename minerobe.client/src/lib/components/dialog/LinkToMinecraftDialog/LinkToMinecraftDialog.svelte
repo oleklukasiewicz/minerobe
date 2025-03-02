@@ -1,14 +1,18 @@
 <script lang="ts">
-  import Button from "$lib/components/base/Button/Button.svelte";
-  import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
+  //services
+  import { ShowToast } from "$src/data/toast";
+  import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
+  //models
   import type {
     MinecraftAccount,
     MinecraftSkin,
   } from "$src/data/models/integration/minecraft";
-  import ArticleMultipleIcon from "$icons/article-multiple.svg?raw";
-  import { ShowToast } from "$src/data/toast";
+  //components
   import Label from "$lib/components/base/Label/Label.svelte";
-  import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
+  //icons
+  import ArticleMultipleIcon from "$icons/article-multiple.svg?raw";
 
   export let open = false;
   export let authUrl = "";

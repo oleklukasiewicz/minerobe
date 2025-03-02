@@ -10,7 +10,7 @@
   import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
   //consts
   import { CURRENT_APP_STATE, CURRENT_USER } from "$src/data/static";
-  //model
+  //models
   import type { MinerobeUserProfile } from "$src/data/models/user";
   import { APP_STATE } from "$src/data/enums/app";
   import { Cape, MinecraftAccount, MinecraftSkin } from "$src/data/models/integration/minecraft";

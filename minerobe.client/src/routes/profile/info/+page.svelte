@@ -14,7 +14,7 @@
   import { ShowToast } from "$src/data/toast";
   //consts
   import { CURRENT_APP_STATE, CURRENT_USER } from "$src/data/static";
-  //model
+  //models
   import type {
     MinerobeUser,
     MinerobeUserSettings,

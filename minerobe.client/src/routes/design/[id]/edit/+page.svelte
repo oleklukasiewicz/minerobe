@@ -42,7 +42,7 @@
     CURRENT_APP_STATE,
     IS_MOBILE_VIEW,
   } from "$src/data/static.js";
-  //model
+  //models
   import { OutfitFilter } from "$data/models/filter.js";
   import { APP_STATE } from "$src/data/enums/app.js";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit.js";

@@ -1,17 +1,22 @@
 <script lang="ts">
+  //main imports
+  import { createEventDispatcher } from "svelte";
+  //consts
   import { COLORS_ARRAY } from "$src/data/consts/color";
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
+  //model
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+  import { SortOption, type ValueData } from "$src/data/models/base";
   import { OutfitFilter } from "$src/data/models/filter";
-  import { createEventDispatcher } from "svelte";
+  //components
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
   import Select from "../base/Select/Select.svelte";
-  import Sliders2Icon from "$icons/sliders-2.svg?raw";
-  import SortSelect from "../base/SortSelect/SortSelect.svelte";
-  import { SortOption, type ValueData } from "$src/data/models/base";
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
+  import SortSelect from "../base/SortSelect/SortSelect.svelte";
+  //icons
+  import Sliders2Icon from "$icons/sliders-2.svg?raw";
 
   const dispatch = createEventDispatcher();
 
@@ -37,11 +42,7 @@
   <div id="outfit-filters-dialog">
     {#if !hideSort && sortItems.length > 0}
       <SectionTitle label="Sort" />
-      <SortSelect
-        clearable
-        items={sortItems}
-        bind:selectedItem={sortOptions}
-      />
+      <SortSelect clearable items={sortItems} bind:selectedItem={sortOptions} />
     {/if}
     {#if !hideType}
       <div>

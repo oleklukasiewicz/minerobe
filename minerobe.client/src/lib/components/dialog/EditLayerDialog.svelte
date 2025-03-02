@@ -17,8 +17,9 @@
   import TextBox from "../base/TextBox/TextBox.svelte";
   import DragAndDrop from "../draganddrop/DragAndDrop/DragAndDrop.svelte";
   import OutfitPackageRender from "../render/OutfitPackageRender.svelte";
-  import ImportPackageIcon from "$icons/upload.svg?raw";
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
+  //icons
+  import ImportPackageIcon from "$icons/upload.svg?raw";
 
   const dispatch = createEventDispatcher();
 

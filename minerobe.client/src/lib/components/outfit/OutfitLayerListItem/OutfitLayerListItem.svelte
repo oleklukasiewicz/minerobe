@@ -1,9 +1,10 @@
 <script lang="ts">
   //main imports
   import { createEventDispatcher } from "svelte";
-  //model
+  //models
   import type { OutfitLayer } from "$data/models/package";
   import type { MODEL_TYPE } from "$src/data/enums/model";
+  import type { OUTFIT_TYPE } from "$src/data/enums/outfit";
   //components
   import Button from "$lib/components/base/Button/Button.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
@@ -14,7 +15,6 @@
   import DeleteIcon from "$src/icons/close.svg?raw";
   import EditIcon from "$src/icons/edit.svg?raw";
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
-  import type { OUTFIT_TYPE } from "$src/data/enums/outfit";
 
   const dispatch = createEventDispatcher();
 

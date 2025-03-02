@@ -1,24 +1,31 @@
 <script lang="ts">
+  //main imports
+  import { page } from "$app/stores";
+  //api
+  import { AddPackage } from "$src/api/pack";
+  import { AddPackageToWardrobe } from "$src/api/wardrobe";
+  //services
+  import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
+  import { ShowToast } from "$src/data/toast";
+  //consts
+  import { CURRENT_USER, IS_MOBILE_VIEW } from "$src/data/static";
+  //model
+  import { MODEL_TYPE } from "$src/data/enums/model";
+  import { OutfitPackage } from "$src/data/models/package";
+  import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
+  //components
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import MenuItemHeader from "$lib/components/base/MenuItemHeader/MenuItemHeader.svelte";
-  import { CURRENT_USER, IS_MOBILE_VIEW } from "$src/data/static";
-  import MenuIcon from "$src/icons/menu.svg?raw";
+  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import OutfitPackageTypePickerDialog from "$lib/components/dialog/OutfitPackageTypePickerDialog.svelte";
+  import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
+  //icons
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
+  import MenuIcon from "$src/icons/menu.svg?raw";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
-  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
-  import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
-  import Button from "$lib/components/base/Button/Button.svelte";
-  import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
-  import OutfitPackageTypePickerDialog from "$lib/components/dialog/OutfitPackageTypePickerDialog.svelte";
-  import { OutfitPackage } from "$src/data/models/package";
-  import { MODEL_TYPE } from "$src/data/enums/model";
-  import { AddPackage } from "$src/api/pack";
-  import { AddPackageToWardrobe } from "$src/api/wardrobe";
-  import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
-  import { ShowToast } from "$src/data/toast";
-  import { page } from "$app/stores";
 
   let menuOpened = true;
   let isCreating = false;

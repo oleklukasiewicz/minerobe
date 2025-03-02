@@ -28,7 +28,7 @@
     CURRENT_USER,
     IS_MOBILE_VIEW,
   } from "$src/data/static.js";
-  //model
+  //models
   import { APP_STATE } from "$src/data/enums/app.js";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit.js";
   import type { RenderAnimation } from "$src/data/animation.js";

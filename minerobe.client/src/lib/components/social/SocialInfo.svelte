@@ -1,8 +1,11 @@
 <script lang="ts">
+  //services
+  import { normalizeNumber } from "$src/helpers/data/dataHelper";
+  //model
+  import type { PackageSocialData } from "$data/models/package";
+  //icons
   import HeartSmallIcon from "$icons/small/heart.svg?raw";
   import DownloadSmallIcon from "$icons/small/download.svg?raw";
-  import { normalizeNumber } from "$src/helpers/data/dataHelper";
-  import type { PackageSocialData } from "$data/models/package";
 
   export let data: PackageSocialData;
   export let dense = false;

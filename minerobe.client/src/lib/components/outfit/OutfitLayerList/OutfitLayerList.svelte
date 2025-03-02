@@ -1,14 +1,15 @@
 <script lang="ts">
   //main imports
   import { createEventDispatcher } from "svelte";
-  //model
+  //services
+  import { ConvertFileToFileData } from "$src/data/import";
+  //models
   import type { OutfitLayer } from "$data/models/package";
   import { MODEL_TYPE } from "$src/data/enums/model";
   //components
   import OutfitLayerListItem from "../OutfitLayerListItem/OutfitLayerListItem.svelte";
   import MultiDragAndDrop from "$lib/components/draganddrop/MultiDragAndDrop/MultiDragAndDrop.svelte";
   import Resize from "$lib/components/other/Resize/Resize.svelte";
-  import { ConvertFileToFileData } from "$src/data/import";
 
   const dispatch = createEventDispatcher();
 

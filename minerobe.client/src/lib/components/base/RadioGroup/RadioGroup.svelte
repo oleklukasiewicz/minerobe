@@ -1,10 +1,14 @@
 <script lang="ts">
+  //main imports
   import { createEventDispatcher } from "svelte";
-  import RadioButton from "../RadioButton/RadioButton.svelte";
+  //models
   import type { ValueData } from "$data/models/base";
+  //compoennts
+  import RadioButton from "../RadioButton/RadioButton.svelte";
 
   export let options: ValueData[] = [];
   export let selectedValue = null;
+
   const dispatch = createEventDispatcher();
 
   const onSelect = (item) => {

@@ -16,7 +16,7 @@
     IS_MOBILE_VIEW,
   } from "$src/data/static";
   import { DEFAULT_PACKAGE } from "$src/data/consts/outfit";
-  //model
+  //models
   import { APP_STATE } from "$src/data/enums/app";
   import type { MinerobeUserSettings } from "$src/data/models/user";
   //components

@@ -1,8 +1,11 @@
 <script lang="ts">
+  //main imports
+  import { createEventDispatcher } from "svelte";
+  //components
+  import Button from "../Button/Button.svelte";
+  //icons
   import SearchIcon from "$icons/search.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
-  import { createEventDispatcher } from "svelte";
-  import Button from "../Button/Button.svelte";
 
   export let value = null;
   export let dense = true;
@@ -47,7 +50,6 @@
       icon={CloseIcon}
       type="secondary"
       size="auto"
-      {dark}
       noBorder
       label="Clear"
       on:click={onClear}

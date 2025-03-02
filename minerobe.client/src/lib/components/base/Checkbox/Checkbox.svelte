@@ -9,6 +9,7 @@
   export let style = "";
   export let value: boolean = false;
   export let label: string = null;
+  
   const toggleValue = () => {
     value = !value;
     dispatch("change", { value });

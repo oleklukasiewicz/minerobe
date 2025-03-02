@@ -1,10 +1,14 @@
 <script lang="ts">
+  //main imports
+  import { createEventDispatcher } from "svelte";
+  //model
+  import type { OutfitPackage } from "$data/models/package";
+  //components
   import Label from "$lib/components/base/Label/Label.svelte";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import type { OutfitPackage } from "$data/models/package";
+  //icons
   import CheckIcon from "$icons/check.svg?raw";
-  import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
 

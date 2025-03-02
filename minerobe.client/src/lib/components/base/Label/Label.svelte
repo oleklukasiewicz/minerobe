@@ -1,12 +1,14 @@
 <script lang="ts">
-export let variant: "unique" | "rare" | "common" |"legendary"|"ancient"  = "common";
-export let dense: boolean = false;
-export let text: string = "";
-export let style: string = "";
+  export let variant: "unique" | "rare" | "common" | "legendary" | "ancient" =
+    "common";
+  export let dense: boolean = false;
+  export let text: string = "";
+  export let style: string = "";
 </script>
 
 <div class="label {variant}" class:dense {style}>
-  {text} <slot></slot>
+  {text}
+  <slot></slot>
 </div>
 
 <style lang="scss">

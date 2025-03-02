@@ -1,16 +1,20 @@
 <script lang="ts">
+  //api
+  import { GetWardrobePackages } from "$src/api/wardrobe";
+  //model
+  import { OutfitPackage } from "$src/data/models/package";
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+  import { PagedResponse, SortOption } from "$src/data/models/base";
+  import { OutfitFilter } from "$src/data/models/filter";
+  //icons
+  import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
+  import AnimationIcon from "$icons/animation.svg?raw";
+  //components
   import MenuItem from "../base/MenuItem/MenuItem.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import Menu from "../base/Menu/Menu.svelte";
-  import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
-  import AnimationIcon from "$icons/animation.svg?raw";
   import PagedList from "../list/PagedList/PagedList.svelte";
   import OutfitPackageList from "../outfit/OutfitPackageList/OutfitPackageList.svelte";
-  import { PagedResponse, SortOption } from "$src/data/models/base";
-  import { OutfitPackage } from "$src/data/models/package";
-  import { GetWardrobePackages } from "$src/api/wardrobe";
-  import { OutfitFilter } from "$src/data/models/filter";
-  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
 
   export let open = false;
   export let label = "Wardrobe";

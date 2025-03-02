@@ -1,10 +1,14 @@
 <script lang="ts">
-  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
-  import { createEventDispatcher, onMount } from "svelte";
-  import OutfitPackageListItem from "../OutfitPackageListItem/OutfitPackageListItem.svelte";
+  //main imports
+  import { createEventDispatcher } from "svelte";
+  //api
   import { GetLayer } from "$src/api/pack";
-  import Resize from "$lib/components/other/Resize/Resize.svelte";
+  //model
+  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+  //components
+  import Resize from "$lib/components/other/Resize/Resize.svelte";
+  import OutfitPackageListItem from "../OutfitPackageListItem/OutfitPackageListItem.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
 
   const dispatch = createEventDispatcher();

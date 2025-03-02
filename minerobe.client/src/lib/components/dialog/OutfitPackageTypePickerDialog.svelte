@@ -1,10 +1,14 @@
 <script lang="ts">
+  //main imports
   import { createEventDispatcher } from "svelte";
+  //model
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+  //components
   import Dialog from "../base/Dialog/Dialog.svelte";
+  //icons
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
-  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
 
   const dispatch = createEventDispatcher();
 

@@ -25,7 +25,7 @@
     IS_MOBILE_VIEW,
     WS_CONNECTION,
   } from "$src/data/static";
-  //model
+  //models
   import { APP_STATE } from "$src/data/enums/app";
   import type {
     Cape,

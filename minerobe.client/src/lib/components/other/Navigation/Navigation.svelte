@@ -1,17 +1,23 @@
 <script lang="ts">
+  //main imports
   import { _ } from "svelte-i18n";
-  import HomeIcon from "$src/icons/home.svg?raw";
-  import SearchIcon from "$src/icons/search.svg?raw";
-  import SubscriptionIcon from "$src/icons/subscriptions.svg?raw";
-  import AvatarIcon from "$src/icons/avatar.svg?raw";
-  import NavigationItem from "../NavigationItem/NavigationItem.svelte";
-  import Search from "$lib/components/base/Search/Search.svelte";
+  //api
+  import { loginUser } from "$src/api/auth";
+  //services
   import {
     navigate,
     navigateToProfile,
   } from "$src/helpers/other/navigationHelper";
-  import { loginUser } from "$src/api/auth";
+  //consts
   import { CURRENT_USER, IS_MOBILE_VIEW } from "$src/data/static";
+  //components
+  import NavigationItem from "../NavigationItem/NavigationItem.svelte";
+  import Search from "$lib/components/base/Search/Search.svelte";
+  //icons
+  import HomeIcon from "$src/icons/home.svg?raw";
+  import SearchIcon from "$src/icons/search.svg?raw";
+  import SubscriptionIcon from "$src/icons/subscriptions.svg?raw";
+  import AvatarIcon from "$src/icons/avatar.svg?raw";
 
   const profileAction = async () => {
     if ($CURRENT_USER) {

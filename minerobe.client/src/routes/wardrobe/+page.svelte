@@ -12,6 +12,7 @@
   import { APP_STATE } from "$src/data/enums/app";
   import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+  import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
   //models
   import type { PagedResponse, SortOption } from "$src/data/models/base";
   import { OutfitPackage } from "$src/data/models/package";
@@ -25,7 +26,6 @@
   import OutfitFiltersDialog from "$lib/components/dialog/OutfitFiltersDialog.svelte";
   //icons
   import Sliders2Icon from "$icons/sliders-2.svg?raw";
-  import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
 
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
 

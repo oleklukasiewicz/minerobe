@@ -1,6 +1,8 @@
 <script lang="ts">
-  import DeleteIcon from "$src/icons/close.svg?raw";
+  //components
   import Button from "../Button/Button.svelte";
+  //icons
+  import DeleteIcon from "$src/icons/close.svg?raw";
 
   export let label = "";
   export let type: "warning" | "info" = "info";

@@ -1,18 +1,22 @@
 <script lang="ts">
+  //main imports
+  import { createEventDispatcher } from "svelte";
+  //consts
+  import { COLORS_ARRAY } from "$src/data/consts/color";
+  import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
+  //model
   import { PagedModel, type PagedResponse } from "$src/data/models/base";
   import { OutfitFilter } from "$src/data/models/filter";
   import type { OutfitPackage } from "$src/data/models/package";
-  import { createEventDispatcher } from "svelte";
+  //components
   import Dialog from "../base/Dialog/Dialog.svelte";
   import PagedList from "../list/PagedList/PagedList.svelte";
   import Search from "../base/Search/Search.svelte";
   import Select from "../base/Select/Select.svelte";
   import OutfitPackagePickerList from "../outfit/OutfitPackagePickerList/OutfitPackagePickerList.svelte";
-  import { COLORS_ARRAY } from "$src/data/consts/color";
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
   import SortSelect from "../base/SortSelect/SortSelect.svelte";
-  import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
   import Button from "../base/Button/Button.svelte";
 
   const dispatch = createEventDispatcher();

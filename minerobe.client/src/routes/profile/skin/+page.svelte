@@ -18,7 +18,7 @@
     CURRENT_APP_STATE,
     IS_MOBILE_VIEW,
   } from "$src/data/static";
-  //model
+  //models
   import { APP_STATE } from "$src/data/enums/app";
   import type { MinerobeUserSettings } from "$src/data/models/user";
   import type { RenderAnimation } from "$src/data/animation";

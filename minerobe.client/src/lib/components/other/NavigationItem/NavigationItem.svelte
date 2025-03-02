@@ -1,5 +1,7 @@
 <script lang="ts">
+  //main imports
   import { page } from "$app/stores";
+  
   export let label = "";
   export let icon = "";
   export let iconImage = "";
@@ -10,7 +12,7 @@
 </script>
 
 <a
-  href={customCall ? null :( "/" + viewId)}
+  href={customCall ? null : "/" + viewId}
   class:minimal
   class:selected={viewId?.length > 0
     ? $page.route?.id?.startsWith("/" + viewId)
@@ -26,7 +28,7 @@
     <span class="nav-icon icon-small">{@html icon}</span>
   {/if}
   {#if label}
-  <span class="item-label">{label}</span>
+    <span class="item-label">{label}</span>
   {/if}
   <slot />
 </a>

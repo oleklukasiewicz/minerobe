@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { PagedResponse } from "$src/data/models/base";
+  //main imports
   import IntersectionObserver from "svelte-intersection-observer";
   import { createEventDispatcher } from "svelte";
+  //models
+  import { PagedResponse } from "$src/data/models/base";
 
   const dispatch = createEventDispatcher();
 

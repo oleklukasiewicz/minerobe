@@ -1,8 +1,11 @@
 <script lang="ts">
-  import type { OutfitLayer } from "$data/models/package";
+  //main imports
   import { createEventDispatcher } from "svelte";
-  import OutfitLayerVariantListItem from "../OutfitLayerVariantListItem/OutfitLayerVariantListItem.svelte";
+  //model
+  import type { OutfitLayer } from "$data/models/package";
   import type { MODEL_TYPE } from "$src/data/enums/model";
+  //components
+  import OutfitLayerVariantListItem from "../OutfitLayerVariantListItem/OutfitLayerVariantListItem.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -33,6 +36,6 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap:8px;
+    gap: 8px;
   }
 </style>

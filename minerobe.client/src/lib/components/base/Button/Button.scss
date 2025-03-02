@@ -53,10 +53,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    svg {
-      width: 24px;
-      height: 24px;
-    }
   }
   &.white-text {
     color: var(--color-accent-font) !important;
@@ -70,9 +66,6 @@
     overflow: hidden;
     gap: 6px;
     justify-content: flex-start;
-    &.nav-fab {
-      bottom: 62px;
-    }
     &.fab-dynamic {
       &.large {
         padding: 12px;

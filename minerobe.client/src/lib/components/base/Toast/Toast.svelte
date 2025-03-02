@@ -1,8 +1,12 @@
 <script lang="ts">
-  import CloseIcon from "$icons/close.svg?raw";
+  //main imports
   import { createEventDispatcher } from "svelte";
   import { cubicOut } from "svelte/easing";
+  //components
   import Button from "../Button/Button.svelte";
+  //icons
+  import CloseIcon from "$icons/close.svg?raw";
+
   export let message: string;
   export let type: "success" | "error" | "warning" | "info" = "info";
   export let mobile = false;

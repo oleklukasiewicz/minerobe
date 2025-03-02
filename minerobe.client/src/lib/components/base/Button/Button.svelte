@@ -1,23 +1,24 @@
 <script lang="ts">
   //main imports
   import { onMount } from "svelte";
+
   export let href: string = null;
   export let label: string = null;
   export let icon: string = null;
+  export let disabled: boolean = false;
+  export let onlyIcon: boolean = false;
+  export let noBorder = false;
+  export let style = null;
+  export let whiteText = false;
+  export let flat = false;
+  export let focused = false;
   export let type: "primary" | "secondary" | "tertiary" | "quaternary" =
     "primary";
   export let size: "small" | "medium" | "large" | "auto" = "medium";
   export let iconSize: "small" | "medium" | "large" | "auto" = size;
-  export let disabled: boolean = false;
-  export let onlyIcon: boolean = false;
   export let textAlign: "left" | "center" | "right" = "center";
-  export let style = null;
   export let target: "_blank" | "_self" = null;
   export let fab: "static" | "dynamic" | "expanded" | null = null;
-  export let noBorder = false;
-  export let whiteText = false;
-  export let flat = false;
-  export let focused = false;
 
   let component = null;
   let componentLabel = null;

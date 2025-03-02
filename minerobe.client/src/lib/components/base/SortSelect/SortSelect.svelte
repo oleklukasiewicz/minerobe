@@ -1,10 +1,14 @@
 <script lang="ts">
+  //main imports
+  import { createEventDispatcher } from "svelte";
+  //models
+  import { SortOption } from "$src/data/models/base";
+  //components
   import Button from "../Button/Button.svelte";
   import Select from "../Select/Select.svelte";
+  //icons
   import ArrowUpIcon from "$icons/arrow-up.svg?raw";
   import ArrowDownIcon from "$icons/arrow-down.svg?raw";
-  import { createEventDispatcher } from "svelte";
-  import { SortOption } from "$src/data/models/base";
 
   const dispatch = createEventDispatcher();
 

@@ -1,13 +1,15 @@
 <script lang="ts">
+  //components
+  import Button from "../Button/Button.svelte";
+  //icons
+  import ChevronUpIcon from "$icons/chevron-up.svg?raw";
+  import ChevronDownIcon from "$icons/chevron-down.svg?raw";
+
   export let icon = null;
   export let label = null;
   export let group = null;
   export let opened = false;
   export let value = null;
-
-  import ChevronUpIcon from "$icons/chevron-up.svg?raw";
-  import ChevronDownIcon from "$icons/chevron-down.svg?raw";
-  import Button from "../Button/Button.svelte";
 
   const toggleExpander = () => {
     if (group == null) {
@@ -38,9 +40,9 @@
         type="quaternary"
         on:click={toggleExpander}
         onlyIcon
-        icon="{(group == null ? opened : group == value)
+        icon={(group == null ? opened : group == value)
           ? ChevronUpIcon
-          : ChevronDownIcon}"
+          : ChevronDownIcon}
       />
     </span>
   </div>

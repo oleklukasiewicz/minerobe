@@ -131,6 +131,6 @@ export const Initialize = async function () {
 //api
 //services
 //consts
-//model
+//models
 //components
 //icons

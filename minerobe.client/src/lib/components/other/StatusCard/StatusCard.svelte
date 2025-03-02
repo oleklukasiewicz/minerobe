@@ -1,6 +1,7 @@
 <script lang="ts">
-  import Button from "$lib/components/base/Button/Button.svelte";
+  //components
   import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
+
   export let label;
 </script>
 
@@ -14,7 +15,7 @@
     <slot></slot>
   </div>
   <div class="data">
-    <div class='actions'>
+    <div class="actions">
       <slot name="actions"></slot>
     </div>
   </div>
@@ -40,9 +41,8 @@
       max-width: 100%;
       flex: 1;
     }
-    .actions
-    {
-      flex:1;
+    .actions {
+      flex: 1;
       max-width: 100%;
     }
   }
