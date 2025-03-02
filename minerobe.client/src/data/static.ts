@@ -95,26 +95,6 @@ export const Initialize = async function () {
       .then((x) => x.ResetPosition())
   );
 
-  //setup SignalR
-  serverWsConnectionWritable.set(
-    new HubConnectionBuilder()
-      .withUrl(
-        "/api/ws?userId=" + get(CURRENT_USER)?.id,
-        HttpTransportType.ServerSentEvents
-      )
-      .withKeepAliveInterval(15000)
-      .withAutomaticReconnect()
-      .build()
-  );
-  get(serverWsConnectionWritable)
-    .start()
-    .then(() => {
-      console.log("Connection started!");
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-
   //setup default renderer
   defaultRendererWritable.update((renderer: any) => {
     renderer = new THREE.WebGLRenderer({
@@ -124,6 +104,27 @@ export const Initialize = async function () {
     return renderer;
   });
   CURRENT_USER.subscribe((user) => {
+    if (user && get(appStateWritable) != APP_STATE.READY) {
+      //setup SignalR
+      serverWsConnectionWritable.set(
+        new HubConnectionBuilder()
+          .withUrl(
+            "/api/ws?userId=" + get(CURRENT_USER)?.id,
+            HttpTransportType.ServerSentEvents
+          )
+          .withKeepAliveInterval(15000)
+          .withAutomaticReconnect()
+          .build()
+      );
+      get(serverWsConnectionWritable)
+        .start()
+        .then(() => {
+          console.log("Connection started!");
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
     appStateWritable.set(user ? APP_STATE.READY : APP_STATE.GUEST_READY);
   });
 };
