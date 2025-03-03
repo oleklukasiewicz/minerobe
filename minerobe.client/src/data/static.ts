@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-import baseModelTextureRaw from "$src/texture/base_skin.png?url";
+import baseModelTextureRaw from "$src/texture/base_skin.webp?url";
 import {
   get,
   readable,

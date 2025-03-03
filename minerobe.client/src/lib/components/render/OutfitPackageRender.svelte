@@ -24,7 +24,7 @@
   //components
   import Resize from "../other/Resize/Resize.svelte";
   //icons
-  import floorTexture from "$texture/floor.png?url";
+  import floorTexture from "$texture/floor.webp?url";
 
   const dispatch = createEventDispatcher();
 
