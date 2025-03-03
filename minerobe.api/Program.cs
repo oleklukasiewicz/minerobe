@@ -1,5 +1,6 @@
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using minerobe.api;
 using minerobe.api.Configuration;
@@ -25,6 +26,7 @@ using minerobe.api.Modules.Integration.Minecraft.Interface;
 using minerobe.api.Modules.Integration.Minecraft.Service;
 using minerobe.api.Modules.View.Landing.Interface;
 using minerobe.api.Modules.View.Landing.Service;
+using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -122,6 +124,14 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+builder.Services.AddResponseCompression((options) =>
+{
+    options.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
 
 var app = builder.Build();
 
@@ -139,6 +149,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+app.UseResponseCompression();
 
 app.UseStaticFiles();
 app.MapHub<DefaultHub>("/ws");
