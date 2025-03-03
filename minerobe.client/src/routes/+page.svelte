@@ -19,26 +19,24 @@
   let mostLiked = [];
   let mostRecent = [];
   let mostDownloaded = [];
-  let landingLoaded = false;
+  let listsLoaded = false;
+  let loaded = false;
 
   let stateSub;
   onMount(async () => {
     // let landing ;
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
-      if (
-        !(state == APP_STATE.READY || state == APP_STATE.GUEST_READY) ||
-        landingLoaded
-      )
-        return;
+      if (!(state == APP_STATE.READY || state == APP_STATE.GUEST_READY)) return;
+      if (!listsLoaded)
+        await Promise.all([getRecent(), getLiked(), getDownloaded()]);
 
-      await Promise.all([getRecent(), getLiked(), getDownloaded()]);
-
-      landingLoaded = true;
+      listsLoaded = true;
 
       if (state == APP_STATE.READY) {
         const settings = await FetchSettings();
         userSettings.set(settings);
       }
+      loaded = true;
     });
   });
   onDestroy(() => {
@@ -74,7 +72,7 @@
       in your own Minecraft worlds or use them as a base for your own skins.
     </p>
   </div>
-  {#if landingLoaded}
+  {#if listsLoaded}
     <h2 class="list-title">Most Recent</h2>
     <OutfitPackageList
       items={mostRecent}

@@ -292,6 +292,9 @@
     }
 
     cachedtexture = await merger.ConvertAsyncWithFlattenSettingsAsync();
+    if (cachedtexture != null)
+      await textureRenderer.SetTextureAsync(cachedtexture);
+    if (!isDynamic) await textureRenderer.RenderStatic();
   };
   const setCape = async (v) => {
     if (!initialized) return;
