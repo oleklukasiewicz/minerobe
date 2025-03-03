@@ -72,9 +72,7 @@
     await setRenderMode(isDynamic);
     initialized = true;
     renderReady = true;
-
     if (_cape != null) await textureRenderer.SetCapeAsync(_cape);
-    else textureRenderer.RemoveCape();
   });
   onDestroy(() => {
     textureRenderer.StopRendering();
@@ -100,6 +98,7 @@
       await textureRenderer.RenderStatic();
     }
   };
+
   const loadInitialParams = async function () {
     if (_source == null || _source == "") return;
     if (_model == "source" && typeof _source === "string") {

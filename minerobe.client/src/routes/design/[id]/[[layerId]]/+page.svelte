@@ -296,7 +296,7 @@
       <div id="item-data-integration">
         <SectionTitle label="Capes" />
         <CapeList
-          items={integrationSettings.capes}
+          items={integrationSettings?.capes}
           selectedCapeId={$renderConfiguration.cape?.id}
           on:select={setCape}
         />

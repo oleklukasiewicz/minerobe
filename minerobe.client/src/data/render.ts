@@ -58,7 +58,7 @@ export class TextureRender {
   private animationPrepared: boolean = false;
   private animationIsQuiting: boolean = false;
 
-  private _loadTexture = async function (targetTexture: string = null) {
+  private _loadTexture = async function (targetTexture: string = null, flipY) {
     return new Promise((resolve) => {
       this.textureLoader.load(targetTexture, (texture) => {
         const canvasTexture = new THREE.CanvasTexture(texture);
@@ -165,7 +165,6 @@ export class TextureRender {
           _clockElapsedTime
         );
     }
-
     this.renderer.render(this.modelScene.scene, this.modelScene.camera);
     this.node.appendChild(this.renderer.domElement);
     requestAnimationFrame(() => this._render(this));
@@ -176,14 +175,17 @@ export class TextureRender {
     force = false
   ) {
     if (this.animationPrepared && !force) return;
+    this._loadScenedataToAnimation(animation);
+    this.animationPrepared = true;
+  }
+  private _loadScenedataToAnimation = function (animation: RenderAnimation) {
     const animationData = animation.prepare(
       this.modelScene.renderScene,
-      keepData,
+      false,
       this.modelScene.name
     );
     this.animationData = Object.assign(this.animationData || {}, animationData);
-    this.animationPrepared = true;
-  }
+  };
   private _updateRenderSize = function () {
     const canvas = this.node;
     const width = canvas.clientWidth != 0 ? canvas.clientWidth : 300;
@@ -289,7 +291,7 @@ export class TextureRender {
   };
   RenderStatic = async function (): Promise<TextureRender> {
     //do it in one paint call
-    requestAnimationFrame(async() => {
+    requestAnimationFrame(async () => {
       if (this.renderer == null) return this;
 
       this._loadCameraOptions();
@@ -401,13 +403,17 @@ export class TextureRender {
     this.capeTexture = capeTexture;
     if (this.capeScene != null) this.modelScene.scene.remove(this.capeScene);
 
-    const capeTxt = new THREE.TextureLoader().load(capeTexture);
-    //load cape_model
+    const loaderPromise: Promise<any> = new Promise((resolve) => {
+      const capeLoader = new THREE.ImageBitmapLoader();
+      capeLoader.load(capeTexture, (texture) => {
+        const canvasTexture = new THREE.CanvasTexture(texture);
+        canvasTexture.magFilter = THREE.NearestFilter;
+        canvasTexture.minFilter = THREE.NearestFilter;
+        resolve(canvasTexture);
+      });
+    });
 
-    capeTxt.magFilter = THREE.NearestFilter;
-    capeTxt.minFilter = THREE.LinearMipmapLinearFilter;
-    //flip texture vertically
-    capeTxt.flipY = false;
+    const capeTxt = await loaderPromise;
 
     const capeModel = await this._loadModelToTempScene(
       "data:model/gltf+json;base64," + btoa(capeModelData)
@@ -429,7 +435,7 @@ export class TextureRender {
     this.capeScene = capeModel;
     this._attachCapeToModel();
     if (this.animations.length > 0 && this.renderingActive)
-      this._prepareAnimation(this.animations[0], true, true);
+      this._loadScenedataToAnimation(this.animations[0]);
 
     return this;
   };
