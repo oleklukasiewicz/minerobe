@@ -11,7 +11,7 @@
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
   import type { OutfitLayer } from "$data/models/package";
   import type { MinerobeUserSettings } from "$data/models/user";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
 
   const userSettings: Writable<MinerobeUserSettings> = writable(null);
@@ -20,28 +20,44 @@
   let mostRecent = [];
   let mostDownloaded = [];
   let landingLoaded = false;
+
+  let stateSub;
   onMount(async () => {
     // let landing ;
-    CURRENT_APP_STATE.subscribe(async (state) => {
-      if (!(state == APP_STATE.READY || state == APP_STATE.GUEST_READY)) return;
+    stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
+      if (
+        !(state == APP_STATE.READY || state == APP_STATE.GUEST_READY) ||
+        landingLoaded
+      )
+        return;
 
-      const recent = await GetMostRecent(0, 6);
-      mostRecent = recent.items;
+      await Promise.all([getRecent(), getLiked(), getDownloaded()]);
 
-      const liked = await GetMostLiked(0, 6);
-      mostLiked = liked.items;
-
-      const downloaded = await GetMostDownloaded(0, 6);
-      mostDownloaded = downloaded.items;
+      landingLoaded = true;
 
       if (state == APP_STATE.READY) {
         const settings = await FetchSettings();
         userSettings.set(settings);
       }
-
-      landingLoaded = true;
     });
   });
+  onDestroy(() => {
+    if (stateSub) stateSub();
+  });
+
+  const getRecent = async () => {
+    const recent = await GetMostRecent(0, 6);
+    mostRecent = recent.items;
+  };
+  const getLiked = async () => {
+    const liked = await GetMostLiked(0, 6);
+    mostLiked = liked.items;
+  };
+  const getDownloaded = async () => {
+    const downloaded = await GetMostDownloaded(0, 6);
+    mostDownloaded = downloaded.items;
+  };
+
   const goToItemPage = (e) => {
     const item = e.detail.item;
     console.log("goToItemPage", e.detail);
