@@ -288,13 +288,16 @@ export class TextureRender {
     return this;
   };
   RenderStatic = async function (): Promise<TextureRender> {
-    if (this.renderer == null) return this;
+    //do it in one paint call
+    requestAnimationFrame(async() => {
+      if (this.renderer == null) return this;
 
-    this._loadCameraOptions();
-    this._updateRenderSize();
-    await this._applyTextureToModel();
+      this._loadCameraOptions();
+      this._updateRenderSize();
+      await this._applyTextureToModel();
 
-    this._renderInNode();
+      this._renderInNode();
+    });
     return this;
   };
   RenderDynamic = async function (): Promise<TextureRender> {
