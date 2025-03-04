@@ -1,5 +1,7 @@
 <script lang="ts">
+  import Button from "$lib/components/base/Button/Button.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import WardrobePickerDialog from "$lib/components/dialog/WardrobePickerDialog.svelte";
   import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
   import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
   import { GetCollection, GetCollectionsItems } from "$src/api/collection";
@@ -26,9 +28,11 @@
   let loaded = false;
   let collectionLoaded = false;
 
+  let isWadrobePickerDialogOpen = false;
+
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
-      if (state != APP_STATE.READY && state != APP_STATE.GUEST_READY) return;
+      if (state != APP_STATE.READY) return;
 
       if (!collectionLoaded) {
         $itemCollection = await GetCollection(data.id);
@@ -58,8 +62,16 @@
 
 <div id="collection-view">
   <div id="collection-header">
-    <Placeholder {loaded}><h1>{$itemCollection.name}</h1></Placeholder>
-    <Placeholder {loaded}><p>{$itemCollection.description}</p></Placeholder>
+    <Placeholder {loaded}
+      ><input class="title-input" bind:value={$itemCollection.name} />
+    </Placeholder>
+    <Placeholder {loaded}
+      ><textarea class="description-input" bind:value={$itemCollection.description} ></textarea></Placeholder
+    >
+    <Button
+      label="Edi items"
+      on:click={() => (isWadrobePickerDialogOpen = true)}
+    />
   </div>
   <div id="collection-items">
     {#if loaded}
@@ -80,6 +92,11 @@
       >
     {/if}
   </div>
+  <WardrobePickerDialog
+    collectionId={$itemCollection?.id}
+    bind:open={isWadrobePickerDialogOpen}
+    baseTexture={userSettings?.baseTexture.layers[0]}
+  />
 </div>
 
 <style lang="scss">
