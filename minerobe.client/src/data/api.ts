@@ -63,6 +63,7 @@ export const getCurrentUserFromLocal = () => {
   });
 };
 async function checkToken() {
+  if (!cRefreshToken) return;
   if (cTokenAcuireDate + cTokenValidity * 1000 < Date.now()) {
     await refreshToken(cRefreshToken);
   }
@@ -93,7 +94,6 @@ function refreshToken(refreshToken) {
       console.error("Error refreshing token", error);
     });
 }
-
 
 export const login = async () => {
   await getCurrentUserFromLocal();
