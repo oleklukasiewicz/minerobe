@@ -23,7 +23,7 @@ const app = initializeApp(firebaseConfig);
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
 let cUser;
-let cTokenValidity = 3600;
+let cTokenValidity = 3600 - 100;
 let cTokenAcuireDate = 0;
 let cRefreshToken;
 let cToken;
