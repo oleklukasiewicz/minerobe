@@ -1,8 +1,11 @@
 <script lang="ts">
   //api
-  import { GetWardrobePackages } from "$src/api/wardrobe";
+  import {
+    GetWardrobeItemsWithCollectionContext,
+    GetWardrobePackages,
+  } from "$src/api/wardrobe";
   //model
-  import { OutfitPackage } from "$src/data/models/package";
+  import { OutfitLayer, OutfitPackage } from "$src/data/models/package";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
   import { PagedResponse, SortOption } from "$src/data/models/base";
   import { OutfitFilter } from "$src/data/models/filter";
@@ -14,10 +17,12 @@
   import Dialog from "../base/Dialog/Dialog.svelte";
   import Menu from "../base/Menu/Menu.svelte";
   import PagedList from "../list/PagedList/PagedList.svelte";
-  import OutfitPackageList from "../outfit/OutfitPackageList/OutfitPackageList.svelte";
+  import OutfitPackagePickerList from "../outfit/OutfitPackagePickerList/OutfitPackagePickerList.svelte";
 
   export let open = false;
   export let label = "Wardrobe";
+  export let collectionId: string = null;
+  export let baseTexture: OutfitLayer = null;
 
   let items = new PagedResponse<OutfitPackage>();
   let filter: OutfitFilter = new OutfitFilter();
@@ -27,10 +32,12 @@
 
   const fetchItems = async (e) => {
     const options: PagedResponse<OutfitPackage> = e?.detail?.options;
-    const pagedItems = await GetWardrobePackages(
+    items.items = null;
+    const pagedItems = await GetWardrobeItemsWithCollectionContext(
+      collectionId,
       filter,
       options?.options.page || 0,
-      options?.options.pageSize || 6,
+      options?.options.pageSize || 12,
       sortOption,
       abortController
     );
@@ -72,15 +79,21 @@
     <div id="wardrobe-picker-items">
       <PagedList
         {items}
+        pageSize={items?.options.pageSize ?? 12}
+        loading={items?.items == null}
         pageSizes={[6, 12, 24]}
         on:optionsChanged={fetchItems}
         let:items={pagedItems}
         let:pageSize={pagedPageSize}
         let:loading={pagedLoading}
       >
-        <OutfitPackageList
+        <OutfitPackagePickerList
+          baseTexture={filter.type == PACKAGE_TYPE.OUTFIT_SET
+            ? baseTexture
+            : null}
           selectable
-          columns={4}
+          disableContext={collectionId}
+          disableFunction={(context, item) => item.isInCollection}
           items={pagedItems}
           pageSize={pagedPageSize}
           loading={pagedLoading}
@@ -94,12 +107,13 @@
 <style lang="scss">
   #wardrobe-picker-dialog {
     min-width: 70vw;
+    overflow: hidden;
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 8px;
     margin-top: 8px;
     #wardrobe-picker-navigation {
-      min-width: 150px;
+      min-width: 200px;
     }
   }
 </style>

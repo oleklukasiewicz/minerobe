@@ -26,6 +26,7 @@
   let stateSub = null;
   let itemsLoaded = false;
   let loaded = false;
+  let collectionLoaded = false;
 
   let isWadrobePickerDialogOpen = false;
 
@@ -33,7 +34,10 @@
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY && state != APP_STATE.GUEST_READY) return;
 
-      $itemCollection = await GetCollection(data.id);
+      if (!collectionLoaded) {
+        $itemCollection = await GetCollection(data.id);
+        collectionLoaded = true;
+      }
       userSettings = await FetchSettings();
 
       fetchItems(null);
@@ -84,7 +88,11 @@
       >
     {/if}
   </div>
-  <WardrobePickerDialog bind:open={isWadrobePickerDialogOpen} />
+  <WardrobePickerDialog
+    collectionId={$itemCollection?.id}
+    bind:open={isWadrobePickerDialogOpen}
+    baseTexture={userSettings?.baseTexture.layers[0]}
+  />
 </div>
 
 <style lang="scss">

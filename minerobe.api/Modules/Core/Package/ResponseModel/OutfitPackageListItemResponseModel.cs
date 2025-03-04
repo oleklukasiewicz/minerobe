@@ -18,10 +18,11 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
         public int TotalLayersCount { get; set; }
         public MinerobePackageUserResponseModel Publisher { get; set; }
         public bool IsInWardrobe { get; set; }
+        public bool IsInCollection { get; set; }
     }
     public static class OutfitPackageListItemResponseModelExtensions
     {
-        public static OutfitPackageListItemResponseModel ToListItemResponseModel(this OutfitPackage entity, int layersCount = 2, int loadedCount = 1, bool isInWardrobe = false)
+        public static OutfitPackageListItemResponseModel ToListItemResponseModel(this OutfitPackage entity, int layersCount = 2, int loadedCount = 1, bool isInWardrobe = false,bool isInCollection =false)
         {
             var layers = new List<OutfitLayerResponseModel>();
             if (layersCount > entity.Layers.Count)
@@ -51,6 +52,7 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
                 Social = entity.Social,
                 OutfitType = entity.OutfitType.ToString().ToLower(),
                 IsInWardrobe = isInWardrobe,
+                IsInCollection = isInCollection,
                 Layers = layers,
                 Publisher = entity.Publisher.ToPackageResponseModel(),
                 TotalLayersCount = entity.Layers != null ? entity.Layers.Count : 0

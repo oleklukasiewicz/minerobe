@@ -55,6 +55,10 @@ namespace minerobe.api.Modules.Core.Collection.Service
 
             return collection;
         }
+        public async Task<List<OutfitPackage>> GetCollectionsItems(Guid id)
+        {
+            return await GetPackagesOfCollection(id).ToListAsync();
+        }
         public async Task<bool> Delete(Guid id)
         {
             var collection = await _context.OutfitPackageCollections.FindAsync(id);

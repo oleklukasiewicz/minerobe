@@ -2,7 +2,7 @@
   //main imports
   import { createEventDispatcher } from "svelte";
   //model
-  import type { OutfitPackage } from "$data/models/package";
+  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
   //components
   import Label from "$lib/components/base/Label/Label.svelte";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
@@ -16,6 +16,7 @@
   export let disabled = false;
   export let selected = false;
   export let selectable = false;
+  export let baseTexture: OutfitLayer = null;
 
   const onClick = function (e) {
     if (selectable) {
@@ -49,7 +50,7 @@
     </div>
   {/if}
   <div class="render">
-    <OutfitPackageRender source={item} />
+    <OutfitPackageRender source={item} {baseTexture} />
   </div>
   <div class="data">
     <span>{item.name}</span>

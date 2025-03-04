@@ -4,6 +4,7 @@ using minerobe.api.Helpers;
 using minerobe.api.Helpers.Filter;
 using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Collection.Entity;
+using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Collection.ResponseModel;
 using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.User.Interface;
@@ -19,11 +20,13 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
         private readonly IWardrobeService _wardrobeService;
         private readonly IUserService _userService;
         private readonly IPackageService _packageService;
-        public WardrobeController(IWardrobeService wardrobeService, IUserService userService, IPackageService packageService)
+        private readonly ICollectionService _collectionService;
+        public WardrobeController(IWardrobeService wardrobeService, IUserService userService, IPackageService packageService, ICollectionService collectionService)
         {
             _wardrobeService = wardrobeService;
             _userService = userService;
             _packageService = packageService;
+            _collectionService = collectionService;
         }
         [HttpGet("")]
         public async Task<IActionResult> Get()
@@ -111,6 +114,18 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
 
             var mappedCollections = paged.Items.Select(x => x.ToPackageResponseModel(id, true)).ToList();
             return Ok(paged.MapResponseOptions<OutfitPackageCollection, OutfitPackageCollectionPackageResponseModel>(mappedCollections));
+        }
+        [HttpPost("items/context/collection/{id}")]
+        public async Task<IActionResult> GetItemsWithCollectionContext(Guid id, [FromBody] PagedModel<OutfitFilter> options)
+        {
+            var user = await _userService.GetFromExternalUser(User);
+            var res = await _wardrobeService.GetWardrobeOutfits(user.WardrobeId, options.Filter);
+
+            var collectionsItems = await _collectionService.GetCollectionsItems(id);
+            var paged = res.ToPagedResponse(options);
+            var items = paged.ToOutfitPackage();
+            items.ForEach(x => x.IsInCollection = collectionsItems.Any(y => y.Id.Equals(x.Id)));
+            return Ok(paged.MapResponseOptions(items));
         }
 
         [HttpPost("items/singleLayer")]

@@ -33,7 +33,7 @@
   let selectedItems: OutfitPackage[] = [];
 
   const onFiltersUpdate = function () {
-    if (options.sort[0] == null) options.sort = [];
+    if (options.sort[0]?.value == null) options.sort = [];
     options.page = 0;
     dispatch("filter", { options: options });
   };
@@ -41,7 +41,7 @@
     const page = e.detail.options;
     options.page = page.options.page;
     options.pageSize = page.options.pageSize;
-    if (options.sort[0] == null) options.sort = [];
+    if (options.sort[0]?.value == null) options.sort = [];
     dispatch("optionsChanged", { options: options });
   };
   const onSelect = function (items) {
@@ -112,7 +112,7 @@
       <OutfitPackagePickerList
         bind:selectedItems
         selectable={multiple}
-        {packageContext}
+        disableContext={packageContext}
         items={pagedItems}
         pageSize={pagedPageSize}
         loading={pagedLoading}

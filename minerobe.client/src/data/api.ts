@@ -69,7 +69,7 @@ async function checkToken() {
   }
 }
 
-function refreshToken(refreshToken) {
+async function refreshToken(refreshToken) {
   const url =
     "https://securetoken.googleapis.com/v1/token?key=" +
     import.meta.env.VITE_API_KEY;
@@ -78,21 +78,18 @@ function refreshToken(refreshToken) {
     refresh_token: refreshToken,
   };
 
-  fetch(url, {
+  const resp = await fetch(url, {
     method: "POST",
     body: JSON.stringify(payload),
     headers: {
       "Content-Type": "application/json",
     },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      // update token
-      cToken = data.id_token;
-    })
-    .catch((error) => {
-      console.error("Error refreshing token", error);
-    });
+  });
+  const data = await resp.json();
+  cToken = data.id_token;
+  cRefreshToken = data.refresh_token;
+  cTokenAcuireDate = Date.now();
+  return cToken;
 }
 
 export const login = async () => {

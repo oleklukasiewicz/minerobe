@@ -16,5 +16,6 @@ namespace minerobe.api.Modules.Core.Collection.Interface
         Task<bool> CanAccess(Guid packageId, Guid userId);
         Task<bool> CanEdit(Guid packageId, Guid userId);
         IQueryable<OutfitPackage> GetPackagesOfCollection(Guid collectionId);
+        Task<List<OutfitPackage>> GetCollectionsItems(Guid id);
     }
 }

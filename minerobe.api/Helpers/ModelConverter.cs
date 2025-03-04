@@ -12,7 +12,7 @@ namespace minerobe.api.Helpers
             {
                 foreach (var sort in pagedOptions.Sort)
                 {
-                    if (sort.Value?.Length > 0)
+                    if (sort?.Value?.Length > 0)
                         entity = entity.OrderBy(sort.Value + (sort.IsDesc ? " desc" : ""));
                 }
             }
