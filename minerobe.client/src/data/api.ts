@@ -23,11 +23,16 @@ const app = initializeApp(firebaseConfig);
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
 let cUser;
+let cTokenValidity = 3600;
+let cTokenAcuireDate = 0;
+let cRefreshToken;
 let cToken;
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     try {
       cToken = await user.getIdToken();
+      cRefreshToken = user.refreshToken;
+      cTokenAcuireDate = Date.now();
       cUser = user;
     } catch {
       cUser = null;
@@ -46,6 +51,8 @@ export const getCurrentUserFromLocal = () => {
       if (user) {
         try {
           cToken = await user.getIdToken();
+          cRefreshToken = user.refreshToken;
+          cTokenAcuireDate = Date.now();
           cUser = user;
         } catch {
           resolve(user);
@@ -55,11 +62,45 @@ export const getCurrentUserFromLocal = () => {
     }, reject);
   });
 };
+async function checkToken() {
+  if (cTokenAcuireDate + cTokenValidity * 1000 < Date.now()) {
+    await refreshToken(cRefreshToken);
+  }
+}
+
+function refreshToken(refreshToken) {
+  const url =
+    "https://securetoken.googleapis.com/v1/token?key=" +
+    import.meta.env.VITE_API_KEY;
+  const payload = {
+    grant_type: "refresh_token",
+    refresh_token: refreshToken,
+  };
+
+  fetch(url, {
+    method: "POST",
+    body: JSON.stringify(payload),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      // update token
+      cToken = data.id_token;
+    })
+    .catch((error) => {
+      console.error("Error refreshing token", error);
+    });
+}
+
 
 export const login = async () => {
   await getCurrentUserFromLocal();
   if (cUser) {
     cToken = await cUser.getIdToken();
+    cRefreshToken = cUser.refreshToken;
+    cTokenAcuireDate = Date.now();
     return cUser;
   }
   await setPersistence(auth, browserLocalPersistence).catch((error) => {
@@ -69,7 +110,11 @@ export const login = async () => {
     // Handle error
   });
   cUser = res?.user;
-  if (cUser) cToken = await cUser.getIdToken();
+  if (cUser) {
+    cToken = await cUser.getIdToken();
+    cRefreshToken = cUser.refreshToken;
+    cTokenAcuireDate = Date.now();
+  }
   return res?.user;
 };
 export const logout = async () => {
@@ -86,6 +131,7 @@ export const PostRequest = async function (
   data: any,
   abortController = null
 ) {
+  await checkToken();
   const res = await fetch(path, {
     method: "POST",
     signal: abortController?.signal,
@@ -101,6 +147,7 @@ export const GetRequest = async function (
   path: string,
   abortController = null
 ) {
+  await checkToken();
   const res = await axios.get(path, {
     signal: abortController?.signal,
     headers: {
@@ -115,6 +162,7 @@ export const PutRequest = async function (
   data: any,
   abortController = null
 ) {
+  await checkToken();
   const res = await fetch(path, {
     method: "PUT",
     signal: abortController?.signal,
@@ -130,6 +178,7 @@ export const DeleteRequest = async function (
   path: string,
   abortController = null
 ) {
+  await checkToken();
   const res = await fetch(path, {
     method: "DELETE",
     signal: abortController?.signal,
@@ -145,6 +194,7 @@ export const PatchRequest = async function (
   data: any,
   abortController = null
 ) {
+  await checkToken();
   const res = await fetch(path, {
     method: "PATCH",
     signal: abortController?.signal,
