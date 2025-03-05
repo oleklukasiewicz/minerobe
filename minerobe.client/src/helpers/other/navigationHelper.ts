@@ -29,6 +29,3 @@ export const navigateToHome = function () {
 export const navigateToCollection = function (id?: string) {
   goto(`/collection/${id || ""}`);
 };
-export const navigateToCollectionEdit = function (id: string) {
-  goto(`/collection/${id}/edit`);
-}

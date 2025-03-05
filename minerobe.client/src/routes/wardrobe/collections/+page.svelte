@@ -6,7 +6,7 @@
   import { FetchSettings } from "$src/api/settings";
   import { GetWadrobeCollections } from "$src/api/wardrobe";
   //services
-  import { navigateToCollection, navigateToCollectionEdit } from "$src/helpers/other/navigationHelper";
+  import { navigateToCollection } from "$src/helpers/other/navigationHelper";
   //consts
   import { APP_STATE } from "$src/data/enums/app";
   import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
@@ -55,7 +55,7 @@
   });
 
   const goToCollection = function (e) {
-    navigateToCollectionEdit(e.detail.item.id);
+    navigateToCollection(e.detail.item.id);
   };
   const fetchCollections = async (e) => {
     const options = e?.detail?.options;

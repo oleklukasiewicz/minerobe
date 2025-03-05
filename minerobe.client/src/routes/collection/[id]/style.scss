@@ -4,24 +4,21 @@
   flex-wrap: wrap;
   flex-direction: column;
   margin: 0px 16px 0px 16px;
-  #collection-header
-  {
+  #collection-header {
     background-color: var(--color-theme-D1);
     margin: 8px 0px;
     box-sizing: border-box;
     padding: 32px;
-    h1
-    {
+    h1 {
       margin: 0px;
-      text-align: center;
       font-size: var(--size-font-subheader);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
     }
-    p
-    {
+    p {
       font-size: var(--size-font-base);
-      text-align: center;
       margin: 16px auto 0px;
-      max-width: 75%;
     }
   }
 }

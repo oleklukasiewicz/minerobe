@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from "$lib/components/base/Button/Button.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
   import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
@@ -12,6 +13,7 @@
   import { CURRENT_APP_STATE } from "$src/data/static";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
+  import EditIcon from "$src/icons/edit.svg?raw";
 
   export let data;
 
@@ -58,7 +60,12 @@
 
 <div id="collection-view">
   <div id="collection-header">
-    <Placeholder {loaded}><h1>{$itemCollection.name}</h1></Placeholder>
+    <Placeholder {loaded}
+      ><h1>
+        {$itemCollection.name}
+        <Button label="Edit" onlyIcon icon={EditIcon} type="tertiary" size="large" />
+      </h1>
+    </Placeholder>
     <Placeholder {loaded}><p>{$itemCollection.description}</p></Placeholder>
   </div>
   <div id="collection-items">
