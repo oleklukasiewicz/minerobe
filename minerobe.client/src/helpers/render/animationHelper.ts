@@ -76,58 +76,44 @@ export class AnimationStepState {
 }
 
 export const GetAnimationForPackageChange = function (
-  itempackage: OutfitPackage,
-  type: string,
-  index: number
-): RenderAnimation[] {
+  type: CHANGE_TYPE,
+  outfitType: OUTFIT_TYPE = null
+): RenderAnimation {
   if (type == CHANGE_TYPE.MODEL_TYPE_CHANGE) {
-    return [NewOutfitBottomAnimation, DefaultAnimation];
+    return NewOutfitBottomAnimation;
   }
   if (type == CHANGE_TYPE.LAYER_ADD) {
-    return [
-      GetAnimationForType(itempackage.layers[index].outfitType),
-      DefaultAnimation,
-    ];
+    return GetAnimationForType(outfitType);
   }
   if (type == CHANGE_TYPE.LAYER_DOWN) {
-    return [
-      GetAnimationForType(itempackage.layers[index].outfitType),
-      DefaultAnimation,
-    ];
+    return GetAnimationForType(outfitType);
   }
   if (type == CHANGE_TYPE.LAYER_UP) {
-    return [
-      GetAnimationForType(itempackage.layers[index].outfitType),
-      DefaultAnimation,
-    ];
+    return GetAnimationForType(outfitType);
   }
   if (type == CHANGE_TYPE.LAYER_REMOVE) {
-    return [
-      GetAnimationForType(itempackage.layers[index].outfitType),
-      DefaultAnimation,
-    ];
+    return GetAnimationForType(outfitType);
   }
   if (type == CHANGE_TYPE.PACKAGE_IMPORT) {
     const random = Math.random();
 
     if (random < 0.2) {
-      return [HandsUpAnimation];
+      return HandsUpAnimation;
     } else {
-      if (random < 0.4) return [WavingAnimation];
-      else [ClapAnimation];
+      if (random < 0.4) return WavingAnimation;
+      else ClapAnimation;
     }
-    [DefaultAnimation];
   }
   if (type == CHANGE_TYPE.SHARE) {
-    return [WavingAnimation, DefaultAnimation];
+    return WavingAnimation;
   }
   if (type == CHANGE_TYPE.DOWNLOAD) {
-    return [HandsUpAnimation, DefaultAnimation];
+    return HandsUpAnimation;
   }
   if (type == CHANGE_TYPE.SKIN_SET) {
-    return [ClapAnimation, DefaultAnimation];
+    return ClapAnimation;
   }
-  return [];
+  return null;
 };
 export const GetAnimationForType = function (type: string) {
   const random = Math.random();

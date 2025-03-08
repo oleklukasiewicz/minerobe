@@ -44,7 +44,7 @@
   } from "$src/data/static.js";
   //models
   import { OutfitFilter } from "$data/models/filter.js";
-  import { APP_STATE } from "$src/data/enums/app.js";
+  import { APP_STATE, CHANGE_TYPE } from "$src/data/enums/app.js";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit.js";
   import type { RenderAnimation } from "$src/data/animation.js";
   import type {
@@ -90,6 +90,7 @@
   import ListIcon from "$icons/list.svg?raw";
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
+  import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
 
   export let data;
 
@@ -204,7 +205,9 @@
       item.layers.splice(index - 1, 0, layer);
       return item;
     });
-    addAnimation(NewOutfitBottomAltAnimation);
+    addAnimation(
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_DOWN, layer.outfitType)
+    );
   };
   const moveLayerUp = (e) => {
     const layer = e.detail.item;
@@ -214,7 +217,9 @@
       item.layers.splice(index + 1, 0, layer);
       return item;
     });
-    addAnimation(NewOutfitBottomAnimation);
+    addAnimation(
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_UP, layer.outfitType)
+    );
   };
   const removeLayer = async (e) => {
     const layer = e.detail.item;
@@ -225,6 +230,9 @@
         $renderConfiguration.selectedLayerId = item.layers[0]?.id;
       return item;
     });
+    addAnimation(
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_REMOVE, layer.outfitType)
+    );
   };
   const editLayer = async function (e) {
     const item = e.detail.item;
@@ -235,6 +243,9 @@
       layers[index] = item;
       return layers;
     });
+    addAnimation(
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, item.outfitType)
+    );
   };
   const dropLayer = async (e) => {
     const layer = e.detail.item;
@@ -248,6 +259,9 @@
       item.layers[index][option] = file;
       return item;
     });
+    addAnimation(
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layer.outfitType)
+    );
   };
 
   //imports
@@ -265,6 +279,9 @@
       if (!isOutfitSet) config.selectedLayerId = addedlayers[0].id;
       return config;
     });
+    addAnimation(
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layers[0].outfitType)
+    );
   };
   const importLayerFromDrop = async (e) => {
     const files = e.detail.items;
@@ -281,6 +298,9 @@
       if (!isOutfitSet) config.selectedLayerId = addedlayers[0].id;
       return config;
     });
+    addAnimation(
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layers[0].outfitType)
+    );
   };
 
   //export
@@ -294,7 +314,7 @@
       await texture.ConvertAsyncWithFlattenSettingsAsync(),
       $itemPackage.name
     );
-    addAnimation(HandsUpAnimation);
+    addAnimation(GetAnimationForPackageChange(CHANGE_TYPE.DOWNLOAD, null));
   };
 
   //animations
@@ -402,6 +422,9 @@
         pack.layers.push(layer);
         return pack;
       });
+      addAnimation(
+        GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layer.outfitType)
+      );
     }
     isOutfitPickerDialogOpen = false;
   };

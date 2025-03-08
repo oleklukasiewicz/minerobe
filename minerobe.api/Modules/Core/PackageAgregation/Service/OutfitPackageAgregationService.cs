@@ -40,6 +40,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                               Likes = s.Likes,
                               IsShared = s.IsShared,
                               LayerId = l.Id,
+                              LayerSourcePackageId = l.SourcePackageId,
                               WardrobeId = wm.WardrobeId,
                               PublisherId = p.PublisherId
                           };
@@ -81,6 +82,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                            join s in _context.SocialDatas on p.SocialDataId equals s.Id
                            join u in _context.MinerobeUsers on p.PublisherId equals u.Id
                            join l in _context.OutfitLayers on a.LayerId equals l.Id
+                           where a.Id == a.LayerSourcePackageId
                            select new OutfitPackage
                            {
                                Id = p.Id,

@@ -16,6 +16,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Entity
         public DateTime CreatedAt { get; set; }
         //layer
         public Guid? LayerId { get; set; }
+        public Guid? LayerSourcePackageId { get; set; }
         public string ColorName { get; set; }
         public OutfitType OutfitType { get; set; }
         //social
