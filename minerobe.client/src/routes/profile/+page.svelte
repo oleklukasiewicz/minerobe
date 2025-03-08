@@ -13,7 +13,11 @@
   //models
   import type { MinerobeUserProfile } from "$src/data/models/user";
   import { APP_STATE } from "$src/data/enums/app";
-  import { Cape, MinecraftAccount, MinecraftSkin } from "$src/data/models/integration/minecraft";
+  import {
+    Cape,
+    MinecraftAccount,
+    MinecraftSkin,
+  } from "$src/data/models/integration/minecraft";
   import { OUTFIT_TYPE } from "$src/data/enums/outfit";
   import type { OutfitPackage } from "$src/data/models/package";
   //components
@@ -24,6 +28,7 @@
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
+  import { IsEmptyGuid } from "$src/helpers/data/dataHelper";
   //icons
 
   const profileUser: Writable<MinerobeUserProfile> = writable(null);
@@ -35,7 +40,10 @@
       if (state != APP_STATE.READY) return;
 
       $profileUser = await GetUserProfile($CURRENT_USER.id);
-      if ($profileUser.settings.currentTexture != null) {
+      if (
+        $profileUser.settings.currentTexture != null &&
+        !IsEmptyGuid($profileUser.settings.currentTexture.packageId)
+      ) {
         currentTexture = await GetMergedPackage(
           $profileUser.settings.currentTexture.packageId,
           $profileUser.settings.currentTexture.isFlatten,
@@ -44,7 +52,7 @@
       }
       if ($profileUser.settings.integrations.includes("minecraft")) {
         $minecraftIntegration = await GetAccount(false);
-        currentMinecraftSkin=await GetCurrentSkin(false);
+        currentMinecraftSkin = await GetCurrentSkin(false);
         if ($profileUser.settings.currentTexture?.capeId != null) {
           currentCape = $minecraftIntegration.capes.find(
             (x) => x.id == $profileUser.settings.currentTexture?.capeId
@@ -60,7 +68,7 @@
 
   let currentCape: Cape = new Cape();
   let currentTexture: OutfitPackage;
-  let currentMinecraftSkin:MinecraftSkin=null;
+  let currentMinecraftSkin: MinecraftSkin = null;
   let loaded = false;
 </script>
 
@@ -153,11 +161,7 @@
             </div>
           </div>
         </Placeholder>
-        <Button
-          slot="actions"
-          label={"Change cape"}
-          href="/profile/skin"
-        />
+        <Button slot="actions" label={"Change cape"} href="/profile/skin" />
       </StatusCard>
     {/if}
     <!-- Minecraft account card-->

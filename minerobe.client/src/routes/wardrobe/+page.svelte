@@ -125,7 +125,7 @@
       <OutfitPackageList
         resizable
         on:select={goToEdit}
-        resizeDebounce={10}
+        resizeDebounce={500}
         currentPackageId={userSettings.currentTexture?.packageId}
         baseTexture={userSettings?.baseTexture.layers[0]}
         items={pagedItems}

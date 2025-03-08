@@ -39,6 +39,7 @@
   import DownloadIcon from "$icons/download.svg?raw";
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
+  import { IsEmptyGuid } from "$src/helpers/data/dataHelper";
 
   const userSettings: Writable<MinerobeUserSettings> = writable(null);
   const renderConfiguration: Writable<OutfitPackageRenderConfig> = writable(
@@ -61,7 +62,10 @@
 
       $userSettings = await FetchSettings();
 
-      if ($userSettings.currentTexture != null) {
+      if (
+        $userSettings.currentTexture != null &&
+        IsEmptyGuid($userSettings.currentTexture.packageId) == false
+      ) {
         $renderConfiguration.FromExportConfig(
           $userSettings.currentTexture,
           await GetPackage($userSettings.currentTexture.packageId)
@@ -126,7 +130,7 @@
         renderer={dynamicRenderer}
         cape={$renderConfiguration?.cape?.texture}
         resizable
-        resizeDebounce={10}
+        resizeDebounce={-1}
         isDynamic={true}
       />
     </Placeholder>

@@ -138,6 +138,7 @@ export class TextureRender {
     requestAnimationFrame(() => this._render(this));
   };
   private _updateRenderSize = function () {
+    if (this.modelScene?.camera == null) return;
     const canvas = this.node;
     const width = canvas.clientWidth != 0 ? canvas.clientWidth : 300;
     const height = canvas.clientHeight != 0 ? canvas.clientHeight : 300;

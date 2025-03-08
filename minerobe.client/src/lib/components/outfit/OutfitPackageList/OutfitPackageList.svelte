@@ -23,6 +23,7 @@
   export let pageSize: number = 10;
   export let selectable = false;
 
+  let _component: any = null;
   const selectOutfit = function (item) {
     dispatch("select", { item: item });
   };
@@ -38,7 +39,7 @@
   };
 </script>
 
-<div class="outfit-package-list">
+<div class="outfit-package-list" bind:this={_component}>
   <div
     class="outfit-package-list-items"
     style={`grid-template-columns: repeat(${columns > 0 ? "auto-fill" : "auto-fit"}, minmax(max(5px, ${columns > 0 ? `calc((100% / ${columns}) - 4px)` : "128px"}),1fr));`}
@@ -64,7 +65,11 @@
     {/if}
   </div>
   {#if resizable}
-    <Resize debounce={resizeDebounce} on:resize={onResize} />
+    <Resize
+      debounce={resizeDebounce}
+      on:resize={onResize}
+      targetNode={_component}
+    />
   {/if}
 </div>
 

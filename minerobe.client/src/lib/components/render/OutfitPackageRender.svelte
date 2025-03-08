@@ -52,6 +52,8 @@
   export let resizable = false;
   export let resizeDebounce = 300;
 
+  let _component: any = null;
+
   let _source: string | OutfitPackage = structuredClone(source);
   let _model: MODEL_TYPE | "source" = structuredClone(model);
   let _isFlatten: boolean = isFlatten;
@@ -405,7 +407,7 @@
   };
 </script>
 
-<div class="outfit-render">
+<div class="outfit-render" bind:this={_component}>
   {#if !isDynamic}
     <!-- svelte-ignore a11y-missing-attribute -->
     <img
@@ -419,7 +421,11 @@
     <div bind:this={renderNode}></div>
   {/if}
   {#if resizable}
-    <Resize on:resize={onResize} debounce={resizeDebounce}></Resize>
+    <Resize
+      on:resize={onResize}
+      debounce={resizeDebounce}
+      targetNode={_component}
+    ></Resize>
   {/if}
 </div>
 

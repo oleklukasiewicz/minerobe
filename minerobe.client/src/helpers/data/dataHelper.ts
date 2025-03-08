@@ -17,6 +17,9 @@ export const normalizeNumber = (value: number): string => {
   return newValue + suffix;
 };
 export const normalizeStringCase = (value: string): string => {
-  value= value.toLowerCase();
+  value = value.toLowerCase();
   return value.charAt(0).toUpperCase() + value.slice(1);
-}
+};
+export const IsEmptyGuid = (guid: string): boolean => {
+  return guid === "00000000-0000-0000-0000-000000000000";
+};

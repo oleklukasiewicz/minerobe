@@ -1,33 +1,55 @@
-<script>
+<script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  import { WindowResizeEvent } from "$src/helpers/other/windowEvents";
+  import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
   export let debounce = 0;
+  export let targetNode: any;
 
   const dispatch = createEventDispatcher();
   let timeout;
+  let resizeObserver = null;
+  let _targetNode = null;
 
-  function mount(node) {
-    const unsub = WindowResizeEvent.subscribe(() => {
-      clearTimeout(timeout);
+  const updateTargetNode = (node) => {
+    if (!node) return;
+    resizeObserver?.unobserve(_targetNode);
+    _targetNode = node;
+    observe();
+  };
+  onMount(() => {
+    if (targetNode) {
+      updateTargetNode(targetNode);
+    }
+  });
+  onDestroy(() => {
+    clearTimeout(timeout);
+    resizeObserver?.unobserve(_targetNode);
+  });
 
-      timeout = setTimeout(() => {
-        const visible = node.offsetParent === null;
-        dispatch("resize", { visible: { md: visible } });
-      }, debounce);
-    });
+  function observe() {
+    if (!resizeObserver)
+      resizeObserver = new ResizeObserver((entries) => {
+        clearTimeout(timeout);
+        if (debounce == -1) {
+          dispatch("resize", {});
+        }
+        timeout = setTimeout(() => {
+          dispatch("resize", {});
+        }, debounce);
+      });
+    resizeObserver.observe(_targetNode);
 
     return {
       destroy() {
         clearTimeout(timeout);
-        unsub();
+        resizeObserver.unobserve(_targetNode);
       },
     };
   }
+  $: updateTargetNode(targetNode);
 </script>
 
-<div use:mount ></div>
+<div></div>
 
 <style lang="scss">
   div {
