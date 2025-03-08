@@ -204,12 +204,10 @@ export class TextureRender {
     return this;
   };
   PauseRendering = function (): TextureRender {
-    console.log("pause");
     this.renderingPaused = true;
     return this;
   };
   ResumeRendering = function (): TextureRender {
-    console.log("resume");
     this.renderingPaused = false;
     return this;
   };

@@ -106,6 +106,8 @@
     top: 0;
     width: 100%;
     &.mobile {
+      backdrop-filter: none;
+      background-color: rgba(226, 226, 226);
       bottom: 0;
       height: 50px;
       padding: 4px;
