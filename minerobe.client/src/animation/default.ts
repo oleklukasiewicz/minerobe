@@ -56,7 +56,6 @@ const DefaultAnimation = new RenderAnimation(
 
       clock
     );
-
     if (data.head) {
       if (elapsedRenderTime > data.nextRotationTime) {
         // Time for a new rotation

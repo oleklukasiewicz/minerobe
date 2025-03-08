@@ -40,8 +40,6 @@ export class TextureRender {
   private modelScene: ModelScene;
   private textureLoader: any;
   private loadedTexture: any;
-  private animations: RenderAnimation[] = [];
-  private animationQueueLimit: number = 3;
   private renderingActive: boolean = false;
   private shadowsEnabled: boolean = false;
   private shadowScene: any = null;
@@ -52,11 +50,8 @@ export class TextureRender {
   private capePivot: any = null;
 
   //for dynamic render
-  private clock = null;
+  private animationEngine: RenderAnimationEngine = new RenderAnimationEngine();
   private orbitalControls: any = null;
-  private animationData: any = null;
-  private animationPrepared: boolean = false;
-  private animationIsQuiting: boolean = false;
 
   private _loadTexture = async function (targetTexture: string = null, flipY) {
     return new Promise((resolve) => {
@@ -132,59 +127,15 @@ export class TextureRender {
   private _render = function (_self = this) {
     if (!_self.renderingActive) return;
     //frame rendering
-    const _clockActualDelta = this.clock.getDelta();
-    const _clockDelta = _clockActualDelta > 1 ? 1 : _clockActualDelta;
-    const _clockElapsedTime = this.clock.getElapsedTime();
+    this.animationEngine.PrepareAnimation(
+      this.modelScene.renderScene,
+      this.modelScene.name
+    );
+    this.animationEngine.RenderAnimationFrame();
 
-    //animations
-    const currentAnimation: RenderAnimation = this.animations[0];
-    if (currentAnimation != null) {
-      if (!_self.animationPrepared)
-        _self._prepareAnimation(currentAnimation, false);
-      if (_self.animations.length > 1) _self.animationIsQuiting = true;
-      if (_self.animationIsQuiting) {
-        const isCurrentAnimationFinishedQueting = currentAnimation.stop(
-          _self.animationData,
-          _self.modelScene.renderScene,
-          _clockDelta,
-          _self.modelScene.model,
-          _clockElapsedTime
-        );
-        if (isCurrentAnimationFinishedQueting) {
-          _self.animationIsQuiting = false;
-          _self.animationPrepared = false;
-          _self.animationData = null;
-          _self.animations.shift();
-        }
-      } else
-        currentAnimation.render(
-          _self.animationData,
-          _self.modelScene.renderScene,
-          _clockDelta,
-          _self.modelScene.model,
-          _clockElapsedTime
-        );
-    }
     this.renderer.render(this.modelScene.scene, this.modelScene.camera);
     this.node.appendChild(this.renderer.domElement);
     requestAnimationFrame(() => this._render(this));
-  };
-  private _prepareAnimation(
-    animation: RenderAnimation,
-    keepData: boolean,
-    force = false
-  ) {
-    if (this.animationPrepared && !force) return;
-    this._loadScenedataToAnimation(animation);
-    this.animationPrepared = true;
-  }
-  private _loadScenedataToAnimation = function (animation: RenderAnimation) {
-    const animationData = animation.prepare(
-      this.modelScene.renderScene,
-      false,
-      this.modelScene.name
-    );
-    this.animationData = Object.assign(this.animationData || {}, animationData);
   };
   private _updateRenderSize = function () {
     const canvas = this.node;
@@ -241,8 +192,11 @@ export class TextureRender {
     if (this.capeTexture != null) {
       this._attachCapeToModel();
     }
-    if (this.animations.length > 0 && this.renderingActive)
-      this._prepareAnimation(this.animations[0], true, true);
+    if (this.renderingActive)
+      this.animationEngine.RefreshAnimationData(
+        this.modelScene.renderScene,
+        this.modelScene.name
+      );
     return this;
   };
   SetTextureAsync = async function (texture: string): Promise<TextureRender> {
@@ -278,15 +232,11 @@ export class TextureRender {
     animation: RenderAnimation,
     force: boolean
   ): TextureRender {
-    if (this.animations.length >= this.animationQueueLimit) {
-      if (!force) return this;
-      this.animations.splice(this.animations.length - 1, 1, animation);
-    }
-    this.animations.push(animation);
+    this.animationEngine.AddAnimation(animation, force);
     return this;
   };
   SetAnimationsLimit = function (limit: number): TextureRender {
-    this.animationQueueLimit = limit;
+    //this.animationEngine.animationQueueLimit = limit;
     return this;
   };
   RenderStatic = async function (): Promise<TextureRender> {
@@ -313,7 +263,6 @@ export class TextureRender {
     this._updateRenderSize();
     await this._applyTextureToModel();
 
-    this.clock = new THREE.Clock();
     this.orbitalControls = new OrbitControls(
       this.modelScene.camera,
       this.renderer.domElement
@@ -434,8 +383,11 @@ export class TextureRender {
     });
     this.capeScene = capeModel;
     this._attachCapeToModel();
-    if (this.animations.length > 0 && this.renderingActive)
-      this._loadScenedataToAnimation(this.animations[0]);
+    if (this.renderingActive)
+      this.animationEngine.RefreshAnimationData(
+        this.modelScene.renderScene,
+        this.modelScene.name
+      );
 
     return this;
   };
@@ -518,6 +470,114 @@ export class ModelScene {
     });
     return cloned;
   }
+}
+export class RenderAnimationEngine {
+  private animationsList: RenderAnimation[] = [];
+  private currentAnimation: RenderAnimation = null;
+  private animationData: any = null;
+  private animationDataModelName: string = null;
+
+  private isAnimationPrepared: boolean = false;
+  private isAnimationQuiting: boolean = false;
+
+  private animationQueueLimit: number = 2;
+
+  private clock: any = null;
+
+  constructor() {
+    this.clock = new THREE.Clock();
+  }
+  PrepareAnimation = function (
+    sceneData: any,
+    modelName,
+    keepData: boolean,
+    force = false
+  ) {
+    if (this.isAnimationPrepared && !force) return this;
+
+    if (this.currentAnimation == null) {
+      if (this.animationsList.length > 0) {
+        this.currentAnimation = this.animationsList[0];
+        this.animationsList.splice(0, 1);
+      }
+    }
+    if (this.currentAnimation == null) return this;
+
+    const localAnimationData = this.currentAnimation.prepare(
+      sceneData,
+      keepData,
+      modelName
+    );
+
+    this.animationDataModelName = modelName;
+    this.animationData = Object.assign(
+      this.animationData || {},
+      localAnimationData
+    );
+
+    this.isAnimationPrepared = true;
+    return this;
+  };
+  AddAnimation = function (animation: RenderAnimation, force = false) {
+    if (this.animationsList.length >= this.animationQueueLimit) {
+      if (!force) return this;
+      this.animationsList.splice(this.animationsList.length - 1, 1, animation);
+    }
+    this.animationsList.push(animation);
+    return this;
+  };
+  RenderAnimationFrame = function () {
+    const _clockActualDelta = this.clock.getDelta();
+    const _clockDelta = _clockActualDelta > 1 ? 1 : _clockActualDelta;
+    const _clockElapsedTime = this.clock.getElapsedTime();
+
+    if (!this.isAnimationPrepared) {
+      this.PrepareAnimation(
+        this.animationData,
+        false,
+        this.animationDataModelName
+      );
+    }
+    if (this.currentAnimation == null) return this;
+
+    if (this.animationsList.length > 0) this.isAnimationQuiting = true;
+    if (this.isAnimationQuiting) {
+      const isAnimationFinishedQuiting = this.currentAnimation.stop(
+        this.animationData,
+        null,
+        _clockDelta,
+        this.animationDataModelName,
+        _clockElapsedTime
+      );
+      if (isAnimationFinishedQuiting) {
+        this.isAnimationQuiting = false;
+        this.isAnimationPrepared = false;
+        this.animationData = null;
+        this.currentAnimation = null;
+      }
+    } else {
+      this.currentAnimation.render(
+        this.animationData,
+        null,
+        _clockDelta,
+        this.animationDataModelName,
+        _clockElapsedTime
+      );
+    }
+  };
+  RefreshAnimationData = function (sceneData: any, modelName) {
+    if (this.currentAnimation == null) return this;
+    const localAnimationData = this.currentAnimation.prepare(
+      sceneData,
+      true,
+      modelName
+    );
+    this.animationData = Object.assign(
+      this.animationData || {},
+      localAnimationData
+    );
+    this.animationDataModelName = modelName;
+  };
 }
 export class OutfitPackageToTextureConverter {
   private outfitPackage: OutfitPackage;
