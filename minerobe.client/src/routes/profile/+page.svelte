@@ -97,7 +97,7 @@
     <!-- Current skin card-->
     <StatusCard label={"current skin"}>
       <Placeholder
-        loaded={$profileUser?.settings != null || loaded}
+        {loaded}
         height="100%"
         width="100%"
         loadedStyle="width:100%;"
