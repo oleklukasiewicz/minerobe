@@ -76,7 +76,7 @@
   <div id="overview-header">
     <!-- svelte-ignore a11y-missing-attribute -->
     <Placeholder
-      {loaded}
+      loaded={$profileUser != null}
       width="96px"
       height="96px"
       aspectRatio="1"
@@ -97,7 +97,7 @@
     <!-- Current skin card-->
     <StatusCard label={"current skin"}>
       <Placeholder
-        {loaded}
+        loaded={$profileUser?.settings != null || loaded}
         height="100%"
         width="100%"
         loadedStyle="width:100%;"
@@ -123,7 +123,7 @@
     <!-- Base texture card-->
     <StatusCard label={"base texture"}>
       <Placeholder
-        {loaded}
+        loaded={$profileUser?.settings != null || loaded}
         height="100%"
         width="100%"
         loadedStyle="width:100%;"
