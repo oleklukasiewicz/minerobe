@@ -232,6 +232,7 @@
       <Placeholder {loaded}>
         <div id="render-node">
           <OutfitPackageRender
+            pauseOnIntersection
             bind:addAnimation={__addAnimation}
             source={$renderConfiguration.item}
             isDynamic

@@ -26,5 +26,6 @@ export const DEFAULT_PACKAGE = {
   createdAt: new Date(),
   modifiedAt: new Date(),
   isInWardrobe: false,
+  isInCollection: false,
   totalLayersCount: 0,
 };

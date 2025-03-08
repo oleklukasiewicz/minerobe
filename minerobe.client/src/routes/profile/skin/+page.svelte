@@ -123,6 +123,7 @@
   <div class="render">
     <Placeholder {loaded}>
       <OutfitPackageRender
+        pauseOnIntersection
         bind:addAnimation={__addAnimation}
         baseTexture={$userSettings?.baseTexture.layers[0] || $BASE_TEXTURE}
         source={$renderConfiguration.item}

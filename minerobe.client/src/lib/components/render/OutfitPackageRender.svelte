@@ -1,6 +1,7 @@
 <script lang="ts">
   //main imports
   import { onDestroy, onMount, createEventDispatcher } from "svelte";
+  import IntersectionObserver from "svelte-intersection-observer";
   //services
   import {
     CameraConfig,
@@ -38,6 +39,7 @@
   export let renderer = $DEFAULT_RENDERER;
   export let cape: string = null;
   export let baseTexture: OutfitLayer | string = null;
+  export let pauseOnIntersection = false;
   export const addAnimation = function (animation, force = false) {
     if (textureRenderer == null) return;
     textureRenderer.AddAnimation(animation, force);
@@ -405,6 +407,12 @@
     textureRenderer.Resize();
     renderReady = true;
   };
+  const onObserve = function (e) {
+    if (pauseOnIntersection) {
+      if (!e.detail.isIntersecting) textureRenderer.PauseRendering();
+      else textureRenderer.ResumeRendering();
+    } else textureRenderer.ResumeRendering();
+  };
 </script>
 
 <div class="outfit-render" bind:this={_component}>
@@ -418,7 +426,9 @@
       loading="lazy"
     />
   {:else}
-    <div bind:this={renderNode}></div>
+    <IntersectionObserver element={_component} on:observe={onObserve}>
+      <div bind:this={renderNode}></div></IntersectionObserver
+    >
   {/if}
   {#if resizable}
     <Resize

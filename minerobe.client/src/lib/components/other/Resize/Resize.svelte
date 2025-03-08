@@ -9,6 +9,7 @@
   let timeout;
   let resizeObserver = null;
   let _targetNode = null;
+  let initialized = false;
 
   const updateTargetNode = (node) => {
     if (!node) return;
@@ -30,6 +31,10 @@
     if (!resizeObserver)
       resizeObserver = new ResizeObserver((entries) => {
         clearTimeout(timeout);
+        if (!initialized) {
+          initialized = true;
+          return;
+        }
         if (debounce == -1) {
           dispatch("resize", {});
         }

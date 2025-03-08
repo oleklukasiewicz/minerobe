@@ -101,6 +101,7 @@
     <Placeholder {loaded}>
       <DragAndDrop on:drop={DropBaseTexture}>
         <OutfitPackageRender
+          pauseOnIntersection
           baseTexture={$BASE_TEXTURE}
           renderer={dynamicRenderer}
           resizable

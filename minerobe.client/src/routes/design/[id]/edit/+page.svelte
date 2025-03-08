@@ -426,6 +426,7 @@
         <div id="render-node">
           <DragAndDrop on:drop={importLayerFromDrop}>
             <OutfitPackageRender
+              pauseOnIntersection
               on:textureUpdate={UpdatePackageLayersOrder}
               bind:addAnimation={__addAnimation}
               source={$renderConfiguration.item}

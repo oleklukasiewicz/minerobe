@@ -137,6 +137,7 @@
     <div class="render">
       <Placeholder {loaded}>
         <OutfitPackageRender
+          pauseOnIntersection
           baseTexture={$BASE_TEXTURE}
           renderer={dynamicRenderer}
           resizable

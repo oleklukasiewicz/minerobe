@@ -48,6 +48,7 @@ export class TextureRender {
   private capeTexture: string = null;
   private capeScene: any = null;
   private capePivot: any = null;
+  private renderingPaused: boolean = false;
 
   //for dynamic render
   private animationEngine: RenderAnimationEngine = new RenderAnimationEngine();
@@ -126,15 +127,17 @@ export class TextureRender {
   };
   private _render = function (_self = this) {
     if (!_self.renderingActive) return;
-    //frame rendering
-    this.animationEngine.PrepareAnimation(
-      this.modelScene.renderScene,
-      this.modelScene.name
-    );
-    this.animationEngine.RenderAnimationFrame();
+    if (!this.renderingPaused) {
+      //frame rendering
+      this.animationEngine.PrepareAnimation(
+        this.modelScene.renderScene,
+        this.modelScene.name
+      );
+      this.animationEngine.RenderAnimationFrame();
 
-    this.renderer.render(this.modelScene.scene, this.modelScene.camera);
-    this.node.appendChild(this.renderer.domElement);
+      this.renderer.render(this.modelScene.scene, this.modelScene.camera);
+      this.node.appendChild(this.renderer.domElement);
+    }
     requestAnimationFrame(() => this._render(this));
   };
   private _updateRenderSize = function () {
@@ -198,6 +201,16 @@ export class TextureRender {
         this.modelScene.renderScene,
         this.modelScene.name
       );
+    return this;
+  };
+  PauseRendering = function (): TextureRender {
+    console.log("pause");
+    this.renderingPaused = true;
+    return this;
+  };
+  ResumeRendering = function (): TextureRender {
+    console.log("resume");
+    this.renderingPaused = false;
     return this;
   };
   SetTextureAsync = async function (texture: string): Promise<TextureRender> {
