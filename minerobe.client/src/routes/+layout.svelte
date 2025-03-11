@@ -34,7 +34,7 @@
   });
 </script>
 
-{#if !$isLoading}
+<div id="app">
   {#if ToastController}
     <svelte:component this={ToastController} items={$TOAST_LIST} />
   {/if}
@@ -42,7 +42,7 @@
   <div id="view" class:mobile={$IS_MOBILE_VIEW}>
     <slot />
   </div>
-{/if}
+</div>
 
 <style lang="scss">
   @use "layout_style.scss";

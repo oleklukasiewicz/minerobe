@@ -1,6 +1,4 @@
 <script lang="ts">
-  //main imports
-  import { _ } from "svelte-i18n";
   //api
   import { loginUser } from "$src/api/auth";
   //services
@@ -61,7 +59,7 @@
         />
         <NavigationItem
           on:click={profileAction}
-          label={$CURRENT_USER ? null : $_("navigation.login")}
+          label={$CURRENT_USER ? null : "Login"}
           iconImage={$CURRENT_USER ? $CURRENT_USER?.avatar : null}
           icon={$CURRENT_USER == null ? AvatarIcon : null}
           viewId={"profile"}
@@ -119,12 +117,10 @@
     }
     .items {
       flex: 1;
-      transition: var(--time) cubic-bezier(0.1, 0.9, 0.2, 1);
       display: grid;
       grid-template-columns: 23% 1fr 23%;
       gap: 16px;
       max-width: 1300px;
-      padding: 0px 16px;
       box-sizing: border-box;
       margin: auto;
     }
