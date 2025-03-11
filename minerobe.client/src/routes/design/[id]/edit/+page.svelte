@@ -236,13 +236,13 @@
   };
   const editLayer = async function (e) {
     const item = e.detail.item;
-    await UpdatePackageLayer(item);
-
     itemPackageLayers.update((layers) => {
       const index = layers.findIndex((x) => x.id == item.id);
       layers[index] = item;
       return layers;
     });
+
+    await UpdatePackageLayer(item);
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, item.outfitType)
     );
@@ -253,12 +253,13 @@
     const file = e.detail.file;
 
     const index = $itemPackageLayers.findIndex((x) => x.id == layer.id);
-    await UpdatePackageLayer($itemPackageLayers[index]);
 
     itemPackage.update((item) => {
       item.layers[index][option] = file;
       return item;
     });
+
+    await UpdatePackageLayer($itemPackageLayers[index]);
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layer.outfitType)
     );
