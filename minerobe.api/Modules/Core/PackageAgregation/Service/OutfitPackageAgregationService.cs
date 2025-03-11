@@ -69,6 +69,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                                Layers = (from lm in _context.PackageLayerMatchings
                                          join l in _context.OutfitLayers on lm.LayerId equals l.Id
                                          where lm.PackageId == p.Id
+                                         orderby lm.Order
                                          select l).ToList(),
                                Publisher = u
                            };
@@ -123,6 +124,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                                Layers = (from lm in _context.PackageLayerMatchings
                                          join l in _context.OutfitLayers on lm.LayerId equals l.Id
                                          where lm.PackageId == p.Id
+                                         orderby lm.Order
                                          select l).ToList(),
                                Publisher = u
                            };
