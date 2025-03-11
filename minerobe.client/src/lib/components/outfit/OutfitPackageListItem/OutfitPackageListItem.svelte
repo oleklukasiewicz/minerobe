@@ -7,7 +7,7 @@
   //consts
   //model
   import type { OutfitLayer, OutfitPackage } from "$data/models/package";
-  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+  import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
   //components
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
@@ -16,6 +16,7 @@
   import HeartSmallIcon from "$icons/small/heart-micro.svg?raw";
   import DownloadSmallIcon from "$icons/small/download-micro.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
+  import { GetDominantColorTitleFromImage } from "$src/helpers/image/colorHelper";
 
   const dispatch = createEventDispatcher();
 
@@ -88,21 +89,31 @@
       <OutfitPackageRender
         bind:resize
         source={item}
-        outfitType={currentLayer?.outfitType || item.outfitType}
-        layerId={currentLayer?.id}
+        outfitType={item.type == PACKAGE_TYPE.OUTFIT_SET
+          ? OUTFIT_TYPE.OUTFIT_SET
+          : currentLayer?.outfitType || item.outfitType}
+        layerId={item.type == PACKAGE_TYPE.OUTFIT_SET ? null : currentLayer?.id}
         isDynamic={false}
         {baseTexture}
       />
     {/if}
     <div class="colors">
-      {#each item.layers.slice(0, layerCount) as layer}
+      {#if item.type == PACKAGE_TYPE.OUTFIT_SET}
         <ColorBadge
-          selected={currentLayer?.id == layer.id}
-          color={layer.colorName}
-          colorName={layer.colorName}
-          on:click={async () => await updateLayerId(layer.id)}
+          selected
+          color={item.layers[0].colorName}
+          colorName={item.layers[0].colorName}
         />
-      {/each}
+      {:else}
+        {#each item.layers.slice(0, layerCount) as layer}
+          <ColorBadge
+            selected={currentLayer?.id == layer.id}
+            color={layer.colorName}
+            colorName={layer.colorName}
+            on:click={async () => await updateLayerId(layer.id)}
+          />
+        {/each}
+      {/if}
       {#if item.totalLayersCount > layerCount && moreLayersIndicator && item.type != PACKAGE_TYPE.OUTFIT_SET}
         <span class="more">+{item.totalLayersCount - layerCount}</span>
       {/if}

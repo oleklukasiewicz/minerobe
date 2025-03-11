@@ -17,7 +17,6 @@ namespace minerobe.api.Modules.Core.Package.Entity
         public FileData Steve { get; set; }
         public FileData Alex { get; set; }
         public LayerType Type { get; set; }
-        public bool IsMerged { get; set; }
         public string ColorName { get; set; }
         public OutfitType OutfitType { get; set; }
 
@@ -33,7 +32,6 @@ namespace minerobe.api.Modules.Core.Package.Entity
             builder.Ignore(x => x.Type);
             builder.Property(x => x.Steve).StoreAsJSON();
             builder.Property(x => x.Alex).StoreAsJSON();
-            builder.Property(x => x.IsMerged);
             builder.ToTable("Layers");
         }
     }

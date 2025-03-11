@@ -17,7 +17,10 @@ namespace minerobe.api.Helpers.Model
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
-                items.Add(item.Package.ToListItemResponseModel(maxLayersCount, 1, item.IsInWardrobe));
+                if (item.Package.Type == PackageType.Set)
+                    items.Add(item.Package.ToListItemResponseModel(-1, -1, item.IsInWardrobe));
+                else
+                    items.Add(item.Package.ToListItemResponseModel(maxLayersCount, 1, item.IsInWardrobe));
             }
             return items;
         }
@@ -26,7 +29,10 @@ namespace minerobe.api.Helpers.Model
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
-                items.Add(item.ToListItemResponseModel(maxLayerCount, 1, false));
+                if (item.Type == PackageType.Set)
+                    items.Add(item.ToListItemResponseModel(-1, -1, false));
+                else
+                    items.Add(item.ToListItemResponseModel(maxLayerCount, 1, false));
             }
             return items;
         }
@@ -35,7 +41,10 @@ namespace minerobe.api.Helpers.Model
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
-                items.Add(item.ToListItemResponseModel(1, 1, isInWardrobe));
+                if (item.Type == PackageType.Set)
+                    items.Add(item.ToListItemResponseModel(-1, -1, isInWardrobe));
+                else
+                    items.Add(item.ToListItemResponseModel(1, 1, isInWardrobe));
             }
             return items;
         }

@@ -717,7 +717,12 @@ export class OutfitPackageToTextureConverter {
     if (this.layerId == null || this.layerId == "") {
       //load all layers
       this.outfitPackage.layers.forEach((layer: OutfitLayer) => {
-        const content = layer[this.model]?.content;
+        let content = layer[this.model]?.content;
+        if (content == null) {
+          if (this.model == MODEL_TYPE.ALEX)
+            content = layer[MODEL_TYPE.STEVE]?.content;
+          else content = layer[MODEL_TYPE.ALEX]?.content;
+        }
         if (content != null) layers.push(content);
       });
     } else {

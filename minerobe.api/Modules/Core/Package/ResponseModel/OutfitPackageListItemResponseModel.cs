@@ -22,26 +22,21 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
     }
     public static class OutfitPackageListItemResponseModelExtensions
     {
-        public static OutfitPackageListItemResponseModel ToListItemResponseModel(this OutfitPackage entity, int layersCount = 2, int loadedCount = 1, bool isInWardrobe = false,bool isInCollection =false)
+        public static OutfitPackageListItemResponseModel ToListItemResponseModel(this OutfitPackage entity, int layersCount = 2, int loadedCount = 1, bool isInWardrobe = false, bool isInCollection = false)
         {
             var layers = new List<OutfitLayerResponseModel>();
             if (layersCount > entity.Layers.Count)
                 layersCount = entity.Layers.Count;
-            var mergedLayers = entity.Layers.Where(x => x.IsMerged).FirstOrDefault();
-            if (entity.Type == PackageType.Set && mergedLayers != null)
+            if (entity.Layers?.Count > 0)
             {
-                layers.Add(mergedLayers.ToResponseModel(entity));
-            }
-            else
-            {
-                if (entity.Layers?.Count > 0)
+                if (layersCount < 0)
+                    layersCount = entity.Layers.Count;
+                for (int i = 0; i < layersCount; i++)
                 {
-                    for (int i = 0; i < layersCount; i++)
-                    {
-                        layers.Add(entity.Layers[i].ToResponseModel(entity, i < loadedCount));
-                    }
+                    layers.Add(entity.Layers[i].ToResponseModel(entity, loadedCount < 0 ? true : i < loadedCount));
                 }
             }
+
 
             return new OutfitPackageListItemResponseModel
             {

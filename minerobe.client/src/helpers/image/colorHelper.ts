@@ -50,6 +50,11 @@ export const GetDominantColorFromImage = async function (base64) {
   const ctx = (await GetContextFromBase64(base64)) as any;
   return await GetDominantColorFromImageContext(ctx);
 };
+export const GetDominantColorTitleFromImage = async function (base64) {
+  const ctx = (await GetContextFromBase64(base64)) as any;
+  const dominantColor = await GetDominantColorFromImageContext(ctx);
+  return FindColorTitle(dominantColor);
+}
 export const GetDominantColorFromImageContext = async function (ctx) {
   const imageData = ctx.getImageData(
     0,

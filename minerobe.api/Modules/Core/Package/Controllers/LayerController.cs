@@ -118,15 +118,5 @@ namespace minerobe.api.Modules.Core.Package.Controllers
                 return NotFound();
             return Ok(res);
         }
-        [HttpPost("Merged")]
-        public async Task<IActionResult> SetMergedLayer([FromBody] OutfitLayerModel layer)
-        {
-            var canEdit = await _packageService.CanEditPackage(layer.SourcePackageId.Value, (await _userService.GetFromExternalUser(User)).Id);
-            if (canEdit == false)
-                return Unauthorized();
-
-            var res = await _packageService.SetMergedLayer(layer.ToEntity());
-            return Ok(res.ToResponseModel(layer.SourcePackageId.Value));
-        }
     }
 }

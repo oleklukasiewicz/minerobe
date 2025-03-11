@@ -13,7 +13,6 @@
     SetPackageLayerOrder,
     RemovePackageLayerWithPackageContext,
     AddPackageLayer,
-    SetMergedLayer,
     RemovePackage,
     AddRemoteLayerToPackage,
   } from "$src/api/pack";
@@ -32,7 +31,6 @@
   import { ImportImages, ImportImagesFromFiles } from "$src/data/import.js";
   import { ExportImage } from "$src/data/export.js";
   import { OutfitPackageToTextureConverter } from "$src/data/render.js";
-  import { MergePackageLayersToSingleLayer } from "$src/helpers/package/packageHelper.js";
   import { ShowToast } from "$src/data/toast.js";
   import { debounce } from "$src/data/base.js";
   import { SetMinecraftSkin } from "$src/data/integration.js";
@@ -58,8 +56,6 @@
   import { OutfitPackageRenderConfig } from "$data/models/render";
   import { MinerobeUserSettings } from "$data/models/user";
   import HandsUpAnimation from "$src/animation/handsup";
-  import NewOutfitBottomAnimation from "$src/animation/bottom.js";
-  import NewOutfitBottomAltAnimation from "$src/animation/bottomAlt.js";
   import {
     navigateToOutfitPackage,
     navigateToWardrobe,
@@ -140,10 +136,6 @@
       $itemPackage.id,
       layers.map((x) => x.id)
     );
-    if (isOutfitSet) {
-      const merged = await MergePackageLayersToSingleLayer($itemPackage);
-      await SetMergedLayer(merged);
-    }
   }, 500);
 
   let __addAnimation = function (
