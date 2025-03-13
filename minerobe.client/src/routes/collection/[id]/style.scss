@@ -3,7 +3,7 @@
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
-  margin: 0px 16px 0px 16px;
+  box-sizing: border-box;
   #collection-header {
     background-color: var(--color-theme-D1);
     margin: 8px 0px;

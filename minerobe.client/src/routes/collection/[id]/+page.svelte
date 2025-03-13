@@ -10,7 +10,7 @@
   import type { OutfitPackageCollection } from "$src/data/models/collection";
   import { OutfitPackage } from "$src/data/models/package.js";
   import type { MinerobeUserSettings } from "$src/data/models/user.js";
-  import { CURRENT_APP_STATE } from "$src/data/static";
+  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
   import EditIcon from "$src/icons/edit.svg?raw";
@@ -78,7 +78,7 @@
         loading={!itemsLoaded}
       >
         <OutfitPackageList
-          columns={6}
+          columns={$IS_MOBILE_VIEW ? 3 : 6}
           resizable
           items={pagedItems}
           currentPackageId={userSettings.currentTexture?.packageId}
