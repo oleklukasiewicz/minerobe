@@ -12,12 +12,14 @@
     padding: 16px 0px;
     background-color: var(--color-theme);
   }
-  &.mobile
-  {
+  &.mobile {
     #content-header {
       position: static;
       grid-template-columns: auto 1fr;
       padding: 8px;
+    }
+    #content-list {
+      margin: 0px 8px;
     }
   }
 }
