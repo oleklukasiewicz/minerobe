@@ -1,135 +1,109 @@
 <script lang="ts">
-  //api
-  import { loginUser } from "$src/api/auth";
-  //services
-  import {
-    navigate,
-    navigateToProfile,
-  } from "$src/helpers/other/navigationHelper";
-  //consts
-  import { CURRENT_USER, IS_MOBILE_VIEW } from "$src/data/static";
-  //components
-  import NavigationItem from "../NavigationItem/NavigationItem.svelte";
   import Search from "$lib/components/base/Search/Search.svelte";
-  //icons
+  import NavigationItem from "../NavigationItem/NavigationItem.svelte";
+
   import HomeIcon from "$src/icons/home.svg?raw";
   import SearchIcon from "$src/icons/search.svg?raw";
   import SubscriptionIcon from "$src/icons/subscriptions.svg?raw";
   import AvatarIcon from "$src/icons/avatar.svg?raw";
-
-  const profileAction = async () => {
-    if ($CURRENT_USER) {
-      navigateToProfile();
-      isMenuOpened = false;
-    } else {
-      await loginUser();
-      isMenuOpened = false;
-    }
-  };
-
-  let isMenuOpened = false;
+  import { CURRENT_USER, IS_MOBILE_VIEW } from "$src/data/static";
 </script>
 
-<div
-  id="nav"
-  class:opened={isMenuOpened}
-  class:closed={!isMenuOpened}
-  class:mobile={$IS_MOBILE_VIEW}
->
-  {#if !$IS_MOBILE_VIEW}
-    <div class="items">
-      <a id="nav-title" href={"/"}>
-        <img src="/texture/logo.png" alt="Logo" />
-      </a>
-      <div style="flex:1;text-align:center">
-        <Search
-          dense={true}
-          style="width:100%;max-width:400px;margin-top:2px;"
-          placeholder={"Search outfits, sets and collections"}
-          on:search={() => navigate("/explore")}
-        />
-      </div>
-      <div style="display:flex;gap:8px">
-        <div style="flex:1;"></div>
-        <NavigationItem
-          icon={SubscriptionIcon}
-          minimal
-          viewId="wardrobe"
-          disabled={$CURRENT_USER?.id == null}
-        />
-        <NavigationItem
-          on:click={profileAction}
-          label={$CURRENT_USER ? null : "Login"}
-          iconImage={$CURRENT_USER ? $CURRENT_USER?.avatar : null}
-          icon={$CURRENT_USER == null ? AvatarIcon : null}
-          viewId={"profile"}
-          minimal
-          customCall
-        />
-      </div>
-    </div>{:else}
-    <div class="items">
-      <NavigationItem icon={HomeIcon} minimal viewId="" />
-      <NavigationItem icon={SearchIcon} minimal viewId="explore" />
-      <NavigationItem
-        icon={SubscriptionIcon}
-        minimal
-        viewId="wardrobe"
-        disabled={$CURRENT_USER?.id == null}
-      />
-      <NavigationItem
-        on:click={profileAction}
-        iconImage={$CURRENT_USER ? $CURRENT_USER?.avatar : null}
-        icon={$CURRENT_USER == null ? AvatarIcon : null}
-        viewId={"profile"}
-        minimal
-        customCall
+<div class="navigation" class:mobile={$IS_MOBILE_VIEW}>
+  <div class="items">
+    <a id="nav-title" href={"/"}>
+      <img src="/texture/logo.png" alt="Logo" />
+    </a>
+    <div id="nav-search">
+      <Search
+        placeholder="Search outfits, collections"
+        style="width:100%;max-width:400px;"
       />
     </div>
-  {/if}
+    <div id="nav-actions">
+      {#if $IS_MOBILE_VIEW}
+        <NavigationItem
+          label="Home"
+          onlyIcon
+          icon={HomeIcon}
+          viewId=""
+          href="/"
+        />
+        <NavigationItem
+          label="Search"
+          onlyIcon
+          icon={SearchIcon}
+          viewId="explore"
+          href="/explore"
+        />
+      {/if}
+      <NavigationItem
+        label="Wardrobe"
+        onlyIcon
+        icon={SubscriptionIcon}
+        viewId="wardrobe"
+        href="/wardrobe"
+      />
+      <NavigationItem
+        label={$CURRENT_USER?.name || "Sign in"}
+        viewId="profile"
+        onlyIcon={$IS_MOBILE_VIEW}
+        href="/profile"
+        icon={$CURRENT_USER?.avatar ? null : AvatarIcon}
+        iconImage={$CURRENT_USER?.avatar}
+      />
+    </div>
+  </div>
 </div>
 
 <style lang="scss">
-  #nav {
-    backdrop-filter: blur(60px) saturate(150%);
-    background-color: rgba(226, 226, 226, 0.8);
-    color: var(--color-theme);
-    font-family: minecraft;
-    height: 60px;
-    padding: 10px 0px;
-    box-sizing: border-box;
+  .navigation {
+    height: 54px;
+    min-width: 100%;
     display: flex;
     position: fixed;
-    z-index: 10;
-    top: 0;
-    width: 100%;
-    &.mobile {
-      backdrop-filter: none;
-      background-color: rgba(226, 226, 226);
-      bottom: 0;
-      height: 50px;
-      padding: 4px;
-      top: auto;
-      .items {
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        place-items: center;
-      }
-    }
+    z-index: 20;
+    backdrop-filter: blur(60px) saturate(150%);
+    background-color: rgba(226, 226, 226, 0.8);
+    justify-content: center;
     .items {
+      max-width: 1300px;
+      padding: 8px;
+      box-sizing: border-box;
       flex: 1;
       display: grid;
-      grid-template-columns: 23% 1fr 23%;
-      gap: 16px;
-      max-width: 1300px;
-      box-sizing: border-box;
-      margin: auto;
+      grid-template-columns: auto 1fr auto;
+      #nav-title {
+        display: table;
+        padding: 8px 0px 2px;
+        box-sizing: border-box;
+        img {
+          height: 24px;
+        }
+      }
+      #nav-search {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #nav-actions {
+        display: flex;
+        gap: 8px;
+        max-height: 100%;
+      }
     }
-    #nav-title {
-      display: table;
-      padding: 8px 0px;
-      box-sizing: border-box;
-      img {
-        height: 24px;
+
+    &.mobile {
+      bottom: 0px;
+      backdrop-filter: none;
+      background-color: rgba(226, 226, 226);
+      #nav-title,
+      #nav-search {
+        display: none;
+      }
+      .items {
+        padding: 4px;
+        grid-template-columns: 1fr
       }
     }
   }

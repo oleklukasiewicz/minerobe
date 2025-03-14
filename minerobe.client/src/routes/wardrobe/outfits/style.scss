@@ -1,42 +1,23 @@
 #wardrobe-outfits {
-    max-width: 100%;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: 100%;
+  #content-header {
+    position: sticky;
+    top: 60px;
+    z-index: 10;
     display: grid;
-    grid-template-columns: 1fr;
-    &.mobile {
-      max-width: 100%;
-      width: 100%;
-      overflow: hidden;
-      #content-header {
-        margin-top: 16px;
-        grid-template-columns: 32px 1fr;
-        top: 0px;
-        padding: 8px 8px 8px;
-        box-sizing: border-box;
-        #content-filters {
-          max-width: 100%;
-        }
-      }
-      #content-list {
-        width: calc(100vw - 16px);
-        margin: 8px;
-      }
-    }
+    grid-template-columns: 1fr auto 300px;
+    gap: 8px;
+    padding: 16px 0px;
+    background-color: var(--color-theme);
+  }
+  &.mobile
+  {
     #content-header {
-      position: sticky;
-      top: 60px;
-      z-index: 5;
-      background-color: var(--color-theme);
-      padding: 16px 0px 8px 0px;
-      box-sizing: border-box;
-      display: grid;
-      grid-template-columns: 1fr auto 300px;
-      gap: 8px;
-      width: 100%;
-      #content-filters {
-        display: grid;
-        min-width: 180px;
-        max-width: 240px;
-      }
+      position: static;
+      grid-template-columns: auto 1fr;
+      padding: 8px;
     }
   }
-  
+}

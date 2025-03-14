@@ -1,18 +1,19 @@
 #wardrobe-view {
   flex: 1;
-  max-width: 100%;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 16px;
+  #content {
+    margin: 0px;
+  }
   &.mobile {
-    grid-template-columns: 1fr;
+    grid-template-columns: 100%;
     grid-template-rows: 50px 1fr;
     margin: 0px;
     gap:0px;
     #content {
-      max-width: 100%;
-      width: 100%;
-      margin: 0px;
+      overflow: hidden;
+      margin-top:20px;
     }
     #navigation {
       max-width: 100%;
