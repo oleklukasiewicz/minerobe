@@ -106,8 +106,7 @@
       const menuY = menuCoords?.top;
       const menuHeight = menuCoords?.height;
       if (itemsContainer) {
-        if (itemsContainer.style.maxHeight?.length == 0)
-          itemsContainer.style.maxHeight = `calc(100vh - ${menuY}px - ${menuHeight}px)`;
+        itemsContainer.style.maxHeight = `calc(100vh - ${menuY}px - ${menuHeight}px - 20px)`;
 
         itemsContainer.style.minWidth = `${menuWidth}px`;
         itemsContainer.style.maxWidth = `${menuWidth}px`;
@@ -226,7 +225,7 @@
         <div class="select-placeholder">{placeholder}</div>
       {/if}
     </div>
-    {#if autocomplete && (multiple ? true: selectedItemValue == null)}
+    {#if autocomplete && (multiple ? true : selectedItemValue == null)}
       <input
         bind:this={inputComponent}
         type="text"
@@ -237,7 +236,10 @@
         on:click={(e) => (opened = true)}
       />
     {:else}
-      <div class="autocomplete-placeholder" on:click={() => (opened = true)}></div>
+      <div
+        class="autocomplete-placeholder"
+        on:click={() => (opened = true)}
+      ></div>
     {/if}
     {#if clearable && selectedItemValue != null && (multiple ? selectedItemValue.length > 0 : true)}
       <Button
