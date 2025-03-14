@@ -39,6 +39,7 @@ namespace minerobe.api.Modules.Core.Package.Entity
         public Guid SocialDataId { get; set; }
         public SocialData Social { get; set; }
         public OutfitType OutfitType { get; set; }
+        public string ColorName { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public List<OutfitLayer> Layers { get; set; }

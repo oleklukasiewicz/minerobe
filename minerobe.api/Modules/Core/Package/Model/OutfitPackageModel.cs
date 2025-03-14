@@ -8,6 +8,7 @@ namespace minerobe.api.Modules.Core.Package.Model
         public string Name { get; set; }
         public string Model { get; set; }
         public string Type { get; set; }
+        public string ColorName { get; set; }
         public List<OutfitLayerModel> Layers { get; set; }
         public Guid PublisherId { get; set; }
         public string Description { get; set; }
@@ -25,6 +26,7 @@ namespace minerobe.api.Modules.Core.Package.Model
                 Name = model.Name,
                 Model = Enum.Parse<ModelType>(model.Model.ToFirstCapitalLetter()),
                 Type = Enum.Parse<PackageType>(model.Type.ToFirstCapitalLetter()),
+                ColorName = model.ColorName,
                 Layers = layers,
                 PublisherId = model.PublisherId,
                 Description = model.Description,

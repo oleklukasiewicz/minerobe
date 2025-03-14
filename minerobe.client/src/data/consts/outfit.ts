@@ -13,6 +13,7 @@ export const DEFAULT_PACKAGE = {
   name: "Default",
   model: MODEL_TYPE.STEVE,
   type: PACKAGE_TYPE.OUTFIT,
+  colorName: null,
   layers: [],
   publisher: {
     id: "",

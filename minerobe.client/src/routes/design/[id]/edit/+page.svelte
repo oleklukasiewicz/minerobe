@@ -87,6 +87,8 @@
   import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
+  import ColorSelect from "$lib/components/other/ColorSelect/ColorSelect.svelte";
+  import { COLORS_ARRAY } from "$src/data/consts/color.js";
 
   export let data;
 
@@ -552,6 +554,17 @@
         <textarea id="description-input" bind:value={$itemPackage.description}
         ></textarea>
       </Placeholder>
+      {#if loaded && isOutfitSet}
+      <SectionTitle label="Color" />
+      <ColorSelect
+        bind:selectedItem={$itemPackage.colorName}
+        placeholder="Select color"
+        items={COLORS_ARRAY}
+        autocomplete clearable
+        itemText="normalizedName"
+        itemValue="name"
+      />
+    {/if}
     </div>
     <div id="item-data-model">
       <SectionTitle label="Model" placeholder={!loaded} />

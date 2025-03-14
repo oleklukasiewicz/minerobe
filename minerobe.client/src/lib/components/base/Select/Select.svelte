@@ -127,12 +127,13 @@
     } else selectedItemValue = items.find((i) => i == value);
   };
   const filterByAutocomplete = (value) => {
-    if (autocomplete && autocompleteInput?.length > 0) {
+    if (autocomplete) {
       filteredItems = items.filter((i) => {
+        if (value?.length == 0 || value == null) return true;
         if (itemText) {
-          return i[itemText].toLowerCase().includes(value.toLowerCase());
+          return i[itemText]?.toLowerCase().includes(value?.toLowerCase());
         }
-        return i.toLowerCase().includes(value.toLowerCase());
+        return i?.toLowerCase().includes(value?.toLowerCase());
       });
     }
   };
@@ -225,7 +226,7 @@
         <div class="select-placeholder">{placeholder}</div>
       {/if}
     </div>
-    {#if autocomplete}
+    {#if autocomplete && (multiple ? true: selectedItemValue == null)}
       <input
         bind:this={inputComponent}
         type="text"
@@ -235,6 +236,8 @@
         on:input={(e) => (opened = true)}
         on:click={(e) => (opened = true)}
       />
+    {:else}
+      <div class="autocomplete-placeholder" on:click={() => (opened = true)}></div>
     {/if}
     {#if clearable && selectedItemValue != null && (multiple ? selectedItemValue.length > 0 : true)}
       <Button

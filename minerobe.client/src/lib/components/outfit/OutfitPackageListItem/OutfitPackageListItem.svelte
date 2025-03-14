@@ -101,8 +101,8 @@
       {#if item.type == PACKAGE_TYPE.OUTFIT_SET}
         <ColorBadge
           selected
-          color={item.layers[0]?.colorName}
-          colorName={item.layers[0]?.colorName}
+          color={item.colorName || item.layers[0]?.colorName}
+          colorName={item.colorName || item.layers[0]?.colorName}
         />
       {:else}
         {#each item.layers.slice(0, layerCount) as layer}

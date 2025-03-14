@@ -30,7 +30,7 @@ namespace minerobe.api.Helpers.Filter
                 outfits = outfits.Where(x => x.IsShared == this.IsShared);
             if (this.Colors != null && this.Colors.Count > 0)
             {
-                outfits = outfits.Where(outfit => this.Colors.Any(color => outfit.ColorName == color));
+                outfits = outfits.Where(outfit => this.Colors.Any(color => outfit.PackageColorName == color) || this.Colors.Any(color => outfit.ColorName == color));
             }
 
             return outfits;

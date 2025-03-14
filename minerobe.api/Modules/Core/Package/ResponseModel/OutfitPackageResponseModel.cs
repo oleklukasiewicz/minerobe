@@ -10,6 +10,7 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
         public string Name { get; set; }
         public string Model { get; set; }
         public string Type { get; set; }
+        public string ColorName { get; set; }
         public string Description { get; set; }
         public SocialData Social { get; set; }
         public string OutfitType { get; set; }
@@ -38,6 +39,7 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
                 Type = entity.Type.ToString().ToLower(),
                 Description = entity.Description,
                 Social = entity.Social,
+                ColorName = entity.ColorName,
                 OutfitType = entity.OutfitType.ToString().ToLower(),
                 CreatedAt = entity.CreatedAt,
                 ModifiedAt = entity.ModifiedAt,

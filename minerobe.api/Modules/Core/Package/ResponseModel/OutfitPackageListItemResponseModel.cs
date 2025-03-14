@@ -12,6 +12,7 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
         public string Name { get; set; }
         public string Model { get; set; }
         public string Type { get; set; }
+        public string ColorName { get; set; }
         public SocialData Social { get; set; }
         public string OutfitType { get; set; }
         public List<OutfitLayerResponseModel> Layers { get; set; }
@@ -42,6 +43,7 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
             {
                 Id = entity.Id,
                 Name = entity.Name,
+                ColorName = entity.ColorName,
                 Model = entity.Model.ToString().ToLower(),
                 Type = entity.Type.ToString().ToLower(),
                 Social = entity.Social,

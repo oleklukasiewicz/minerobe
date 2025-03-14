@@ -18,6 +18,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Entity
         public Guid? LayerId { get; set; }
         public Guid? LayerSourcePackageId { get; set; }
         public string ColorName { get; set; }
+        public string PackageColorName { get; set; } 
         public OutfitType OutfitType { get; set; }
         //social
         public int Downloads { get; set; }

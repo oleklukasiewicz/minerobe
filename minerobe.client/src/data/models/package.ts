@@ -6,6 +6,7 @@ export class OutfitPackage {
   name: string;
   model: MODEL_TYPE;
   type: PACKAGE_TYPE;
+  colorName: string;
   layers: OutfitLayer[];
   publisher: MinerobeUserSimple;
   publisherId: string;
