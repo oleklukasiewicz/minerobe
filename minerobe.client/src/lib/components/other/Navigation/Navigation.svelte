@@ -7,6 +7,11 @@
   import SubscriptionIcon from "$src/icons/subscriptions.svg?raw";
   import AvatarIcon from "$src/icons/avatar.svg?raw";
   import { CURRENT_USER, IS_MOBILE_VIEW } from "$src/data/static";
+  import { loginUser } from "$src/api/auth";
+
+  const profileAction = async () => {
+    if (!$CURRENT_USER) await loginUser();
+  };
 </script>
 
 <div class="navigation" class:mobile={$IS_MOBILE_VIEW}>
@@ -48,9 +53,10 @@
         label={$CURRENT_USER?.name || "Sign in"}
         viewId="profile"
         onlyIcon={$IS_MOBILE_VIEW}
-        href="/profile"
+        href={$CURRENT_USER ? "/profile" : null}
         icon={$CURRENT_USER?.avatar ? null : AvatarIcon}
         iconImage={$CURRENT_USER?.avatar}
+        on:click={profileAction}
       />
     </div>
   </div>
@@ -67,7 +73,7 @@
     background-color: rgba(226, 226, 226, 0.8);
     justify-content: center;
     .items {
-      max-width: 1300px;
+      max-width: 1316px;
       padding: 8px;
       box-sizing: border-box;
       flex: 1;
@@ -103,7 +109,7 @@
       }
       .items {
         padding: 4px;
-        grid-template-columns: 1fr
+        grid-template-columns: 1fr;
       }
     }
   }
