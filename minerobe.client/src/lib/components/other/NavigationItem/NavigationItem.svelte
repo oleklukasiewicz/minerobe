@@ -8,7 +8,6 @@
   export let href = "";
   export let viewId = "";
   export let disabled = false;
-  export let customCall = false;
   export let onlyIcon = false;
 </script>
 
