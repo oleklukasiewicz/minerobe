@@ -13,7 +13,6 @@ import type { MinerobeUser } from "$data/models/user";
 import { ModelScene } from "./render";
 import { ALEX_MODEL, STEVE_MODEL } from "./consts/model";
 import { APP_STATE } from "./enums/app";
-import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 
 //steve modelscene
 const steveModelSceneWritable: Writable<ModelScene> = writable(null);
@@ -103,8 +102,14 @@ export const Initialize = async function () {
     renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     return renderer;
   });
-  CURRENT_USER.subscribe((user) => {
+
+  CURRENT_USER.subscribe(async (user) => {
     if (user && get(appStateWritable) != APP_STATE.READY) {
+      // Dynamically import SignalR
+      const { HubConnectionBuilder, HttpTransportType } = await import(
+        "@microsoft/signalr"
+      );
+
       //setup SignalR
       serverWsConnectionWritable.set(
         new HubConnectionBuilder()
