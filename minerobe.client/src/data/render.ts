@@ -1,4 +1,25 @@
-import * as THREE from "three";
+import {
+  Vector3,
+  CanvasTexture,
+  Object3D,
+  NearestFilter,
+  LinearMipmapLinearFilter,
+  RepeatWrapping,
+  MeshStandardMaterial,
+  ImageBitmapLoader,
+  PerspectiveCamera,
+  PCFShadowMap,
+  DirectionalLight,
+  AmbientLight,
+  TextureLoader,
+  PlaneGeometry,
+  Mesh,
+  DoubleSide,
+  Color,
+  Scene,
+  OrthographicCamera,
+  Clock,
+} from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RenderAnimation } from "./animation";
@@ -8,19 +29,19 @@ import type { OutfitLayer, OutfitPackage } from "$data/models/package";
 import type { OutfitPackageRenderConfig } from "$data/models/render";
 import { MODEL_TYPE } from "./enums/model";
 export class CameraConfig {
-  rotation: THREE.Vector3;
-  position: THREE.Vector3;
-  lookAt: THREE.Vector3;
+  rotation: Vector3;
+  position: Vector3;
+  lookAt: Vector3;
   lookAtEnabled: boolean;
   fov: number;
   zoom: number;
   constructor(
-    position: THREE.Vector3 = new THREE.Vector3(0, 0, 0),
-    lookAt: THREE.Vector3 = new THREE.Vector3(0, 0, 0),
+    position: Vector3 = new Vector3(0, 0, 0),
+    lookAt: Vector3 = new Vector3(0, 0, 0),
     zoom: number = 1,
     fov: number = 1,
     lookAtEnabled: boolean = false,
-    rotation: THREE.Vector3 = new THREE.Vector3(0, 0, 0)
+    rotation: Vector3 = new Vector3(0, 0, 0)
   ) {
     this.fov = fov;
     this.position = position;
@@ -57,7 +78,7 @@ export class TextureRender {
   private _loadTexture = async function (targetTexture: string = null, flipY) {
     return new Promise((resolve) => {
       this.textureLoader.load(targetTexture, (texture) => {
-        const canvasTexture = new THREE.CanvasTexture(texture);
+        const canvasTexture = new CanvasTexture(texture);
         resolve(canvasTexture);
       });
     });
@@ -69,7 +90,7 @@ export class TextureRender {
       this.capePivot = null;
     }
 
-    const pivot = new THREE.Object3D();
+    const pivot = new Object3D();
     pivot.position.set(0, -0.02, 0);
     this.capePivot = pivot;
     pivot.add(this.capeScene);
@@ -85,10 +106,10 @@ export class TextureRender {
   };
   private _applyTextureToModel = async function () {
     if (this.loadedTexture == null) return;
-    this.loadedTexture.magFilter = THREE.NearestFilter;
-    this.loadedTexture.minFilter = THREE.LinearMipmapLinearFilter;
-    this.loadedTexture.wrapS = THREE.RepeatWrapping;
-    this.loadedTexture.wrapT = THREE.RepeatWrapping;
+    this.loadedTexture.magFilter = NearestFilter;
+    this.loadedTexture.minFilter = LinearMipmapLinearFilter;
+    this.loadedTexture.wrapS = RepeatWrapping;
+    this.loadedTexture.wrapT = RepeatWrapping;
 
     this.modelScene.renderScene.traverse((child: any) => {
       if (child.isMesh && child.name != "Cape") {
@@ -96,7 +117,7 @@ export class TextureRender {
           child.castShadow = true;
           child.receiveShadow = true;
         }
-        const mat = child.material as THREE.MeshStandardMaterial;
+        const mat = child.material as MeshStandardMaterial;
         mat.map = this.loadedTexture;
         mat.roughness = 1;
       }
@@ -109,7 +130,7 @@ export class TextureRender {
       options = this.cameraOptions || new CameraConfig();
     } else {
       options = new CameraConfig(
-        new THREE.Vector3(0, 0, -2),
+        new Vector3(0, 0, -2),
         undefined,
         undefined,
         75
@@ -172,7 +193,7 @@ export class TextureRender {
 
   constructor(renderer: any = DEFAULT_RENDERER) {
     this.renderer = renderer;
-    this.textureLoader = new THREE.ImageBitmapLoader();
+    this.textureLoader = new ImageBitmapLoader();
     this.textureLoader.setOptions({ imageOrientation: "flipY" });
   }
   SetModelScene = async function (
@@ -267,7 +288,7 @@ export class TextureRender {
   RenderDynamic = async function (): Promise<TextureRender> {
     this.StopRendering();
     //initial configuration
-    this.modelScene.camera = new THREE.PerspectiveCamera();
+    this.modelScene.camera = new PerspectiveCamera();
 
     this.renderingActive = true;
 
@@ -296,9 +317,9 @@ export class TextureRender {
     this.shadowsEnabled = true;
 
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFShadowMap;
+    this.renderer.shadowMap.type = PCFShadowMap;
 
-    const pointLight = new THREE.DirectionalLight(0xffffff, 0.78);
+    const pointLight = new DirectionalLight(0xffffff, 0.78);
 
     pointLight.castShadow = true;
     pointLight.shadow.camera.near = 0.5;
@@ -330,14 +351,14 @@ export class TextureRender {
   };
   AddFloor = function (texture: string): TextureRender {
     if (this.floorScene != null) return this;
-    const floorTexture = new THREE.TextureLoader().load(texture);
-    const floorGeometry = new THREE.PlaneGeometry(3, 3, 3, 3);
-    const floorMaterial = new THREE.MeshStandardMaterial({
+    const floorTexture = new TextureLoader().load(texture);
+    const floorGeometry = new PlaneGeometry(3, 3, 3, 3);
+    const floorMaterial = new MeshStandardMaterial({
       map: floorTexture,
-      side: THREE.DoubleSide,
+      side: DoubleSide,
       roughness: 1,
     });
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    const floor = new Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = Math.PI / 2;
     floor.position.y = 0;
     floor.receiveShadow = true;
@@ -350,14 +371,14 @@ export class TextureRender {
     this.floorScene = null;
     return this;
   };
-  SetBackground = function (color: THREE.Color): TextureRender {
+  SetBackground = function (color: Color): TextureRender {
     if (this.renderer == null) return this;
     this.renderer.setClearColor(color, 1);
     return this;
   };
   RemoveBackground = function (): TextureRender {
     if (this.renderer == null) return this;
-    this.renderer.setClearColor(new THREE.Color(0x000000), 0);
+    this.renderer.setClearColor(new Color(0x000000), 0);
     return this;
   };
   SetCapeAsync = async function (capeTexture: string): Promise<TextureRender> {
@@ -365,11 +386,11 @@ export class TextureRender {
     if (this.capeScene != null) this.modelScene.scene.remove(this.capeScene);
 
     const loaderPromise: Promise<any> = new Promise((resolve) => {
-      const capeLoader = new THREE.ImageBitmapLoader();
+      const capeLoader = new ImageBitmapLoader();
       capeLoader.load(capeTexture, (texture) => {
-        const canvasTexture = new THREE.CanvasTexture(texture);
-        canvasTexture.magFilter = THREE.NearestFilter;
-        canvasTexture.minFilter = THREE.NearestFilter;
+        const canvasTexture = new CanvasTexture(texture);
+        canvasTexture.magFilter = NearestFilter;
+        canvasTexture.minFilter = NearestFilter;
         resolve(canvasTexture);
       });
     });
@@ -379,7 +400,7 @@ export class TextureRender {
     const capeModel = await this._loadModelToTempScene(
       "data:model/gltf+json;base64," + btoa(capeModelData)
     );
-    const material = new THREE.MeshStandardMaterial({
+    const material = new MeshStandardMaterial({
       map: capeTxt,
     });
     capeModel.traverse((child: any) => {
@@ -432,23 +453,19 @@ export class ModelScene {
   }
   async Create() {
     //prepare scene
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.OrthographicCamera();
+    this.scene = new Scene();
+    this.camera = new OrthographicCamera();
 
     const modelLoader = new GLTFLoader();
 
     //set default values
     this.scene.position.y = -1;
     const brightness = 1.2;
-    const light = new THREE.AmbientLight(0xffffff, brightness * 1.8, 10);
+    const light = new AmbientLight(0xffffff, brightness * 1.8, 10);
 
     //configure light
     this.scene.add(light);
-    const pointLight = new THREE.DirectionalLight(
-      0xffffff,
-      brightness * 0.65,
-      10
-    );
+    const pointLight = new DirectionalLight(0xffffff, brightness * 0.65, 10);
     pointLight.position.set(0, 50, -50);
     this.scene.add(pointLight);
 
@@ -476,7 +493,7 @@ export class ModelScene {
     cloned.scene = this.scene.clone(true);
     cloned.renderScene.traverse((child: any) => {
       if (child.isMesh) {
-        const mat = child.material as THREE.MeshStandardMaterial;
+        const mat = child.material as MeshStandardMaterial;
         child.material = mat.clone();
       }
     });
@@ -497,7 +514,7 @@ export class RenderAnimationEngine {
   private clock: any = null;
 
   constructor() {
-    this.clock = new THREE.Clock();
+    this.clock = new Clock();
   }
   PrepareAnimation = function (
     sceneData: any,

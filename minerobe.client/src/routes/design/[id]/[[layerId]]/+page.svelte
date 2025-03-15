@@ -4,7 +4,7 @@
   import { writable, type Writable } from "svelte/store";
   import { onDestroy, onMount } from "svelte";
   import { propertyStore } from "svelte-writable-derived";
-  import * as THREE from "three";
+  import { WebGLRenderer, LinearSRGBColorSpace } from "three";
   //api
   import { GetPackage } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
@@ -100,10 +100,10 @@
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY && state != APP_STATE.GUEST_READY) return;
-      renderer = new THREE.WebGLRenderer({
+      renderer = new WebGLRenderer({
         alpha: true,
       });
-      renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+      renderer.outputColorSpace = LinearSRGBColorSpace;
 
       $itemPackage = await GetPackage(data.id);
       isOutfitSet = $itemPackage.type === PACKAGE_TYPE.OUTFIT_SET;

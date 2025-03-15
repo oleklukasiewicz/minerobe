@@ -4,7 +4,7 @@
   import { writable, type Writable } from "svelte/store";
   import { onDestroy, onMount } from "svelte";
   import { propertyStore } from "svelte-writable-derived";
-  import * as THREE from "three";
+  import { LinearSRGBColorSpace, WebGLRenderer } from "three";
   //api
   import {
     GetPackage,
@@ -149,10 +149,10 @@
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
-      renderer = new THREE.WebGLRenderer({
+      renderer = new WebGLRenderer({
         alpha: true,
       });
-      renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+      renderer.outputColorSpace = LinearSRGBColorSpace;
 
       $itemPackage = await GetPackage(data.id);
       isOutfitSet = $itemPackage.type === PACKAGE_TYPE.OUTFIT_SET;
@@ -555,16 +555,17 @@
         ></textarea>
       </Placeholder>
       {#if loaded && isOutfitSet}
-      <SectionTitle label="Color" />
-      <ColorSelect
-        bind:selectedItem={$itemPackage.colorName}
-        placeholder="Select color"
-        items={COLORS_ARRAY}
-        autocomplete clearable
-        itemText="normalizedName"
-        itemValue="name"
-      />
-    {/if}
+        <SectionTitle label="Color" />
+        <ColorSelect
+          bind:selectedItem={$itemPackage.colorName}
+          placeholder="Select color"
+          items={COLORS_ARRAY}
+          autocomplete
+          clearable
+          itemText="normalizedName"
+          itemValue="name"
+        />
+      {/if}
     </div>
     <div id="item-data-model">
       <SectionTitle label="Model" placeholder={!loaded} />

@@ -2,7 +2,6 @@ import NewOutfitBottomAnimation from "$src/animation/bottom";
 import NewOutfitBottomAltAnimation from "$src/animation/bottomAlt";
 import NewOutfitBottomAlt2Animation from "$src/animation/bottomAlt2";
 import ClapAnimation from "$src/animation/clap";
-import DefaultAnimation from "$src/animation/default";
 import HandsUpAnimation from "$src/animation/handsup";
 import HatAnimation from "$src/animation/hat";
 import WavingAnimation from "$src/animation/waving";
@@ -14,8 +13,7 @@ import {
 import { CHANGE_TYPE } from "$src/data/enums/app";
 import { MODEL_TYPE } from "$src/data/enums/model";
 import { OUTFIT_TYPE } from "$src/data/enums/outfit";
-import type { OutfitPackage } from "$data/models/package";
-import * as THREE from "three";
+import { AxesHelper, Object3D, Vector3 } from "three";
 const CreatePropertyStep = function (
   data,
   part,
@@ -140,15 +138,15 @@ export const GetAnimationForType = function (type: string) {
 export const CreatePivotPart = function (
   basePart,
   targetPart,
-  pivotPosition: THREE.vector3,
-  partPosition: THREE.vector3 = new THREE.Vector3(0, 0, 0),
+  pivotPosition: Vector3,
+  partPosition: Vector3 = new Vector3(0, 0, 0),
   showAxis = false
 ) {
   targetPart.parent.remove(targetPart);
   basePart.add(targetPart);
   targetPart.position.set(partPosition.x, partPosition.y, partPosition.z);
 
-  let pivot = new THREE.Object3D();
+  let pivot = new Object3D();
   pivot.position.y = pivotPosition.y;
   pivot.position.x = pivotPosition.x;
   pivot.position.z = pivotPosition.z;
@@ -156,7 +154,7 @@ export const CreatePivotPart = function (
   basePart.add(pivot);
 
   if (showAxis) {
-    const axisHelper = new THREE.AxesHelper(5);
+    const axisHelper = new AxesHelper(5);
     pivot.add(axisHelper);
   }
 
@@ -186,8 +184,8 @@ export const CreateModelAnimationData = function (
     data.body,
     data.leftarm,
     modelName == MODEL_TYPE.STEVE
-      ? new THREE.Vector3(-0.31, -0.125, 0)
-      : new THREE.Vector3(-0.31, -0.16, 0),
+      ? new Vector3(-0.31, -0.125, 0)
+      : new Vector3(-0.31, -0.16, 0),
     undefined,
     debug
   );
@@ -197,8 +195,8 @@ export const CreateModelAnimationData = function (
     data.body,
     data.rightarm,
     modelName == MODEL_TYPE.STEVE
-      ? new THREE.Vector3(0.31, -0.125, 0)
-      : new THREE.Vector3(0.31, -0.16, 0),
+      ? new Vector3(0.31, -0.125, 0)
+      : new Vector3(0.31, -0.16, 0),
     undefined,
     debug
   );
@@ -207,8 +205,8 @@ export const CreateModelAnimationData = function (
   const ll = CreatePivotPart(
     data.body,
     data.leftleg,
-    new THREE.Vector3(-0.125, -0.75, 0),
-    new THREE.Vector3(0, 0, 0),
+    new Vector3(-0.125, -0.75, 0),
+    new Vector3(0, 0, 0),
     debug
   );
   data.leftLegPivot = ll.pivot;
@@ -216,13 +214,13 @@ export const CreateModelAnimationData = function (
   const rl = CreatePivotPart(
     data.body,
     data.rightleg,
-    new THREE.Vector3(0.125, -0.75, 0),
-    new THREE.Vector3(0, 0, 0),
+    new Vector3(0.125, -0.75, 0),
+    new Vector3(0, 0, 0),
     debug
   );
   data.rightLegPivot = rl.pivot;
 
-  const h = CreatePivotPart(data.body, data.head, new THREE.Vector3(0, 0, 0));
+  const h = CreatePivotPart(data.body, data.head, new Vector3(0, 0, 0));
   data.headPivot = h.pivot;
 
   data.bodyPivot = data.body;

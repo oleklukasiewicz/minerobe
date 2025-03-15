@@ -1,4 +1,7 @@
-import * as THREE from "three";
+import {
+  WebGLRenderer,
+  LinearSRGBColorSpace
+} from "three";
 
 import baseModelTextureRaw from "$src/texture/base_skin.webp?url";
 import {
@@ -96,10 +99,10 @@ export const Initialize = async function () {
 
   //setup default renderer
   defaultRendererWritable.update((renderer: any) => {
-    renderer = new THREE.WebGLRenderer({
+    renderer = new WebGLRenderer({
       alpha: true,
     });
-    renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+    renderer.outputColorSpace = LinearSRGBColorSpace;
     return renderer;
   });
 

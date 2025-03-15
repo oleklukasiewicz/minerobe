@@ -2,7 +2,7 @@
   //main imports
   import { onDestroy, onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
-  import * as THREE from "three";
+  import { WebGLRenderer, LinearSRGBColorSpace } from "three";
   //api
   import { GetPackage } from "$src/api/pack";
   import { FetchSettings, SetCurrentTexture } from "$src/api/settings";
@@ -55,10 +55,10 @@
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
-      dynamicRenderer = new THREE.WebGLRenderer({
+      dynamicRenderer = new WebGLRenderer({
         alpha: true,
       });
-      dynamicRenderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+      dynamicRenderer.outputColorSpace = LinearSRGBColorSpace;
 
       $userSettings = await FetchSettings();
 
