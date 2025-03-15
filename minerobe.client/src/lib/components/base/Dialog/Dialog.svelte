@@ -5,6 +5,7 @@
   import Button from "../Button/Button.svelte";
   //icons
   import CloseIcon from "$icons/close.svg?raw";
+  import { IS_MOBILE_VIEW } from "$src/data/static";
 
   const dispatch = createEventDispatcher();
 
@@ -22,7 +23,12 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="dialog {className}" class:open on:click={onClose}>
+<div
+  class="dialog {className}"
+  class:open
+  on:click={onClose}
+  class:mobile={$IS_MOBILE_VIEW}
+>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   {#if open}

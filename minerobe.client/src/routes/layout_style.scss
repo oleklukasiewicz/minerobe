@@ -1,18 +1,18 @@
 #view {
   display: flex;
   margin: 54px 8px 0px;
-  flex:1;
+  flex: 1;
   flex-direction: column;
   min-height: calc(100vh - 64px);
-  max-width: 1300px;
+  max-width: min(1300px, 100%);
   &.mobile {
-    margin-top: 0px;
+    margin: 0px;
     margin-bottom: 54px;
   }
 }
-#app
-{
-  width:100%;
+#app {
+  max-width: 100%;
+  width: 100%;
   display: flex;
   justify-content: center;
 }

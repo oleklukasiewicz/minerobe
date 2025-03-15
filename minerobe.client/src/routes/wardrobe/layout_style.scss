@@ -9,7 +9,7 @@
   &.mobile {
     grid-template-columns: 100%;
     grid-template-rows: 50px 1fr;
-    margin: 0px;
+    margin: 0px 8px;
     gap:0px;
     #content {
       overflow: hidden;
@@ -22,10 +22,9 @@
       max-width: 100%;
       div {
         top: 8px;
-        margin: 0px 8px;
       }
       &.opened {
-        width: 100vw;
+        width: 100%;
         max-width: 100%;
       }
     }

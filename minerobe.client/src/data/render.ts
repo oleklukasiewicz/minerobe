@@ -110,10 +110,10 @@ export class TextureRender {
   private _loadCameraOptions = async function () {
     if (this.modelScene == null) return;
     let options = new CameraConfig();
+    const threeModule = await THREE.getThree();
     if (!this.renderingActive) {
       options = this.cameraOptions || new CameraConfig();
     } else {
-      const threeModule = await THREE.getThree();
       options = new CameraConfig(
         new threeModule.Vector3(0, 0, -2),
         undefined,
@@ -121,6 +121,21 @@ export class TextureRender {
         75
       );
     }
+    options.position = new threeModule.Vector3(
+      options.position.x,
+      options.position.y,
+      options.position.z
+    );
+    options.lookAt = new threeModule.Vector3(
+      options.lookAt.x,
+      options.lookAt.y,
+      options.lookAt.z
+    );
+    options.rotation = new threeModule.Vector3(
+      options.rotation.x,
+      options.rotation.y,
+      options.rotation.z
+    );
     this.modelScene.camera.position.x = options.position.x;
     this.modelScene.camera.position.y = options.position.y;
     this.modelScene.camera.position.z = options.position.z;

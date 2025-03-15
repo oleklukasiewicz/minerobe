@@ -32,7 +32,7 @@
       width: 100%;
     }
     &.top {
-      width: 100vw;
+      width: 100%;
       .menu-items {
         flex-direction: row;
         gap: 8px;

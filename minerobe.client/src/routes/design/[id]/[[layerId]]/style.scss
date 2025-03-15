@@ -66,6 +66,7 @@
   }
   &.mobile {
     margin: 0px;
+    flex-direction: column;
     #item-render {
       max-width: 100%;
       #render {

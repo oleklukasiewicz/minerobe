@@ -9,17 +9,13 @@
     display: grid;
     grid-template-columns: 1fr auto 300px;
     gap: 8px;
-    padding: 16px 0px;
+    padding: 8px 0px;
     background-color: var(--color-theme);
   }
   &.mobile {
     #content-header {
       position: static;
       grid-template-columns: auto 1fr;
-      padding: 8px;
-    }
-    #content-list {
-      margin: 0px 8px;
     }
   }
 }

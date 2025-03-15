@@ -402,7 +402,7 @@
 
   const onResize = async function () {
     if (!initialized) return;
-    textureRenderer.Resize();
+    await textureRenderer.Resize();
     renderReady = true;
   };
   const onObserve = function (e) {
