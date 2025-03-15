@@ -8,11 +8,6 @@ dotenv.config();
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
   return {
-    build: {
-      rollupOptions: {
-        external: ["three", "firebase/auth", "signalr"],
-      },
-    },
     plugins: [
       sveltekit(),
       visualizer({
