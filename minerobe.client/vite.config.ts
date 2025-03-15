@@ -1,6 +1,7 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig, loadEnv } from "vite";
 import dotenv from "dotenv";
+import { threeMinifier } from "@yushijinhun/three-minifier-rollup";
 
 // Load environment variables from .env
 dotenv.config();
@@ -8,7 +9,7 @@ dotenv.config();
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
   return {
-    plugins: [sveltekit()],
+    plugins: [{ ...threeMinifier(), enforce: "pre" }, sveltekit()],
     define: {
       "process.env": import.meta.env,
     },
