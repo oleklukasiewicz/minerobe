@@ -22,15 +22,17 @@
     await waitLocale();
   };
   onMount(async () => {
-    await Promise.all([InitializeLayout(), Initialize()]);
-    //dont wait for user to load
-    getCurrentUser();
-    // Dynamically import components
-    ToastController = (
-      await import(
-        "$lib/components/other/ToastController/ToastController.svelte"
-      )
-    ).default;
+    await InitializeLayout();
+
+    Initialize().then(() => {
+      getCurrentUser();
+    });
+
+    import("$lib/components/other/ToastController/ToastController.svelte").then(
+      (module) => {
+        ToastController = module.default;
+      }
+    );
   });
 </script>
 
