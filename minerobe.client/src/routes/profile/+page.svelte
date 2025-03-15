@@ -54,7 +54,7 @@
         $minecraftIntegration = await GetAccount(false);
         currentMinecraftSkin = await GetCurrentSkin(false);
         if ($profileUser.settings.currentTexture?.capeId != null) {
-          currentCape = $minecraftIntegration.capes.find(
+          currentCape = $minecraftIntegration.capes?.find(
             (x) => x.id == $profileUser.settings.currentTexture?.capeId
           );
         }

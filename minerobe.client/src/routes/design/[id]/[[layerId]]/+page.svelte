@@ -127,7 +127,7 @@
           userSettings?.integrations.includes("minecraft");
         if (isMinecraftIntegrated && isOutfitSet) {
           integrationSettings = await GetAccount(false);
-          $renderConfiguration.cape = integrationSettings.capes.find(
+          $renderConfiguration.cape = integrationSettings.capes?.find(
             (c) => c.id == userSettings?.currentTexture?.capeId
           );
         }

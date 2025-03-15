@@ -1,7 +1,4 @@
-import {
-  WebGLRenderer,
-  LinearSRGBColorSpace
-} from "three";
+import { WebGLRenderer, LinearSRGBColorSpace } from "three";
 
 import baseModelTextureRaw from "$src/texture/base_skin.webp?url";
 import {
@@ -16,6 +13,7 @@ import type { MinerobeUser } from "$data/models/user";
 import { ModelScene } from "./render";
 import { ALEX_MODEL, STEVE_MODEL } from "./consts/model";
 import { APP_STATE } from "./enums/app";
+import { SIGNAL_R } from "$lib/signalr";
 
 //steve modelscene
 const steveModelSceneWritable: Writable<ModelScene> = writable(null);
@@ -108,22 +106,7 @@ export const Initialize = async function () {
 
   CURRENT_USER.subscribe(async (user) => {
     if (user && get(appStateWritable) != APP_STATE.READY) {
-      // Dynamically import SignalR
-      const { HubConnectionBuilder, HttpTransportType } = await import(
-        "@microsoft/signalr"
-      );
-
-      //setup SignalR
-      serverWsConnectionWritable.set(
-        new HubConnectionBuilder()
-          .withUrl(
-            "/api/ws?userId=" + get(CURRENT_USER)?.id,
-            HttpTransportType.ServerSentEvents
-          )
-          .withKeepAliveInterval(15000)
-          .withAutomaticReconnect()
-          .build()
-      );
+      serverWsConnectionWritable.set(await SIGNAL_R.getUserWebSocket(user.id));
       get(serverWsConnectionWritable)
         .start()
         .then(() => {

@@ -1,36 +1,5 @@
+import { FIREBASE } from "$lib/firebase";
 import axios from "axios";
-
-let firebaseApp;
-let firebaseAuth;
-let GoogleAuthProvider;
-let getAuth;
-let signInWithPopup;
-let setPersistence;
-let browserLocalPersistence;
-
-const loadFirebaseModules = async () => {
-  if (!firebaseApp) {
-    const firebase = await import("firebase/app");
-    firebaseApp = firebase.initializeApp({
-      apiKey: import.meta.env.VITE_API_KEY,
-      authDomain: import.meta.env.VITE_AUTH_DOMAIN,
-      projectId: import.meta.env.VITE_PROJECT_ID,
-      storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
-      messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
-      appId: import.meta.env.VITE_APP_ID,
-      measurementId: import.meta.env.VITE_MEASUREMENT_ID,
-    });
-
-    const authModule = await import("firebase/auth");
-    GoogleAuthProvider = authModule.GoogleAuthProvider;
-    getAuth = authModule.getAuth;
-    signInWithPopup = authModule.signInWithPopup;
-    setPersistence = authModule.setPersistence;
-    browserLocalPersistence = authModule.browserLocalPersistence;
-
-    firebaseAuth = getAuth(firebaseApp);
-  }
-};
 
 let cUser;
 let cTokenValidity = 3600 - 100;
@@ -39,8 +8,7 @@ let cRefreshToken;
 let cToken;
 
 const initializeAuthStateListener = async () => {
-  await loadFirebaseModules();
-  firebaseAuth.onAuthStateChanged(async (user) => {
+  (await FIREBASE.getAuth()).onAuthStateChanged(async (user) => {
     if (user) {
       try {
         cToken = await user.getIdToken();
@@ -62,21 +30,23 @@ initializeAuthStateListener();
 
 export const getCurrentUserFromLocal = () => {
   return new Promise(async (resolve, reject) => {
-    await loadFirebaseModules();
-    const unsubscribe = firebaseAuth.onAuthStateChanged(async (user) => {
-      unsubscribe();
-      if (user) {
-        try {
-          cToken = await user.getIdToken();
-          cRefreshToken = user.refreshToken;
-          cTokenAcuireDate = Date.now();
-          cUser = user;
-        } catch {
-          resolve(user);
+    const unsubscribe = (await FIREBASE.getAuth()).onAuthStateChanged(
+      async (user) => {
+        unsubscribe();
+        if (user) {
+          try {
+            cToken = await user.getIdToken();
+            cRefreshToken = user.refreshToken;
+            cTokenAcuireDate = Date.now();
+            cUser = user;
+          } catch {
+            resolve(user);
+          }
         }
-      }
-      resolve(user);
-    }, reject);
+        resolve(user);
+      },
+      reject
+    );
   });
 };
 
@@ -111,7 +81,6 @@ async function refreshToken(refreshToken) {
 }
 
 export const login = async () => {
-  await loadFirebaseModules();
   await getCurrentUserFromLocal();
   if (cUser) {
     cToken = await cUser.getIdToken();
@@ -119,6 +88,13 @@ export const login = async () => {
     cTokenAcuireDate = Date.now();
     return cUser;
   }
+  var firebaseAuth = await FIREBASE.getAuth();
+  var {
+    signInWithPopup,
+    GoogleAuthProvider,
+    setPersistence,
+    browserLocalPersistence,
+  } = await FIREBASE.getAuthModule();
   await setPersistence(firebaseAuth, browserLocalPersistence).catch((error) => {
     // Handle error
   });
@@ -138,8 +114,7 @@ export const login = async () => {
 };
 
 export const logout = async () => {
-  await loadFirebaseModules();
-  await firebaseAuth.signOut();
+  (await FIREBASE.getAuth()).signOut();
   cUser = null;
   cToken = null;
 };
@@ -148,6 +123,7 @@ export const getAuthUser = () => {
   return cUser;
 };
 
+//requests
 export const PostRequest = async function (
   path: string,
   data: any,
