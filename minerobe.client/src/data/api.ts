@@ -61,7 +61,8 @@ const initializeAuthStateListener = async () => {
 initializeAuthStateListener();
 
 export const getCurrentUserFromLocal = () => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+    await loadFirebaseModules();
     const unsubscribe = firebaseAuth.onAuthStateChanged(async (user) => {
       unsubscribe();
       if (user) {
@@ -121,7 +122,10 @@ export const login = async () => {
   await setPersistence(firebaseAuth, browserLocalPersistence).catch((error) => {
     // Handle error
   });
-  let res: any = await signInWithPopup(firebaseAuth, new GoogleAuthProvider()).catch((error) => {
+  let res: any = await signInWithPopup(
+    firebaseAuth,
+    new GoogleAuthProvider()
+  ).catch((error) => {
     // Handle error
   });
   cUser = res?.user;
