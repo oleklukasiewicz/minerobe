@@ -2,7 +2,6 @@
   //main imports
   import { onDestroy, onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
-  import { WebGLRenderer, LinearSRGBColorSpace } from "three";
   //api
   import { GetPackage } from "$src/api/pack";
   import { FetchSettings, SetCurrentTexture } from "$src/api/settings";
@@ -40,6 +39,7 @@
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import { IsEmptyGuid } from "$src/helpers/data/dataHelper";
+  import { THREE } from "$lib/three";
 
   const userSettings: Writable<MinerobeUserSettings> = writable(null);
   const renderConfiguration: Writable<OutfitPackageRenderConfig> = writable(
@@ -55,10 +55,11 @@
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
-      dynamicRenderer = new WebGLRenderer({
+      const threeModule = await THREE.getThree();
+      dynamicRenderer = new threeModule.WebGLRenderer({
         alpha: true,
       });
-      dynamicRenderer.outputColorSpace = LinearSRGBColorSpace;
+      dynamicRenderer.outputColorSpace = threeModule.LinearSRGBColorSpace;
 
       $userSettings = await FetchSettings();
 

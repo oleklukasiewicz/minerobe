@@ -1,3 +1,4 @@
+import { THREE, Vector3Min } from "$lib/three";
 import NewOutfitBottomAnimation from "$src/animation/bottom";
 import NewOutfitBottomAltAnimation from "$src/animation/bottomAlt";
 import NewOutfitBottomAlt2Animation from "$src/animation/bottomAlt2";
@@ -13,7 +14,6 @@ import {
 import { CHANGE_TYPE } from "$src/data/enums/app";
 import { MODEL_TYPE } from "$src/data/enums/model";
 import { OUTFIT_TYPE } from "$src/data/enums/outfit";
-import { AxesHelper, Object3D, Vector3 } from "three";
 const CreatePropertyStep = function (
   data,
   part,
@@ -135,18 +135,19 @@ export const GetAnimationForType = function (type: string) {
       }
   }
 };
-export const CreatePivotPart = function (
+export const CreatePivotPart = async function (
   basePart,
   targetPart,
-  pivotPosition: Vector3,
-  partPosition: Vector3 = new Vector3(0, 0, 0),
+  pivotPosition: Vector3Min,
+  partPosition: Vector3Min = new Vector3Min(0, 0, 0),
   showAxis = false
 ) {
   targetPart.parent.remove(targetPart);
   basePart.add(targetPart);
   targetPart.position.set(partPosition.x, partPosition.y, partPosition.z);
 
-  let pivot = new Object3D();
+  const threeModule = await THREE.getThree();
+  let pivot = new threeModule.Object3D();
   pivot.position.y = pivotPosition.y;
   pivot.position.x = pivotPosition.x;
   pivot.position.z = pivotPosition.z;
@@ -154,13 +155,13 @@ export const CreatePivotPart = function (
   basePart.add(pivot);
 
   if (showAxis) {
-    const axisHelper = new AxesHelper(5);
+    const axisHelper = new threeModule.AxesHelper(5);
     pivot.add(axisHelper);
   }
 
   return { part: targetPart, pivot: pivot };
 };
-export const CreateModelAnimationData = function (
+export const CreateModelAnimationData = async function (
   scene,
   modelName,
   debug = false
@@ -180,47 +181,49 @@ export const CreateModelAnimationData = function (
     bodyPivot: null,
     cape: scene.getObjectByName("Cape"),
   };
-  const la = CreatePivotPart(
+
+  const threeModule = await THREE.getThree();
+  const la = await CreatePivotPart(
     data.body,
     data.leftarm,
     modelName == MODEL_TYPE.STEVE
-      ? new Vector3(-0.31, -0.125, 0)
-      : new Vector3(-0.31, -0.16, 0),
+      ? new threeModule.Vector3(-0.31, -0.125, 0)
+      : new threeModule.Vector3(-0.31, -0.16, 0),
     undefined,
     debug
   );
   data.leftArmPivot = la.pivot;
 
-  const ra = CreatePivotPart(
+  const ra = await CreatePivotPart(
     data.body,
     data.rightarm,
     modelName == MODEL_TYPE.STEVE
-      ? new Vector3(0.31, -0.125, 0)
-      : new Vector3(0.31, -0.16, 0),
+      ? new threeModule.Vector3(0.31, -0.125, 0)
+      : new threeModule.Vector3(0.31, -0.16, 0),
     undefined,
     debug
   );
   data.rightArmPivot = ra.pivot;
 
-  const ll = CreatePivotPart(
+  const ll = await CreatePivotPart(
     data.body,
     data.leftleg,
-    new Vector3(-0.125, -0.75, 0),
-    new Vector3(0, 0, 0),
+    new threeModule.Vector3(-0.125, -0.75, 0),
+    new threeModule.Vector3(0, 0, 0),
     debug
   );
   data.leftLegPivot = ll.pivot;
 
-  const rl = CreatePivotPart(
+  const rl = await CreatePivotPart(
     data.body,
     data.rightleg,
-    new Vector3(0.125, -0.75, 0),
-    new Vector3(0, 0, 0),
+    new threeModule.Vector3(0.125, -0.75, 0),
+    new threeModule.Vector3(0, 0, 0),
     debug
   );
   data.rightLegPivot = rl.pivot;
 
-  const h = CreatePivotPart(data.body, data.head, new Vector3(0, 0, 0));
+  const h = await CreatePivotPart(data.body, data.head, new threeModule.Vector3(0, 0, 0));
   data.headPivot = h.pivot;
 
   data.bodyPivot = data.body;

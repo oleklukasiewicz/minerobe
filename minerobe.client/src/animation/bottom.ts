@@ -7,8 +7,8 @@ import {
   CreateModelAnimationData,
 } from "$src/helpers/render/animationHelper";
 const NewOutfitBottomAnimation = new RenderAnimation(
-  function (scene, keepData = false, modelName) {
-    let data: any = CreateModelAnimationData(scene, modelName);
+ async function (scene, keepData = false, modelName) {
+    let data: any =await CreateModelAnimationData(scene, modelName);
     scene.add(data.rightLegPivot);
     scene.add(data.leftLegPivot);
     data.rightLegPivot.position.set(0.125, 0.75, 0);

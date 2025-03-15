@@ -1,14 +1,12 @@
-import {
-  RenderAnimation,
-} from "$data/animation";
+import { RenderAnimation } from "$data/animation";
 import {
   AnimationPropertyStep,
   AnimationStep,
   CreateModelAnimationData,
 } from "$src/helpers/render/animationHelper";
 const NewOutfitBottomAltAnimation = new RenderAnimation(
-  function (scene, keepData = false, modelName) {
-    let data: any = CreateModelAnimationData(scene, modelName);
+  async function (scene, keepData = false, modelName) {
+    let data: any = await CreateModelAnimationData(scene, modelName);
     data.leftLegPivot.rotation.x = -0.13;
     if (keepData) {
       return data;

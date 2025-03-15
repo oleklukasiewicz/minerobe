@@ -1,6 +1,4 @@
-import {
-  RenderAnimation
-} from "$data/animation";
+import { RenderAnimation } from "$data/animation";
 import {
   AnimationPropertyStep,
   AnimationStepManager,
@@ -8,8 +6,8 @@ import {
   CreateModelAnimationData,
 } from "$src/helpers/render/animationHelper";
 const WavingAnimation = new RenderAnimation(
-  function (scene, keepData = false, modelName) {
-    let data: any = CreateModelAnimationData(scene, modelName);
+  async function (scene, keepData = false, modelName) {
+    let data: any = await CreateModelAnimationData(scene, modelName);
     //unpin legs from body
     data.rightLegPivot.parent.remove(data.rightLegPivot);
     data.leftLegPivot.parent.remove(data.leftLegPivot);
@@ -91,7 +89,8 @@ const WavingAnimation = new RenderAnimation(
               } else {
                 return "waveOut";
               }
-            },0.05
+            },
+            0.05
           ),
           new AnimationStepState(
             "waveOut",

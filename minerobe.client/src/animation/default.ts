@@ -5,8 +5,8 @@ import {
   CreateModelAnimationData,
 } from "$src/helpers/render/animationHelper";
 const DefaultAnimation = new RenderAnimation(
-  function (scene, keepData = false, modelName) {
-    let data: any = CreateModelAnimationData(scene, modelName);
+  async function (scene, keepData = false, modelName) {
+    let data: any = await CreateModelAnimationData(scene, modelName);
     //unpin legs from body
     data.rightLegPivot.parent.remove(data.rightLegPivot);
     data.leftLegPivot.parent.remove(data.leftLegPivot);

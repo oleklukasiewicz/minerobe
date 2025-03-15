@@ -2,7 +2,6 @@
   //main imports
   import { onDestroy, onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
-  import { WebGLRenderer, LinearSRGBColorSpace } from "three";
   //api
   import {
     FetchSettings,
@@ -43,6 +42,7 @@
   import SyncIcon from "$icons/sync.svg?raw";
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
+  import { THREE } from "$lib/three";
 
   const minecraftAccount: Writable<MinecraftAccount> = writable(null);
 
@@ -50,10 +50,12 @@
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
-      dynamicRenderer = new WebGLRenderer({
+      const threeModule = await THREE.getThree();
+      dynamicRenderer = new threeModule.WebGLRenderer({
         alpha: true,
       });
-      dynamicRenderer.outputColorSpace = LinearSRGBColorSpace;
+      dynamicRenderer.outputColorSpace = threeModule.LinearSRGBColorSpace;
+
       $WS_CONNECTION.on("linkToMc", (data) => {
         linkingStatus = data.status;
         linkingCode = data.data.userCode;

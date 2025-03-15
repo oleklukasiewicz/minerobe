@@ -88,17 +88,15 @@
 
   const setRenderMode = async (v) => {
     if (isDynamic) {
-      textureRenderer
-        .AddFloor(floorTexture)
-        .AddShadow()
-        .SetBackground(0x202020);
+      await textureRenderer.AddFloor(floorTexture);
+      await textureRenderer.AddShadow();
+      await textureRenderer.SetBackground(0x202020);
       await textureRenderer.RenderDynamic();
     } else {
-      textureRenderer
-        .RemoveFloor()
-        .RemoveShadow()
-        .RemoveBackground()
-        .StopRendering();
+      textureRenderer.RemoveFloor().RemoveShadow();
+
+      await textureRenderer.RemoveBackground();
+      textureRenderer.StopRendering();
       await textureRenderer.RenderStatic();
     }
   };
@@ -135,7 +133,7 @@
       } else {
         options = CAMERA_CONFIG.getForOutfit(outfitType);
       }
-      textureRenderer.SetCameraOptions(options);
+      await textureRenderer.SetCameraOptions(options);
     }
     if (cachedtexture != null)
       await textureRenderer.SetTextureAsync(cachedtexture);
@@ -180,11 +178,11 @@
     cachedtexture = _source as string;
     if (typeof _source !== "string") {
       if (cameraOptions == "auto" && outfitType == null) {
-        textureRenderer.SetCameraOptions(
+        await textureRenderer.SetCameraOptions(
           CAMERA_CONFIG.getForOutfit(_source.outfitType)
         );
       } else {
-        textureRenderer.SetCameraOptions(
+        await textureRenderer.SetCameraOptions(
           CAMERA_CONFIG.getForOutfit(outfitType)
         );
       }
@@ -251,7 +249,7 @@
       if (typeof _source !== "string") {
         const layer = _source.layers.find((x) => x.id == layerId);
         if (layer != null)
-          textureRenderer.SetCameraOptions(
+          await textureRenderer.SetCameraOptions(
             CAMERA_CONFIG.getForOutfit(layer.outfitType)
           );
       }
@@ -267,7 +265,7 @@
         targetCameraOptions = CAMERA_CONFIG.getForOutfit(_source.outfitType);
       else targetCameraOptions = CAMERA_CONFIG.getForOutfit(outfitType);
     }
-    textureRenderer.SetCameraOptions(targetCameraOptions);
+    await textureRenderer.SetCameraOptions(targetCameraOptions);
 
     if (!isDynamic) await textureRenderer.RenderStatic();
   };

@@ -1,5 +1,3 @@
-import { WebGLRenderer, LinearSRGBColorSpace } from "three";
-
 import baseModelTextureRaw from "$src/texture/base_skin.webp?url";
 import {
   get,
@@ -14,6 +12,7 @@ import { ModelScene } from "./render";
 import { ALEX_MODEL, STEVE_MODEL } from "./consts/model";
 import { APP_STATE } from "./enums/app";
 import { SIGNAL_R } from "$lib/signalr";
+import { THREE } from "$lib/three";
 
 //steve modelscene
 const steveModelSceneWritable: Writable<ModelScene> = writable(null);
@@ -95,12 +94,14 @@ export const Initialize = async function () {
       .then((x) => x.ResetPosition())
   );
 
+  const threeModule = await THREE.getThree();
+
   //setup default renderer
   defaultRendererWritable.update((renderer: any) => {
-    renderer = new WebGLRenderer({
+    renderer = new threeModule.WebGLRenderer({
       alpha: true,
     });
-    renderer.outputColorSpace = LinearSRGBColorSpace;
+    renderer.outputColorSpace = threeModule.LinearSRGBColorSpace;
     return renderer;
   });
 

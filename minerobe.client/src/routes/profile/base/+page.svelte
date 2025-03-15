@@ -2,7 +2,7 @@
   //main imports
   import { onDestroy, onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
-  import { WebGLRenderer, LinearSRGBColorSpace } from "three";
+
   //api
   import { FetchSettings, UpdateBaseTexture } from "$src/api/settings";
   //services
@@ -31,6 +31,7 @@
   //icons
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import DownloadIcon from "$icons/download.svg?raw";
+  import { THREE } from "$lib/three";
 
   const userSettings: Writable<MinerobeUserSettings> = writable(null);
 
@@ -38,10 +39,11 @@
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
-      dynamicRenderer = new WebGLRenderer({
+      const threeModule = await THREE.getThree();
+      dynamicRenderer = new threeModule.WebGLRenderer({
         alpha: true,
       });
-      dynamicRenderer.outputColorSpace = LinearSRGBColorSpace;
+      dynamicRenderer.outputColorSpace = threeModule.LinearSRGBColorSpace;
 
       $userSettings = await FetchSettings();
       loaded = true;

@@ -1,27 +1,3 @@
-import {
-  Vector3,
-  CanvasTexture,
-  Object3D,
-  NearestFilter,
-  LinearMipmapLinearFilter,
-  RepeatWrapping,
-  MeshStandardMaterial,
-  ImageBitmapLoader,
-  PerspectiveCamera,
-  PCFShadowMap,
-  DirectionalLight,
-  AmbientLight,
-  TextureLoader,
-  PlaneGeometry,
-  Mesh,
-  DoubleSide,
-  Color,
-  Scene,
-  OrthographicCamera,
-  Clock,
-} from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RenderAnimation } from "./animation";
 import { ALEX_MODEL, STEVE_MODEL } from "./consts/model";
 import { DEFAULT_RENDERER } from "./static";
@@ -29,19 +5,19 @@ import type { OutfitLayer, OutfitPackage } from "$data/models/package";
 import type { OutfitPackageRenderConfig } from "$data/models/render";
 import { MODEL_TYPE } from "./enums/model";
 export class CameraConfig {
-  rotation: Vector3;
-  position: Vector3;
-  lookAt: Vector3;
+  rotation: any;
+  position: any;
+  lookAt: any;
   lookAtEnabled: boolean;
   fov: number;
   zoom: number;
   constructor(
-    position: Vector3 = new Vector3(0, 0, 0),
-    lookAt: Vector3 = new Vector3(0, 0, 0),
+    position: Vector3Min = new Vector3Min(0, 0, 0),
+    lookAt: Vector3Min = new Vector3Min(0, 0, 0),
     zoom: number = 1,
     fov: number = 1,
     lookAtEnabled: boolean = false,
-    rotation: Vector3 = new Vector3(0, 0, 0)
+    rotation: Vector3Min = new Vector3Min(0, 0, 0)
   ) {
     this.fov = fov;
     this.position = position;
@@ -52,6 +28,7 @@ export class CameraConfig {
   }
 }
 import capeModelData from "$src/playerModel/cape.gltf?raw";
+import { THREE, Vector3Min } from "$lib/three";
 export class TextureRender {
   private renderer: any;
   private model: any;
@@ -72,33 +49,39 @@ export class TextureRender {
   private renderingPaused: boolean = false;
 
   //for dynamic render
-  private animationEngine: RenderAnimationEngine = new RenderAnimationEngine();
+  private animationEngine: RenderAnimationEngine = null;
   private orbitalControls: any = null;
 
   private _loadTexture = async function (targetTexture: string = null, flipY) {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
+      const threeModule = await THREE.getThree();
+      if (this.textureLoader == null) {
+        this.textureLoader = new threeModule.ImageBitmapLoader();
+        this.textureLoader.setOptions({ imageOrientation: "flipY" });
+      }
       this.textureLoader.load(targetTexture, (texture) => {
-        const canvasTexture = new CanvasTexture(texture);
+        const canvasTexture = new threeModule.CanvasTexture(texture);
         resolve(canvasTexture);
       });
     });
   };
-  private _attachCapeToModel = function (oldCape) {
+  private _attachCapeToModel = async function (oldCape) {
     const bodyPart = this.modelScene.renderScene.getObjectByName("Body");
     if (this.capePivot != null) {
       bodyPart.remove(this.capePivot);
       this.capePivot = null;
     }
-
-    const pivot = new Object3D();
+    const threeModule = await THREE.getThree();
+    const pivot = new threeModule.Object3D();
     pivot.position.set(0, -0.02, 0);
     this.capePivot = pivot;
     pivot.add(this.capeScene);
     bodyPart.add(pivot);
   };
   private _loadModelToTempScene = async function (model: string) {
-    return new Promise((resolve) => {
-      const modelLoader = new GLTFLoader();
+    return new Promise(async (resolve) => {
+      const module = await THREE.getGLTFLoader();
+      const modelLoader = new module.GLTFLoader();
       modelLoader.load(model, (gltf) => {
         resolve(gltf.scene);
       });
@@ -106,10 +89,11 @@ export class TextureRender {
   };
   private _applyTextureToModel = async function () {
     if (this.loadedTexture == null) return;
-    this.loadedTexture.magFilter = NearestFilter;
-    this.loadedTexture.minFilter = LinearMipmapLinearFilter;
-    this.loadedTexture.wrapS = RepeatWrapping;
-    this.loadedTexture.wrapT = RepeatWrapping;
+    const threeModule = await THREE.getThree();
+    this.loadedTexture.magFilter = threeModule.NearestFilter;
+    this.loadedTexture.minFilter = threeModule.LinearMipmapLinearFilter;
+    this.loadedTexture.wrapS = threeModule.RepeatWrapping;
+    this.loadedTexture.wrapT = threeModule.RepeatWrapping;
 
     this.modelScene.renderScene.traverse((child: any) => {
       if (child.isMesh && child.name != "Cape") {
@@ -117,20 +101,21 @@ export class TextureRender {
           child.castShadow = true;
           child.receiveShadow = true;
         }
-        const mat = child.material as MeshStandardMaterial;
+        const mat = child.material;
         mat.map = this.loadedTexture;
         mat.roughness = 1;
       }
     });
   };
-  private _loadCameraOptions = function () {
+  private _loadCameraOptions = async function () {
     if (this.modelScene == null) return;
     let options = new CameraConfig();
     if (!this.renderingActive) {
       options = this.cameraOptions || new CameraConfig();
     } else {
+      const threeModule = await THREE.getThree();
       options = new CameraConfig(
-        new Vector3(0, 0, -2),
+        new threeModule.Vector3(0, 0, -2),
         undefined,
         undefined,
         75
@@ -146,20 +131,24 @@ export class TextureRender {
     this.modelScene.camera.fov = options.fov;
     this.modelScene.camera.zoom = options.zoom;
   };
-  private _render = function (_self = this) {
+  private _render = async function (_self = this) {
     if (!_self.renderingActive) return;
+    if (this.animationEngine == null) {
+      this.animationEngine = new RenderAnimationEngine();
+      await this.animationEngine.Create();
+    }
     if (!this.renderingPaused) {
       //frame rendering
-      this.animationEngine.PrepareAnimation(
+      await this.animationEngine.PrepareAnimation(
         this.modelScene.renderScene,
         this.modelScene.name
       );
-      this.animationEngine.RenderAnimationFrame();
+      await this.animationEngine.RenderAnimationFrame();
 
       this.renderer.render(this.modelScene.scene, this.modelScene.camera);
       this.node.appendChild(this.renderer.domElement);
     }
-    requestAnimationFrame(() => this._render(this));
+    requestAnimationFrame(async () => await this._render(this));
   };
   private _updateRenderSize = function () {
     if (this.modelScene?.camera == null) return;
@@ -193,8 +182,6 @@ export class TextureRender {
 
   constructor(renderer: any = DEFAULT_RENDERER) {
     this.renderer = renderer;
-    this.textureLoader = new ImageBitmapLoader();
-    this.textureLoader.setOptions({ imageOrientation: "flipY" });
   }
   SetModelScene = async function (
     newModelScene: ModelScene
@@ -215,10 +202,10 @@ export class TextureRender {
     this.modelScene.name = targetSceneModel.name;
     if (this.renderingActive) await this._applyTextureToModel();
     if (this.capeTexture != null) {
-      this._attachCapeToModel();
+      await this._attachCapeToModel();
     }
     if (this.renderingActive)
-      this.animationEngine.RefreshAnimationData(
+      await this.animationEngine.RefreshAnimationData(
         this.modelScene.renderScene,
         this.modelScene.name
       );
@@ -257,7 +244,22 @@ export class TextureRender {
     this.temporaryRenderNode = null;
     return this;
   };
-  SetCameraOptions = function (cameraOptions: any): TextureRender {
+  SetCameraOptions = async function (
+    cameraOptions: CameraConfig | string
+  ): Promise<TextureRender> {
+    if (typeof cameraOptions != "string") {
+      const threeModule = await THREE.getThree();
+      cameraOptions.position = new threeModule.Vector3(
+        cameraOptions.position.x,
+        cameraOptions.position.y,
+        cameraOptions.position.z
+      );
+      cameraOptions.lookAt = new threeModule.Vector3(
+        cameraOptions.lookAt.x,
+        cameraOptions.lookAt.y,
+        cameraOptions.lookAt.z
+      );
+    }
     this.cameraOptions = cameraOptions;
     return this;
   };
@@ -265,6 +267,10 @@ export class TextureRender {
     animation: RenderAnimation,
     force: boolean
   ): TextureRender {
+    if (this.animationEngine == null) {
+      this.animationEngine = new RenderAnimationEngine();
+      this.animationEngine.Create();
+    }
     this.animationEngine.AddAnimation(animation, force);
     return this;
   };
@@ -277,7 +283,7 @@ export class TextureRender {
     requestAnimationFrame(async () => {
       if (this.renderer == null) return this;
 
-      this._loadCameraOptions();
+      await this._loadCameraOptions();
       this._updateRenderSize();
       await this._applyTextureToModel();
 
@@ -288,15 +294,17 @@ export class TextureRender {
   RenderDynamic = async function (): Promise<TextureRender> {
     this.StopRendering();
     //initial configuration
-    this.modelScene.camera = new PerspectiveCamera();
+    const threeModule = await THREE.getThree();
+    this.modelScene.camera = new threeModule.PerspectiveCamera();
 
     this.renderingActive = true;
 
-    this._loadCameraOptions();
+    await this._loadCameraOptions();
     this._updateRenderSize();
     await this._applyTextureToModel();
 
-    this.orbitalControls = new OrbitControls(
+    const module = await THREE.getOrbitalControls();
+    this.orbitalControls = new module.OrbitControls(
       this.modelScene.camera,
       this.renderer.domElement
     );
@@ -312,14 +320,15 @@ export class TextureRender {
     this.clock = null;
     return this;
   };
-  AddShadow = function (): TextureRender {
+  AddShadow = async function (): Promise<TextureRender> {
     if (this.shadowScene != null) return this;
     this.shadowsEnabled = true;
 
+    const threeModule = await THREE.getThree();
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = PCFShadowMap;
+    this.renderer.shadowMap.type = threeModule.PCFShadowMap;
 
-    const pointLight = new DirectionalLight(0xffffff, 0.78);
+    const pointLight = new threeModule.DirectionalLight(0xffffff, 0.78);
 
     pointLight.castShadow = true;
     pointLight.shadow.camera.near = 0.5;
@@ -349,16 +358,18 @@ export class TextureRender {
     this.shadowScene = null;
     return this;
   };
-  AddFloor = function (texture: string): TextureRender {
+  AddFloor = async function (texture: string): Promise<TextureRender> {
     if (this.floorScene != null) return this;
-    const floorTexture = new TextureLoader().load(texture);
-    const floorGeometry = new PlaneGeometry(3, 3, 3, 3);
-    const floorMaterial = new MeshStandardMaterial({
+
+    const threeModule = await THREE.getThree();
+    const floorTexture = new threeModule.TextureLoader().load(texture);
+    const floorGeometry = new threeModule.PlaneGeometry(3, 3, 3, 3);
+    const floorMaterial = new threeModule.MeshStandardMaterial({
       map: floorTexture,
-      side: DoubleSide,
+      side: threeModule.DoubleSide,
       roughness: 1,
     });
-    const floor = new Mesh(floorGeometry, floorMaterial);
+    const floor = new threeModule.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = Math.PI / 2;
     floor.position.y = 0;
     floor.receiveShadow = true;
@@ -371,26 +382,28 @@ export class TextureRender {
     this.floorScene = null;
     return this;
   };
-  SetBackground = function (color: Color): TextureRender {
+  SetBackground = function (color): TextureRender {
     if (this.renderer == null) return this;
     this.renderer.setClearColor(color, 1);
     return this;
   };
-  RemoveBackground = function (): TextureRender {
+  RemoveBackground = async function (): Promise<TextureRender> {
     if (this.renderer == null) return this;
-    this.renderer.setClearColor(new Color(0x000000), 0);
+
+    const threeModule = await THREE.getThree();
+    this.renderer.setClearColor(new threeModule.Color(0x000000), 0);
     return this;
   };
   SetCapeAsync = async function (capeTexture: string): Promise<TextureRender> {
     this.capeTexture = capeTexture;
     if (this.capeScene != null) this.modelScene.scene.remove(this.capeScene);
-
+    const threeModule = await THREE.getThree();
     const loaderPromise: Promise<any> = new Promise((resolve) => {
-      const capeLoader = new ImageBitmapLoader();
+      const capeLoader = new threeModule.ImageBitmapLoader();
       capeLoader.load(capeTexture, (texture) => {
-        const canvasTexture = new CanvasTexture(texture);
-        canvasTexture.magFilter = NearestFilter;
-        canvasTexture.minFilter = NearestFilter;
+        const canvasTexture = new threeModule.CanvasTexture(texture);
+        canvasTexture.magFilter = threeModule.NearestFilter;
+        canvasTexture.minFilter = threeModule.NearestFilter;
         resolve(canvasTexture);
       });
     });
@@ -400,7 +413,7 @@ export class TextureRender {
     const capeModel = await this._loadModelToTempScene(
       "data:model/gltf+json;base64," + btoa(capeModelData)
     );
-    const material = new MeshStandardMaterial({
+    const material = new threeModule.MeshStandardMaterial({
       map: capeTxt,
     });
     capeModel.traverse((child: any) => {
@@ -415,9 +428,9 @@ export class TextureRender {
       }
     });
     this.capeScene = capeModel;
-    this._attachCapeToModel();
+    await this._attachCapeToModel();
     if (this.renderingActive)
-      this.animationEngine.RefreshAnimationData(
+      await this.animationEngine.RefreshAnimationData(
         this.modelScene.renderScene,
         this.modelScene.name
       );
@@ -434,7 +447,7 @@ export class TextureRender {
   };
   async Resize() {
     if (this.renderer == null) return this;
-    this._loadCameraOptions();
+    await this._loadCameraOptions();
     this._updateRenderSize();
 
     this._renderInNode();
@@ -453,19 +466,25 @@ export class ModelScene {
   }
   async Create() {
     //prepare scene
-    this.scene = new Scene();
-    this.camera = new OrthographicCamera();
 
-    const modelLoader = new GLTFLoader();
+    const threeModule = await THREE.getThree();
+    this.scene = new threeModule.Scene();
+    this.camera = new threeModule.OrthographicCamera();
+    const module = await THREE.getGLTFLoader();
+    const modelLoader = new module.GLTFLoader();
 
     //set default values
     this.scene.position.y = -1;
     const brightness = 1.2;
-    const light = new AmbientLight(0xffffff, brightness * 1.8, 10);
+    const light = new threeModule.AmbientLight(0xffffff, brightness * 1.8, 10);
 
     //configure light
     this.scene.add(light);
-    const pointLight = new DirectionalLight(0xffffff, brightness * 0.65, 10);
+    const pointLight = new threeModule.DirectionalLight(
+      0xffffff,
+      brightness * 0.65,
+      10
+    );
     pointLight.position.set(0, 50, -50);
     this.scene.add(pointLight);
 
@@ -493,7 +512,7 @@ export class ModelScene {
     cloned.scene = this.scene.clone(true);
     cloned.renderScene.traverse((child: any) => {
       if (child.isMesh) {
-        const mat = child.material as MeshStandardMaterial;
+        const mat = child.material;
         child.material = mat.clone();
       }
     });
@@ -513,10 +532,13 @@ export class RenderAnimationEngine {
 
   private clock: any = null;
 
-  constructor() {
-    this.clock = new Clock();
-  }
-  PrepareAnimation = function (
+  constructor() {}
+  Create = async function () {
+    const threeModule = await THREE.getThree();
+    this.clock = new threeModule.Clock();
+    return this;
+  };
+  PrepareAnimation = async function (
     sceneData: any,
     modelName,
     keepData: boolean,
@@ -532,7 +554,7 @@ export class RenderAnimationEngine {
     }
     if (this.currentAnimation == null) return this;
 
-    const localAnimationData = this.currentAnimation.prepare(
+    const localAnimationData = await this.currentAnimation.prepare(
       sceneData,
       keepData,
       modelName
@@ -555,13 +577,13 @@ export class RenderAnimationEngine {
     this.animationsList.push(animation);
     return this;
   };
-  RenderAnimationFrame = function () {
+  RenderAnimationFrame = async function () {
     const _clockActualDelta = this.clock.getDelta();
     const _clockDelta = _clockActualDelta > 1 ? 1 : _clockActualDelta;
     const _clockElapsedTime = this.clock.getElapsedTime();
 
     if (!this.isAnimationPrepared) {
-      this.PrepareAnimation(
+      await this.PrepareAnimation(
         this.animationData,
         false,
         this.animationDataModelName
@@ -594,9 +616,9 @@ export class RenderAnimationEngine {
       );
     }
   };
-  RefreshAnimationData = function (sceneData: any, modelName) {
+  RefreshAnimationData = async function (sceneData: any, modelName) {
     if (this.currentAnimation == null) return this;
-    const localAnimationData = this.currentAnimation.prepare(
+    const localAnimationData = await this.currentAnimation.prepare(
       sceneData,
       true,
       modelName

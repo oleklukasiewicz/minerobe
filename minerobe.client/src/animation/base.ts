@@ -8,8 +8,8 @@ import {
   CreateModelAnimationData,
 } from "$src/helpers/render/animationHelper";
 const BaseAnimation = new RenderAnimation(
-  function (scene, keepData = false, modelName) {
-    const data = CreateModelAnimationData(scene,modelName);
+  async function (scene, keepData = false, modelName) {
+    const data = await CreateModelAnimationData(scene,modelName);
     return data;
   },
   function (data, scene, clock, modelName, elapsedRenderTime) {

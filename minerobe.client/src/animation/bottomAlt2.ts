@@ -7,8 +7,8 @@ import {
   CreateModelAnimationData,
 } from "$src/helpers/render/animationHelper";
 const NewOutfitBottomAlt2Animation = new RenderAnimation(
-  function (scene, keepData = false, modelName) {
-    let data: any = CreateModelAnimationData(scene, modelName);
+  async function (scene, keepData = false, modelName) {
+    let data: any = await CreateModelAnimationData(scene, modelName);
     data.rightLegPivot.parent.remove(data.rightLegPivot);
     data.leftLegPivot.parent.remove(data.leftLegPivot);
     //add to scene

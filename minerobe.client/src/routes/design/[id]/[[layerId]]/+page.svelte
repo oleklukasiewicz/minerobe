@@ -4,7 +4,6 @@
   import { writable, type Writable } from "svelte/store";
   import { onDestroy, onMount } from "svelte";
   import { propertyStore } from "svelte-writable-derived";
-  import { WebGLRenderer, LinearSRGBColorSpace } from "three";
   //api
   import { GetPackage } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
@@ -62,6 +61,7 @@
   import ListIcon from "$icons/list.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import EditIcon from "$src/icons/edit.svg?raw";
+  import { THREE } from "$lib/three.js";
 
   export let data;
 
@@ -100,10 +100,11 @@
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY && state != APP_STATE.GUEST_READY) return;
-      renderer = new WebGLRenderer({
+      const threeModule = await THREE.getThree();
+      renderer = new threeModule.WebGLRenderer({
         alpha: true,
       });
-      renderer.outputColorSpace = LinearSRGBColorSpace;
+      renderer.outputColorSpace = threeModule.LinearSRGBColorSpace;
 
       $itemPackage = await GetPackage(data.id);
       isOutfitSet = $itemPackage.type === PACKAGE_TYPE.OUTFIT_SET;
