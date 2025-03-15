@@ -8,9 +8,6 @@ dotenv.config();
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
   return {
-    optimizeDeps: {
-      exclude: ["three", "firebase/auth", "signalr"],
-    },
     build: {
       rollupOptions: {
         external: ["three", "firebase/auth", "signalr"],
