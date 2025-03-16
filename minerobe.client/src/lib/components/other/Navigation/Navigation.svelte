@@ -17,7 +17,7 @@
 <div class="navigation" class:mobile={$IS_MOBILE_VIEW}>
   <div class="items">
     <a id="nav-title" href={"/"}>
-      <img src="/texture/logo.png" alt="Logo" />
+      <img src="/texture/logo-min.webp" alt="Logo" />
     </a>
     <div id="nav-search">
       <Search

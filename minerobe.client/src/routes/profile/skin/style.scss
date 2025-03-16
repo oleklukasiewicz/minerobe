@@ -7,14 +7,14 @@
   gap: 16px;
   .render {
     aspect-ratio: 1;
-    min-width: 30vw;
+    min-width: 250px;
     flex:1;
   }
   .data {
     flex:1;
     max-width: 100%;
     width: 100%;
-    min-width: 400px;
+    min-width: 300px;
     margin: 0px auto;
     display: flex;
     flex-direction: column;
@@ -25,7 +25,7 @@
     }
   }
   &.mobile {
-    grid-template-columns: 100%;
+    flex-direction: column;
     .data {
       max-width: 100%;
     }

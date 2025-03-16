@@ -100,6 +100,8 @@
     if ($IS_MOBILE_VIEW) {
       itemsContainer.style.minWidth = null;
       itemsContainer.style.maxWidth = null;
+      itemsContainer.style.maxHeight = "calc(100% - 54px)";
+      itemsContainer.style.top = "0px";
     } else {
       menuWidth = menu?.offsetWidth;
       const menuCoords = menu?.getBoundingClientRect();
@@ -107,6 +109,7 @@
       const menuHeight = menuCoords?.height;
       if (itemsContainer) {
         itemsContainer.style.maxHeight = `calc(100vh - ${menuY}px - ${menuHeight}px - 20px)`;
+        itemsContainer.style.top = null;
 
         itemsContainer.style.minWidth = `${menuWidth}px`;
         itemsContainer.style.maxWidth = `${menuWidth}px`;
