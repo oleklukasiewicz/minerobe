@@ -238,7 +238,7 @@
         on:input={(e) => (opened = true)}
         on:click={(e) => (opened = true)}
       />
-    {:else}
+    {:else if autocomplete}
       <div
         class="autocomplete-placeholder"
         on:click={() => (opened = true)}
