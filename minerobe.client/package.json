@@ -30,7 +30,7 @@
 		"color-diff": "^1.4.0",
 		"dotenv": "^16.4.7",
 		"firebase": "^11.4.0",
-		"sass": "^1.85.1",
+		"sass": "^1.89.2",
 		"svelte-i18n": "^4.0.1",
 		"svelte-intersection-observer": "^1.0.0",
 		"svelte-writable-derived": "^3.1.1",
