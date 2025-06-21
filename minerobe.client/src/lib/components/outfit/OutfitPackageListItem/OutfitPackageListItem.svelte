@@ -16,7 +16,6 @@
   import HeartSmallIcon from "$icons/small/heart-micro.svg?raw";
   import DownloadSmallIcon from "$icons/small/download-micro.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
-  import { GetDominantColorTitleFromImage } from "$src/helpers/image/colorHelper";
 
   const dispatch = createEventDispatcher();
 
@@ -65,6 +64,11 @@
     e.stopPropagation();
     dispatch("select", { value: selected });
   };
+  const onClick = async function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch("click", { item: item, layer: currentLayer });
+  };
 </script>
 
 <!-- svelte-ignore a11y-missing-attribute -->
@@ -73,7 +77,7 @@
 <a
   {style}
   class="outfit-package-list-item"
-  on:click
+  on:click={onClick}
   class:selected={selectable && selected}
 >
   <div class="render">

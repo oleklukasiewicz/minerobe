@@ -552,7 +552,10 @@
     <div id="item-data-description">
       <SectionTitle label="Description" placeholder={!loaded} />
       <Placeholder height="40px" {loaded}>
-        <textarea id="description-input" bind:value={$itemPackage.description}
+        <textarea
+          id="description-input"
+          bind:value={$itemPackage.description}
+          placeholder="Enter description here..."
         ></textarea>
       </Placeholder>
       {#if loaded && isOutfitSet}

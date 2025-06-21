@@ -175,6 +175,12 @@ namespace minerobe.api.Modules.Core.Collection.Service
                 return true;
             if (access.UserId == userId)
                 return true;
+
+            var user = await _userService.GetById(userId);
+            if (user == null)
+                return false;
+            if (user.IsAdmin)
+                return true;
             return false;
         }
         public async Task<bool> CanEdit(Guid packageId, Guid userId)
@@ -183,6 +189,12 @@ namespace minerobe.api.Modules.Core.Collection.Service
             if (access == null)
                 return false;
             if (access.UserId == userId)
+                return true;
+
+            var user = await _userService.GetById(userId);
+            if (user == null)
+                return false;
+            if (user.IsAdmin)
                 return true;
             return false;
         }
