@@ -158,7 +158,7 @@
       $itemPackage = await GetPackage(data.id);
       isOutfitSet = $itemPackage.type === PACKAGE_TYPE.OUTFIT_SET;
       $renderConfiguration.item = $itemPackage;
-      if (!isOutfitSet)
+      if (!isOutfitSet && $itemPackage.layers.length > 0) {
         $renderConfiguration.selectedLayerId = $itemPackage.layers[0]?.id;
 
       userSettings = await FetchSettings();
