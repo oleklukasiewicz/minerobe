@@ -160,6 +160,7 @@
       $renderConfiguration.item = $itemPackage;
       if (!isOutfitSet && $itemPackage.layers.length > 0) {
         $renderConfiguration.selectedLayerId = $itemPackage.layers[0]?.id;
+      }
 
       userSettings = await FetchSettings();
       if (isOutfitSet && userSettings?.baseTexture != null)
