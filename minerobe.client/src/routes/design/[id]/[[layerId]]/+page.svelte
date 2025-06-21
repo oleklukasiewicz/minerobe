@@ -112,7 +112,7 @@
 
       if (!isOutfitSet) {
         if (data.layerId == null && $itemPackage.layers.length > 0)
-          $renderConfiguration.selectedLayerId = $itemPackage.layers[0].id;
+          $renderConfiguration.selectedLayerId = $itemPackage.layers[0]?.id;
         else $renderConfiguration.selectedLayerId = data.layerId;
       }
       if (data.isFlat != null) $renderConfiguration.isFlatten = data.isFlat;

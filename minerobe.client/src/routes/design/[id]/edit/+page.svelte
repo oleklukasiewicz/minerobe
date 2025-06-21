@@ -272,7 +272,7 @@
     );
     renderConfiguration.update((config) => {
       config.item.layers.push(...addedlayers);
-      if (!isOutfitSet) config.selectedLayerId = addedlayers[0].id;
+      if (!isOutfitSet) config.selectedLayerId = addedlayers[0]?.id;
       return config;
     });
     addAnimation(
@@ -291,7 +291,7 @@
     );
     renderConfiguration.update((config) => {
       config.item.layers.push(...addedlayers);
-      if (!isOutfitSet) config.selectedLayerId = addedlayers[0].id;
+      if (!isOutfitSet) config.selectedLayerId = addedlayers[0]?.id;
       return config;
     });
     addAnimation(
