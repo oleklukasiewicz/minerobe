@@ -1,4 +1,5 @@
-﻿using minerobe.api.Modules.Core.Package.Entity;
+﻿using Microsoft.Identity.Client;
+using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Settings.Entity;
 using minerobe.api.Modules.Core.User.Entity;
 using minerobe.api.Modules.Integration.Minecraft.Helpers;
@@ -16,6 +17,6 @@ namespace minerobe.api.Modules.Integration.Minecraft.Interface
         Task<bool> HideUserCape(Guid userId);
         Task<string> RefreshAllTokens();
         Task<FlowAuthentication> Authenticate(Guid userId);
-        Task<string> Refresh(string token);
+        Task<AuthenticationResult> Refresh(string token);
     }
 }

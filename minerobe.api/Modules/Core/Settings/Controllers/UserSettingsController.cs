@@ -8,6 +8,7 @@ using minerobe.api.Modules.Core.Settings.Model;
 using minerobe.api.Modules.Core.Settings.ResponseModel;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Integration.Minecraft.Interface;
+using minerobe.api.ServicesHelpers;
 
 namespace minerobe.api.Modules.Core.Settings.Controllers
 {
@@ -45,7 +46,7 @@ namespace minerobe.api.Modules.Core.Settings.Controllers
             if (settings == null)
                 return NotFound();
 
-            return Ok(new { integrations = settings.Integrations.Select(x=>x.Type) });
+            return Ok(new { integrations = settings.Integrations.Select(x => x.Type) });
         }
 
         [HttpPost("BaseTexture")]
@@ -69,11 +70,23 @@ namespace minerobe.api.Modules.Core.Settings.Controllers
             //minecraft services integrations
             if (settings.ContainsIntegration("minecraft"))
             {
-                await _javaXboxAuthService.SetUserSkin(user.Id, entity);
-                if (currentTexture.CapeId != null)
-                    await _javaXboxAuthService.SetUserCape(user.Id, currentTexture.CapeId.Value);
-                else
-                    await _javaXboxAuthService.HideUserCape(user.Id);
+                try
+                {
+                    await _javaXboxAuthService.SetUserSkin(user.Id, entity);
+                    if (currentTexture.CapeId != null)
+                        await _javaXboxAuthService.SetUserCape(user.Id, currentTexture.CapeId.Value);
+                    else
+                        await _javaXboxAuthService.HideUserCape(user.Id);
+                }
+                catch (Exception ex)
+                {
+                    return new ErrorResponse()
+                    {
+                        Code = "invalid_grant",
+                        Message = ex.Message,
+                    }.ToHttpReponse();
+
+                }
             }
             if (settings == null)
                 return NotFound();

@@ -453,25 +453,20 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
         }
 
         //refresh flow
-        public async Task<string> Refresh(string accountId)
+        public async Task<AuthenticationResult> Refresh(string accountId)
         {
             var pca = await GetPca();
             var account = await pca.GetAccountAsync(accountId);
             if (account == null)
                 return null;
             var token = await pca.AcquireTokenSilent(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" }, account).ExecuteAsync();
-            return token.ExpiresOn.ToString();
+            return token;
         }
 
         //token cache
         public async Task<string> GetTokenFromCache(string accountId)
         {
-            var pca = await GetPca();
-            var account = await pca.GetAccountAsync(accountId);
-            if (account == null)
-                return null;
-            var token = await pca.AcquireTokenSilent(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" }, account).ExecuteAsync();
-
+            var token = await Refresh(accountId);
             var msalToken = token.AccessToken;
             var msalTokenExpireOn = token.ExpiresOn;
 

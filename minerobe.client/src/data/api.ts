@@ -1,5 +1,4 @@
 import { FIREBASE } from "$lib/firebase";
-import axios from "axios";
 
 let cUser;
 let cTokenValidity = 3600 - 100;
@@ -139,6 +138,11 @@ export const PostRequest = async function (
     },
     body: JSON.stringify(data),
   });
+  //check for error code
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error);
+  }
   return res.json();
 };
 
@@ -147,14 +151,19 @@ export const GetRequest = async function (
   abortController = null
 ) {
   await checkToken();
-  const res = await axios.get(path, {
+  const res = await fetch(path, {
+    method: "GET",
     signal: abortController?.signal,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${cToken}`,
     },
   });
-  return res.data;
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error);
+  }
+  return res.json();
 };
 
 export const PutRequest = async function (
@@ -172,6 +181,10 @@ export const PutRequest = async function (
     },
     body: JSON.stringify(data),
   });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error);
+  }
   return res.json();
 };
 
@@ -188,6 +201,10 @@ export const DeleteRequest = async function (
       Authorization: `Bearer ${cToken}`,
     },
   });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error);
+  }
   return res.json();
 };
 
@@ -206,5 +223,9 @@ export const PatchRequest = async function (
     },
     body: JSON.stringify(data),
   });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error);
+  }
   return res.json();
 };

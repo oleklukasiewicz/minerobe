@@ -124,7 +124,13 @@
   const SyncCurrentSkin = async function () {
     skinIsSyncing = true;
     var settings = await FetchSettings();
-    await SetCurrentTexture(settings.currentTexture);
+    try {
+      await SetCurrentTexture(settings.currentTexture);
+    } catch (e) {
+      ShowToast("Failed to sync skin", "error");
+      skinIsSyncing = false;
+      return;
+    }
     skinIsSyncing = false;
     ShowToast("Skin synced successfully");
   };
