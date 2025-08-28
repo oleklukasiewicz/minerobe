@@ -14,7 +14,7 @@
   export let disableContext: any = null;
   export let disableFunction = function (context, item) {
     return (
-      context?.layers.find((layer) => layer.id === item.layers[0].id) != null
+      context?.layers.find((layer) => layer.id === item.layers[0]?.id) != null
     );
   };
   export let loading = true;
@@ -27,7 +27,7 @@
   };
   const onRemoveFromSelected = (item: OutfitPackage) => {
     selectedItems = selectedItems.filter(
-      (i) => i.id !== item.id || i.layers[0].id !== item.layers[0].id
+      (i) => i.id !== item.id || i.layers[0]?.id !== item.layers[0]?.id
     );
     dispatch("select", { items: selectedItems });
   };

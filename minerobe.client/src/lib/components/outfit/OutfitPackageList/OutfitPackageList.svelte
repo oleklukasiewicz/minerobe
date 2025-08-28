@@ -24,8 +24,10 @@
   export let selectable = false;
 
   let _component: any = null;
-  const selectOutfit = function (item) {
-    dispatch("select", { item: item });
+  const selectOutfit = function (e) {
+    const item = e.detail.item;
+    const layer = e.detail.layer;
+    dispatch("select", { item: item, layer: layer });
   };
   const fetchLayer = async function (id, item): Promise<OutfitLayer> {
     return await GetLayer(id);
@@ -56,7 +58,7 @@
           currentItem={currentPackageId == item.id}
           {item}
           {fetchLayer}
-          on:click={() => selectOutfit(item)}
+          on:click={selectOutfit}
           baseTexture={item.type == PACKAGE_TYPE.OUTFIT_SET
             ? baseTexture
             : null}

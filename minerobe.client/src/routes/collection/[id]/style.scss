@@ -9,6 +9,10 @@
     margin: 8px 0px;
     box-sizing: border-box;
     padding: 32px;
+    #collection-info {
+      display: flex;
+      gap: 8px;
+    }
     h1 {
       margin: 0px;
       font-size: var(--size-font-subheader);

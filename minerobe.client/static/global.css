@@ -237,7 +237,8 @@ input:hover {
 textarea {
   font-family: Arial, Helvetica, sans-serif;
   background-color: transparent;
-  border: 2px solid var(--color-theme-D4);
+  border: 2px solid var(--color-theme-D6);
+  background-color: var(--color-theme-D1);
   outline: none;
   resize: none;
   padding: 8px;

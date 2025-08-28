@@ -158,8 +158,9 @@
       $itemPackage = await GetPackage(data.id);
       isOutfitSet = $itemPackage.type === PACKAGE_TYPE.OUTFIT_SET;
       $renderConfiguration.item = $itemPackage;
-      if (!isOutfitSet)
+      if (!isOutfitSet && $itemPackage.layers.length > 0) {
         $renderConfiguration.selectedLayerId = $itemPackage.layers[0]?.id;
+      }
 
       userSettings = await FetchSettings();
       if (isOutfitSet && userSettings?.baseTexture != null)
@@ -272,7 +273,7 @@
     );
     renderConfiguration.update((config) => {
       config.item.layers.push(...addedlayers);
-      if (!isOutfitSet) config.selectedLayerId = addedlayers[0].id;
+      if (!isOutfitSet) config.selectedLayerId = addedlayers[0]?.id;
       return config;
     });
     addAnimation(
@@ -291,7 +292,7 @@
     );
     renderConfiguration.update((config) => {
       config.item.layers.push(...addedlayers);
-      if (!isOutfitSet) config.selectedLayerId = addedlayers[0].id;
+      if (!isOutfitSet) config.selectedLayerId = addedlayers[0]?.id;
       return config;
     });
     addAnimation(
@@ -552,7 +553,10 @@
     <div id="item-data-description">
       <SectionTitle label="Description" placeholder={!loaded} />
       <Placeholder height="40px" {loaded}>
-        <textarea id="description-input" bind:value={$itemPackage.description}
+        <textarea
+          id="description-input"
+          bind:value={$itemPackage.description}
+          placeholder="Enter description here..."
         ></textarea>
       </Placeholder>
       {#if loaded && isOutfitSet}

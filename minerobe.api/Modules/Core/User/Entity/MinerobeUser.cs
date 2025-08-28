@@ -9,6 +9,7 @@ namespace minerobe.api.Modules.Core.User.Entity
         public string Name { get; set; }
         public string Avatar { get; set; }
         public Guid WardrobeId { get; set; }
+        public bool IsAdmin { get; set; } = false;
     }
     public class MinerobeUserEntityConfig : IEntityTypeConfiguration<MinerobeUser>
     {
