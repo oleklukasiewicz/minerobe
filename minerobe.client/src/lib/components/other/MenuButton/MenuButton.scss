@@ -1,0 +1,21 @@
+.menu-button {
+  position: relative;
+  display: flex;
+  .menu-button-actions {
+    border-top: 2px solid var(--color-theme-font);
+    border-bottom: 2px solid var(--color-theme-font);
+    border-right: 2px solid var(--color-theme-font);
+  }
+  .menu-button-content {
+    width: 100%;
+    min-width: 150px;
+    border: 2px solid var(--color-theme-font);
+    background-color: var(--color-theme-D1);
+    &.pos-top {
+      transform: translateY(2px);
+    }
+    &.pos-bottom {
+      transform: translateY(-2px);
+    }
+  }
+}

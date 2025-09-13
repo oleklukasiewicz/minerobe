@@ -73,19 +73,20 @@
     }
   }
   .items {
-    z-index: 15;
     overflow-y: auto;
     padding: 5px 0px;
     overflow-x: hidden;
+    max-height: 100%;
+    width: 100%;
     border: 2px solid var(--color-theme-D6);
-    transform: translateY(-2px);
     box-sizing: border-box;
-    position: absolute;
-    display: flex;
-    flex-direction: column;
+    display: block;
     background-color: var(--color-theme-D1);
-    &.hidden {
-      display: none !important;
+    &.pos-top {
+      border-bottom: 0px;
+    }
+    &.pos-bottom {
+      border-top: 0px;
     }
   }
   &.mobile {

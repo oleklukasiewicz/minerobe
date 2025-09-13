@@ -89,6 +89,7 @@
   import ColorSelect from "$lib/components/other/ColorSelect/ColorSelect.svelte";
   import { COLORS_ARRAY } from "$src/data/consts/color.js";
   import { THREE } from "$lib/three.js";
+  import MenuButton from "$lib/components/other/MenuButton/MenuButton.svelte";
 
   export let data;
 
@@ -564,6 +565,7 @@
         <ColorSelect
           bind:selectedItem={$itemPackage.colorName}
           placeholder="Select color"
+          dropDownStyle="max-height: 40vh;"
           items={COLORS_ARRAY}
           autocomplete
           clearable
@@ -598,14 +600,22 @@
             disabled={isSkinSetting}
           />
         {/if}
-        <Button
+        <MenuButton
           on:click={exportPackage}
           label="Download"
           type="primary"
           size="large"
           onlyIcon={isMinecraftIntegrated && !$IS_MOBILE_VIEW && isOutfitSet}
           icon={DownloadIcon}
-        />
+        >
+        <Button
+            label="Download only texture"
+            type="quaternary"
+            size="medium"
+            icon={DownloadIcon}
+            on:click={exportPackage}
+          />
+      </MenuButton>
         <Button
           label="Manage collections"
           type="tertiary"

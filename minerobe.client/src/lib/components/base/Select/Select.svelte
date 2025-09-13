@@ -13,6 +13,7 @@
   import CloseIcon from "$icons/close.svg?raw";
   import CheckBoxIcon from "$icons/checkbox.svg?raw";
   import CheckBoxOffIcon from "$icons/checkbox-off.svg?raw";
+  import Flyout from "../Flyout/Flyout.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -100,17 +101,9 @@
     if ($IS_MOBILE_VIEW) {
       itemsContainer.style.minWidth = null;
       itemsContainer.style.maxWidth = null;
-      itemsContainer.style.maxHeight = "calc(100% - 54px)";
-      itemsContainer.style.top = "0px";
     } else {
       menuWidth = menu?.offsetWidth;
-      const menuCoords = menu?.getBoundingClientRect();
-      const menuY = menuCoords?.top;
-      const menuHeight = menuCoords?.height;
       if (itemsContainer) {
-        itemsContainer.style.maxHeight = `calc(100vh - ${menuY}px - ${menuHeight}px - 20px)`;
-        itemsContainer.style.top = null;
-
         itemsContainer.style.minWidth = `${menuWidth}px`;
         itemsContainer.style.maxWidth = `${menuWidth}px`;
       }
@@ -271,47 +264,57 @@
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="select-mobile-bg" on:click={() => (opened = false)}></div>
-  <div
-    class="items"
-    style={dropDownStyle}
-    class:opened
-    class:hidden={!opened}
-    bind:this={itemsContainer}
+  <Flyout
+    bind:opened
+    caller={menu}
+    preventClickOutsideClose
+    resizable
+    let:position
   >
-    {#each filteredItems.sort(sorter) as item, index}
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="selected item" on:click={() => select(item)}>
-        <slot
-          {item}
-          {multiple}
-          {itemText}
-          {selectedItemValue}
-          {comparer}
-          {index}
-          {focusedIndex}
-        >
-          <Button
-            size="small"
-            flat
-            noBorder
-            type={comparer(selectedItemValue, item, multiple) ||
-            index == focusedIndex
-              ? "primary"
-              : "quaternary"}
-            icon={multiple
-              ? comparer(selectedItemValue, item, multiple)
-                ? CheckBoxIcon
-                : CheckBoxOffIcon
-              : null}
-            focused={index == focusedIndex}
-            label={itemText == null ? item : item[itemText]}
-            textAlign="left"
-          ></Button>
-        </slot>
-      </div>
-    {/each}
-  </div>
+    <div
+      class:pos-bottom={position == "bottom"}
+      class:pos-top={position == "top"}
+      class="items"
+      style={dropDownStyle}
+      class:opened
+      class:hidden={!opened}
+      bind:this={itemsContainer}
+    >
+      {#each filteredItems.sort(sorter) as item, index}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div class="selected item" on:click={() => select(item)}>
+          <slot
+            {item}
+            {multiple}
+            {itemText}
+            {selectedItemValue}
+            {comparer}
+            {index}
+            {focusedIndex}
+          >
+            <Button
+              size="small"
+              flat
+              noBorder
+              type={comparer(selectedItemValue, item, multiple) ||
+              index == focusedIndex
+                ? "primary"
+                : "quaternary"}
+              icon={multiple
+                ? comparer(selectedItemValue, item, multiple)
+                  ? CheckBoxIcon
+                  : CheckBoxOffIcon
+                : null}
+              focused={index == focusedIndex}
+              label={itemText == null ? item : item[itemText]}
+              textAlign="left"
+            ></Button>
+          </slot>
+        </div>
+      {/each}
+    </div>
+  </Flyout>
 </div>
 
 <style lang="scss">
