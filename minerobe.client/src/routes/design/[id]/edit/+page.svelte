@@ -314,6 +314,17 @@
     );
     addAnimation(GetAnimationForPackageChange(CHANGE_TYPE.DOWNLOAD, null));
   };
+  const exportPackageWithoutBaseTexture = async () => {
+    const texture = new OutfitPackageToTextureConverter().SetOptions(
+      $renderConfiguration
+    );
+    texture.SetBaseTexture(null);
+    await ExportImage(
+      await texture.ConvertAsyncWithFlattenSettingsAsync(),
+      $itemPackage.name
+    );
+    addAnimation(HandsUpAnimation);
+  };
 
   //animations
   const addAnimation = (animation: RenderAnimation) => {
@@ -608,14 +619,14 @@
           onlyIcon={isMinecraftIntegrated && !$IS_MOBILE_VIEW && isOutfitSet}
           icon={DownloadIcon}
         >
-        <Button
+          <Button
             label="Download only texture"
             type="quaternary"
             size="medium"
             icon={DownloadIcon}
-            on:click={exportPackage}
+            on:click={exportPackageWithoutBaseTexture}
           />
-      </MenuButton>
+        </MenuButton>
         <Button
           label="Manage collections"
           type="tertiary"

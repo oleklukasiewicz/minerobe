@@ -62,6 +62,7 @@
   import LoaderIcon from "$icons/loader.svg?raw";
   import EditIcon from "$src/icons/edit.svg?raw";
   import { THREE } from "$lib/three.js";
+  import MenuButton from "$lib/components/other/MenuButton/MenuButton.svelte";
 
   export let data;
 
@@ -159,6 +160,17 @@
     );
     if (userSettings?.baseTexture == null || !isOutfitSet)
       texture.SetBaseTexture(null);
+    await ExportImage(
+      await texture.ConvertAsyncWithFlattenSettingsAsync(),
+      $itemPackage.name
+    );
+    addAnimation(HandsUpAnimation);
+  };
+  const exportPackageWithoutBaseTexture = async () => {
+    const texture = new OutfitPackageToTextureConverter().SetOptions(
+      $renderConfiguration
+    );
+    texture.SetBaseTexture(null);
     await ExportImage(
       await texture.ConvertAsyncWithFlattenSettingsAsync(),
       $itemPackage.name
@@ -338,14 +350,22 @@
             disabled={isSkinSetting}
           />
         {/if}
-        <Button
+        <MenuButton
           on:click={exportPackage}
           label="Download"
           type="primary"
           size="large"
           onlyIcon={isMinecraftIntegrated && !$IS_MOBILE_VIEW && isOutfitSet}
           icon={DownloadIcon}
-        />
+        >
+          <Button
+            label="Download only texture"
+            type="quaternary"
+            size="medium"
+            icon={DownloadIcon}
+            on:click={exportPackageWithoutBaseTexture}
+          />
+        </MenuButton>
         <Button
           label="Manage collections"
           type="tertiary"
