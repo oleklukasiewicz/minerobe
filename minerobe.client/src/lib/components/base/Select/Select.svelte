@@ -75,7 +75,7 @@
       inputComponent.focus();
     }
     autocompleteInput = null;
-    opened = false;
+    if (!multiple) opened = false;
     dispatch("select", { item: selectedItemValue });
   };
   const selectedClick = () => {
