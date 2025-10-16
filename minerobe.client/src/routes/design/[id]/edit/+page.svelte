@@ -612,6 +612,8 @@
           />
         {/if}
         <MenuButton
+          hideMenuButton={!isOutfitSet}
+          containerStyle={isMinecraftIntegrated && isOutfitSet ? "" : "flex:1"}
           on:click={exportPackage}
           label="Download"
           type="primary"

@@ -11,6 +11,7 @@
   export let onlyIcon: boolean = false;
   export let noBorder = false;
   export let style = null;
+  export let containerStyle = null;
   export let whiteText = false;
   export let flat = false;
   export let focused = false;
@@ -20,7 +21,7 @@
   export let iconSize: "small" | "medium" | "large" | "auto" = size;
   export let textAlign: "left" | "center" | "right" = "center";
   export let target: "_blank" | "_self" = null;
-  export let fab: "static" | "dynamic" | "expanded" | null = null;
+  export let hideMenuButton: boolean = false;
 
   export let opened: boolean = false;
 
@@ -33,6 +34,7 @@
 
 <div
   class="menu-button"
+  style={containerStyle}
   bind:this={component}
   use:clickOutside
   on:click_outside={() => (opened = false)}
@@ -54,20 +56,21 @@
     {iconSize}
     {textAlign}
     {target}
-    {fab}
   />
-  <div class="menu-button-actions">
-    <Button
-      onlyIcon
-      style="height: 100%;width: 32px;"
-      iconSize="auto"
-      size="auto"
-      icon={opened ? ChevronUpIcon : ChevronDownIcon}
-      type="primary"
-      noBorder
-      on:click={() => (opened = !opened)}
-    ></Button>
-  </div>
+  {#if !hideMenuButton}
+    <div class="menu-button-actions">
+      <Button
+        onlyIcon
+        style="height: 100%;width: 32px;"
+        iconSize="auto"
+        size="auto"
+        icon={opened ? ChevronUpIcon : ChevronDownIcon}
+        type="primary"
+        noBorder
+        on:click={() => (opened = !opened)}
+      ></Button>
+    </div>
+  {/if}
   <Flyout
     preventClickOutsideClose
     addCallerHeight
