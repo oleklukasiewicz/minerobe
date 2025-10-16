@@ -83,11 +83,11 @@
     }
   }
   &:active {
-    background-color: var(--color-theme-D6);
+    background-color: var(--color-active);
     border-color: var(--color-theme-D5);
     color: var(--color-accent-font);
     .render {
-      background-color: var(--color-theme-D6);
+      background-color: var(--color-active);
       .colors {
         display: flex;
       }
