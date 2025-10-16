@@ -73,7 +73,6 @@
   {/if}
   <Flyout
     preventClickOutsideClose
-    addCallerHeight
     bind:opened
     caller={component}
     resizable

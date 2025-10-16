@@ -96,19 +96,6 @@
     filteredItems = items;
     dispatch("clear", { item: selectedItemValue });
   };
-  const setMenuWidth = (op) => {
-    if (!opened) return;
-    if ($IS_MOBILE_VIEW) {
-      itemsContainer.style.minWidth = null;
-      itemsContainer.style.maxWidth = null;
-    } else {
-      menuWidth = menu?.offsetWidth;
-      if (itemsContainer) {
-        itemsContainer.style.minWidth = `${menuWidth}px`;
-        itemsContainer.style.maxWidth = `${menuWidth}px`;
-      }
-    }
-  };
   let setSelectedItemValue = (value) => {
     if (itemValue) {
       if (multiple)
@@ -166,7 +153,6 @@
   };
 
   $: setSelectedItemValue(selectedItem);
-  $: setMenuWidth(opened);
 
   $: filteredItems = items;
   $: filterByAutocomplete(autocompleteInput);

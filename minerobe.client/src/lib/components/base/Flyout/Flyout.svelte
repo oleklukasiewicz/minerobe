@@ -9,47 +9,48 @@
   export let position: "top" | "left" | "right" | "bottom" | "auto" = "auto";
   export let align: "left" | "right" | "center" = "right";
   export let preventClickOutsideClose = false;
-  export let addCallerHeight = false;
   export let resizable = false;
 
   let actualPosition = position;
 
   let component = null;
+  let componentContent = null;
 
   const onClose = () => {
     if (opened && !preventClickOutsideClose) opened = false;
   };
   const onStateChanged = (v) => {
-    if (!opened) {
-      if (component) component.style.top = null;
-      return;
-    }
     let parentNode = document.body;
+    if (!component || !parentNode) return;
     if (caller) {
       parentNode = caller;
     }
-    if (!component || !parentNode) return;
-    requestAnimationFrame(() => {
-      calculatePosition();
-    });
   };
   const calculatePosition = () => {
     const flyoutRect = component.getBoundingClientRect();
     const callerRect = caller?.getBoundingClientRect();
     component.style.minWidth = callerRect?.width + "px";
     //component.style.maxWidth = callerRect?.width + "px";
+    component.style.left = null;
+    component.style.right = null;
+    component.style.top = null;
+    component.style.bottom = null;
+    component.style.maxHeight = null;
     //calculate needed space
     if (position == "auto") {
-      if (flyoutRect.height + flyoutRect.top > window.innerHeight)
+      if (
+        flyoutRect.height + callerRect.top + callerRect.height >
+        window.innerHeight
+      )
         actualPosition = "top";
       else actualPosition = "bottom";
     }
     if (actualPosition == "top") {
-      component.style.top = -flyoutRect.height + "px";
+      component.style.bottom = "100%";
     }
     if (actualPosition == "bottom") {
-      if (addCallerHeight) component.style.top = callerRect.height + "px";
-      else component.style.top = null;
+      component.style.top = "100%";
+      //set maxheight
     }
     //align
     if (align == "left") {
@@ -75,6 +76,12 @@
     component.style.minWidth = callerRect?.width + "px";
     component.style.maxWidth = callerRect?.width + "px";
   };
+  const onComponentResize = () => {
+    if (!opened) return;
+    requestAnimationFrame(() => {
+      calculatePosition();
+    });
+  };
   $: onStateChanged(opened);
 </script>
 
@@ -87,7 +94,10 @@
   on:click_outside={onClose}
 >
   <Resize targetNode={caller} on:resize={onResize} debounce={100}></Resize>
-  <slot position={actualPosition} />
+  <Resize targetNode={componentContent} on:resize={onComponentResize}></Resize>
+  <div bind:this={componentContent} class="flyout-content">
+    <slot position={actualPosition} />
+  </div>
 </div>
 
 <style lang="scss">
@@ -99,6 +109,9 @@
     }
     &.closed {
       display: none;
+    }
+    .flyout-content {
+      flex: 1;
     }
   }
 </style>

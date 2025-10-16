@@ -10,6 +10,7 @@
     width: 100%;
     min-width: 150px;
     border: 2px solid var(--color-theme-font);
+    box-sizing: border-box;
     background-color: var(--color-theme-D1);
     &.pos-top {
       transform: translateY(2px);
