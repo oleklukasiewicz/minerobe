@@ -2,14 +2,14 @@
   position: relative;
   display: flex;
   .menu-button-actions {
-    border-top: 2px solid var(--color-theme-font);
-    border-bottom: 2px solid var(--color-theme-font);
-    border-right: 2px solid var(--color-theme-font);
+    border-top: 2px solid var(--color-active-D1);
+    border-bottom: 2px solid var(--color-active-D1);
+    border-right: 2px solid var(--color-active-D1);
   }
   .menu-button-content {
     width: 100%;
     min-width: 150px;
-    border: 2px solid var(--color-theme-font);
+    border: 2px solid var(--color-active-D1);
     box-sizing: border-box;
     background-color: var(--color-theme-D1);
     &.pos-top {

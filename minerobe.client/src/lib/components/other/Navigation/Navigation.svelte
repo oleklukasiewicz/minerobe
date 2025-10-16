@@ -70,7 +70,7 @@
     position: fixed;
     z-index: 20;
     backdrop-filter: blur(60px) saturate(150%);
-    background-color: rgba(226, 226, 226, 0.8);
+    background-color: var(--color-navigation);
     justify-content: center;
     .items {
       max-width: 1316px;

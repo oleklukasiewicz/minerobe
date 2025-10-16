@@ -61,7 +61,7 @@
       background: var(--color-theme-D2);
     }
     &:active {
-      background: var(--color-theme-font);
+      background: var(--color-active-L1);
       color: var(--color-accent-font);
     }
     span {

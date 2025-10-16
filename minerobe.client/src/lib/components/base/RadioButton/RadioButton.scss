@@ -13,7 +13,7 @@
   user-select: none;
   cursor: pointer ;
   &:hover {
-    background-color: var(--color-theme-font);
+    background-color: var(--color-active);
     color: var(--color-accent-font);
   }
   &:active {

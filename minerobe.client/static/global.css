@@ -43,8 +43,8 @@
   --color-common: #c6c6c6;
   --color-common-A1: #888;
   --color-accent-font: #fff;
-  --color-active: #4a494b;
-  --color-active-L1: #8d8e92;
+  --color-active: #2a2a2a;
+  --color-active-L1: #2f2f2f;
   --color-active-D1: #000;
   --color-hover: #3d3938;
   --color-hover-L1: #8d8e92;
@@ -72,6 +72,28 @@
   --color-warning: #f3c995;
   --color-info: #3b6dd8;
   --color-error: #b84343;
+  --color-navigation:rgba(226, 226, 226, 0.8);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-theme-font: #ddd;
+    --color-active: #4a494b;
+    --color-active-L1: #8d8e92;
+    --color-active-D1: #000;
+    --color-hover: #3d3938;
+    --color-hover-L1: #8d8e92;
+    --color-hover-D1: #171615;
+    --color-theme-L1: #2b2b2b;
+    --color-theme: #1e1e1e;
+    --color-theme-D1: #161616;
+    --color-theme-D2: #2e2e2e;
+    --color-theme-D3: #424242;
+    --color-theme-D4: #5c5c5c;
+    --color-theme-D5: #7a7a7a;
+    --color-theme-D6: #9a9a9a;
+    --color-theme-D7: #b8b8b8;
+    --color-navigation: rgba(30, 30, 30, 0.8);
+  }
 }
 @keyframes Blink {
   0% {
@@ -101,6 +123,7 @@ body {
   margin: 0;
   background-color: var(--color-theme);
   overflow-y: scroll;
+  color: var(--color-theme-font);
 }
 .disabled {
   user-select: none;
@@ -200,6 +223,7 @@ br {
   outline: 0;
   border-bottom: 2px solid transparent;
   width: 100%;
+  color:var(--color-theme-font);
 }
 .title-input:hover {
   border-bottom: 2px solid var(--color-active-L1);
@@ -261,6 +285,6 @@ textarea {
   flex-direction: row;
 }
 .vertical-spacer {
-  flex:1;
+  flex: 1;
   margin-top: auto;
 }

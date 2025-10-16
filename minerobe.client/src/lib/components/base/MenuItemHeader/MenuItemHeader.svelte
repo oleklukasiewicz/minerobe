@@ -25,6 +25,7 @@
 
 <style lang="scss">
   .menu-item-header {
+    color:var(--color-theme-font);
     user-select: none;
     cursor: pointer;
     display: flex;
@@ -38,7 +39,7 @@
       background: var(--color-theme-D2);
     }
     &:active {
-      background: var(--color-theme-font);
+      background: var(--color-active-D1);
       color: var(--color-accent-font);
     }
     span {
