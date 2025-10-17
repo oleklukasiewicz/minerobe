@@ -43,8 +43,8 @@
   };
 </script>
 
-<Dialog bind:open label="Edit layer">
-  <div class="editItemDialog">
+<Dialog bind:open label="Edit layer" let:isMobile>
+  <div class="editItemDialog" class:mobile={isMobile}>
     {#if !onlyTextures}
       <SectionTitle label="Name" />
       <TextBox bind:value={item.name} on:input={onEdit} />
@@ -115,6 +115,9 @@
   .editItemDialog {
     width: calc(75vh - 120px);
     max-width: 100%;
+    &.mobile {
+      width: 100%;
+    }
     .textures {
       margin-top: 8px;
       display: flex;

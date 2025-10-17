@@ -14,8 +14,8 @@
   export let pageSizes: number[] = [10, 20, 50, 100];
 </script>
 
-<Dialog bind:open {label}>
-  <div id="collection-dialog">
+<Dialog bind:open {label} let:isMobile>
+  <div id="collection-dialog" class:mobile={isMobile}>
     <PagedList
       on:optionsChanged
       {items}
@@ -41,5 +41,9 @@
   #collection-dialog {
     min-width: 50vw;
     max-width: 600px;
+    &.mobile {
+      min-width: 100%;
+      max-width: 100%;
+    }
   }
 </style>

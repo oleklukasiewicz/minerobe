@@ -82,10 +82,10 @@
         }
       }
       &:active {
-        border-color: var(--color-theme-font);
-        background-color: var(--color-theme-font);
+        border-color: var(--color-active-D1);
+        background-color: var(--color-active-D1);
         div {
-          background-color: var(--color-theme-font);
+          background-color: var(--color-active-D1);
         }
       }
     }

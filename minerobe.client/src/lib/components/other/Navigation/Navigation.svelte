@@ -102,7 +102,7 @@
     &.mobile {
       bottom: 0px;
       backdrop-filter: none;
-      background-color: rgba(226, 226, 226);
+      background-color: var(--color-theme);
       #nav-title,
       #nav-search {
         display: none;

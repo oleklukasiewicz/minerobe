@@ -47,7 +47,7 @@
         </div>
       {/if}
       <div class="dialog-content-container" {style}>
-        <slot />
+        <slot isMobile={$IS_MOBILE_VIEW} />
       </div>
     </div>
   {/if}

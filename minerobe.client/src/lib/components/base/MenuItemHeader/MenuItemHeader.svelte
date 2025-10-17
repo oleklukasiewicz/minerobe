@@ -65,7 +65,7 @@
         background: var(--color-accent-D1);
       }
       &:active {
-        background: var(--color-theme-font);
+        background: var(--color-active-D1);
       }
     }
   }

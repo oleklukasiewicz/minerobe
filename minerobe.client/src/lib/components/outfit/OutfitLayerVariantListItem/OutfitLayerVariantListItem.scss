@@ -10,11 +10,11 @@
   cursor: pointer;
   &.selected {
     background-color: var(--color-accent);
-    border-color: var(--color-theme-font);
+    border-color: var(--color-active-D1);
     box-shadow: var(--shadow-button);
     &:hover {
       background-color: var(--color-accent-D1);
-      border-color: var(--color-theme-font);
+      border-color: var(--color-active-D1);
     }
   }
   &:hover {

@@ -38,8 +38,8 @@
   };
 </script>
 
-<Dialog bind:open label="Sort & Filters">
-  <div id="outfit-filters-dialog">
+<Dialog bind:open label="Sort & Filters" let:isMobile>
+  <div id="outfit-filters-dialog" class:mobile={isMobile}>
     {#if !hideSort && sortItems.length > 0}
       <SectionTitle label="Sort" />
       <SortSelect clearable items={sortItems} bind:selectedItem={sortOptions} />
@@ -120,6 +120,10 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    &.mobile {
+      min-width: 100%;
+      max-width: 100%;
+    }
     #filter-btn {
       margin-top: 16px;
     }

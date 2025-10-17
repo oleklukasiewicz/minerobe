@@ -58,8 +58,8 @@
   $: onOpen(open);
 </script>
 
-<Dialog bind:open {label}>
-  <div id="outfit-picker-dialog">
+<Dialog bind:open {label} let:isMobile>
+  <div id="outfit-picker-dialog" class:mobile={isMobile}>
     <div class="dialog-filters">
       <SortSelect
         clearable
@@ -138,6 +138,10 @@
   #outfit-picker-dialog {
     min-width: 50vw;
     max-width: 600px;
+    &.mobile {
+      min-width: 100%;
+      max-width: 100%;
+    }
     #select-footer {
       max-width: 200px;
     }
