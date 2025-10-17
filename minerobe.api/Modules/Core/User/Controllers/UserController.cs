@@ -40,7 +40,7 @@ namespace minerobe.api.Modules.Core.User.Controllers
         [HttpPut()]
         public async Task<IActionResult> Put([FromBody] MinerobeUserModel user)
         {
-            var tokenuser= await _userService.GetFromExternalUser(User);
+            var tokenuser = await _userService.GetFromExternalUser(User);
             var ent = user.ToEntity();
             ent.Id = tokenuser.Id;
 

@@ -9,6 +9,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Entity
         public Guid Id { get; set; }
         public string Type { get; set; }
         public Guid OwnerId { get; set; }
+        public string ExternalId { get; set; }
         public dynamic Data { get; set; }
     }
     public class IntegrationEntityConfig : IEntityTypeConfiguration<IntegrationItem>

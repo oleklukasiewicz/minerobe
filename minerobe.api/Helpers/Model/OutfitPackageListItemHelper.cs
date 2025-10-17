@@ -1,12 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using minerobe.api.Modules.Core.Package.Entity;
-using minerobe.api.Modules.Core.Package.Interface;
+﻿using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Package.ResponseModel;
 using minerobe.api.Modules.Core.PackageAgregation.Entity;
-using minerobe.api.Modules.Core.PackageAgregation.Interface;
-using minerobe.api.Modules.Core.User.Entity;
-using minerobe.api.Modules.Core.User.Interface;
-using minerobe.api.Modules.Core.Wardrobe.Interface;
 
 namespace minerobe.api.Helpers.Model
 {

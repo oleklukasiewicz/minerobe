@@ -1,5 +1,4 @@
-﻿using minerobe.api.Modules.Core.Package.Entity;
-using minerobe.api.Modules.Core.PackageAgregation.Entity;
+﻿using minerobe.api.Modules.Core.PackageAgregation.Entity;
 using minerobe.api.Modules.Core.User.Entity;
 
 namespace minerobe.api.Modules.View.Landing.Interface

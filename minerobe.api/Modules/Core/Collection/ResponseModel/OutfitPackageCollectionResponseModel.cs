@@ -1,5 +1,4 @@
 ﻿using minerobe.api.Modules.Core.Collection.Entity;
-using minerobe.api.Modules.Core.Package.ResponseModel;
 using minerobe.api.Modules.Core.Social.Entity;
 using minerobe.api.Modules.Core.User.ResponseModel;
 

@@ -43,12 +43,12 @@
     font-size: var(--size-font-base);
     font-family: minecraft-simple;
     box-sizing: border-box;
-    padding: 7px 8px 7px 8px;
+    padding: 8px 8px 6px 8px;
     color: var(--color-theme-font);
     gap: 8px;
-    min-height: 40px;
+    min-height: 38px;
     &.opened {
-      padding: 7px 16px 7px 8px;
+      padding: 8px 16px 6px 8px;
     }
     &.top {
       flex: 1;

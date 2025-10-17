@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using minerobe.api.Database;
+﻿using minerobe.api.Database;
 using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.PackageAgregation.Entity;
 using minerobe.api.Modules.Core.PackageAgregation.Interface;

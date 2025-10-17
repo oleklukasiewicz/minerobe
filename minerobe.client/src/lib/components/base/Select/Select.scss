@@ -19,11 +19,15 @@
         border: none;
       }
       .autocomplete-input {
+        color:var(--color-theme-font);
         border: 0;
         border-right: 2px solid var(--color-theme-D6);
         padding-left: 8px;
         box-sizing: border-box;
         margin: 0px;
+        &::placeholder {
+          color: var(--color-theme-D4);
+        }
         &:hover {
           background-color: var(--color-theme-D2);
         }

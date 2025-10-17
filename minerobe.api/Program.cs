@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using minerobe.api;
 using minerobe.api.Configuration;
 using minerobe.api.Database;
-using minerobe.api.Helpers.Model;
 using minerobe.api.Hubs;
 using minerobe.api.Jobs;
 using minerobe.api.Modules.Core.Collection.Interface;

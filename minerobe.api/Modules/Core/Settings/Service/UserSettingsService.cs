@@ -61,7 +61,7 @@ namespace minerobe.api.Modules.Core.Settings.Service
             await _context.SaveChangesAsync();
             return await GetSettings(userId);
         }
-        public async Task<UserSettings> UpdateCurrentTexture(Guid userId ,OutfitPackageConfigModel config)
+        public async Task<UserSettings> UpdateCurrentTexture(Guid userId, OutfitPackageConfigModel config)
         {
             var settings = await _context.UserSettings.Where(x => x.OwnerId == userId).FirstOrDefaultAsync();
             if (settings == null)

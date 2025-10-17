@@ -5,7 +5,6 @@ using minerobe.api.Modules.Core.Collection.Entity;
 using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Package.Interface;
-using minerobe.api.Modules.Core.PackageAgregation.Entity;
 using minerobe.api.Modules.Core.PackageAgregation.Interface;
 using minerobe.api.Modules.Core.Social.Entity;
 using minerobe.api.Modules.Core.Social.Interface;

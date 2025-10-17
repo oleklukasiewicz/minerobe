@@ -126,7 +126,7 @@
   <div class="data">
     <span class="title">{item.name}</span>
     <div class="social">
-      {#if item.social?.likes > 0}
+      {#if item.social?.likes > 0 && item.social?.isShared}
         <div>
           <span class="icon">
             {@html HeartSmallIcon}
@@ -134,7 +134,7 @@
           {normalizeNumber(item.social.likes)}
         </div>
       {/if}
-      {#if item.social?.downloads > 0}
+      {#if item.social?.downloads > 0 && item.social?.isShared}
         <div>
           <span class="icon">
             {@html DownloadSmallIcon}

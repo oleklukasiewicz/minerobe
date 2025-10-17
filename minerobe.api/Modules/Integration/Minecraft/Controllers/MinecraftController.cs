@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Integration.Minecraft.Interface;
 using minerobe.api.Modules.Integration.Minecraft.ResponseModel;

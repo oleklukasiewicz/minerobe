@@ -60,6 +60,7 @@
       display: flex;
       margin-top: 4px;
       flex-direction: row;
+      min-height: 25px;
       gap: 8px;
       div {
         font-size: var(--size-font-subcaption);

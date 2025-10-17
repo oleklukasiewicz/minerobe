@@ -1,11 +1,10 @@
-﻿using minerobe.api.Modules.Core.Package.Entity;
-
-namespace minerobe.api.Modules.Integration.Minecraft.Helpers
+﻿namespace minerobe.api.Modules.Integration.Minecraft.Helpers
 {
     public class MinecraftAccount
     {
         public Guid Id { get; set; }
         public string AccountId { get; set; }
+        public bool ReLinkRequired { get; set; }
         public MinecraftProfile Profile { get; set; }
     }
     public class MinecraftCape

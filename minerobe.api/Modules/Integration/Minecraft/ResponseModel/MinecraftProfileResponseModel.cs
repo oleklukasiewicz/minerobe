@@ -17,7 +17,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.ResponseModel
             {
                 Id = entity.Id,
                 Username = entity.Profile.Username,
-                   Capes = entity.Profile.Capes,
+                Capes = entity.Profile.Capes,
                 CurrentCapeId = entity.Profile?.CurrentCapeId,
             };
         }

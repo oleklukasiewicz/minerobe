@@ -1,5 +1,4 @@
 ﻿using Microsoft.Identity.Client;
-using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Settings.Entity;
 using minerobe.api.Modules.Core.User.Entity;
 using minerobe.api.Modules.Integration.Minecraft.Helpers;

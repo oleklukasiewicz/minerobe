@@ -17,7 +17,6 @@ using minerobe.api.Modules.Integration.Minecraft.Interface;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
 using System.Net.Http.Headers;
 using System.Text;
 namespace minerobe.api.Modules.Integration.Minecraft.Service
@@ -61,6 +60,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
                 profile.Id = Guid.NewGuid();
                 profile.AccountId = auth.AccountId;
                 profile.Profile = await GetProfileData(auth.Token);
+                profile.ReLinkRequired = false;
 
 
                 var integration = new IntegrationItem()
@@ -68,6 +68,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
                     Id = Guid.NewGuid(),
                     OwnerId = user.Id,
                     Type = "minecraft",
+                    ExternalId = auth.AccountId,
                     Data = profile
                 };
                 _ctx.Set<IntegrationItem>().Add(integration);
@@ -455,11 +456,24 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
         //refresh flow
         public async Task<AuthenticationResult> Refresh(string accountId)
         {
-            var pca = await GetPca();
-            var account = await pca.GetAccountAsync(accountId);
-            if (account == null)
-                return null;
-            var token = await pca.AcquireTokenSilent(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" }, account).ExecuteAsync();
+            AuthenticationResult token = null;
+            try
+            {
+                var pca = await GetPca();
+                var account = await pca.GetAccountAsync(accountId);
+                if (account == null)
+                    return null;
+                token = await pca.AcquireTokenSilent(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" }, account).ExecuteAsync();
+            }
+            catch (Exception ex)
+            {
+                var profile = await GetProfileByExternalId(accountId);
+                var data = ((object)profile.Data).ToClass<MinecraftAccount>();
+                data.ReLinkRequired = true;
+                profile.Data = data;
+                _ctx.Set<IntegrationItem>().Update(profile);
+                await _ctx.SaveChangesAsync();
+            }
             return token;
         }
 
@@ -506,6 +520,13 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
             cacheHelper.RegisterCache(pca.UserTokenCache);
 
             return pca;
+        }
+        public async Task<IntegrationItem> GetProfileByExternalId(string homeAccountId)
+        {
+            var integrationprofile = await _ctx.Set<IntegrationItem>().Where(x => x.ExternalId == homeAccountId && x.Type == "minecraft").FirstOrDefaultAsync();
+            if (integrationprofile == null)
+                return null;
+            return integrationprofile;
         }
     }
 }

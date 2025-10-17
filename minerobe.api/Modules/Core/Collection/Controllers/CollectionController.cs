@@ -18,7 +18,7 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
         private readonly ICollectionService _service;
         private readonly IUserService _userService;
         private readonly IWardrobeService _wardrobeService;
-        public CollectionController(ICollectionService service, IUserService userService,IWardrobeService wardrobeService)
+        public CollectionController(ICollectionService service, IUserService userService, IWardrobeService wardrobeService)
         {
             _service = service;
             _userService = userService;
