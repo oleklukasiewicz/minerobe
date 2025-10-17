@@ -17,7 +17,7 @@ namespace minerobe.api.Modules.View.Landing.Service
             var agregations = _outfitPackageAgregationService.GetAgregation();
             var filter = agregations.Where(x => x.IsShared);
             var packages = _outfitPackageAgregationService.FromAgregationWithUserContext(filter, user?.WardrobeId);
-            return packages.OrderByDescending(x => x.Package.CreatedAt == null ? x.Package.CreatedAt : x.Package.ModifiedAt);
+            return packages.OrderByDescending(x => x.Package.ModifiedAt == null ? x.Package.CreatedAt : x.Package.ModifiedAt);
         }
         public async Task<IQueryable<OutfitPackageAgregationResponse>> GetMostLiked(MinerobeUser? user)
         {
