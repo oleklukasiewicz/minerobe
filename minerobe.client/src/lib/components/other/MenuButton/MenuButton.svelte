@@ -72,6 +72,7 @@
     </div>
   {/if}
   <Flyout
+    autoWidth={false}
     preventClickOutsideClose
     bind:opened
     caller={component}

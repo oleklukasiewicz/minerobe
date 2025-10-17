@@ -9,6 +9,7 @@
   export let position: "top" | "left" | "right" | "bottom" | "auto" = "auto";
   export let align: "left" | "right" | "center" = "right";
   export let preventClickOutsideClose = false;
+  export let autoWidth = true;
   export let resizable = false;
 
   let actualPosition = position;
@@ -29,7 +30,8 @@
   const calculatePosition = () => {
     const flyoutRect = component.getBoundingClientRect();
     const callerRect = caller?.getBoundingClientRect();
-    component.style.minWidth = callerRect?.width + "px";
+    if (autoWidth) component.style.minWidth = callerRect?.width + "px";
+    else component.style.minWidth = null;
     //component.style.maxWidth = callerRect?.width + "px";
     component.style.left = null;
     component.style.right = null;
@@ -73,8 +75,13 @@
   const onResize = () => {
     if (!resizable) return;
     const callerRect = caller?.getBoundingClientRect();
-    component.style.minWidth = callerRect?.width + "px";
-    component.style.maxWidth = callerRect?.width + "px";
+    if (autoWidth) {
+      component.style.minWidth = callerRect?.width + "px";
+      component.style.maxWidth = callerRect?.width + "px";
+    } else {
+      component.style.minWidth = null;
+      component.style.maxWidth = null;
+    }
   };
   const onComponentResize = () => {
     if (!opened) return;

@@ -27,15 +27,17 @@
     // let landing ;
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (!(state == APP_STATE.READY || state == APP_STATE.GUEST_READY)) return;
-      if (!listsLoaded)
-        await Promise.all([getRecent(), getLiked(), getDownloaded()]);
-
-      listsLoaded = true;
 
       if (state == APP_STATE.READY) {
         const settings = await FetchSettings();
         userSettings.set(settings);
       }
+
+      if (!listsLoaded)
+        await Promise.all([getRecent(), getLiked(), getDownloaded()]);
+
+      listsLoaded = true;
+
       loaded = true;
     });
   });

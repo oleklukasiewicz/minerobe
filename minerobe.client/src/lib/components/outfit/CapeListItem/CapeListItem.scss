@@ -4,9 +4,11 @@
   background-color: var(--color-theme-D1);
   border: 2px solid transparent;
   padding: 6px;
-  height: 64px;
-  width: 64px;
+  min-height: 64px;
+  min-width: 64px;
+  max-width: 72px;
   aspect-ratio: 1;
+  flex:1;
   box-sizing: border-box;
   user-select: none;
   img {

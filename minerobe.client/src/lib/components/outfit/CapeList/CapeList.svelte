@@ -38,7 +38,8 @@
 
 <style lang="scss">
   .cape-list {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
     flex-wrap: wrap;
     gap: 8px;
   }
