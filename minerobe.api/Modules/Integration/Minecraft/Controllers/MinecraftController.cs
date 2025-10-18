@@ -37,8 +37,10 @@ namespace minerobe.api.Modules.Integration.Minecraft.Controllers
         {
             var user = await _userService.GetFromToken(User);
 
-            var profile = await _javaXboxAuthService.GetProfile(user);
+            var profile = await _javaXboxAuthService.GetProfile(user, keepFresh);
             var skin = profile?.Profile?.Skins?.FirstOrDefault(x => x.Id == profile?.Profile?.CurrentSkinId);
+            if (skin == null)
+                return NotFound();
             return Ok(skin);
         }
         [HttpGet("RefreshProfile")]

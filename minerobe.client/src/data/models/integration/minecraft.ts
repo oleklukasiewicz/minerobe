@@ -10,10 +10,11 @@ export class MinecraftAccount {
   public username: string;
   public currentCapeId: string;
   public capes: Cape[];
+  public reLinkRequired: boolean;
 }
 export class MinecraftSkin {
   public id: string;
   public texture: string;
   public name: string;
-  public model:MODEL_TYPE;
+  public model: MODEL_TYPE;
 }

@@ -8,6 +8,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.ResponseModel
         public string Username { get; set; }
         public List<MinecraftCape> Capes { get; set; }
         public Guid? CurrentCapeId { get; set; }
+        public bool ReLinkRequired { get; set; }
     }
     public static class JavaXboxProfileResponseModelExtensions
     {
@@ -19,6 +20,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.ResponseModel
                 Username = entity.Profile.Username,
                 Capes = entity.Profile.Capes,
                 CurrentCapeId = entity.Profile?.CurrentCapeId,
+                ReLinkRequired = entity.ReLinkRequired
             };
         }
     }

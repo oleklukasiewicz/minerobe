@@ -160,8 +160,12 @@ export const GetRequest = async function (
     },
   });
   if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error);
+    try {
+      const error = await res.json();
+      throw new Error(error);
+    } catch {
+      return;
+    }
   }
   return res.json();
 };

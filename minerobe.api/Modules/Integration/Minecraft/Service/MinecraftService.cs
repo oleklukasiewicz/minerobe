@@ -462,7 +462,7 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
                 var pca = await GetPca();
                 var account = await pca.GetAccountAsync(accountId);
                 if (account == null)
-                    return null;
+                    throw new KeyNotFoundException();
                 token = await pca.AcquireTokenSilent(new string[] { "XboxLive.SignIn", "XboxLive.offline_access" }, account).ExecuteAsync();
             }
             catch (Exception ex)
@@ -481,6 +481,8 @@ namespace minerobe.api.Modules.Integration.Minecraft.Service
         public async Task<string> GetTokenFromCache(string accountId)
         {
             var token = await Refresh(accountId);
+            if (token == null)
+                return null;
             var msalToken = token.AccessToken;
             var msalTokenExpireOn = token.ExpiresOn;
 

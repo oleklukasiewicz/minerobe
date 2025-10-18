@@ -43,6 +43,7 @@
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import { THREE } from "$lib/three";
+  import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
 
   const minecraftAccount: Writable<MinecraftAccount> = writable(null);
 
@@ -134,6 +135,11 @@
     skinIsSyncing = false;
     ShowToast("Skin synced successfully");
   };
+  const RelinkAccount = async function () {
+    accountInProgress = true;
+    await UnLinkAccount();
+    await StartLinkMinecraftAccount();
+  };
 </script>
 
 <div
@@ -174,18 +180,41 @@
           /></Placeholder
         >
       </div>
+      {#if $minecraftAccount?.reLinkRequired && loaded}
+        <InfoLabel
+          closeable={false}
+          type="warning"
+          label="Re-link required"
+          description="Your account need to be linked again"
+        ></InfoLabel>
+      {/if}
       <div class="actions">
-        <Placeholder {loaded} height="46px">
-          <Button
-            label={skinIsSyncing ? "Syncing skin..." : "Sync Skin"}
-            size="large"
-            type="primary"
-            disabled={skinIsSyncing}
-            icon={SyncIcon}
-            on:click={SyncCurrentSkin}
-          />
-        </Placeholder>
-        <br />
+        {#if !$minecraftAccount?.reLinkRequired}
+          <Placeholder {loaded} height="46px">
+            <Button
+              label={skinIsSyncing ? "Syncing skin..." : "Sync Skin"}
+              size="large"
+              type="primary"
+              disabled={skinIsSyncing}
+              icon={SyncIcon}
+              on:click={SyncCurrentSkin}
+            />
+          </Placeholder>
+          <br />
+        {:else}
+          <Placeholder {loaded} height="46px">
+            <Button
+              label={skinIsSyncing ? "Re-linking..." : "Re-link account"}
+              size="large"
+              type="primary"
+              disabled={skinIsSyncing}
+              icon={SyncIcon}
+              on:click={RelinkAccount}
+            />
+          </Placeholder>
+          <br />
+        {/if}
+
         <Placeholder {loaded} height="46px">
           <Button
             label={accountInProgress ? "Unlinking..." : "Unlink Account"}
