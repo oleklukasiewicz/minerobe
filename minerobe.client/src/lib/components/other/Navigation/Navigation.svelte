@@ -78,10 +78,10 @@
       box-sizing: border-box;
       flex: 1;
       display: grid;
-      grid-template-columns: auto 1fr auto;
+      grid-template-columns: 25% 1fr 25%;
       #nav-title {
         display: table;
-        padding: 8px 0px 2px;
+        padding: 8px 0px 2px 8px;
         box-sizing: border-box;
         img {
           height: 24px;
@@ -93,7 +93,7 @@
         justify-content: center;
       }
       #nav-actions {
-        display: flex;
+        text-align: right;
         gap: 8px;
         max-height: 100%;
       }
@@ -106,6 +106,10 @@
       #nav-title,
       #nav-search {
         display: none;
+      }
+      #nav-actions {
+        justify-content: space-around;
+        display: flex;
       }
       .items {
         padding: 4px;
