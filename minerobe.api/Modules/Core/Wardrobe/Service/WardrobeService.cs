@@ -214,7 +214,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
         }
         public async Task<IQueryable<OutfitPackage>> GetWardrobeOutfitsSingleLayer(Guid wardrobeId, OutfitFilter filter)
         {
-            var outfits = _packageAgregationService.GetAgregation(); outfits = outfits.OrderBy(x => x.Id);
+            var outfits = _packageAgregationService.GetAgregation();
             outfits = outfits.Where(x => x.WardrobeId == wardrobeId);
             if (filter != null)
             {

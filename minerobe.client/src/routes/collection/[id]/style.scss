@@ -4,6 +4,11 @@
   flex-wrap: wrap;
   flex-direction: column;
   box-sizing: border-box;
+  #collection-actions {
+    margin: 0px 0px 8px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+  }
   #collection-header {
     background-color: var(--color-theme-D1);
     margin: 8px 0px;

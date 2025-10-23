@@ -13,7 +13,11 @@
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
   import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
   //models
-  import type { PagedResponse, SortOption } from "$src/data/models/base";
+  import {
+    PagedModel,
+    type PagedResponse,
+    type SortOption,
+  } from "$src/data/models/base";
   import { OutfitPackage } from "$src/data/models/package";
   import { OutfitFilter } from "$src/data/models/filter";
   import type { MinerobeUserSettings } from "$src/data/models/user";
@@ -60,13 +64,12 @@
   };
   const fetchItems = async (e) => {
     const options: PagedResponse<OutfitPackage> = e?.detail?.options;
-    const pagedItems = await GetWardrobePackages(
-      filter,
-      options?.options.page || 0,
-      options?.options.pageSize || 36,
-      sortOption,
-      abortController
-    );
+    const pagedModel = new PagedModel<OutfitFilter>();
+    pagedModel.page = options?.options.page || 0;
+    pagedModel.pageSize = options?.options.pageSize || 36;
+    pagedModel.filter = filter;
+    pagedModel.sort = sortOption;
+    const pagedItems = await GetWardrobePackages(pagedModel, abortController);
     pageItems.update((items) => [...items, pagedItems]);
   };
   const updateFilter = async (e) => {

@@ -42,6 +42,8 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-width: 30vw;
+    max-width: 400px;
     div {
       display: flex;
       flex-direction: column;

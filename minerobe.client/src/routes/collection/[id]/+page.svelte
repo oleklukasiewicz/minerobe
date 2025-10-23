@@ -10,7 +10,7 @@
   } from "$src/api/collection";
   import { FetchSettings } from "$src/api/settings.js";
   import { APP_STATE } from "$src/data/enums/app";
-  import type { PagedResponse } from "$src/data/models/base.js";
+  import { PagedModel, PagedResponse } from "$src/data/models/base.js";
   import type { OutfitPackageCollection } from "$src/data/models/collection";
   import { OutfitPackage } from "$src/data/models/package.js";
   import type { MinerobeUserSettings } from "$src/data/models/user.js";
@@ -24,6 +24,9 @@
   import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper.js";
+  import OutfitPickerDialog from "$lib/components/dialog/OutfitPickerDialog.svelte";
+  import type { OutfitFilter } from "$src/data/models/filter";
+  import { GetWadrobePackagesSingleLayer, GetWardrobePackages } from "$src/api/wardrobe";
   export let data;
 
   const itemCollection: Writable<OutfitPackageCollection> = writable(null);
@@ -37,6 +40,11 @@
   let loaded = false;
   let collectionLoaded = false;
   let isEditDialogOpen = false;
+  let isEditItemsDialogOpen = false;
+  let dialogOutfitsPickerOptions: PagedModel<OutfitFilter> =
+    new PagedModel<OutfitFilter>();
+  let dialogOutfitPickerItems: PagedResponse<OutfitPackage> =
+    new PagedResponse<OutfitPackage>();
 
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
@@ -83,6 +91,23 @@
     const layer = e.detail.layer;
     navigateToOutfitPackage(item, layer?.id);
   };
+  const openOutfitPicker = async (e) => {
+    let options = e?.detail?.options;
+    if (!options) {
+      options = new PagedModel<OutfitFilter>();
+      options.filter.type = null;
+      options.page = 0;
+      options.pageSize = 12;
+      options.total = 0;
+    }
+    dialogOutfitsPickerOptions = options;
+    dialogOutfitPickerItems.items = null;
+    isEditItemsDialogOpen = true;
+
+    dialogOutfitPickerItems = await GetWardrobePackages(
+      dialogOutfitsPickerOptions
+    );
+  };
 </script>
 
 <div id="collection-view">
@@ -111,6 +136,10 @@
     </div>
     <Placeholder {loaded}><p>{$itemCollection.description}</p></Placeholder>
   </div>
+  <div id="collection-actions">
+    <Button label="Edit items" icon={EditIcon} on:click={openOutfitPicker} />
+    <div></div>
+  </div>
   <div id="collection-items">
     {#if loaded}
       <LazyList
@@ -135,6 +164,14 @@
     bind:open={isEditDialogOpen}
     collection={$itemCollection}
     on:save={saveCollection}
+  />
+  <OutfitPickerDialog
+    pageSizes={[6, 12, 24]}
+    bind:open={isEditItemsDialogOpen}
+    items={dialogOutfitPickerItems}
+    loading={dialogOutfitPickerItems?.items == null}
+    on:optionsChanged={openOutfitPicker}
+    on:filter={openOutfitPicker}
   />
 </div>
 

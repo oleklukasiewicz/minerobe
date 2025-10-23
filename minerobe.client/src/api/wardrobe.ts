@@ -7,6 +7,7 @@ import type {
 import type { OutfitFilter } from "$data/models/filter";
 import type { OutfitPackage } from "$data/models/package";
 import type { WardrobePackage } from "$data/models/wadrobe";
+import { page } from "$app/state";
 
 export const AddPackageToWardrobe = async function (packageId: string) {
   const resp = await PostRequest("/api/Wardrobe/item/" + packageId, {});
@@ -22,19 +23,16 @@ export const GetUserWardrobe = async function () {
   return st;
 };
 export const GetWardrobePackages = async function (
-  filter: OutfitFilter,
-  page: number = 0,
-  pageSize: number = -1,
-  sort: SortOption[] = [],
+  pagedModel: PagedModel<OutfitFilter>,
   abortController = null
 ) {
   const req = (await PostRequest(
     "/api/Wardrobe/items",
     {
-      page,
-      pageSize,
-      filter,
-      sort,
+      page: pagedModel.page,
+      pageSize: pagedModel.pageSize,
+      filter: pagedModel.filter,
+      sort: pagedModel.sort,
     },
     abortController
   )) as PagedResponse<OutfitPackage>;
