@@ -3,7 +3,8 @@
   grid-template-columns: 1fr auto auto;
   vertical-align: top;
   max-width: 100%;
-  height: 36px;
+  box-sizing: border-box;
+  height: 38px;
   input {
     color:var(--color-theme-font);
     font-size: var(--size-font-subheaderalt);
@@ -23,9 +24,9 @@
   }
   &.dense {
     border: 2px solid var(--color-theme-D6);
-    max-height: 32px;
+    max-height: 34px;
     input {
-      max-height: 32px;
+      max-height: 34px;
     }
   }
   &.dark {

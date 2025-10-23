@@ -85,6 +85,7 @@
               onlyIcon={!menuOpened}
               disabled={isCreating}
               size={menuOpened ? "medium" : "auto"}
+              style="height: 40px"
             />
           </div>
           <MenuSeparator />
