@@ -106,7 +106,10 @@ export const Initialize = async function () {
   });
 
   CURRENT_USER.subscribe(async (user) => {
-    if (user && get(appStateWritable) != APP_STATE.READY) {
+    if (user == null) return;
+    if (user?.id == null) {
+      get(serverWsConnectionWritable)?.stop();
+    } else if (user.id != null && get(appStateWritable) != APP_STATE.READY) {
       serverWsConnectionWritable.set(await SIGNAL_R.getUserWebSocket(user.id));
       get(serverWsConnectionWritable)
         .start()
@@ -117,7 +120,9 @@ export const Initialize = async function () {
           console.error(err);
         });
     }
-    appStateWritable.set(user ? APP_STATE.READY : APP_STATE.GUEST_READY);
+    appStateWritable.set(
+      user.id?.length > 0 ? APP_STATE.READY : APP_STATE.GUEST_READY
+    );
   });
 };
 //main imports

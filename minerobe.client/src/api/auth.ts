@@ -7,7 +7,7 @@ import {
   login,
   logout,
 } from "../data/api";
-import type { MinerobeUser } from "$data/models/user";
+import { MinerobeUser } from "$data/models/user";
 import { currentUserWritable } from "$src/data/static";
 
 export const getCurrentUser = async function () {
@@ -18,7 +18,7 @@ export const getCurrentUser = async function () {
     currentUserWritable.set(minerobeUser);
   } else {
     currentUserWritable.update((user) => {
-      return undefined;
+      return new MinerobeUser(null, null, null, null);
     });
   }
 };
@@ -29,7 +29,7 @@ export const loginUser = async function () {
 };
 export const logoutUser = async function () {
   await logout();
-  currentUserWritable.set(null);
+  currentUserWritable.set(new MinerobeUser(null, null, null, null));
 };
 
 export const SetMinerobeUser = async function (user: MinerobeUser) {
@@ -37,7 +37,9 @@ export const SetMinerobeUser = async function (user: MinerobeUser) {
     return await PutRequest("/api/User/" + user.id, user);
   }
 };
-export const GetMinerobeUser = async function (id: string):Promise<MinerobeUser> {
+export const GetMinerobeUser = async function (
+  id: string
+): Promise<MinerobeUser> {
   if (id == get(currentUserWritable)?.id) return get(currentUserWritable);
   return await GetRequest("/api/User/" + id);
 };

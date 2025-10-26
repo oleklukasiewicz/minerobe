@@ -23,7 +23,6 @@ namespace minerobe.api.Helpers
                     entity = entity.OrderBy("Id");
                 }
             }
-
             int count = entity.Count();
             if (pagedOptions.PageSize == -1)
                 pagedOptions.PageSize = count;

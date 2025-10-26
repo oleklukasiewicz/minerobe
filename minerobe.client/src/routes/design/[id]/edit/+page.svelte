@@ -494,11 +494,11 @@
       <Placeholder {loaded} height="24px" width="120px">
         <Label>{isOutfitSet ? "Outfit set" : "Outfit"}</Label>
       </Placeholder>
-      <Placeholder {loaded} height="24px" width="120px">
-        {#if $itemPackage?.social?.isShared}
+      {#if $itemPackage?.social?.isShared}
+        <Placeholder {loaded} height="24px" width="120px">
           <Label variant="rare">Shared</Label>
-        {/if}
-      </Placeholder>
+        </Placeholder>
+      {/if}
       {#if loaded && userSettings?.currentTexture?.packageId == $itemPackage.id}
         <Placeholder {loaded} height="24px" width="120px">
           <Label variant="ancient">Current skin</Label>

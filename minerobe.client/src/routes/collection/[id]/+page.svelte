@@ -26,7 +26,10 @@
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper.js";
   import OutfitPickerDialog from "$lib/components/dialog/OutfitPickerDialog.svelte";
   import type { OutfitFilter } from "$src/data/models/filter";
-  import { GetWadrobePackagesSingleLayer, GetWardrobePackages } from "$src/api/wardrobe";
+  import {
+    GetWadrobePackagesSingleLayer,
+    GetWardrobePackages,
+  } from "$src/api/wardrobe";
   export let data;
 
   const itemCollection: Writable<OutfitPackageCollection> = writable(null);
@@ -50,11 +53,11 @@
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY && state != APP_STATE.GUEST_READY) return;
 
+      if (state == APP_STATE.READY) userSettings = await FetchSettings();
       if (!collectionLoaded) {
         $itemCollection = await GetCollection(data.id);
         collectionLoaded = true;
       }
-      userSettings = await FetchSettings();
 
       fetchItems(null);
       loaded = true;
@@ -153,8 +156,8 @@
           columns={$IS_MOBILE_VIEW ? 3 : 6}
           resizable
           items={pagedItems}
-          currentPackageId={userSettings.currentTexture?.packageId}
-          baseTexture={userSettings.baseTexture.layers[0]}
+          currentPackageId={userSettings?.currentTexture?.packageId}
+          baseTexture={userSettings?.baseTexture.layers[0]}
           on:select={goToItemPage}
         /></LazyList
       >

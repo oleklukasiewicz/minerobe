@@ -10,7 +10,7 @@
   import { loginUser } from "$src/api/auth";
 
   const profileAction = async () => {
-    if (!$CURRENT_USER) await loginUser();
+    if (!$CURRENT_USER.id) await loginUser();
   };
 </script>
 
@@ -42,18 +42,20 @@
           href="/explore"
         />
       {/if}
-      <NavigationItem
-        label="Wardrobe"
-        onlyIcon
-        icon={SubscriptionIcon}
-        viewId="wardrobe"
-        href="/wardrobe"
-      />
+      {#if $CURRENT_USER?.id}
+        <NavigationItem
+          label="Wardrobe"
+          onlyIcon
+          icon={SubscriptionIcon}
+          viewId="wardrobe"
+          href="/wardrobe"
+        />
+      {/if}
       <NavigationItem
         label={$CURRENT_USER?.name || "Sign in"}
         viewId="profile"
         onlyIcon={$IS_MOBILE_VIEW}
-        href={$CURRENT_USER ? "/profile" : null}
+        href={$CURRENT_USER?.id ? "/profile" : null}
         icon={$CURRENT_USER?.avatar ? null : AvatarIcon}
         iconImage={$CURRENT_USER?.avatar}
         on:click={profileAction}
