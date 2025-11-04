@@ -4,8 +4,10 @@
   import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
   import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
   import {
+    AddPackageToCollection,
     GetCollection,
     GetCollectionsItems,
+    RemovePackageFromCollection,
     UpdateCollection,
   } from "$src/api/collection";
   import { FetchSettings } from "$src/api/settings.js";
@@ -24,12 +26,9 @@
   import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper.js";
-  import OutfitPickerDialog from "$lib/components/dialog/OutfitPickerDialog.svelte";
   import type { OutfitFilter } from "$src/data/models/filter";
-  import {
-    GetWadrobePackagesSingleLayer,
-    GetWardrobePackages,
-  } from "$src/api/wardrobe";
+  import { GetWardrobeItemsWithCollectionContext } from "$src/api/wardrobe";
+  import CollectionsItemPickerDialog from "$lib/components/dialog/CollectionItemsPickerDialog.svelte";
   export let data;
 
   const itemCollection: Writable<OutfitPackageCollection> = writable(null);
@@ -77,6 +76,10 @@
     collectionItems.update((items) => [...items, pagedItems]);
     itemsLoaded = true;
   };
+  const refreshItems = async () => {
+    collectionItems.set([]);
+    await fetchItems(null);
+  };
   const saveCollection = async (e) => {
     const collection = e.detail.collection;
     itemCollection.set(collection);
@@ -107,10 +110,31 @@
     dialogOutfitPickerItems.items = null;
     isEditItemsDialogOpen = true;
 
-    dialogOutfitPickerItems = await GetWardrobePackages(
+    dialogOutfitPickerItems = await GetWardrobeItemsWithCollectionContext(
+      $itemCollection.id,
       dialogOutfitsPickerOptions
     );
+    dialogOutfitPickerItems.items.forEach((item) => {
+      if (item.isInCollection) {
+        if (
+          flatCollectionItems.find(
+            (i) => i.id === item.id && i.layers[0]?.id === item.layers[0]?.id
+          ) == null
+        ) {
+          flatCollectionItems.push(item);
+        }
+      }
+    });
   };
+  const addItemToCollection = async (e) => {
+    const item = e.detail.items[0];
+    await AddPackageToCollection($itemCollection.id, item.id);
+  };
+  const removeItemFromCollection = async (e) => {
+    const item = e.detail.items[0];
+    await RemovePackageFromCollection($itemCollection.id, item.id);
+  };
+  let flatCollectionItems: OutfitPackage[] = [];
 </script>
 
 <div id="collection-view">
@@ -168,13 +192,19 @@
     collection={$itemCollection}
     on:save={saveCollection}
   />
-  <OutfitPickerDialog
+  <CollectionsItemPickerDialog
     pageSizes={[6, 12, 24]}
     bind:open={isEditItemsDialogOpen}
     items={dialogOutfitPickerItems}
+    selectedItems={flatCollectionItems}
     loading={dialogOutfitPickerItems?.items == null}
+    baseTexture={userSettings?.baseTexture.layers[0]}
+    multiple={false}
     on:optionsChanged={openOutfitPicker}
+    on:select={addItemToCollection}
+    on:unselect={removeItemFromCollection}
     on:filter={openOutfitPicker}
+    on:close={refreshItems}
   />
 </div>
 

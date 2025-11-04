@@ -117,6 +117,17 @@ namespace minerobe.api.Modules.Core.Package.Service
                 property.SetValue(outfitPackage, property.GetValue(package));
             }
 
+            if (package.Type == PackageType.Outfit)
+            {
+                var firstlayer = await GetNthPackageLayer(package.Id, 0);
+                if (firstlayer != null)
+                    outfitPackage.OutfitType = firstlayer.OutfitType;
+            }
+            else
+            {
+                outfitPackage.OutfitType = OutfitType.Set;
+            }
+
             _context.OutfitPackages.Update(outfitPackage);
             await _context.SaveChangesAsync();
             return outfitPackage;
@@ -315,6 +326,7 @@ namespace minerobe.api.Modules.Core.Package.Service
                 matching.Order = i;
                 _context.PackageLayerMatchings.Update(matching);
             }
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -385,6 +397,15 @@ namespace minerobe.api.Modules.Core.Package.Service
             }
             await _context.SaveChangesAsync();
             return true;
+        }
+        private async Task<OutfitLayer> GetNthPackageLayer(Guid packageId, int n)
+        {
+            var layer = await (from l in _context.OutfitLayers
+                               join m in _context.PackageLayerMatchings on l.Id equals m.LayerId
+                               where m.PackageId == packageId
+                               orderby m.Order
+                               select l).Skip(n).FirstOrDefaultAsync();
+            return layer;
         }
     }
 }

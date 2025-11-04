@@ -79,19 +79,16 @@ export const GetWadrobeCollectionsWithPackageContext = async function (
 };
 export const GetWardrobeItemsWithCollectionContext = async function (
   collectionId: string,
-  filter: OutfitFilter,
-  page: number = 0,
-  pageSize: number = -1,
-  sort: SortOption[] = [],
+  pagedModel: PagedModel<OutfitFilter>,
   abortController = null
 ) {
   const req = (await PostRequest(
     "/api/Wardrobe/items/context/collection/" + collectionId,
     {
-      page,
-      pageSize,
-      filter,
-      sort,
+      page: pagedModel.page,
+      pageSize: pagedModel.pageSize,
+      filter: pagedModel.filter,
+      sort: pagedModel.sort,
     },
     abortController
   )) as PagedResponse<OutfitPackage>;

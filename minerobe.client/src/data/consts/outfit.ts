@@ -9,6 +9,11 @@ export const OUTFIT_TYPE_ARRAY = Object.keys(OUTFIT_TYPE)
   .map((key) => {
     return { name: OUTFIT_TYPE[key], normalizedName: key.replace(/_/g, " ") };
   });
+export const OUTFIT_TYPE_WITH_SET_ARRAY = Object.keys(OUTFIT_TYPE)
+  .sort()
+  .map((key) => {
+    return { name: OUTFIT_TYPE[key], normalizedName: key.replace(/_/g, " ") };
+  });
 export const DEFAULT_PACKAGE = {
   name: "Default",
   model: MODEL_TYPE.STEVE,

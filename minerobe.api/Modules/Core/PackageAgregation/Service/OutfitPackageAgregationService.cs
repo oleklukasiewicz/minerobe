@@ -53,13 +53,6 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                            join a in ids on p.Id equals a
                            join s in _context.SocialDatas on p.SocialDataId equals s.Id
                            join u in _context.MinerobeUsers on p.PublisherId equals u.Id
-                           let firstLayerId = _context.PackageLayerMatchings
-                                                 .Where(plm => plm.PackageId == p.Id)
-                                                 .OrderBy(plm => plm.Order)
-                                                 .Select(plm => (Guid?)plm.LayerId)
-                                                 .FirstOrDefault()
-                           join lf in _context.OutfitLayers on firstLayerId equals lf.Id into lGroup
-                           from lf in lGroup.DefaultIfEmpty()
                            select new OutfitPackage
                            {
                                Id = p.Id,
@@ -71,7 +64,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                                Description = p.Description,
                                SocialDataId = p.SocialDataId,
                                Social = s,
-                               OutfitType = lf ==null? p.OutfitType: lf.OutfitType ,
+                               OutfitType = p.OutfitType,
                                CreatedAt = p.CreatedAt,
                                ModifiedAt = p.ModifiedAt,
                                Layers = (from lm in _context.PackageLayerMatchings

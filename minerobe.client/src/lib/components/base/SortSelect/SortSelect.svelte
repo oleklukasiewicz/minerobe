@@ -88,7 +88,7 @@
     }
     .direction {
       border-left: 2px solid var(--color-theme-D6);
-      width: 32px;
+      width: 30px;
     }
   }
 </style>

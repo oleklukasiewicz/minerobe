@@ -6,6 +6,7 @@
   display: flex;
   gap: 8px;
   position: relative;
+  cursor: pointer;
   .item-selected {
     cursor: pointer;
     position: absolute;

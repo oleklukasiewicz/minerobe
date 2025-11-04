@@ -6,6 +6,7 @@
   //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import OutfitPackageSingleLayerListItem from "../OutfitPackageSingleLayerListItem/OutfitPackageSingleLayerListItem.svelte";
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
 
   const dispatch = createEventDispatcher();
 
@@ -23,17 +24,19 @@
   export let baseTexture: OutfitLayer = null;
 
   const onSelect = (item: OutfitPackage) => {
-    dispatch("select", { items: [item] });
+    dispatch("selectClick", { items: [item] });
   };
   const onRemoveFromSelected = (item: OutfitPackage) => {
     selectedItems = selectedItems.filter(
       (i) => i.id !== item.id || i.layers[0]?.id !== item.layers[0]?.id
     );
-    dispatch("select", { items: selectedItems });
+    dispatch("unselect", { items: [item] });
+    dispatch("selectionUpdate", { items: selectedItems });
   };
   const onAddToSelected = (item: OutfitPackage) => {
     selectedItems = [...selectedItems, item];
-    dispatch("select", { items: selectedItems });
+    dispatch("select", { items: [item] });
+    dispatch("selectionUpdate", { items: selectedItems });
   };
 </script>
 
@@ -46,7 +49,7 @@
     {#each items as item (item.id + item.layers[0].id)}
       <OutfitPackageSingleLayerListItem
         {selectable}
-        {baseTexture}
+        baseTexture={item.type === PACKAGE_TYPE.OUTFIT_SET ? baseTexture : null}
         selected={selectedItems.find(
           (i) => i.id === item.id && i.layers[0].id == item.layers[0].id
         ) != null && selectable}

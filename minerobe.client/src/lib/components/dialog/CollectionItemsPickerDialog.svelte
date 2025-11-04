@@ -4,11 +4,11 @@
   //consts
   import { COLORS_ARRAY } from "$src/data/consts/color";
   import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
-  import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
+  import { OUTFIT_TYPE_WITH_SET_ARRAY } from "$src/data/consts/outfit";
   //model
   import { PagedModel, type PagedResponse } from "$src/data/models/base";
   import { OutfitFilter } from "$src/data/models/filter";
-  import type { OutfitPackage } from "$src/data/models/package";
+  import type { OutfitLayer, OutfitPackage } from "$src/data/models/package";
   //components
   import Dialog from "../base/Dialog/Dialog.svelte";
   import PagedList from "../list/PagedList/PagedList.svelte";
@@ -18,19 +18,21 @@
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
   import SortSelect from "../base/SortSelect/SortSelect.svelte";
   import Button from "../base/Button/Button.svelte";
+  import type { OutfitPackageCollection } from "$src/data/models/collection";
 
   const dispatch = createEventDispatcher();
 
   export let items: PagedResponse<OutfitPackage>;
-  export let packageContext: OutfitPackage = null;
+  export let packageContext: OutfitPackageCollection = null;
   export let options: PagedModel<OutfitFilter> = new PagedModel<OutfitFilter>();
   export let pageSizes = [5, 10, 15, 20];
   export let open = false;
   export let label = "Outfit Picker";
   export let loading = true;
   export let multiple = true;
+  export let baseTexture: OutfitLayer = null;
 
-  let selectedItems: OutfitPackage[] = [];
+  export let selectedItems: OutfitPackage[] = [];
 
   const onFiltersUpdate = function () {
     if (options.sort[0]?.value == null) options.sort = [];
@@ -44,22 +46,22 @@
     if (options.sort[0]?.value == null) options.sort = [];
     dispatch("optionsChanged", { options: options });
   };
-  const onSelect = function (items) {
-    selectedItems = items;
-    if (!multiple) dispatch("select", { items: items });
+  const onSelect = function (item) {
+    dispatch("select", { items: item });
+  };
+  const onUnselect = function (item) {
+    dispatch("unselect", { items: item });
   };
   const onSelectClick = function () {
-    dispatch("select", { items: selectedItems });
+    dispatch("selectClick", { items: selectedItems });
   };
 
-  const onOpen = function (v) {
-    selectedItems = [];
-  };
+  const onOpen = function (v) {};
   $: onOpen(open);
 </script>
 
-<Dialog bind:open {label} let:isMobile>
-  <div id="outfit-picker-dialog" class:mobile={isMobile}>
+<Dialog bind:open {label} let:isMobile on:close>
+  <div id="collection-items-picker-dialog" class:mobile={isMobile}>
     <div class="dialog-filters">
       <SortSelect
         clearable
@@ -82,7 +84,7 @@
         on:clear={onFiltersUpdate}
       />
       <Select
-        items={OUTFIT_TYPE_ARRAY}
+        items={OUTFIT_TYPE_WITH_SET_ARRAY}
         placeholder="Outfit type"
         autocomplete
         itemText="normalizedName"
@@ -111,12 +113,17 @@
     >
       <OutfitPackagePickerList
         bind:selectedItems
-        selectable={multiple}
+        selectable={true}
         disableContext={packageContext}
+        disableFunction={(context: OutfitPackageCollection, item) => {
+          return false;
+        }}
         items={pagedItems}
         pageSize={pagedPageSize}
         loading={pagedLoading}
-        on:selectionUpdate={(e) => onSelect(e.detail.items)}
+        {baseTexture}
+        on:select={(e) => onSelect(e.detail.items)}
+        on:unselect={(e) => onUnselect(e.detail.items)}
       />
       {#if items?.items?.length === 0 && !loading}
         <div class="no-items-error">No items found</div>
@@ -135,7 +142,7 @@
 </Dialog>
 
 <style lang="scss">
-  #outfit-picker-dialog {
+  #collection-items-picker-dialog {
     min-width: 50vw;
     max-width: 600px;
     &.mobile {
