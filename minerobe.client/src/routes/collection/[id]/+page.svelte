@@ -194,6 +194,7 @@
   />
   <CollectionsItemPickerDialog
     pageSizes={[6, 12, 24]}
+    options={dialogOutfitsPickerOptions}
     bind:open={isEditItemsDialogOpen}
     items={dialogOutfitPickerItems}
     selectedItems={flatCollectionItems}

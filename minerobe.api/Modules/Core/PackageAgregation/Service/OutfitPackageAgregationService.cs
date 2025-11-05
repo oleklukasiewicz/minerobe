@@ -34,7 +34,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                               CreatedAt = p.CreatedAt,
                               ModifiedAt = p.ModifiedAt,
                               ColorName = l.ColorName,
-                              OutfitType = l.OutfitType,
+                              OutfitType = p.Type == PackageType.Set ? OutfitType.Set : l.OutfitType,
                               Downloads = s.Downloads,
                               IsFeatured = s.IsFeatured,
                               Likes = s.Likes,

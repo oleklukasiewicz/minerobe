@@ -3,9 +3,15 @@
   import { page } from "$app/stores";
   //api
   import { AddPackage } from "$src/api/pack";
-  import { AddPackageToWardrobe } from "$src/api/wardrobe";
+  import {
+    AddCollectionToWardrobe,
+    AddPackageToWardrobe,
+  } from "$src/api/wardrobe";
   //services
-  import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
+  import {
+    navigateToCollection,
+    navigateToOutfitPackageEdit,
+  } from "$src/helpers/other/navigationHelper";
   import { ShowToast } from "$src/data/toast";
   //consts
   import { CURRENT_USER, IS_MOBILE_VIEW } from "$src/data/static";
@@ -26,6 +32,8 @@
   import AnimationIcon from "$icons/animation.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
+  import { OutfitPackageCollection } from "$src/data/models/collection";
+  import { AddCollection } from "$src/api/collection";
 
   let menuOpened = true;
   let isCreating = false;
@@ -38,8 +46,7 @@
   const openOutfitTypePickerDialog = function () {
     isTypePickerDialogOpen = true;
   };
-  const newOutfit = async function (e) {
-    const type = e.detail.type;
+  const newOutfit = async function (type) {
     isCreating = true;
     isTypePickerDialogOpen = false;
     const name = type == PACKAGE_TYPE.OUTFIT_SET ? "New set" : "New outfit";
@@ -62,6 +69,34 @@
     } catch (e) {
       isCreating = false;
       ShowToast("Error creating new outfit", "error");
+    }
+  };
+  const newCollection = async function () {
+    isCreating = true;
+    isTypePickerDialogOpen = false;
+    const collection = new OutfitPackageCollection();
+    collection.name = "New collection";
+    collection.publisherId = $CURRENT_USER.id;
+    collection.description = "";
+    try {
+      const resp = await AddCollection(collection);
+      if (resp == null) {
+        isCreating = false;
+        return;
+      }
+      await AddCollectionToWardrobe(resp.id);
+      isCreating = false;
+      navigateToCollection(resp.id);
+    } catch (e) {
+      isCreating = false;
+      ShowToast("Error creating new collection", "error");
+    }
+  };
+  const newItem = async function (e) {
+    if (e.detail.type === PACKAGE_TYPE.OUTFIT_COLLECTION) {
+      await newCollection();
+    } else {
+      await newOutfit(e.detail.type);
     }
   };
 </script>
@@ -131,7 +166,7 @@
   {/if}
   <OutfitPackageTypePickerDialog
     bind:open={isTypePickerDialogOpen}
-    on:select={newOutfit}
+    on:select={newItem}
   />
 </div>
 

@@ -77,7 +77,7 @@
         onlyIcon
         icon={ChevronRightIcon}
         iconSize="large"
-        disabled={items?.options.page == totalPages - 1 ||
+        disabled={items?.options.page >= totalPages - 1 ||
           items == null ||
           loading}
         on:click={onNext}
