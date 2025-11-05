@@ -138,6 +138,8 @@
   #outfit-picker-dialog {
     min-width: 50vw;
     max-width: 600px;
+    display: flex;
+    flex-direction: column;
     &.mobile {
       min-width: 100%;
       max-width: 100%;
@@ -150,7 +152,7 @@
       margin-left: auto;
       grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 8px;
-      margin-bottom: 8px;
+      margin: 8px 0px;
     }
     .no-items-error {
       display: flex;

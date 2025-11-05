@@ -21,6 +21,7 @@
     .dialog-content-container {
       overflow: visible;
       margin: 8px;
+      display: flex;
       max-height: 75vh;
     }
     .dialog-title-bar {
@@ -54,6 +55,9 @@
       top: auto !important;
       transform: translate(0%, 0%) !important;
       left: 0px !important;
+      .dialog-content-container {
+        max-height: calc(100vh - 58px);
+      }
     }
   }
 }

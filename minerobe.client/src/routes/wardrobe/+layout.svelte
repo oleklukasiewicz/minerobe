@@ -10,7 +10,7 @@
   //services
   import {
     navigateToCollection,
-    navigateToOutfitPackageEdit,
+    navigateToOutfitPackage
   } from "$src/helpers/other/navigationHelper";
   import { ShowToast } from "$src/data/toast";
   //consts
@@ -65,7 +65,7 @@
       }
       await AddPackageToWardrobe(resp.id);
       isCreating = false;
-      navigateToOutfitPackageEdit(resp.id);
+      navigateToOutfitPackage(resp, undefined, true);
     } catch (e) {
       isCreating = false;
       ShowToast("Error creating new outfit", "error");
@@ -86,7 +86,7 @@
       }
       await AddCollectionToWardrobe(resp.id);
       isCreating = false;
-      navigateToCollection(resp.id);
+      navigateToCollection(resp.id,true);
     } catch (e) {
       isCreating = false;
       ShowToast("Error creating new collection", "error");

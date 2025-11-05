@@ -55,7 +55,7 @@
   });
 
   const goToCollection = function (e) {
-    navigateToCollection(e.detail.item.id);
+    navigateToCollection(e.detail.item.id, true);
   };
   const fetchCollections = async (e) => {
     const options = e?.detail?.options;

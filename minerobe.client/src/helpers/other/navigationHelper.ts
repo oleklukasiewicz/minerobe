@@ -9,13 +9,15 @@ export const navigateToWardrobe = function (
 };
 export const navigateToOutfitPackage = function (
   packag: OutfitPackage,
-  variantId?: string
+  variantId?: string,
+  edit: boolean = false
 ) {
+  if (edit) {
+    goto(`/design/${packag.id}/edit`);
+    return;
+  }
   const varaint = variantId ? variantId : packag.layers[0]?.id;
   goto(`/design/${packag.id}/${varaint || ""}`);
-};
-export const navigateToOutfitPackageEdit = function (id: string) {
-  goto(`/design/${id}/edit`);
 };
 export const navigate = function (path: string) {
   goto(path);
@@ -26,6 +28,13 @@ export const navigateToProfile = function () {
 export const navigateToHome = function () {
   goto(`/`);
 };
-export const navigateToCollection = function (id?: string) {
-  goto(`/collection/${id || ""}`);
+export const navigateToCollection = function (
+  id?: string,
+  edit: boolean = false
+) {
+  if (edit) {
+    goto(`/collection/${id}/edit`);
+    return;
+  }
+  goto(`/collection/${id}`);
 };

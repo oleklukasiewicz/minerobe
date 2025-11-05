@@ -1,15 +1,17 @@
 #collection-view {
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   box-sizing: border-box;
   #collection-actions {
+    margin: 0px 0px 8px;
     display: grid;
     grid-template-columns: auto 1fr;
   }
   #collection-header {
     background-color: var(--color-theme-D1);
-    margin: 0px 0px 8px;
+    margin: 8px 0px;
     box-sizing: border-box;
     padding: 32px;
     #collection-info {
@@ -27,14 +29,5 @@
       font-size: var(--size-font-base);
       margin: 16px auto 0px;
     }
-  }
-  #collection-items
-  {
-    max-width: 100%;
-  }
-  &.mobile
-  {
-    margin: 8px;
-    box-sizing: border-box;
   }
 }

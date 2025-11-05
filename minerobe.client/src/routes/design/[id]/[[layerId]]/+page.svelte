@@ -19,7 +19,7 @@
   import { ShowToast } from "$src/data/toast.js";
   import { SetMinecraftSkin } from "$src/data/integration.js";
   import { replaceState } from "$app/navigation";
-  import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
+  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
   //consts
   import {
     BASE_TEXTURE,
@@ -383,7 +383,8 @@
             size="large"
             onlyIcon={!$IS_MOBILE_VIEW}
             icon={EditIcon}
-            on:click={() => navigateToOutfitPackageEdit($itemPackage.id)}
+            on:click={() =>
+              navigateToOutfitPackage($itemPackage, undefined, true)}
           />
         {/if}
       {:else}

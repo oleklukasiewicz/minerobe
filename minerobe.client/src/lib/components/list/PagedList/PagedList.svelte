@@ -95,10 +95,19 @@
 </div>
 
 <style lang="scss">
+  .paged-list {
+    flex: 1;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-height: 0px;
+  }
   .list-items {
     overflow: auto;
+    display: block;
+    min-height: 0px;
   }
   .list-actions {
+    flex: 1;
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 8px;

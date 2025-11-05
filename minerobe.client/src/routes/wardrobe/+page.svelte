@@ -7,7 +7,9 @@
   import { FetchSettings } from "$src/api/settings";
   import { GetWardrobePackages } from "$src/api/wardrobe";
   //services
-  import { navigateToOutfitPackageEdit } from "$src/helpers/other/navigationHelper";
+  import {
+    navigateToOutfitPackage
+  } from "$src/helpers/other/navigationHelper";
   //consts
   import { APP_STATE } from "$src/data/enums/app";
   import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
@@ -61,7 +63,7 @@
 
   const goToEdit = function (e) {
     const item = e.detail.item;
-    navigateToOutfitPackageEdit(item.id);
+    navigateToOutfitPackage(item, undefined, true);
   };
   const fetchItems = async (e) => {
     const options = e?.detail?.options;
