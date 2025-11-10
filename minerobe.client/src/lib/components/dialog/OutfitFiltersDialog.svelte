@@ -69,7 +69,6 @@
           items={COLORS_ARRAY}
           itemText="normalizedName"
           itemValue="name"
-          dropDownStyle="max-height: 275px"
           clearable
           autocomplete
           bind:selectedItem={filter.colors}

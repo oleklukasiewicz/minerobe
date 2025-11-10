@@ -249,7 +249,6 @@
   </div>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div class="select-mobile-bg" on:click={() => (opened = false)}></div>
   <Flyout
     bind:opened
     caller={menu}

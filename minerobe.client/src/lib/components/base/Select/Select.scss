@@ -19,7 +19,7 @@
         border: none;
       }
       .autocomplete-input {
-        color:var(--color-theme-font);
+        color: var(--color-theme-font);
         border: 0;
         border-right: 2px solid var(--color-theme-D6);
         padding-left: 8px;
@@ -94,21 +94,11 @@
     }
   }
   &.mobile {
-    &.opened {
-      & .select-mobile-bg {
-        display: block;
-      }
-    }
     .items {
-      z-index: 20;
-      position: fixed;
       border-top: 2px solid var(--color-theme-D2);
       border-bottom: 0px;
       border-left: 0px;
       border-right: 0px;
-      width: 100%;
-      left: 0;
-      bottom: 0px;
     }
   }
 }

@@ -12,6 +12,10 @@
     margin: 0px 0px 8px;
     box-sizing: border-box;
     padding: 32px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     #collection-info {
       display: flex;
       gap: 8px;

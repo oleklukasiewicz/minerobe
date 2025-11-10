@@ -1,8 +1,10 @@
 <script lang="ts">
   import Resize from "$lib/components/other/Resize/Resize.svelte";
+  import { IS_MOBILE_VIEW } from "$src/data/static";
 
   //services
   import { clickOutside } from "$src/helpers/data/componentHelper";
+  import { fly } from "svelte/transition";
 
   export let opened = false;
   export let caller = null;
@@ -38,6 +40,9 @@
     component.style.top = null;
     component.style.bottom = null;
     component.style.maxHeight = null;
+    if ($IS_MOBILE_VIEW) {
+      return;
+    }
     //calculate needed space
     if (position == "auto") {
       if (
@@ -49,10 +54,14 @@
     }
     if (actualPosition == "top") {
       component.style.bottom = "100%";
+      //set maxheight
+      component.style.maxHeight = callerRect.top - 50 + "px";
     }
     if (actualPosition == "bottom") {
       component.style.top = "100%";
       //set maxheight
+      component.style.maxHeight =
+        window.innerHeight - (callerRect.top + callerRect.height) - 50 + "px";
     }
     //align
     if (align == "left") {
@@ -98,6 +107,7 @@
   class:opened
   class="flyout"
   class:closed={!opened}
+  class:mobile={$IS_MOBILE_VIEW}
   on:click_outside={onClose}
 >
   <Resize targetNode={caller} on:resize={onResize} debounce={100}></Resize>
@@ -105,6 +115,9 @@
   <div bind:this={componentContent} class="flyout-content">
     <slot position={actualPosition} />
   </div>
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div class="flyout-mobile-bg" on:click={() => (opened = false)}></div>
 </div>
 
 <style lang="scss">
@@ -119,6 +132,38 @@
     }
     .flyout-content {
       flex: 1;
+    }
+    &.mobile {
+      /* stick to bottom of the viewport on mobile */
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      justify-content: center;
+      box-sizing: border-box;
+      align-items: flex-end;
+      height: 100vh;
+      .flyout-content {
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        max-height: 75vh;
+        overflow: auto;
+      }
+      &.opened .flyout-mobile-bg {
+        display: block;
+      }
+      .flyout-mobile-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        display: none;
+        background-color: var(--color-dialog);
+      }
     }
   }
 </style>

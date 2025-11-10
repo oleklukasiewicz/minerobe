@@ -1,19 +1,21 @@
 #collection-view {
-  width: 100%;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   box-sizing: border-box;
   #collection-actions {
-    margin: 0px 0px 8px;
     display: grid;
     grid-template-columns: auto 1fr;
   }
   #collection-header {
     background-color: var(--color-theme-D1);
-    margin: 8px 0px;
+    margin: 0px 0px 8px;
     box-sizing: border-box;
     padding: 32px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     #collection-info {
       display: flex;
       gap: 8px;
@@ -29,5 +31,14 @@
       font-size: var(--size-font-base);
       margin: 16px auto 0px;
     }
+  }
+  #collection-items
+  {
+    max-width: 100%;
+  }
+  &.mobile
+  {
+    margin: 8px;
+    box-sizing: border-box;
   }
 }

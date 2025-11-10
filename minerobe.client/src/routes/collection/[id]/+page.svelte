@@ -3,23 +3,27 @@
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
   import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
-  import {
-    GetCollection,
-    GetCollectionsItems
-  } from "$src/api/collection";
+  import { GetCollection, GetCollectionsItems } from "$src/api/collection";
   import { FetchSettings } from "$src/api/settings.js";
   import { APP_STATE } from "$src/data/enums/app";
   import { PagedResponse } from "$src/data/models/base.js";
   import type { OutfitPackageCollection } from "$src/data/models/collection";
   import { OutfitPackage } from "$src/data/models/package.js";
   import type { MinerobeUserSettings } from "$src/data/models/user.js";
-  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
+  import {
+    CURRENT_APP_STATE,
+    CURRENT_USER,
+    IS_MOBILE_VIEW,
+  } from "$src/data/static";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
   import EditIcon from "$src/icons/edit.svg?raw";
   import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
-  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper.js";
+  import {
+    navigateToCollection,
+    navigateToOutfitPackage,
+  } from "$src/helpers/other/navigationHelper.js";
   export let data;
 
   const itemCollection: Writable<OutfitPackageCollection> = writable(null);
@@ -32,7 +36,6 @@
   let itemsLoaded = false;
   let loaded = false;
   let collectionLoaded = false;
-  let isEditDialogOpen = false;
 
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
@@ -44,10 +47,15 @@
         collectionLoaded = true;
       }
 
+      collectionItems.set([]);
       fetchItems(null);
       loaded = true;
     });
   });
+
+  const editCollection = () => {
+    navigateToCollection($itemCollection.id, true);
+  };
 
   const fetchItems = async (e) => {
     itemsLoaded = false;
@@ -72,17 +80,19 @@
 <div id="collection-view" class:mobile={$IS_MOBILE_VIEW}>
   <div id="collection-header">
     <SectionTitle label="Collection" placeholder={!loaded} />
-    <Placeholder {loaded}
-      ><h1>
+    <Placeholder {loaded}  style="min-height: 46px; max-width:50%;">
+      <h1>
         {$itemCollection.name}
-        <Button
-          label="Edit"
-          onlyIcon
-          icon={EditIcon}
-          type="tertiary"
-          size="large"
-          on:click={() => (isEditDialogOpen = true)}
-        />
+        {#if $itemCollection.publisher.id == $CURRENT_USER.id}
+          <Button
+            label="Edit"
+            onlyIcon
+            icon={EditIcon}
+            type="tertiary"
+            size="large"
+            on:click={editCollection}
+          />
+        {/if}
       </h1>
     </Placeholder>
     <div id="collection-info">
@@ -93,14 +103,12 @@
         <Label variant={"rare"}>Shared</Label>
       {/if}
     </div>
-    <Placeholder {loaded}><p>{$itemCollection.description}</p></Placeholder>
+    <Placeholder {loaded} style="min-height: 42px;"><p>{$itemCollection.description}</p></Placeholder>
   </div>
   <div id="collection-actions">
-   
     <div></div>
   </div>
   <div id="collection-items">
-    {#if loaded}
       <LazyList
         let:items={pagedItems}
         on:loading={fetchItems}
@@ -115,9 +123,15 @@
           currentPackageId={userSettings?.currentTexture?.packageId}
           baseTexture={userSettings?.baseTexture.layers[0]}
           on:select={goToItemPage}
-        /></LazyList
-      >
-    {/if}
+        />
+        <OutfitPackageList
+          loading
+          items={[]}
+          pageSize={36}
+          slot="loading"
+          columns={$IS_MOBILE_VIEW ? 3 : 6}
+        />
+      </LazyList>
   </div>
 </div>
 

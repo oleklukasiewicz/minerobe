@@ -137,10 +137,10 @@
   let flatCollectionItems: OutfitPackage[] = [];
 </script>
 
-<div id="collection-view">
+<div id="collection-view" class:mobile={$IS_MOBILE_VIEW}>
   <div id="collection-header">
     <SectionTitle label="Collection" placeholder={!loaded} />
-    <Placeholder {loaded}
+    <Placeholder {loaded}  style="min-height: 46px; max-width:50%;"
       ><h1>
         {$itemCollection.name}
         <Button
@@ -161,7 +161,7 @@
         <Label variant={"rare"}>Shared</Label>
       {/if}
     </div>
-    <Placeholder {loaded}><p>{$itemCollection.description}</p></Placeholder>
+    <Placeholder {loaded} style="min-height: 42px;"><p>{$itemCollection.description}</p></Placeholder>
   </div>
   <div id="collection-actions">
     <Button label="Edit items" icon={EditIcon} on:click={openOutfitPicker} />

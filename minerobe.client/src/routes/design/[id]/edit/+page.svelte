@@ -576,7 +576,7 @@
         <ColorSelect
           bind:selectedItem={$itemPackage.colorName}
           placeholder="Select color"
-          dropDownStyle="max-height: 40vh;"
+     
           items={COLORS_ARRAY}
           autocomplete
           clearable
