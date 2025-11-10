@@ -32,7 +32,8 @@
   const calculatePosition = () => {
     const flyoutRect = component.getBoundingClientRect();
     const callerRect = caller?.getBoundingClientRect();
-    if (autoWidth) component.style.minWidth = callerRect?.width + "px";
+    if (autoWidth && !$IS_MOBILE_VIEW)
+      component.style.minWidth = callerRect?.width + "px";
     else component.style.minWidth = null;
     //component.style.maxWidth = callerRect?.width + "px";
     component.style.left = null;
