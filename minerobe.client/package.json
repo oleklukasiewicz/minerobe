@@ -28,7 +28,7 @@
 		"@sveltejs/adapter-node": "^5.4.0",
 		"axios": "^1.12.2",
 		"color-diff": "^1.4.0",
-		"dotenv": "^17.2.1",
+		"dotenv": "^17.2.3",
 		"firebase": "^12.4.0",
 		"sass": "^1.93.2",
 		"svelte-i18n": "^4.0.1",
