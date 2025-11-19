@@ -13,7 +13,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
         {
             _context = context;
         }
-        public IQueryable<OutfitPackageAgregation> GetAgregation()
+        public IQueryable<OutfitPackageAgregation> GetAgregation(Guid? collectionId = null)
         {
             var outfits = from p in _context.OutfitPackages
                           join s in _context.SocialDatas on p.SocialDataId equals s.Id
@@ -44,6 +44,35 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                               WardrobeId = wm.WardrobeId,
                               PublisherId = p.PublisherId
                           };
+            if (collectionId != null)
+            {
+                outfits = from o in outfits
+                          join c in _context.OutfitPackageCollectionMatchings on o.Id equals c.PackageId into collectionGroup
+                          from c in collectionGroup.DefaultIfEmpty()
+                          where c == null || c.CollectionId == collectionId.Value
+                          select new OutfitPackageAgregation
+                          {
+                              Id = o.Id,
+                              Name = o.Name,
+                              Type = o.Type,
+                              PackageColorName = o.PackageColorName,
+                              PublisherName = o.PublisherName,
+                              CreatedAt = o.CreatedAt,
+                              ModifiedAt = o.ModifiedAt,
+                              ColorName = o.ColorName,
+                              OutfitType = o.OutfitType,
+                              Downloads = o.Downloads,
+                              IsFeatured = o.IsFeatured,
+                              Likes = o.Likes,
+                              IsShared = o.IsShared,
+                              LayerId = o.LayerId,
+                              LayerSourcePackageId = o.LayerSourcePackageId,
+                              WardrobeId = o.WardrobeId,
+                              IsInCollection = c != null,
+                              PublisherId = o.PublisherId
+                          };
+
+            }
             return outfits;
         }
         public IQueryable<OutfitPackage> FromAgregation(IQueryable<OutfitPackageAgregation> agregations)
@@ -136,38 +165,43 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
 
         public IQueryable<OutfitPackageAgregationResponse> FromAgregationWithUserContext(IQueryable<OutfitPackageAgregation> agregations, Guid? wardobeId)
         {
-            var ids = agregations.GroupBy(x => x.Id).Select(x => x.Key);
-            var packages = from p in _context.OutfitPackages
-                           join a in ids on p.Id equals a
-                           join s in _context.SocialDatas on p.SocialDataId equals s.Id
-                           join u in _context.MinerobeUsers on p.PublisherId equals u.Id
-                           select new OutfitPackageAgregationResponse
-                           {
-                               Package = new OutfitPackage
-                               {
-                                   Id = p.Id,
-                                   Name = p.Name,
-                                   ColorName = p.ColorName,
-                                   Model = p.Model,
-                                   Type = p.Type,
-                                   PublisherId = p.PublisherId,
-                                   Description = p.Description,
-                                   SocialDataId = p.SocialDataId,
-                                   Social = s,
-                                   OutfitType = p.OutfitType,
-                                   CreatedAt = p.CreatedAt,
-                                   ModifiedAt = p.ModifiedAt,
-                                   Layers = (from lm in _context.PackageLayerMatchings
-                                             join l in _context.OutfitLayers on lm.LayerId equals l.Id
-                                             where lm.PackageId == p.Id
-                                             orderby lm.Order
-                                             select l).ToList(),
-                                   Publisher = u
-                               },
-                               IsInWardrobe = _context.WardrobeMatchings.Any(x => x.WardrobeId == wardobeId && x.OutfitPackageId == p.Id)
-                           };
-
-            return packages;
+            var fromAggr = FromAgregation(agregations);
+            var aggrWithUserContext = from p in fromAggr
+                                      join w in _context.WardrobeMatchings on p.Id equals w.OutfitPackageId into wmGroup
+                                      from w in wmGroup.DefaultIfEmpty()
+                                      where w == null || w.WardrobeId == wardobeId
+                                      select new OutfitPackageAgregationResponse
+                                      {
+                                          Package = p,
+                                          IsInWardrobe = wmGroup.Any(w => w.WardrobeId == wardobeId),
+                                          IsInCollection = false
+                                      };
+            return aggrWithUserContext;
+        }
+        public IQueryable<OutfitPackageAgregationResponse> FromAgregationWithCollectionContext(IQueryable<OutfitPackageAgregation> agregations, Guid collectionId)
+        {
+            var fromAggr = FromAgregation(agregations);
+            var aggrWithCollectionContext = from p in fromAggr
+                                            join c in _context.OutfitPackageCollectionMatchings on p.Id equals c.PackageId into collectionGroup
+                                            select new OutfitPackageAgregationResponse
+                                            {
+                                                Package = p,
+                                                IsInWardrobe = false,
+                                                IsInCollection = collectionGroup.Any(c => c.CollectionId == collectionId)
+                                            };
+            return aggrWithCollectionContext;
+        }
+        public IQueryable<OutfitPackageAgregationResponse> FromAgregationWithNoContext(IQueryable<OutfitPackageAgregation> agregations)
+        {
+            var fromAggr = FromAgregation(agregations);
+            var aggrWithNoContext = from p in fromAggr
+                                    select new OutfitPackageAgregationResponse
+                                    {
+                                        Package = p,
+                                        IsInWardrobe = false,
+                                        IsInCollection = false
+                                    };
+            return aggrWithNoContext;
         }
     }
 }

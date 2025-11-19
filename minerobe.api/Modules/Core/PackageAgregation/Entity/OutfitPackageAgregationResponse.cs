@@ -6,5 +6,6 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Entity
     {
         public OutfitPackage Package { get; set; }
         public bool IsInWardrobe { get; set; }
+        public bool IsInCollection { get; set; }
     }
 }

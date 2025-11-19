@@ -200,7 +200,6 @@
     selectedItems={flatCollectionItems}
     loading={dialogOutfitPickerItems?.items == null}
     baseTexture={userSettings?.baseTexture.layers[0]}
-    multiple={false}
     on:optionsChanged={openOutfitPicker}
     on:select={addItemToCollection}
     on:unselect={removeItemFromCollection}

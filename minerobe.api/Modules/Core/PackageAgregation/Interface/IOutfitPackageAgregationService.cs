@@ -8,7 +8,9 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Interface
         IQueryable<OutfitPackage> FromAgregation(IQueryable<OutfitPackageAgregation> agregations);
         IQueryable<OutfitPackage> FromAgregationSingleLayer(IQueryable<OutfitPackageAgregation> agregations);
         IQueryable<OutfitPackageAgregationResponse> FromAgregationWithUserContext(IQueryable<OutfitPackageAgregation> agregations, Guid? wardobeId);
-        IQueryable<OutfitPackageAgregation> GetAgregation();
+        IQueryable<OutfitPackageAgregationResponse> FromAgregationWithCollectionContext(IQueryable<OutfitPackageAgregation> agregations, Guid collectionId);
+        public IQueryable<OutfitPackageAgregationResponse> FromAgregationWithNoContext(IQueryable<OutfitPackageAgregation> agregations);
+        IQueryable<OutfitPackageAgregation> GetAgregation(Guid? collectionId = null);
         IQueryable<OutfitPackage> FromIdList(IQueryable<Guid> ids);
     }
 }

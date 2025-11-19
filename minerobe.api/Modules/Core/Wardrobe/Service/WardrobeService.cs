@@ -5,6 +5,7 @@ using minerobe.api.Modules.Core.Collection.Entity;
 using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.PackageAgregation.Entity;
 using minerobe.api.Modules.Core.PackageAgregation.Interface;
 using minerobe.api.Modules.Core.Social.Entity;
 using minerobe.api.Modules.Core.Social.Interface;
@@ -200,17 +201,23 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             var matching = await _context.WardrobeMatchings.Where(x => x.OutfitPackageId == outfitId && x.WardrobeId == wardrobeId).FirstOrDefaultAsync();
             return matching != null;
         }
-        public async Task<IQueryable<OutfitPackage>> GetWardrobeOutfits(Guid wardrobeId, OutfitFilter filter)
+        public async Task<IQueryable<OutfitPackageAgregationResponse>> GetWardrobeOutfits(Guid wardrobeId, OutfitFilter filter, Guid? collectionId = null)
         {
-            var outfits = _packageAgregationService.GetAgregation();
-            outfits = outfits.Where(x => x.WardrobeId == wardrobeId);
-
+            var agregation = _packageAgregationService.GetAgregation(collectionId);
+            var outfits = agregation.Where(x => x.WardrobeId == wardrobeId);
             if (filter != null)
             {
                 outfits = filter.Filter(outfits);
             }
-            var packages = _packageAgregationService.FromAgregation(outfits);
-            return packages;
+            
+            IQueryable<OutfitPackageAgregationResponse> outfitsResponse;
+            if (collectionId != null)
+                outfitsResponse = _packageAgregationService.FromAgregationWithCollectionContext(outfits, collectionId.Value);
+            else
+                outfitsResponse = _packageAgregationService.FromAgregationWithNoContext(outfits);
+
+            var list = outfitsResponse.ToList();
+            return outfitsResponse;
         }
         public async Task<IQueryable<OutfitPackage>> GetWardrobeOutfitsSingleLayer(Guid wardrobeId, OutfitFilter filter)
         {

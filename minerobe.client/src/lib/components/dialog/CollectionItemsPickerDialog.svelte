@@ -27,9 +27,8 @@
   export let options: PagedModel<OutfitFilter> = new PagedModel<OutfitFilter>();
   export let pageSizes = [5, 10, 15, 20];
   export let open = false;
-  export let label = "Outfit Picker";
+  export let label = "Items Picker";
   export let loading = true;
-  export let multiple = true;
   export let baseTexture: OutfitLayer = null;
 
   export let selectedItems: OutfitPackage[] = [];
@@ -58,9 +57,13 @@
 
   const onOpen = function (v) {};
   $: onOpen(open);
+  const onClose = function () {
+    open = false;
+    dispatch("close");
+  };
 </script>
 
-<Dialog bind:open {label} let:isMobile on:close>
+<Dialog bind:open {label} let:isMobile on:close={onClose}>
   <div id="collection-items-picker-dialog" class:mobile={isMobile}>
     <div class="dialog-filters">
       <SortSelect
@@ -129,13 +132,7 @@
         <div class="no-items-error">No items found</div>
       {/if}
       <div slot="footer" id="select-footer">
-        {#if multiple}
-          <Button
-            on:click={onSelectClick}
-            label={"Add " + "(" + selectedItems.length + ")"}
-            disabled={selectedItems.length === 0}
-          />
-        {/if}
+        <Button label="Save items" on:click={onClose} />
       </div>
     </PagedList>
   </div>

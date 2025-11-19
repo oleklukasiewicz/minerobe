@@ -6,15 +6,15 @@ namespace minerobe.api.Helpers.Model
 {
     public static class OutfitPackageListItemHelper
     {
-        public static List<OutfitPackageListItemResponseModel> AddUserContextToPage(this PagedResponse<OutfitPackageAgregationResponse> page, int maxLayersCount = 2)
+        public static List<OutfitPackageListItemResponseModel> ToOutfitPackageListItem(this PagedResponse<OutfitPackageAgregationResponse> page, int maxLayersCount = 2)
         {
             var items = new List<OutfitPackageListItemResponseModel>();
             foreach (var item in page.Items)
             {
                 if (item.Package.Type == PackageType.Set)
-                    items.Add(item.Package.ToListItemResponseModel(-1, -1, item.IsInWardrobe));
+                    items.Add(item.Package.ToListItemResponseModel(-1, -1, item.IsInWardrobe,item.IsInCollection));
                 else
-                    items.Add(item.Package.ToListItemResponseModel(maxLayersCount, 1, item.IsInWardrobe));
+                    items.Add(item.Package.ToListItemResponseModel(maxLayersCount, 1, item.IsInWardrobe,item.IsInCollection));
             }
             return items;
         }

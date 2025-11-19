@@ -15,7 +15,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Entity
         //layer
         public Guid? LayerId { get; set; }
         public Guid? LayerSourcePackageId { get; set; }
-        public string ColorName { get; set; }
+        public string? ColorName { get; set; }
         public string PackageColorName { get; set; }
         public OutfitType OutfitType { get; set; }
         //social
@@ -26,6 +26,8 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Entity
 
         //wardrobe
         public Guid? WardrobeId { get; set; }
+        //optional
+        public bool? IsInCollection { get; set; }
 
     }
 }

@@ -30,7 +30,7 @@ namespace minerobe.api.Modules.View.Landing.Controllers
             var packages = await _landingViewService.GetMostRecent(user);
             var packagesPage = packages.ToPagedResponse(options);
 
-            var items = packagesPage.AddUserContextToPage();
+            var items = packagesPage.ToOutfitPackageListItem();
 
             var mappedRespose = packagesPage.MapResponseOptions(items);
             return Ok(mappedRespose);
@@ -43,7 +43,7 @@ namespace minerobe.api.Modules.View.Landing.Controllers
             var packages = await _landingViewService.GetMostLiked(user);
             var packagesPage = packages.ToPagedResponse(options);
 
-            var items = packagesPage.AddUserContextToPage();
+            var items = packagesPage.ToOutfitPackageListItem();
 
             var mappedRespose = packagesPage.MapResponseOptions(items);
             return Ok(mappedRespose);
@@ -56,7 +56,7 @@ namespace minerobe.api.Modules.View.Landing.Controllers
             var packages = await _landingViewService.GetMostDownloaded(user);
             var packagesPage = packages.ToPagedResponse(options);
 
-            var items = packagesPage.AddUserContextToPage();
+            var items = packagesPage.ToOutfitPackageListItem();
 
             var mappedRespose = packagesPage.MapResponseOptions(items);
             return Ok(mappedRespose);
