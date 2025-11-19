@@ -168,8 +168,6 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
             var fromAggr = FromAgregation(agregations);
             var aggrWithUserContext = from p in fromAggr
                                       join w in _context.WardrobeMatchings on p.Id equals w.OutfitPackageId into wmGroup
-                                      from w in wmGroup.DefaultIfEmpty()
-                                      where w == null || w.WardrobeId == wardobeId
                                       select new OutfitPackageAgregationResponse
                                       {
                                           Package = p,
