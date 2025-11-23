@@ -106,6 +106,7 @@
           <div style="width: 100%;">
             <OutfitPackageRender
               source={currentTexture}
+              useTextureLighting
               model={$profileUser?.settings.currentTexture.model}
               outfitType={OUTFIT_TYPE.DEFAULT}
             />
@@ -131,6 +132,7 @@
         {#if $profileUser?.settings?.baseTexture?.layers.length > 0}
           <div style="width: 100%;">
             <OutfitPackageRender
+              useTextureLighting
               source={$profileUser?.settings?.baseTexture}
               model={"source"}
             />

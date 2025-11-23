@@ -47,7 +47,8 @@ export class TextureRender {
   private capeScene: any = null;
   private capePivot: any = null;
   private renderingPaused: boolean = false;
-
+  private ambientLight: any = null;
+  private directionalLight: any = null;
   //for dynamic render
   private animationEngine: RenderAnimationEngine = null;
   private orbitalControls: any = null;
@@ -460,6 +461,47 @@ export class TextureRender {
     this.capeScene = null;
     return;
   };
+  AddAmbientLight = async function () {
+    const threeModule = await THREE.getThree();
+    const brightness = 1.2;
+    const light = new threeModule.AmbientLight(0xffffff, brightness * 1.8, 10);
+
+    //configure light
+    this.modelScene.scene.add(light);
+    this.ambientLight = light;
+  };
+  AddDirectionalLight = async function () {
+    const threeModule = await THREE.getThree();
+    const brightness = 1.2;
+    const pointLight = new threeModule.DirectionalLight(
+      0xffffff,
+      brightness * 0.65,
+      10
+    );
+    pointLight.position.set(0, 50, -50);
+    this.modelScene.scene.add(pointLight);
+    this.directionalLight = pointLight;
+    return this;
+  };
+  RemoveDirectionalLight = function () {
+    if (this.directionalLight != null)
+      this.modelScene.scene.remove(this.directionalLight);
+    this.directionalLight = null;
+    return this;
+  };
+  RemoveAmbientLight = function () {
+    if (this.ambientLight != null)
+      this.modelScene.scene.remove(this.ambientLight);
+    this.ambientLight = null;
+    return this;
+  };
+  AddTextureAmbientLighting = async function () {
+    const threeModule = await THREE.getThree();
+    const ambient = new threeModule.AmbientLight(0xffffff, 3.14);
+    this.modelScene.scene.add(ambient);
+    this.ambientLight = ambient;
+    return this;
+  };
   async Resize() {
     if (this.renderer == null) return this;
     await this._loadCameraOptions();
@@ -490,18 +532,6 @@ export class ModelScene {
 
     //set default values
     this.scene.position.y = -1;
-    const brightness = 1.2;
-    const light = new threeModule.AmbientLight(0xffffff, brightness * 1.8, 10);
-
-    //configure light
-    this.scene.add(light);
-    const pointLight = new threeModule.DirectionalLight(
-      0xffffff,
-      brightness * 0.65,
-      10
-    );
-    pointLight.position.set(0, 50, -50);
-    this.scene.add(pointLight);
 
     //load model
     this.renderScene = await new Promise((resolve) => {

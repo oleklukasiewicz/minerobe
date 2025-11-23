@@ -84,7 +84,7 @@ namespace minerobe.api.Modules.Core.Social.Service
 
             foreach (var package in packages)
             {
-                var social = await _context.SocialDatas.Where(x => x.Id == package.SocialDataId && x.IsShared).FirstOrDefaultAsync();
+                var social = await _context.SocialDatas.Where(x => x.Id == package.SocialDataId && x.IsShared == true).FirstOrDefaultAsync();
                 if (social != null)
                     socialDatas.Add(social);
             }

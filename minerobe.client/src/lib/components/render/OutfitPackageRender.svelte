@@ -40,6 +40,7 @@
   export let cape: string = null;
   export let baseTexture: OutfitLayer | string = null;
   export let pauseOnIntersection = false;
+  export let useTextureLighting = false;
   export const addAnimation = function (animation, force = false) {
     if (textureRenderer == null) return;
     textureRenderer.AddAnimation(animation, force);
@@ -87,6 +88,13 @@
   };
 
   const setRenderMode = async (v) => {
+    textureRenderer.RemoveAmbientLight().RemoveDirectionalLight();
+    if (useTextureLighting) {
+      await textureRenderer.AddTextureAmbientLighting();
+    } else {
+      await textureRenderer.AddAmbientLight();
+      await textureRenderer.AddDirectionalLight();
+    }
     if (isDynamic) {
       await textureRenderer.AddFloor(floorTexture);
       await textureRenderer.AddShadow();
