@@ -118,5 +118,16 @@ namespace minerobe.api.Modules.Core.Package.Controllers
                 return NotFound();
             return Ok(res);
         }
+        [HttpPost("Primary/{packageId}/{layerId}")]
+        public async Task<IActionResult> UpdatePrimaryLayer(Guid packageId, Guid layerId)
+        {
+            var canEdit = await _packageService.CanEditPackage(packageId, (await _userService.GetFromExternalUser(User)).Id);
+            if (canEdit == false)
+                return Unauthorized();
+            var res = await _packageService.UpdatePrimaryLayer(packageId, layerId);
+            if (res == false)
+                return NotFound();
+            return Ok(res);
+        }
     }
 }

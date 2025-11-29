@@ -12,6 +12,7 @@ namespace minerobe.api.Modules.Core.Package.Model
         public FileDataModel Alex { get; set; }
         public string ColorName { get; set; }
         public string OutfitType { get; set; }
+        public bool IsPrimary { get; set; }
     }
     public static class OutfitLayerExtensions
     {

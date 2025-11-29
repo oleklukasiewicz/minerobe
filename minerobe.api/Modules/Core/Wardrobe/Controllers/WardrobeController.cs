@@ -119,7 +119,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
         public async Task<IActionResult> GetItemsWithCollectionContext(Guid id, [FromBody] PagedModel<OutfitFilter> options)
         {
             var user = await _userService.GetFromExternalUser(User);
-            var res = await _wardrobeService.GetWardrobeOutfits(user.WardrobeId, options.Filter,id);
+            var res = await _wardrobeService.GetWardrobeOutfits(user.WardrobeId, options.Filter, id);
 
             var paged = res.ToPagedResponse(options);
             var items = paged.ToOutfitPackageListItem();

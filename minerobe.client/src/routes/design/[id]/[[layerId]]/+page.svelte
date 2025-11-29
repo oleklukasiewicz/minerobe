@@ -368,14 +368,16 @@
             on:click={exportPackageWithoutBaseTexture}
           />
         </MenuButton>
-        <Button
-          label="Manage collections"
-          type="tertiary"
-          size="large"
-          onlyIcon={!$IS_MOBILE_VIEW}
-          icon={ListIcon}
-          on:click={openCollectionsDialog}
-        />
+       {#if $CURRENT_USER?.id != null}
+          <Button
+            label="Manage collections"
+            type="tertiary"
+            size="large"
+            onlyIcon={!$IS_MOBILE_VIEW}
+            icon={ListIcon}
+            on:click={openCollectionsDialog}
+          />
+        {/if}
         {#if $CURRENT_USER?.id == $itemPackage.publisher.id}
           <Button
             label="Edit item"

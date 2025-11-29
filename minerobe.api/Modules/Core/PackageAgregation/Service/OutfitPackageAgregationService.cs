@@ -78,33 +78,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
         public IQueryable<OutfitPackage> FromAgregation(IQueryable<OutfitPackageAgregation> agregations)
         {
             var ids = agregations.GroupBy(x => x.Id).Select(x => x.Key);
-            var packages = from p in _context.OutfitPackages
-                           join a in ids on p.Id equals a
-                           join s in _context.SocialDatas on p.SocialDataId equals s.Id
-                           join u in _context.MinerobeUsers on p.PublisherId equals u.Id
-                           select new OutfitPackage
-                           {
-                               Id = p.Id,
-                               Name = p.Name,
-                               Model = p.Model,
-                               Type = p.Type,
-                               ColorName = p.ColorName,
-                               PublisherId = p.PublisherId,
-                               Description = p.Description,
-                               SocialDataId = p.SocialDataId,
-                               Social = s,
-                               OutfitType = p.OutfitType,
-                               CreatedAt = p.CreatedAt,
-                               ModifiedAt = p.ModifiedAt,
-                               Layers = (from lm in _context.PackageLayerMatchings
-                                         join l in _context.OutfitLayers on lm.LayerId equals l.Id
-                                         where lm.PackageId == p.Id
-                                         orderby lm.Order
-                                         select l).ToList(),
-                               Publisher = u
-                           };
-
-            return packages;
+            return FromIdList(ids);
         }
         public IQueryable<OutfitPackage> FromAgregationSingleLayer(IQueryable<OutfitPackageAgregation> agregations)
         {
@@ -156,7 +130,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                                Layers = (from lm in _context.PackageLayerMatchings
                                          join l in _context.OutfitLayers on lm.LayerId equals l.Id
                                          where lm.PackageId == p.Id
-                                         orderby lm.Order
+                                         orderby lm.IsPrimary descending, lm.Order
                                          select l).ToList(),
                                Publisher = u
                            };

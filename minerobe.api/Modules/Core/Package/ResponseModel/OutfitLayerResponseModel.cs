@@ -13,14 +13,15 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
         public string ColorName { get; set; }
         public string OutfitType { get; set; }
         public bool IsLoaded { get; set; }
+        public bool IsPrimary { get; set; }
     }
     public static class OutfitLayerResponseModelExtensions
     {
-        public static OutfitLayerResponseModel ToResponseModel(this OutfitLayer entity, OutfitPackage packageContext, bool isLoaded = true)
+        public static OutfitLayerResponseModel ToResponseModel(this OutfitLayer entity, OutfitPackage packageContext, bool isLoaded = true, bool isPrimary = false)
         {
             return entity.ToResponseModel(packageContext.Id, isLoaded);
         }
-        public static OutfitLayerResponseModel ToResponseModel(this OutfitLayer entity, Guid packageId, bool isLoaded = true)
+        public static OutfitLayerResponseModel ToResponseModel(this OutfitLayer entity, Guid packageId, bool isLoaded = true, bool isPrimary = false)
         {
             LayerType type = LayerType.Local;
             if (entity.SourcePackageId != packageId)
@@ -37,6 +38,7 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
                 ColorName = entity.ColorName,
                 OutfitType = entity.OutfitType.ToString().ToLower(),
                 IsLoaded = isLoaded,
+                IsPrimary = isPrimary
             };
         }
     }

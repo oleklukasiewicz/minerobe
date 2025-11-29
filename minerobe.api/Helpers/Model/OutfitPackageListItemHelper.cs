@@ -12,9 +12,9 @@ namespace minerobe.api.Helpers.Model
             foreach (var item in page.Items)
             {
                 if (item.Package.Type == PackageType.Set)
-                    items.Add(item.Package.ToListItemResponseModel(-1, -1, item.IsInWardrobe,item.IsInCollection));
+                    items.Add(item.Package.ToListItemResponseModel(-1, -1, item.IsInWardrobe, item.IsInCollection));
                 else
-                    items.Add(item.Package.ToListItemResponseModel(maxLayersCount, 1, item.IsInWardrobe,item.IsInCollection));
+                    items.Add(item.Package.ToListItemResponseModel(maxLayersCount, 1, item.IsInWardrobe, item.IsInCollection));
             }
             return items;
         }

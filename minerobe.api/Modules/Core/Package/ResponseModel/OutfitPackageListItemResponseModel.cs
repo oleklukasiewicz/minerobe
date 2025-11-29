@@ -55,24 +55,5 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
                 TotalLayersCount = entity.Layers != null ? entity.Layers.Count : 0
             };
         }
-        public static List<OutfitPackageListItemResponseModel> ToListItemResponseModel(this List<OutfitPackage> entity, int layersCount = 2, int loadedCount = 1)
-        {
-            var mapped = entity.Select(x => x.ToListItemResponseModel(layersCount)).ToList();
-            return mapped;
-        }
-        public static PagedResponse<OutfitPackageListItemResponseModel> ToResponseModel(this PagedResponse<OutfitPackage> entity)
-        {
-            var items = entity.Items.Select(x => x.ToListItemResponseModel()).ToList();
-            return new PagedResponse<OutfitPackageListItemResponseModel>
-            {
-                Items = items,
-                Options = new PagedOptions
-                {
-                    Page = entity.Options.Page,
-                    PageSize = entity.Options.PageSize,
-                    Total = entity.Options.Total
-                }
-            };
-        }
     }
 }

@@ -209,7 +209,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             {
                 outfits = filter.Filter(outfits);
             }
-            
+
             IQueryable<OutfitPackageAgregationResponse> outfitsResponse;
             if (collectionId != null)
                 outfitsResponse = _packageAgregationService.FromAgregationWithCollectionContext(outfits, collectionId.Value);

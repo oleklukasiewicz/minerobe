@@ -37,6 +37,7 @@
   import {
     BASE_TEXTURE,
     CURRENT_APP_STATE,
+    CURRENT_USER,
     IS_MOBILE_VIEW,
   } from "$src/data/static.js";
   //models
@@ -576,7 +577,6 @@
         <ColorSelect
           bind:selectedItem={$itemPackage.colorName}
           placeholder="Select color"
-     
           items={COLORS_ARRAY}
           autocomplete
           clearable
@@ -629,14 +629,16 @@
             on:click={exportPackageWithoutBaseTexture}
           />
         </MenuButton>
-        <Button
-          label="Manage collections"
-          type="tertiary"
-          size="large"
-          onlyIcon={!$IS_MOBILE_VIEW}
-          icon={ListIcon}
-          on:click={openCollectionsDialog}
-        />
+        {#if $CURRENT_USER?.id != null}
+          <Button
+            label="Manage collections"
+            type="tertiary"
+            size="large"
+            onlyIcon={!$IS_MOBILE_VIEW}
+            icon={ListIcon}
+            on:click={openCollectionsDialog}
+          />
+        {/if}
         {#if !$itemPackage?.social?.isShared}
           <Button
             disabled={$itemPackage?.layers.length == 0}

@@ -9,6 +9,7 @@ namespace minerobe.api.Modules.Core.Package.Entity
         public Guid PackageId { get; set; }
         public Guid LayerId { get; set; }
         public int Order { get; set; }
+        public bool IsPrimary { get; set; }
     }
     public class PackageLayerMatchingEntityConfig : IEntityTypeConfiguration<PackageLayerMatching>
     {

@@ -53,6 +53,7 @@ export class OutfitLayer {
   outfitType: OUTFIT_TYPE;
   isSnapshot: boolean;
   isLoaded: boolean;
+  isPrimary: boolean;
   constructor(
     name: string = "",
     steve: FileData = null,
