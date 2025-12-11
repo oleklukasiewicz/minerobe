@@ -31,8 +31,9 @@
   const onEdit = () => {
     dispatch("edit", { item: item });
   };
-  const onPrimaryChange = () => {
-    dispatch("primaryChange", { item: item });
+  const onPrimaryChange = (e) => {
+    const value = e.detail.value;
+    dispatch("primaryChange", { item: item, isPrimary: value });
   };
 
   const onDrop = async function (e, model) {
@@ -69,8 +70,12 @@
         dropDownStyle="max-height: 275px"
         on:select={onEdit}
       />
-      <br>
-      <Checkbox label="Is primary" bind:value={item.isPrimary} on:change={onPrimaryChange} />
+      <br />
+      <Checkbox
+        label="Is primary"
+        bind:value={item.isPrimary}
+        on:change={onPrimaryChange}
+      />
     {/if}
     <div class="textures">
       <div class="model-selection">

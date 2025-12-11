@@ -85,3 +85,17 @@ export const RemoveRemoteLayerFromPackage = async function (
   );
   return res;
 };
+export const SetLayerAsPrimary = async function (
+  packageId: string,
+  layerId: string
+) {
+  const res = await PostRequest(
+    "/api/Layers/Primary/" + packageId + "/" + layerId,
+    {}
+  );
+  return res;
+};
+export const RemovePrimaryLayer = async function (packageId: string) {
+  const res = await DeleteRequest("/api/Layers/Primary/" + packageId);
+  return res;
+};

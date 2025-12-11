@@ -19,7 +19,7 @@ namespace minerobe.api.Modules.Core.Package.ResponseModel
     {
         public static OutfitLayerResponseModel ToResponseModel(this OutfitLayer entity, OutfitPackage packageContext, bool isLoaded = true, bool isPrimary = false)
         {
-            return entity.ToResponseModel(packageContext.Id, isLoaded);
+            return entity.ToResponseModel(packageContext.Id, isLoaded,isPrimary);
         }
         public static OutfitLayerResponseModel ToResponseModel(this OutfitLayer entity, Guid packageId, bool isLoaded = true, bool isPrimary = false)
         {

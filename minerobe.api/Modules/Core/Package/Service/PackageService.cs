@@ -433,5 +433,13 @@ namespace minerobe.api.Modules.Core.Package.Service
                                select l).Skip(n).FirstOrDefaultAsync();
             return layer;
         }
+        public async Task<OutfitLayer> GetPrimaryLayer(Guid packageId)
+        {
+            var layer = await (from l in _context.OutfitLayers
+                               join m in _context.PackageLayerMatchings on l.Id equals m.LayerId
+                               where m.PackageId == packageId && m.IsPrimary
+                               select l).FirstOrDefaultAsync();
+            return layer;
+        }
     }
 }

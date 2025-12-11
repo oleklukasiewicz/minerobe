@@ -13,6 +13,17 @@
     aspect-ratio: 1;
     width: 58px;
     background-color: var(--color-theme-D2);
+    .primary-layer-icon {
+      height: 24px;
+      font-family: minecraft;
+      color: var(--color-accent-font);
+      background-color: var(--color-info);
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      display: flex;
+      gap: 4px;
+    }
   }
   .data {
     overflow: hidden;

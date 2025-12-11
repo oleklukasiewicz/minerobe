@@ -14,6 +14,8 @@
     AddPackageLayer,
     RemovePackage,
     AddRemoteLayerToPackage,
+    SetLayerAsPrimary,
+    RemovePrimaryLayer,
   } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
   import { GetAccount } from "$src/api/integration/minecraft.js";
@@ -244,6 +246,22 @@
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, item.outfitType)
     );
+  };
+  const changeLayerPrimary = async function (e) {
+    const item = e.detail.item;
+    const isPrimary = e.detail.isPrimary;
+
+    if (isPrimary) await SetLayerAsPrimary($itemPackage.id, item.id);
+    else await RemovePrimaryLayer($itemPackage.id);
+
+    itemPackageLayers.update((layers) => {
+      const existingPrimary = layers.find((x) => x.isPrimary);
+      if (existingPrimary) existingPrimary.isPrimary = false;
+
+      const index = layers.findIndex((x) => x.id == item.id);
+      layers[index].isPrimary = isPrimary;
+      return layers;
+    });
   };
   const dropLayer = async (e) => {
     const layer = e.detail.item;
@@ -518,6 +536,7 @@
           selectable={!isOutfitSet}
           selectedLayerId={$renderConfiguration.selectedLayerId}
           movable={isOutfitSet}
+          primaryLayerId={$itemPackageLayers.find((l) => l.isPrimary)?.id}
           dropable
           on:edit={openLayerEditDialog}
           on:moveUp={moveLayerUp}
@@ -668,6 +687,7 @@
   <!-- Dialogs -->
   <EditLayerDialog
     on:edit={editLayer}
+    on:primaryChange={changeLayerPrimary}
     bind:open={isLayerEditDialogOpen}
     item={dialogSelectedLayer}
   />

@@ -3,7 +3,7 @@
   import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
   export let debounce = 0;
-  export let targetNode: any;
+  export let targetNode: any=null;
 
   const dispatch = createEventDispatcher();
   let timeout;

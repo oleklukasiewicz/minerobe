@@ -15,6 +15,7 @@
   import DeleteIcon from "$src/icons/close.svg?raw";
   import EditIcon from "$src/icons/edit.svg?raw";
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
+  import LoaderIcon from "$icons/loader.svg?raw";
 
   const dispatch = createEventDispatcher();
 
@@ -30,6 +31,7 @@
   export let link = null;
   export let selected = false;
   export let packageId: string = null;
+  export let isPrimary: boolean = false;
   export let dense = false;
   export let labels = true;
 
@@ -70,6 +72,9 @@
   on:click={onSelect}
 >
   <div class="render">
+    {#if isPrimary}
+      <span class="primary-layer-icon">{@html LoaderIcon}</span>
+    {/if}
     <OutfitPackageRender
       source={item[model].content}
       {model}

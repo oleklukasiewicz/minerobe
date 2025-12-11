@@ -25,6 +25,7 @@
   export let dropable: boolean = false;
   export let resizable: boolean = false;
   export let dense: boolean = false;
+  export let primaryLayerId: string = null;
   export let resizeDebounce = 300;
   export let link = null;
 
@@ -79,6 +80,7 @@
           {packageId}
           {movable}
           {removable}
+          isPrimary={item.id === primaryLayerId}
           editable={(packageId != null
             ? item.sourcePackageId == packageId
             : true) && editable}
