@@ -129,5 +129,16 @@ namespace minerobe.api.Modules.Core.Package.Controllers
                 return NotFound();
             return Ok(res);
         }
+        [HttpDelete("Primary/{packageId}")]
+        public async Task<IActionResult> RemovePrimaryLayer(Guid packageId)
+        {
+            var canEdit = await _packageService.CanEditPackage(packageId, (await _userService.GetFromExternalUser(User)).Id);
+            if (canEdit == false)
+                return Unauthorized();
+            var res = await _packageService.RemovePrimaryLayer(packageId);
+            if (res == false) return NotFound();
+            return Ok(res);
+        }
+
     }
 }

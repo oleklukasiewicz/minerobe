@@ -41,6 +41,6 @@ export const CAMERA_CONFIG = {
   suit: new CameraConfig(
     new Vector3Min(-1, 0 + angle, -1),
     new Vector3Min(0, 0, 0),
-    0.91
+    0.85
   ),
 };

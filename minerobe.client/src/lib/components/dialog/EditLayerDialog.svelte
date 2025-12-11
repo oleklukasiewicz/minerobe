@@ -20,6 +20,7 @@
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
   //icons
   import ImportPackageIcon from "$icons/upload.svg?raw";
+  import Checkbox from "../base/Checkbox/Checkbox.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -29,6 +30,9 @@
 
   const onEdit = () => {
     dispatch("edit", { item: item });
+  };
+  const onPrimaryChange = () => {
+    dispatch("primaryChange", { item: item });
   };
 
   const onDrop = async function (e, model) {
@@ -65,6 +69,8 @@
         dropDownStyle="max-height: 275px"
         on:select={onEdit}
       />
+      <br>
+      <Checkbox label="Is primary" bind:value={item.isPrimary} on:change={onPrimaryChange} />
     {/if}
     <div class="textures">
       <div class="model-selection">

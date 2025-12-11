@@ -333,18 +333,25 @@ namespace minerobe.api.Modules.Core.Package.Service
         //primary layer
         public async Task<bool> UpdatePrimaryLayer(Guid packageId, Guid layerId)
         {
-            var existingPrimary = await _context.PackageLayerMatchings.Where(x => x.PackageId == packageId && x.IsPrimary).FirstOrDefaultAsync();
-            if (existingPrimary != null)
-            {
-                existingPrimary.IsPrimary = false;
-                _context.PackageLayerMatchings.Update(existingPrimary);
-            }
+            await RemovePrimaryLayer(packageId);
+
             var newPrimary = await _context.PackageLayerMatchings.Where(x => x.PackageId == packageId && x.LayerId == layerId).FirstOrDefaultAsync();
             if (newPrimary == null)
                 return false;
             newPrimary.IsPrimary = true;
             _context.PackageLayerMatchings.Update(newPrimary);
 
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> RemovePrimaryLayer(Guid packageId)
+        {
+            var existingPrimary = await _context.PackageLayerMatchings.Where(x => x.PackageId == packageId && x.IsPrimary).FirstOrDefaultAsync();
+            if (existingPrimary != null)
+            {
+                existingPrimary.IsPrimary = false;
+                _context.PackageLayerMatchings.Update(existingPrimary);
+            }
             await _context.SaveChangesAsync();
             return true;
         }
