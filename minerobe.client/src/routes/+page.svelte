@@ -68,7 +68,7 @@
 
 <div id="content" class:mobile={$IS_MOBILE_VIEW}>
   <div class="banner">
-    <h1 id="view-title">Welcome to Minerobe</h1> test
+    <h1 id="view-title">Welcome to Minerobe</h1>
     <p id="view-description">
       Minerobe is a collection of Minecraft skins and outfits. You can use them
       in your own Minecraft worlds or use them as a base for your own skins.
