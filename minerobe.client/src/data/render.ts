@@ -12,9 +12,9 @@ export class CameraConfig {
   fov: number;
   zoom: number;
   constructor(
-    position: Vector3Min = new Vector3Min(0, 0, 0),
+    position: Vector3Min = new Vector3Min(0, 0, -1),
     lookAt: Vector3Min = new Vector3Min(0, 0, 0),
-    zoom: number = 1,
+    zoom: number = 0.95,
     fov: number = 1,
     lookAtEnabled: boolean = false,
     rotation: Vector3Min = new Vector3Min(0, 0, 0)
