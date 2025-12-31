@@ -42,7 +42,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
             var isInWardrobe = await _wardrobeService.IsPackageInWardrobe(user.WardrobeId, id);
             var primaryLayer = await _packageService.GetPrimaryLayer(id);
 
-            return Ok(package.ToResponseModel(isInWardrobe,true,false,primaryLayer?.Id));
+            return Ok(package.ToResponseModel(isInWardrobe, true, false, primaryLayer?.Id));
         }
         [HttpGet("{id}/merged/{isFlatten}/{useBaseTexture}")]
         [AllowAnonymous]
@@ -92,7 +92,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
             var isInWardrobe = await _wardrobeService.IsPackageInWardrobe(user.Id, id);
             var primaryLayer = await _packageService.GetPrimaryLayer(id);
 
-            return Ok(res.ToResponseModel(isInWardrobe, false,false,primaryLayer?.Id));
+            return Ok(res.ToResponseModel(isInWardrobe, false, false, primaryLayer?.Id));
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
