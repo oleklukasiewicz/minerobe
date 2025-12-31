@@ -26,7 +26,7 @@
   onMount(async () => {
     // let landing ;
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
-      if (!(state == APP_STATE.READY || state == APP_STATE.GUEST_READY)) return;
+      //if (!(state == APP_STATE.READY || state == APP_STATE.GUEST_READY)) return;
 
       if (state == APP_STATE.READY) {
         const settings = await FetchSettings();
@@ -93,6 +93,15 @@
       on:select={goToItemPage}
       baseTexture={$userSettings?.baseTexture?.layers[0]}
     />
+  {:else}
+    <div class="loading-lists">
+      <OutfitPackageList
+        loading
+        items={[]}
+        pageSize={36}
+        columns={$IS_MOBILE_VIEW ? 3 : 6}
+      />
+    </div>
   {/if}
 </div>
 
