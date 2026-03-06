@@ -145,6 +145,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                                       select new OutfitPackageAgregationResponse
                                       {
                                           Package = p,
+                                          Id = p.Id,
                                           IsInWardrobe = wmGroup.Any(w => w.WardrobeId == wardobeId),
                                           IsInCollection = false
                                       };
@@ -158,6 +159,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                                             select new OutfitPackageAgregationResponse
                                             {
                                                 Package = p,
+                                                Id = p.Id,
                                                 IsInWardrobe = false,
                                                 IsInCollection = collectionGroup.Any(c => c.CollectionId == collectionId)
                                             };
@@ -170,6 +172,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                                     select new OutfitPackageAgregationResponse
                                     {
                                         Package = p,
+                                        Id = p.Id,
                                         IsInWardrobe = false,
                                         IsInCollection = false
                                     };
