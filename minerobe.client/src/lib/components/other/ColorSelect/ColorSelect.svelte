@@ -45,6 +45,7 @@
     size="medium"
     flat
     noBorder
+    style="height: 40px;"
     focused={index === focusedIndex}
     type={comparer(selectedItemValue, item, multiple)
       ? "primary"
