@@ -104,7 +104,7 @@
         selectedItemValue = items.find(
           (i) =>
             i[itemValue] == value ||
-            (value ? i[itemValue] == value[itemValue] : false)
+            (value ? i[itemValue] == value[itemValue] : false),
         );
     } else selectedItemValue = items.find((i) => i == value);
   };
@@ -279,7 +279,7 @@
             {focusedIndex}
           >
             <Button
-              size="small"
+              size="medium"
               flat
               noBorder
               type={comparer(selectedItemValue, item, multiple) ||

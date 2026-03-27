@@ -42,7 +42,7 @@
   let:focusedIndex
 >
   <Button
-    size="small"
+    size="medium"
     flat
     noBorder
     focused={index === focusedIndex}
