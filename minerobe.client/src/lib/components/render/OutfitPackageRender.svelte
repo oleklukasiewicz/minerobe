@@ -125,16 +125,7 @@
 
     textureRenderer.SetNode(renderNode);
     
-    // Add timeout to prevent hanging if initialization takes too long
-    const initPromise = loadInitialParams();
-    const timeoutPromise = new Promise<void>((resolve) =>
-      setTimeout(() => {
-        console.warn("Render initialization timeout");
-        resolve();
-      }, 3000)
-    );
-    
-    await Promise.race([initPromise, timeoutPromise]);
+    await loadInitialParams();
     await setRenderMode(isDynamic);
     initialized = true;
     renderReady = true;
