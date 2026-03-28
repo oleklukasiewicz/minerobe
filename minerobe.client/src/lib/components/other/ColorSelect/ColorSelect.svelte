@@ -26,7 +26,7 @@
   let {
     items = $bindable([]),
     placeholder = $bindable("Select"),
-    selectedItem = $bindable(null),
+    selectedItem = $bindable(),
     opened = $bindable(false),
     itemText = $bindable("label"),
     itemValue = $bindable("value"),

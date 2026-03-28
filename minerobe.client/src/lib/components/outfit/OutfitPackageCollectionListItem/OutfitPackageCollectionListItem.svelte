@@ -20,9 +20,9 @@
     onclick = null
   }: Props = $props();
 
-  const onSelect= (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const onSelect= (e?: Event) => {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
     onselect?.({ detail: item });
   };
   const onUnselect= () => {

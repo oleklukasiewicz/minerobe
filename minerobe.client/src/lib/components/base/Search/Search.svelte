@@ -19,7 +19,7 @@
   }
 
   let {
-    value = $bindable(null),
+    value = $bindable(),
     dense = true,
     style = "",
     clearable = true,

@@ -30,7 +30,7 @@
   let {
     items = $bindable([]),
     placeholder = $bindable("Sort by"),
-    selectedItem = $bindable(null),
+    selectedItem = $bindable(),
     opened = $bindable(false),
     itemText = $bindable("label"),
     itemValue = $bindable("value"),
@@ -53,7 +53,7 @@
   const onDirectionClick= () => {
     isDescending = !isDescending;
     var sortOption: SortOption = new SortOption();
-    sortOption.value = selectedItem.value;
+    sortOption.value = selectedItem?.value;
     sortOption.isDesc = isDescending;
     selectedItem = sortOption;
     onselect?.({ detail: { option: sortOption } });

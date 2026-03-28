@@ -35,13 +35,15 @@
   let isFilterDialogOpen = $state(false);
   let stateSub = null;
 
-  const initialFilter = new OutfitFilter();
-  initialFilter.type = PACKAGE_TYPE.OUTFIT_COLLECTION;
-  let filter: OutfitFilter = $state(initialFilter);
+  const createInitialFilter = (): OutfitFilter => ({
+    ...new OutfitFilter(),
+    type: PACKAGE_TYPE.OUTFIT_COLLECTION,
+    phrase: "",
+  });
+  let filter: OutfitFilter = $state(createInitialFilter());
   let abortController = new AbortController();
 
   onMount(async () => {
-    filter.type = PACKAGE_TYPE.OUTFIT_COLLECTION;
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
 
@@ -75,7 +77,10 @@
       isFilterDialogOpen = false;
       const newFilter = e?.detail?.filter;
       if (newFilter) {
-        filter = newFilter;
+        filter = {
+          ...newFilter,
+          phrase: newFilter.phrase ?? filter.phrase ?? "",
+        };
       }
       itemsLoaded = false;
 
@@ -143,7 +148,7 @@
     hideType
     hideOutfitType
     hideColor
-    {filter}
+    bind:filter={filter}
     onfilter={updateFilter}
   />
 </div>

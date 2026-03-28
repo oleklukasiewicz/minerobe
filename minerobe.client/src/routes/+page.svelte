@@ -21,6 +21,7 @@
   let mostDownloaded = $state([]);
   let listsLoaded = $state(false);
   let loaded = false;
+  let lastAppState = $state(null);
 
   let stateSub;
   onMount(async () => {
@@ -33,10 +34,13 @@
         userSettings.set(settings);
       }
 
-      if (!listsLoaded)
+      // Reload lists only if auth state changed (login/logout), not on every emit
+      const stateChanged = lastAppState !== state;
+      if (stateChanged || !listsLoaded) {
+        lastAppState = state;
         await Promise.all([getRecent(), getLiked(), getDownloaded()]);
-
-      listsLoaded = true;
+        listsLoaded = true;
+      }
 
       loaded = true;
     });

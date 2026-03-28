@@ -38,24 +38,30 @@
     if (opened && !preventClickOutsideClose) opened = false;
   };
   const onStateChanged= (v) => {
-    let parentNode = document.body;
-    if (!component || !parentNode) return;
-    if (caller) {
-      parentNode = caller;
-    }
+    if (!component) return;
+    if (!v) return;
+    requestAnimationFrame(() => {
+      calculatePosition();
+    });
   };
   const calculatePosition = () => {
+    if (!component) return;
     const flyoutRect = component.getBoundingClientRect();
     const callerRect = caller?.getBoundingClientRect();
-    if (autoWidth && !$IS_MOBILE_VIEW)
-      component.style.minWidth = callerRect?.width + "px";
-    else component.style.minWidth = null;
-    //component.style.maxWidth = callerRect?.width + "px";
+
+    // Clear stale inline values from previous viewport mode before recalculating.
+    component.style.minWidth = null;
+    component.style.maxWidth = null;
     component.style.left = null;
     component.style.right = null;
     component.style.top = null;
     component.style.bottom = null;
     component.style.maxHeight = null;
+
+    if (autoWidth && !$IS_MOBILE_VIEW)
+      component.style.minWidth = callerRect?.width + "px";
+    else component.style.minWidth = null;
+
     if ($IS_MOBILE_VIEW) {
       return;
     }
@@ -119,6 +125,18 @@
   });
   run(() => {
     actualPosition = position;
+    if (opened) {
+      requestAnimationFrame(() => {
+        calculatePosition();
+      });
+    }
+  });
+  run(() => {
+    if (opened) {
+      requestAnimationFrame(() => {
+        calculatePosition();
+      });
+    }
   });
 </script>
 
@@ -163,24 +181,23 @@
       justify-content: center;
       box-sizing: border-box;
       align-items: flex-end;
-      height: 100vh;
+      height: 100dvh;
+      min-height: 100dvh;
       .flyout-content {
         position: relative;
+        z-index: 1;
         width: 100%;
         max-width: 100%;
-        max-height: 75vh;
-        overflow: auto;
+        max-height: none;
+        overflow: visible;
       }
       &.opened .flyout-mobile-bg {
         display: block;
       }
       .flyout-mobile-bg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
+        position: fixed;
+        inset: 0;
+        z-index: 0;
         display: none;
         background-color: var(--color-dialog);
       }

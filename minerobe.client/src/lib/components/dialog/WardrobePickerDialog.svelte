@@ -100,7 +100,7 @@
     </div>
     <div id="wardrobe-picker-items">
       <PagedList
-        {items}
+        bind:items={items}
         pageSize={items?.options.pageSize ?? 12}
         loading={items?.items == null}
         pageSizes={[6, 12, 24]}

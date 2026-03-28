@@ -201,9 +201,13 @@
     const layer = e.detail.item;
     const index = e.detail.index;
     itemPackage.update((item) => {
-      item.layers.splice(index, 1);
-      item.layers.splice(index - 1, 0, layer);
-      return item;
+      const layers = [...item.layers];
+      layers.splice(index, 1);
+      layers.splice(index - 1, 0, layer);
+      return {
+        ...item,
+        layers,
+      };
     });
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_DOWN, layer.outfitType)
@@ -213,9 +217,13 @@
     const layer = e.detail.item;
     const index = e.detail.index;
     itemPackage.update((item) => {
-      item.layers.splice(index, 1);
-      item.layers.splice(index + 1, 0, layer);
-      return item;
+      const layers = [...item.layers];
+      layers.splice(index, 1);
+      layers.splice(index + 1, 0, layer);
+      return {
+        ...item,
+        layers,
+      };
     });
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_UP, layer.outfitType)
@@ -291,11 +299,18 @@
         return await AddPackageLayer(layer);
       })
     );
-    renderConfiguration.update((config) => {
-      config.item.layers.push(...addedlayers);
-      if (!isOutfitSet) config.selectedLayerId = addedlayers[0]?.id;
-      return config;
+    itemPackage.update((item) => {
+      return {
+        ...item,
+        layers: [...item.layers, ...addedlayers],
+      };
     });
+    if (!isOutfitSet) {
+      renderConfiguration.update((config) => {
+        config.selectedLayerId = addedlayers[0]?.id;
+        return config;
+      });
+    }
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layers[0].outfitType)
     );
@@ -310,11 +325,18 @@
         return await AddPackageLayer(layer);
       })
     );
-    renderConfiguration.update((config) => {
-      config.item.layers.push(...addedlayers);
-      if (!isOutfitSet) config.selectedLayerId = addedlayers[0]?.id;
-      return config;
+    itemPackage.update((item) => {
+      return {
+        ...item,
+        layers: [...item.layers, ...addedlayers],
+      };
     });
+    if (!isOutfitSet) {
+      renderConfiguration.update((config) => {
+        config.selectedLayerId = addedlayers[0]?.id;
+        return config;
+      });
+    }
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layers[0].outfitType)
     );
@@ -689,7 +711,7 @@
     onedit={editLayer}
     onprimaryChange={changeLayerPrimary}
     bind:open={isLayerEditDialogOpen}
-    item={dialogSelectedLayer}
+    bind:item={dialogSelectedLayer}
   />
   <OverviewDialog
     bind:open={isOverviewDialogOpen}

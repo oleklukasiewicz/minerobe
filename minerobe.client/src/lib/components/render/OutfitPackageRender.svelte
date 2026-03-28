@@ -3,6 +3,7 @@
 
   //main imports
   import { onDestroy, onMount } from "svelte";
+  import { get, type Readable } from "svelte/store";
   import IntersectionObserver from "svelte-intersection-observer";
   //services
   import {
@@ -93,9 +94,25 @@
   let textureRenderer: TextureRender;
   let initialized = false;
 
+  const safeClone = <T>(value: T): T => {
+    if (value == null) return value;
+    if (typeof value !== "object") return value;
+
+    try {
+      return structuredClone(value);
+    } catch {
+      // Fallback for non-cloneable values (e.g. functions/proxies inside objects).
+      try {
+        return JSON.parse(JSON.stringify(value)) as T;
+      } catch {
+        return value;
+      }
+    }
+  };
+
   onMount(async () => {
-    _source = structuredClone(source);
-    _model = structuredClone(model);
+    _source = safeClone(source);
+    _model = model;
     _isFlatten = isFlatten;
     _baseTexture = baseTexture;
     _layerId = layerId;
@@ -103,7 +120,17 @@
     textureRenderer = new TextureRender(renderer);
 
     textureRenderer.SetNode(renderNode);
-    await loadInitialParams();
+    
+    // Add timeout to prevent hanging if initialization takes too long
+    const initPromise = loadInitialParams();
+    const timeoutPromise = new Promise<void>((resolve) =>
+      setTimeout(() => {
+        console.warn("Render initialization timeout");
+        resolve();
+      }, 3000)
+    );
+    
+    await Promise.race([initPromise, timeoutPromise]);
     await setRenderMode(isDynamic);
     initialized = true;
     renderReady = true;
@@ -212,7 +239,7 @@
     if (typeof _source !== "string" && typeof v !== "string")
       isLayersModified = isLayersChanged(_source, v);
 
-    _source = structuredClone(v);
+    _source = safeClone(v);
     cachedtexture = _source as string;
     if (typeof _source !== "string") {
       if (cameraOptions == "auto" && outfitType == null) {
@@ -349,26 +376,67 @@
     OUTFIT_TYPE.BOTTOM,
   ];
 
+  async function waitForStoreValue<T>(
+    store: Readable<T>,
+    timeoutMs = 5000
+  ): Promise<T> {
+    const value = get(store);
+    if (value != null) return value;
+
+    return new Promise<T>((resolve) => {
+      let timeout: ReturnType<typeof setTimeout> = null;
+      const unsubscribe = store.subscribe((nextValue) => {
+        if (nextValue == null) return;
+        if (timeout != null) clearTimeout(timeout);
+        unsubscribe();
+        resolve(nextValue);
+      });
+
+      timeout = setTimeout(() => {
+        unsubscribe();
+        resolve(get(store));
+      }, timeoutMs);
+    });
+  }
+
+  const resolveModelScene = async (
+    modelToSync: MODEL_TYPE,
+    useBaseScene: boolean
+  ): Promise<ModelScene> => {
+    const targetStore = useBaseScene
+      ? modelToSync === MODEL_TYPE.ALEX
+        ? ALEX_MODELSCENE_BASE
+        : STEVE_MODELSCENE_BASE
+      : modelToSync === MODEL_TYPE.ALEX
+        ? ALEX_MODELSCENE
+        : STEVE_MODELSCENE;
+
+    return await waitForStoreValue(targetStore as Readable<ModelScene>);
+  };
+
   const syncModel = async (modelToSync) => {
     if (modelToSync == "source") modelToSync = (source as OutfitPackage).model;
     merger.SetModel(modelToSync);
 
-    let modelScene: ModelScene = null;
-    if (
+    const useBaseScene =
       (typeof _source !== "string" &&
         outfitType == null &&
         baseModelTypesList.includes(_source.outfitType as OUTFIT_TYPE)) ||
       ((typeof _source === "string" || outfitType != null) &&
-        baseModelTypesList.includes(outfitType as OUTFIT_TYPE))
-    ) {
-      modelScene =
-        modelToSync === MODEL_TYPE.ALEX ? $ALEX_MODELSCENE : $STEVE_MODELSCENE;
-    } else {
-      modelScene =
-        modelToSync === MODEL_TYPE.ALEX
-          ? $ALEX_MODELSCENE_BASE
-          : $STEVE_MODELSCENE_BASE;
+        baseModelTypesList.includes(outfitType as OUTFIT_TYPE));
+
+    const modelScene = await resolveModelScene(
+      modelToSync as MODEL_TYPE,
+      !useBaseScene
+    );
+    if (modelScene == null) {
+      console.warn("Unable to resolve model scene in syncModel", {
+        modelToSync,
+        useBaseScene: !useBaseScene,
+      });
+      return;
     }
+
     await textureRenderer.SetModelScene(modelScene.Clone());
   };
   const syncModelSource = async function (vModel, vSource, vLayerId, vCape) {

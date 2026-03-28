@@ -41,11 +41,29 @@
     onclear?: (event?: any) => void;
   }
 
+  const equalsValue = (a, b) => {
+    if (a == null || b == null) return a == b;
+
+    if (typeof a !== "object" && typeof b !== "object") {
+      return a === b;
+    }
+
+    if (typeof a === "object" && typeof b === "object") {
+      try {
+        return JSON.stringify(a) === JSON.stringify(b);
+      } catch {
+        return false;
+      }
+    }
+
+    return false;
+  };
+
   let {
     items = [],
     placeholder = "Select",
     multiple = false,
-    selectedItem = $bindable(null),
+    selectedItem = $bindable(),
     clickable = false,
     opened = $bindable(false),
     itemText = null,
@@ -62,9 +80,11 @@
   },
     comparer = function (selectedItemValue, item, isMultiple = false) {
     if (isMultiple) {
-      return selectedItemValue?.includes(item);
+      return selectedItemValue?.some((selectedItem) =>
+        equalsValue(selectedItem, item)
+      );
     }
-    return selectedItemValue == item;
+    return equalsValue(selectedItemValue, item);
   },
     selected,
     actions,
@@ -82,6 +102,7 @@
   let autocompleteInput = $state(null);
   let inputComponent = $state(null);
   let filteredItems = $state([]);
+  const sortedFilteredItems = $derived([...filteredItems].sort(sorter));
   let focusedIndex = $state(-1);
 
   const select = (item) => {
@@ -90,8 +111,10 @@
         if (selectedItemValue == null) selectedItemValue = [];
         selectedItemValue = [selectedItemValue];
       }
-      if (selectedItemValue.includes(item)) {
-        selectedItemValue = selectedItemValue.filter((i) => i !== item);
+      if (selectedItemValue.some((i) => equalsValue(i, item))) {
+        selectedItemValue = selectedItemValue.filter(
+          (i) => !equalsValue(i, item)
+        );
       } else {
         selectedItemValue = [...selectedItemValue, item];
       }
@@ -135,10 +158,10 @@
       else
         selectedItemValue = items.find(
           (i) =>
-            i[itemValue] == value ||
-            (value ? i[itemValue] == value[itemValue] : false),
+            equalsValue(i[itemValue], value) ||
+            (value ? equalsValue(i[itemValue], value[itemValue]) : false),
         );
-    } else selectedItemValue = items.find((i) => i == value);
+    } else selectedItemValue = items.find((i) => equalsValue(i, value));
   };
   const filterByAutocomplete = (value) => {
     if (autocomplete) {
@@ -303,7 +326,7 @@
         class:hidden={!opened}
         bind:this={itemsContainer}
       >
-        {#each filteredItems.sort(sorter) as item, index}
+        {#each sortedFilteredItems as item, index}
           <!-- svelte-ignore a11y_click_events_have_key_events -->
           <!-- svelte-ignore a11y_no_static_element_interactions -->
           <div class="selected item" onclick={() => select(item)}>

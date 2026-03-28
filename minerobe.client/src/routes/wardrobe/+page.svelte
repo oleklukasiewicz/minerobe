@@ -41,14 +41,16 @@
   let isFilterDialogOpen = $state(false);
   let stateSub = null;
 
-  const initialFilter = new OutfitFilter();
-  initialFilter.type = PACKAGE_TYPE.OUTFIT_SET;
-  let filter: OutfitFilter = $state(initialFilter);
+  const createInitialFilter = (): OutfitFilter => ({
+    ...new OutfitFilter(),
+    type: PACKAGE_TYPE.OUTFIT_SET,
+    phrase: "",
+  });
+  let filter: OutfitFilter = $state(createInitialFilter());
   let sortOption: SortOption[] = $state([]);
   let abortController = new AbortController();
 
   onMount(async () => {
-    filter.type = PACKAGE_TYPE.OUTFIT_SET;
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
 
@@ -84,7 +86,10 @@
       const newFilter = e?.detail?.filter;
       const newSort = e?.detail?.sort;
       if (newFilter) {
-        filter = newFilter;
+        filter = {
+          ...newFilter,
+          phrase: newFilter.phrase ?? filter.phrase ?? "",
+        };
       }
       if (newSort) {
         sortOption = newSort;
@@ -154,7 +159,7 @@
     bind:open={isFilterDialogOpen}
     hideType
     hideOutfitType
-    {filter}
+    bind:filter={filter}
     onfilter={updateFilter}
   />
 </div>

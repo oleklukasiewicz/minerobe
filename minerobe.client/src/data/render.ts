@@ -60,10 +60,19 @@ export class TextureRender {
         this.textureLoader = new threeModule.ImageBitmapLoader();
         this.textureLoader.setOptions({ imageOrientation: "flipY" });
       }
-      this.textureLoader.load(targetTexture, (texture) => {
-        const canvasTexture = new threeModule.CanvasTexture(texture);
-        resolve(canvasTexture);
-      });
+      this.textureLoader.load(
+        targetTexture,
+        (texture) => {
+          const canvasTexture = new threeModule.CanvasTexture(texture);
+          resolve(canvasTexture);
+        },
+        undefined,
+        (error) => {
+          // On error, resolve with null to prevent hanging promise
+          console.warn("Texture load failed:", error);
+          resolve(null);
+        }
+      );
     });
   };
   private _attachCapeToModel = async function (oldCape) {
@@ -237,8 +246,16 @@ export class TextureRender {
   };
   SetTextureAsync = async function (texture: string): Promise<TextureRender> {
     this.texture = texture;
-    this.loadedTexture = await this._loadTexture(texture);
-    if (this.renderingActive) await this._applyTextureToModel();
+    if (texture != null) {
+      this.loadedTexture = await this._loadTexture(texture);
+    }
+    if (this.renderingActive) {
+      await this._applyTextureToModel();
+    }
+    if (this.renderingActive === false) {
+      // For static rendering, refresh the frame
+      await this.RenderStatic();
+    }
     return this;
   };
   GetTexture = function (): string {
@@ -747,30 +764,40 @@ export class OutfitPackageToTextureConverter {
     //create image
     var Image = window.Image;
     var img = new Image();
-    img.src = this.texture;
-    //await for img to laod in promise
+    //await for img to load in promise (handlers must be attached before src)
     const loadedImg: any = await new Promise((resolve) => {
       img.onload = () => {
         resolve({ img: img });
       };
+      img.onerror = () => {
+        resolve({ img: null });
+      };
+      img.src = this.texture;
     });
+    if (loadedImg?.img == null) {
+      return this.texture;
+    }
     //get canvas size
     ctx.canvas.width = loadedImg.img.width;
     ctx.canvas.height = loadedImg.img.height;
 
     ctx.drawImage(loadedImg.img, 0, 0);
     //flattening
-    const modelMapKeys = Object.keys(modelMap);
-    for (let i = 0; i < modelMapKeys.length; i++) {
-      let part = modelMap[modelMapKeys[i]];
-      if (
-        part.outerTextureArea != null &&
-        part.textureArea != null &&
-        !this.excludedPartsFromFlat.includes(part.name)
-      )
-        flatPart(ctx, part);
+    try {
+      const modelMapKeys = Object.keys(modelMap);
+      for (let i = 0; i < modelMapKeys.length; i++) {
+        let part = modelMap[modelMapKeys[i]];
+        if (
+          part.outerTextureArea != null &&
+          part.textureArea != null &&
+          !this.excludedPartsFromFlat.includes(part.name)
+        )
+          flatPart(ctx, part);
+      }
+      this.texture = ctx.canvas.toDataURL();
+    } catch {
+      // Keep original texture if flatten fails
     }
-    this.texture = ctx.canvas.toDataURL();
     return this.texture;
   };
   AsNotFlatten = function (): string {
@@ -795,18 +822,29 @@ export class OutfitPackageToTextureConverter {
   ConvertAsync = async function (): Promise<string> {
     //set modelMap
     const modelMap = this.modelMap;
+
+    const getLayerContent = (layer: OutfitLayer, model: MODEL_TYPE) => {
+      const primary = layer?.[model];
+      if (primary?.content != null) return primary.content;
+      if (primary?.contentSnapshot != null) return primary.contentSnapshot;
+
+      const fallbackModel = model == MODEL_TYPE.ALEX
+        ? MODEL_TYPE.STEVE
+        : MODEL_TYPE.ALEX;
+      const fallback = layer?.[fallbackModel];
+      if (fallback?.content != null) return fallback.content;
+      if (fallback?.contentSnapshot != null) return fallback.contentSnapshot;
+
+      return null;
+    };
+
     //load target layers
     const layers: string[] = [];
     if (this.basetexture != null) layers.push(this.basetexture);
     if (this.layerId == null || this.layerId == "") {
       //load all layers
       this.outfitPackage.layers.forEach((layer: OutfitLayer) => {
-        let content = layer[this.model]?.content;
-        if (content == null) {
-          if (this.model == MODEL_TYPE.ALEX)
-            content = layer[MODEL_TYPE.STEVE]?.content;
-          else content = layer[MODEL_TYPE.ALEX]?.content;
-        }
+        const content = getLayerContent(layer, this.model as MODEL_TYPE);
         if (content != null) layers.push(content);
       });
     } else {
@@ -815,7 +853,7 @@ export class OutfitPackageToTextureConverter {
         (x) => x.id == this.layerId
       );
       if (layer != null) {
-        const content = layer[this.model]?.content;
+        const content = getLayerContent(layer, this.model as MODEL_TYPE);
         if (content != null) layers.push(content);
       }
     }
@@ -853,9 +891,11 @@ const mergeTextures = async function (textures: string[], modelMap) {
   var layerPromises = textures.map(async (texture) => {
     return new Promise((resolve) => {
       const img = new windowImage();
-      img.src = texture;
       img.onload = () => {
-        return resolve(Object.assign({}, texture, { img: img }));
+        return resolve({ textureSrc: texture, img: img });
+      };
+      img.onerror = () => {
+        return resolve({ textureSrc: texture, img: null });
       };
       img.src = texture;
     });
@@ -866,12 +906,15 @@ const mergeTextures = async function (textures: string[], modelMap) {
   const tempCtx = tempCanvas.getContext("2d", { willReadFrequently: true });
 
   const images = await Promise.all(layerPromises);
+  const validImages = images.filter((image: any) => image?.img != null);
+
+  if (validImages.length === 0) return null;
 
   //get canvas size
   const getSize = function (dim) {
     return Math.max.apply(
       Math,
-      images.map(function (image: any) {
+      validImages.map(function (image: any) {
         if (image?.img == null) return 0;
         return image.img[dim];
       })
@@ -882,7 +925,7 @@ const mergeTextures = async function (textures: string[], modelMap) {
   canvas.height = getSize("height");
 
   //draw images
-  images.forEach(function (image: any) {
+  validImages.forEach(function (image: any) {
     ctx.globalAlpha = 1;
     tempCtx.drawImage(image.img, 0, 0);
     //replace lower parts based on modelMap
@@ -898,7 +941,12 @@ const mergeTextures = async function (textures: string[], modelMap) {
     ctx.drawImage(image.img, 0, 0);
   });
 
-  return canvas.toDataURL();
+  try {
+    return canvas.toDataURL();
+  } catch {
+    // If canvas fails, fallback to first valid texture
+    return validImages[0]?.textureSrc ?? null;
+  }
 };
 const replaceLowerLayerPart = function (imgContext, lowerLayerContext, part) {
   const imageData = imgContext.getImageData(

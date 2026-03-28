@@ -35,7 +35,7 @@
     <div id="collection-dialog" class:mobile={isMobile}>
       <PagedList
         {onoptionsChanged}
-        {items}
+        bind:items={items}
         {loading}
         {pageSizes}
         

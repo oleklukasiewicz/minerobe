@@ -59,16 +59,52 @@
     onclose = null
   }: Props = $props();
 
+  let selectedSort = $state(null);
+  let selectedColors = $state([]);
+  let selectedOutfitTypes = $state([]);
+  let phrase = $state("");
+
+  const ensureOptionsShape = () => {
+    if (!options) options = new PagedModel<OutfitFilter>();
+    if (!options.filter) options.filter = new OutfitFilter();
+    if (!Array.isArray(options.sort)) options.sort = [];
+    if (!Array.isArray(options.filter.colors)) options.filter.colors = [];
+    if (!Array.isArray(options.filter.outfitType)) options.filter.outfitType = [];
+    if (options.filter.phrase == null) options.filter.phrase = "";
+    if (options.page == null) options.page = 0;
+    if (options.pageSize == null) options.pageSize = 12;
+  };
+
+  const syncLocalFiltersFromOptions = () => {
+    ensureOptionsShape();
+    selectedSort = options.sort[0] ?? null;
+    selectedColors = [...options.filter.colors];
+    selectedOutfitTypes = [...options.filter.outfitType];
+    phrase = options.filter.phrase ?? "";
+  };
+
+  const syncOptionsFromLocalFilters = () => {
+    ensureOptionsShape();
+    options.sort = selectedSort?.value == null ? [] : [selectedSort];
+    options.filter.colors = selectedColors ?? [];
+    options.filter.outfitType = selectedOutfitTypes ?? [];
+    options.filter.phrase = phrase ?? "";
+  };
+
+  run(() => {
+    syncLocalFiltersFromOptions();
+  });
+
   const onFiltersUpdate= function () {
-    if (options.sort[0]?.value == null) options.sort = [];
+    syncOptionsFromLocalFilters();
     options.page = 0;
     onfilter?.({ detail: { options: options } });
   };
   const onPageChanged= function (e) {
     const page = e.detail.options;
+    syncOptionsFromLocalFilters();
     options.page = page.options.page;
     options.pageSize = page.options.pageSize;
-    if (options.sort[0]?.value == null) options.sort = [];
     onoptionsChanged?.({ detail: { options: options } });
   };
   const onSelect= function (item) {
@@ -98,14 +134,14 @@
         <SortSelect
           clearable
           items={OUTFIT_PACKAGE_SORT_OPTIONS}
-          bind:selectedItem={options.sort[0]}
+          bind:selectedItem={selectedSort}
           onselect={onFiltersUpdate}
           onclear={onFiltersUpdate}
         />
         <ColorSelect
           items={COLORS_ARRAY}
           autocomplete
-          bind:selectedItem={options.filter.colors}
+          bind:selectedItem={selectedColors}
           placeholder="Colors"
           itemText="normalizedName"
           itemValue="name"
@@ -123,18 +159,18 @@
           multiple
           clearable
           itemValue="name"
-          bind:selectedItem={options.filter.outfitType}
+          bind:selectedItem={selectedOutfitTypes}
           onselect={onFiltersUpdate}
           onclear={onFiltersUpdate}
         />
         <Search
           dense
-          bind:value={options.filter.phrase}
+          bind:value={phrase}
           onsearch={onFiltersUpdate}
         />
       </div>
       <PagedList
-        {items}
+        bind:items={items}
         pageSize={options.pageSize}
         {pageSizes}
         {loading}
