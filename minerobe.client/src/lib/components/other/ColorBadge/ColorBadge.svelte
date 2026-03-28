@@ -1,9 +1,11 @@
 <script lang="ts">
+  //consts
+  import { COLORS } from "$src/data/consts/color";
+
   import { run } from 'svelte/legacy';
 
   //main imports
     //consts
-  import { COLORS } from "$src/data/consts/color";
 
   interface Props {
     color: string;

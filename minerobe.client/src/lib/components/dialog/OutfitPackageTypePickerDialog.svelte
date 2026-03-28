@@ -1,13 +1,14 @@
 <script lang="ts">
-  //main imports
-    //model
+  //consts
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
-  //components
-  import Dialog from "../base/Dialog/Dialog.svelte";
+
   //icons
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
+
+  import Dialog from "../base/Dialog/Dialog.svelte";
+  //icons
 
   interface Props {
     open?: boolean;

@@ -1,15 +1,19 @@
 <script lang="ts">
+  //consts
+  import { COLORS_ARRAY } from "$src/data/consts/color";
+  import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
+  import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
+
+  //models
+  import { PagedModel, type PagedResponse } from "$src/data/models/base";
+  import { OutfitFilter } from "$src/data/models/filter";
+  import type { OutfitPackage } from "$src/data/models/package";
+
   import { run } from 'svelte/legacy';
 
   //main imports
     //consts
-  import { COLORS_ARRAY } from "$src/data/consts/color";
-  import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
-  import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
   //model
-  import { PagedModel, type PagedResponse } from "$src/data/models/base";
-  import { OutfitFilter } from "$src/data/models/filter";
-  import type { OutfitPackage } from "$src/data/models/package";
   //components
   import Dialog from "../base/Dialog/Dialog.svelte";
   import PagedList from "../list/PagedList/PagedList.svelte";

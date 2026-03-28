@@ -1,25 +1,22 @@
 <script lang="ts">
-  //main imports
-  import { onDestroy, onMount } from "svelte";
-  import { writable, type Writable } from "svelte/store";
   //api
   import { GetUserProfile } from "$src/api/user";
   import { GetAccount, GetCurrentSkin } from "$src/api/integration/minecraft";
   import { GetMergedPackage } from "$src/api/pack";
+
   //services
   import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
+  import { IsEmptyGuid } from "$src/helpers/data/dataHelper";
+
   //consts
   import { CURRENT_APP_STATE, CURRENT_USER } from "$src/data/static";
+  import { APP_STATE } from "$src/data/enums/app";
+  import { OUTFIT_TYPE } from "$src/data/enums/outfit";
+
   //models
   import type { MinerobeUserProfile } from "$src/data/models/user";
-  import { APP_STATE } from "$src/data/enums/app";
-  import {
-    Cape,
-    MinecraftAccount,
-    MinecraftSkin,
-  } from "$src/data/models/integration/minecraft";
-  import { OUTFIT_TYPE } from "$src/data/enums/outfit";
   import type { OutfitPackage } from "$src/data/models/package";
+
   //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import SocialInfo from "$lib/components/social/SocialInfo.svelte";
@@ -28,7 +25,19 @@
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
-  import { IsEmptyGuid } from "$src/helpers/data/dataHelper";
+
+  import { onDestroy, onMount } from "svelte";
+  import { writable, type Writable } from "svelte/store";
+  //api
+  //services
+  //consts
+  //models
+  import {
+    Cape,
+    MinecraftAccount,
+    MinecraftSkin,
+  } from "$src/data/models/integration/minecraft";
+  //components
   //icons
 
   const profileUser: Writable<MinerobeUserProfile> = writable(null);

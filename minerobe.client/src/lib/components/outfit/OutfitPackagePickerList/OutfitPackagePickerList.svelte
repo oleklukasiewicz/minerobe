@@ -1,11 +1,14 @@
 <script lang="ts">
-  //main imports
-    //models
+  //consts
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+
+  //models
   import type { OutfitLayer, OutfitPackage } from "$data/models/package";
+
   //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+
   import OutfitPackageSingleLayerListItem from "../OutfitPackageSingleLayerListItem/OutfitPackageSingleLayerListItem.svelte";
-  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
 
   interface Props {
     items: OutfitPackage[];

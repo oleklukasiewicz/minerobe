@@ -1,7 +1,7 @@
 <script lang="ts">
-  //main imports
-    //models
+  //models
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
+
   //components
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
 

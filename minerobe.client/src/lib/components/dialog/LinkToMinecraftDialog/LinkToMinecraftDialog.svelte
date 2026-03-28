@@ -1,20 +1,26 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   //services
   import { ShowToast } from "$src/data/toast";
   import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
+
+  //components
+  import Label from "$lib/components/base/Label/Label.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
+
+  //icons
+  import ArticleMultipleIcon from "$icons/article-multiple.svg?raw";
+
+  import { run } from 'svelte/legacy';
+
+  //services
   //models
   import type {
     MinecraftAccount,
     MinecraftSkin,
   } from "$src/data/models/integration/minecraft";
   //components
-  import Label from "$lib/components/base/Label/Label.svelte";
-  import Button from "$lib/components/base/Button/Button.svelte";
-  import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
   //icons
-  import ArticleMultipleIcon from "$icons/article-multiple.svg?raw";
 
   interface Props {
     open?: boolean;

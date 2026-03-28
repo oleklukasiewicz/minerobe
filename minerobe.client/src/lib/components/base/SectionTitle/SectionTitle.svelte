@@ -1,5 +1,4 @@
 <script lang="ts">
-  //components
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
 
   interface Props {

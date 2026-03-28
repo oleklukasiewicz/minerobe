@@ -1,13 +1,16 @@
 <script lang="ts">
-  //main imports
-    //consts
+  //consts
   import { COLORS_ARRAY } from "$src/data/consts/color";
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
-  //model
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+
+  //models
   import { SortOption, type ValueData } from "$src/data/models/base";
   import { OutfitFilter } from "$src/data/models/filter";
-  //components
+
+  //icons
+  import Sliders2Icon from "$icons/sliders-2.svg?raw";
+
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
@@ -15,7 +18,6 @@
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
   import SortSelect from "../base/SortSelect/SortSelect.svelte";
   //icons
-  import Sliders2Icon from "$icons/sliders-2.svg?raw";
 
   interface Props {
     open?: boolean;

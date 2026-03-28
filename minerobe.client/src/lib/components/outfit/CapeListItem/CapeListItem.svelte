@@ -1,4 +1,13 @@
 <script lang="ts">
+  //services
+  import { GetImageArea } from "$src/helpers/image/imageDataHelpers";
+
+  //models
+  import { Cape } from "$data/models/integration/minecraft";
+
+  //icons
+  import CloseBoxIcon from "$icons/close-box.svg?raw";
+
   import { createBubbler } from 'svelte/legacy';
 
   const bubble = createBubbler();
@@ -6,11 +15,8 @@
     click: MouseEvent;
   }
   //services
-  import { GetImageArea } from "$src/helpers/image/imageDataHelpers";
   //models
-  import { Cape } from "$data/models/integration/minecraft";
   //icons
-  import CloseBoxIcon from "$icons/close-box.svg?raw";
 
   interface Props {
     item?: Cape;

@@ -1,10 +1,10 @@
 <script lang="ts">
-  //main imports
-    //components
-  import Button from "../Button/Button.svelte";
   //icons
   import SearchIcon from "$icons/search.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
+
+  import Button from "../Button/Button.svelte";
+  //icons
 
   interface Props {
     value?: any;

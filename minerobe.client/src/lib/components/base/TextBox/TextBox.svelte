@@ -1,9 +1,9 @@
 <script lang="ts">
-  //main imports
-    //components
-  import Button from "../Button/Button.svelte";
   //icons
   import CloseIcon from "$icons/close.svg?raw";
+
+  import Button from "../Button/Button.svelte";
+  //icons
 
   interface Props {
     value?: string;

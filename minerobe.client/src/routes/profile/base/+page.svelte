@@ -1,24 +1,19 @@
 <script lang="ts">
-  //main imports
-  import { onDestroy, onMount } from "svelte";
-  import { writable, type Writable } from "svelte/store";
-
   //api
   import { FetchSettings, UpdateBaseTexture } from "$src/api/settings";
+
   //services
   import { ImportImages, ImportImagesFromFiles } from "$src/data/import";
   import { ExportImage } from "$src/data/export";
   import { ShowToast } from "$src/data/toast";
+
   //consts
-  import {
-    BASE_TEXTURE,
-    CURRENT_APP_STATE,
-    IS_MOBILE_VIEW,
-  } from "$src/data/static";
   import { DEFAULT_PACKAGE } from "$src/data/consts/outfit";
-  //models
   import { APP_STATE } from "$src/data/enums/app";
+
+  //models
   import type { MinerobeUserSettings } from "$src/data/models/user";
+
   //components
   import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
@@ -28,9 +23,25 @@
   import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
+
   //icons
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import DownloadIcon from "$icons/download.svg?raw";
+
+  import { onDestroy, onMount } from "svelte";
+  import { writable, type Writable } from "svelte/store";
+
+  //api
+  //services
+  //consts
+  import {
+    BASE_TEXTURE,
+    CURRENT_APP_STATE,
+    IS_MOBILE_VIEW,
+  } from "$src/data/static";
+  //models
+  //components
+  //icons
   import { THREE } from "$lib/three";
 
   const userSettings: Writable<MinerobeUserSettings> = writable(null);

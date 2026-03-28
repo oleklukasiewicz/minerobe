@@ -1,11 +1,19 @@
 <script lang="ts">
-  import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
-  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
+  //api
   import { GetWadrobePackagesSingleLayer } from "$src/api/wardrobe";
-  import { PagedModel } from "$src/data/models/base";
-  import { OutfitFilter } from "$src/data/models/filter";
+
+  //consts
   import { APP_STATE } from "$src/data/enums/app";
   import { CURRENT_APP_STATE } from "$src/data/static";
+
+  //models
+  import { PagedModel } from "$src/data/models/base";
+  import { OutfitFilter } from "$src/data/models/filter";
+
+  //components
+  import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
+  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
+
   import { onDestroy, onMount } from "svelte";
 
   let pages = $state([]);

@@ -1,6 +1,5 @@
 <script lang="ts">
-  //main imports
-    //icons
+  //icons
   import CheckIcon from "$icons/check.svg?raw";
 
   interface Props {

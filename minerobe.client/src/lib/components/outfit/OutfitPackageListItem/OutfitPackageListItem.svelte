@@ -1,21 +1,30 @@
 <script lang="ts">
-  //main imports
-  import { onMount } from "svelte";
-  //api
   //services
   import { normalizeNumber } from "$src/helpers/data/dataHelper";
+
   //consts
-  //model
-  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
   import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
+
+  //models
+  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
+
   //components
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
+
   //icons
   import HeartSmallIcon from "$icons/small/heart-micro.svg?raw";
   import DownloadSmallIcon from "$icons/small/download-micro.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
+
+  import { onMount } from "svelte";
+  //api
+  //services
+  //consts
+  //model
+  //components
+  //icons
 
 
   interface Props {

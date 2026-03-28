@@ -1,10 +1,40 @@
 <script lang="ts">
+  //api
+  import { AddPackage } from "$src/api/pack";
+  import { AddCollection } from "$src/api/collection";
+
+  //services
+  import { ShowToast } from "$src/data/toast";
+
+  //consts
+  import { CURRENT_USER, IS_MOBILE_VIEW } from "$src/data/static";
+  import { MODEL_TYPE } from "$src/data/enums/model";
+  import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
+
+  //models
+  import { OutfitPackage } from "$src/data/models/package";
+  import { OutfitPackageCollection } from "$src/data/models/collection";
+
+  //components
+  import Menu from "$lib/components/base/Menu/Menu.svelte";
+  import MenuItemHeader from "$lib/components/base/MenuItemHeader/MenuItemHeader.svelte";
+  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import OutfitPackageTypePickerDialog from "$lib/components/dialog/OutfitPackageTypePickerDialog.svelte";
+  import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
+
+  //icons
+  import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
+  import MenuIcon from "$src/icons/menu.svg?raw";
+  import AnimationIcon from "$icons/animation.svg?raw";
+  import ListIcon from "$icons/list.svg?raw";
+  import AddIcon from "$icons/plus.svg?raw";
+
   import { run } from 'svelte/legacy';
 
   //main imports
   import { page } from "$app/stores";
   //api
-  import { AddPackage } from "$src/api/pack";
   import {
     AddCollectionToWardrobe,
     AddPackageToWardrobe,
@@ -14,28 +44,10 @@
     navigateToCollection,
     navigateToOutfitPackage
   } from "$src/helpers/other/navigationHelper";
-  import { ShowToast } from "$src/data/toast";
   //consts
-  import { CURRENT_USER, IS_MOBILE_VIEW } from "$src/data/static";
   //model
-  import { MODEL_TYPE } from "$src/data/enums/model";
-  import { OutfitPackage } from "$src/data/models/package";
-  import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
   //components
-  import Menu from "$lib/components/base/Menu/Menu.svelte";
-  import MenuItemHeader from "$lib/components/base/MenuItemHeader/MenuItemHeader.svelte";
-  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
-  import Button from "$lib/components/base/Button/Button.svelte";
-  import OutfitPackageTypePickerDialog from "$lib/components/dialog/OutfitPackageTypePickerDialog.svelte";
-  import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
   //icons
-  import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
-  import MenuIcon from "$src/icons/menu.svg?raw";
-  import AnimationIcon from "$icons/animation.svg?raw";
-  import ListIcon from "$icons/list.svg?raw";
-  import AddIcon from "$icons/plus.svg?raw";
-  import { OutfitPackageCollection } from "$src/data/models/collection";
-  import { AddCollection } from "$src/api/collection";
   interface Props {
     children?: import('svelte').Snippet;
   }

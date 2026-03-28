@@ -1,9 +1,10 @@
 <script lang="ts">
-  //main imports
-    //model
-  import type { OutfitLayer } from "$data/models/package";
+  //consts
   import type { MODEL_TYPE } from "$src/data/enums/model";
-  //components
+
+  //models
+  import type { OutfitLayer } from "$data/models/package";
+
   import OutfitLayerVariantListItem from "../OutfitLayerVariantListItem/OutfitLayerVariantListItem.svelte";
 
   interface Props {

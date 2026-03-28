@@ -1,5 +1,24 @@
 <script lang="ts">
-  //main imports
+  //services
+  import { ShowToast } from "$src/data/toast";
+
+  //consts
+  import { APP_STATE } from "$src/data/enums/app";
+
+  //components
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
+  import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import LinkToMinecraftDialog from "$lib/components/dialog/LinkToMinecraftDialog/LinkToMinecraftDialog.svelte";
+  import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
+
+  //icons
+  import SyncIcon from "$icons/sync.svg?raw";
+  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
+  import CloseIcon from "$icons/close.svg?raw";
+
   import { onDestroy, onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
   //api
@@ -15,7 +34,6 @@
     UnLinkAccount,
   } from "$src/api/integration/minecraft";
   //services
-  import { ShowToast } from "$src/data/toast";
   import { goto } from "$app/navigation";
   //consts
   import {
@@ -25,25 +43,14 @@
     WS_CONNECTION,
   } from "$src/data/static";
   //models
-  import { APP_STATE } from "$src/data/enums/app";
   import type {
     Cape,
     MinecraftAccount,
     MinecraftSkin,
   } from "$src/data/models/integration/minecraft";
   //components
-  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
-  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
-  import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
-  import Button from "$lib/components/base/Button/Button.svelte";
-  import LinkToMinecraftDialog from "$lib/components/dialog/LinkToMinecraftDialog/LinkToMinecraftDialog.svelte";
   //icons
-  import SyncIcon from "$icons/sync.svg?raw";
-  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
-  import CloseIcon from "$icons/close.svg?raw";
   import { THREE } from "$lib/three";
-  import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
 
   const minecraftAccount: Writable<MinecraftAccount> = writable(null);
 

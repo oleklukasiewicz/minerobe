@@ -1,14 +1,15 @@
 <script lang="ts">
-  import Button from "$lib/components/base/Button/Button.svelte";
-
   //services
   import { clickOutside } from "$src/helpers/data/componentHelper";
 
+  //components
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import Flyout from "$lib/components/base/Flyout/Flyout.svelte";
 
-
+  //icons
   import ChevronUpIcon from "$icons/chevron-up.svg?raw";
   import ChevronDownIcon from "$icons/chevron-down.svg?raw";
-  import Flyout from "$lib/components/base/Flyout/Flyout.svelte";
+
   interface Props {
     href?: string;
     label?: string;

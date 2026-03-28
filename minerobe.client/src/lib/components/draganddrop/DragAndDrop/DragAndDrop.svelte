@@ -1,5 +1,4 @@
 <script lang="ts">
-  //main imports
     interface Props {
     children?: import('svelte').Snippet;
     ondrop?: (event?: any) => void;

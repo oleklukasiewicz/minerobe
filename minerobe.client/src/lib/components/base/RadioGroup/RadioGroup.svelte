@@ -1,8 +1,7 @@
 <script lang="ts">
-  //main imports
-    //models
+  //models
   import type { ValueData } from "$data/models/base";
-  //compoennts
+
   import RadioButton from "../RadioButton/RadioButton.svelte";
 
   interface Props {

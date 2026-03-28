@@ -1,6 +1,5 @@
 <script lang="ts">
-  //main imports
-    //models
+  //models
   import type { ValueData } from "$data/models/base";
 
   interface Props {

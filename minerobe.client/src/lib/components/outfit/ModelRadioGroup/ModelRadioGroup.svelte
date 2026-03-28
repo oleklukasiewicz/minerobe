@@ -1,8 +1,10 @@
 <script lang="ts">
   //consts
   import { MODEL_TYPE } from "$src/data/enums/model";
+
   //models
   import { ValueData } from "$data/models/base";
+
   //components
   import RadioGroup from "$lib/components/base/RadioGroup/RadioGroup.svelte";
 

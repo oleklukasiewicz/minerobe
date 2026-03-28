@@ -1,7 +1,9 @@
 <script lang="ts">
+  //models
+  import type { OutfitPackageCollection } from "$src/data/models/collection";
+
   import { run } from 'svelte/legacy';
 
-  import type { OutfitPackageCollection } from "$src/data/models/collection";
     import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";

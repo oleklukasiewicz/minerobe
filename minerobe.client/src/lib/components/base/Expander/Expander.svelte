@@ -1,9 +1,10 @@
 <script lang="ts">
-  //components
-  import Button from "../Button/Button.svelte";
   //icons
   import ChevronUpIcon from "$icons/chevron-up.svg?raw";
   import ChevronDownIcon from "$icons/chevron-down.svg?raw";
+
+  import Button from "../Button/Button.svelte";
+  //icons
 
   interface Props {
     icon?: any;

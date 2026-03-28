@@ -1,17 +1,18 @@
 <script lang="ts">
-  //main imports
-    //models
+  //models
   import type { OutfitPackage } from "$data/models/package";
-  //components
+
+  //icons
+  import CloudIcon from "$icons/cloud.svg?raw";
+  import CloseIcon from "$icons/close.svg?raw";
+  import SpotlightIcon from "$icons/spotlight.svg?raw";
+
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import Label from "../base/Label/Label.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
   import SocialInfo from "../social/SocialInfo.svelte";
   //icons
-  import CloudIcon from "$icons/cloud.svg?raw";
-  import CloseIcon from "$icons/close.svg?raw";
-  import SpotlightIcon from "$icons/spotlight.svg?raw";
 
   interface Props {
     open: boolean;

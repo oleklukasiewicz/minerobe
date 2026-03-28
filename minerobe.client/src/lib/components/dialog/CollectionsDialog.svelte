@@ -2,7 +2,7 @@
   //models
   import type { PagedResponse } from "$data/models/base";
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
-  //components
+
   import Dialog from "../base/Dialog/Dialog.svelte";
   import PagedList from "../list/PagedList/PagedList.svelte";
   import OutfitPackageCollectionList from "../outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";

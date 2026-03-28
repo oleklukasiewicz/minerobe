@@ -1,4 +1,7 @@
 <script lang="ts">
+  //icons
+  import CloseIcon from "$icons/close.svg?raw";
+
   import { createBubbler } from 'svelte/legacy';
 
   const bubble = createBubbler();
@@ -7,7 +10,6 @@
   //components
   import Button from "../Button/Button.svelte";
   //icons
-  import CloseIcon from "$icons/close.svg?raw";
 
   interface Props {
     message: string;

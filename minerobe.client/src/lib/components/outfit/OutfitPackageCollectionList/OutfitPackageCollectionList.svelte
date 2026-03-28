@@ -1,9 +1,10 @@
 <script lang="ts">
-  //main imports
-    //models
+  //models
   import { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
+
   //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+
   import OutfitPackageCollectionListItem from "../OutfitPackageCollectionListItem/OutfitPackageCollectionListItem.svelte";
 
   interface Props {

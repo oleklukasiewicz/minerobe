@@ -1,8 +1,37 @@
 <script lang="ts">
+  //api
+  import { FetchSettings } from "$src/api/settings.js";
+  import { SharePackage, UnSharePackage } from "$src/api/social.js";
+  import { GetWardrobeItemsWithCollectionContext } from "$src/api/wardrobe";
+
+  //services
+  import { ShowToast } from "$src/data/toast.js";
+  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper.js";
+
+  //consts
+  import { APP_STATE } from "$src/data/enums/app";
+  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
+
+  //models
+  import { PagedModel, PagedResponse } from "$src/data/models/base.js";
+  import type { OutfitPackageCollection } from "$src/data/models/collection";
+  import { OutfitPackage } from "$src/data/models/package.js";
+  import type { MinerobeUserSettings } from "$src/data/models/user.js";
+  import type { OutfitFilter } from "$src/data/models/filter";
+
+  //components
   import Button from "$lib/components/base/Button/Button.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
   import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
+  import EditCollectionDialog from "$lib/components/dialog/EditCollectionDialog.svelte";
+  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
+  import Label from "$lib/components/base/Label/Label.svelte";
+  import CollectionsItemPickerDialog from "$lib/components/dialog/CollectionItemsPickerDialog.svelte";
+
+  //icons
+  import EditIcon from "$src/icons/edit.svg?raw";
+
   import {
     AddPackageToCollection,
     GetCollection,
@@ -10,25 +39,8 @@
     RemovePackageFromCollection,
     UpdateCollection,
   } from "$src/api/collection";
-  import { FetchSettings } from "$src/api/settings.js";
-  import { APP_STATE } from "$src/data/enums/app";
-  import { PagedModel, PagedResponse } from "$src/data/models/base.js";
-  import type { OutfitPackageCollection } from "$src/data/models/collection";
-  import { OutfitPackage } from "$src/data/models/package.js";
-  import type { MinerobeUserSettings } from "$src/data/models/user.js";
-  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
-  import EditIcon from "$src/icons/edit.svg?raw";
-  import EditCollectionDialog from "$lib/components/dialog/EditCollectionDialog.svelte";
-  import { SharePackage, UnSharePackage } from "$src/api/social.js";
-  import { ShowToast } from "$src/data/toast.js";
-  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
-  import Label from "$lib/components/base/Label/Label.svelte";
-  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper.js";
-  import type { OutfitFilter } from "$src/data/models/filter";
-  import { GetWardrobeItemsWithCollectionContext } from "$src/api/wardrobe";
-  import CollectionsItemPickerDialog from "$lib/components/dialog/CollectionItemsPickerDialog.svelte";
   interface Props {
     data: any;
   }

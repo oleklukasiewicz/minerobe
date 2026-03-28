@@ -1,14 +1,18 @@
 <script lang="ts">
-  //main imports
-    //services
+  //services
   import { ConvertFileToFileData } from "$src/data/import";
+
+  //consts
+  import { MODEL_TYPE } from "$src/data/enums/model";
+
   //models
   import type { OutfitLayer } from "$data/models/package";
-  import { MODEL_TYPE } from "$src/data/enums/model";
+
   //components
-  import OutfitLayerListItem from "../OutfitLayerListItem/OutfitLayerListItem.svelte";
   import MultiDragAndDrop from "$lib/components/draganddrop/MultiDragAndDrop/MultiDragAndDrop.svelte";
   import Resize from "$lib/components/other/Resize/Resize.svelte";
+
+  import OutfitLayerListItem from "../OutfitLayerListItem/OutfitLayerListItem.svelte";
 
   interface Props {
     items: OutfitLayer[];

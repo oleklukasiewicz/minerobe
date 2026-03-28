@@ -1,8 +1,9 @@
 <script lang="ts">
-  //components
-  import Button from "../Button/Button.svelte";
   //icons
   import DeleteIcon from "$src/icons/close.svg?raw";
+
+  import Button from "../Button/Button.svelte";
+  //icons
 
   interface Props {
     label?: string;

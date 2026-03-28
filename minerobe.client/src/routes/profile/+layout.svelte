@@ -1,10 +1,20 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
+  //api
+  import { logoutUser } from "$src/api/auth";
 
+  //services
+  import { navigateToHome } from "$src/helpers/other/navigationHelper";
+
+  //consts
+  import { IS_MOBILE_VIEW } from "$src/data/static";
+
+  //components
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
   import MenuItemHeader from "$lib/components/base/MenuItemHeader/MenuItemHeader.svelte";
-  import { IS_MOBILE_VIEW } from "$src/data/static";
+  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
+
+  //icons
   import MenuIcon from "$src/icons/menu.svg?raw";
   import ContactIcon from "$icons/contact.svg?raw";
   import ZapIcon from "$icons/zap.svg?raw";
@@ -12,10 +22,10 @@
   import LoginIcon from "$icons/login.svg?raw";
   import UsersIcon from "$icons/users.svg?raw";
   import DashboardIcon from "$icons/dashboard.svg?raw";
-  import MenuSeparator from "$lib/components/base/MenuSeparator/MenuSeparator.svelte";
+
+  import { run } from 'svelte/legacy';
+
   import { page } from "$app/stores";
-  import { logoutUser } from "$src/api/auth";
-  import { navigateToHome } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
   interface Props {
     children?: import('svelte').Snippet;

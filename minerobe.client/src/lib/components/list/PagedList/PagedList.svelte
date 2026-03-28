@@ -1,15 +1,19 @@
 <script lang="ts">
+  //models
+  import type { PagedResponse } from "$data/models/base";
+
+  //icons
+  import ChevronLeftIcon from "$icons/chevron-left.svg?raw";
+  import ChevronRightIcon from "$icons/chevron-right.svg?raw";
+
   import { run } from 'svelte/legacy';
 
   //main imports
     //models
-  import type { PagedResponse } from "$data/models/base";
   //components
   import Button from "../../base/Button/Button.svelte";
   import Select from "../../base/Select/Select.svelte";
   //icons
-  import ChevronLeftIcon from "$icons/chevron-left.svg?raw";
-  import ChevronRightIcon from "$icons/chevron-right.svg?raw";
 
   interface Props {
     items: PagedResponse<any>;

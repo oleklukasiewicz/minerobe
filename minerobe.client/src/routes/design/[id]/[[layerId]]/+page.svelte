@@ -1,48 +1,28 @@
 <script lang="ts">
-  //main imports
-  import { _ } from "svelte-i18n";
-  import { writable, type Writable } from "svelte/store";
-  import { onDestroy, onMount } from "svelte";
-  import { propertyStore } from "svelte-writable-derived";
   //api
   import { GetPackage } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
   import { GetAccount } from "$src/api/integration/minecraft.js";
   import { GetWadrobeCollectionsWithPackageContext } from "$src/api/wardrobe.js";
-  import {
-    AddPackageToCollection,
-    RemovePackageFromCollection,
-  } from "$src/api/collection.js";
+
   //services
   import { ExportImage } from "$src/data/export.js";
   import { OutfitPackageToTextureConverter } from "$src/data/render.js";
   import { ShowToast } from "$src/data/toast.js";
-  import { SetMinecraftSkin } from "$src/data/integration.js";
-  import { replaceState } from "$app/navigation";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
+  import type { RenderAnimation } from "$src/data/animation.js";
+
   //consts
-  import {
-    BASE_TEXTURE,
-    CURRENT_APP_STATE,
-    CURRENT_USER,
-    IS_MOBILE_VIEW,
-  } from "$src/data/static.js";
-  //models
   import { APP_STATE } from "$src/data/enums/app.js";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit.js";
-  import type { RenderAnimation } from "$src/data/animation.js";
-  import type {
-    Cape,
-    MinecraftAccount,
-  } from "$data/models/integration/minecraft";
+  import type { MODEL_TYPE } from "$src/data/enums/model.js";
+
+  //models
   import type { PagedResponse, PageOptions } from "$data/models/base";
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
-  import { OutfitLayer, type OutfitPackage } from "$model/package";
-  import DefaultAnimation from "$src/animation/default.js";
   import { OutfitPackageRenderConfig } from "$data/models/render";
   import { MinerobeUserSettings } from "$data/models/user";
-  import HandsUpAnimation from "$src/animation/handsup";
-  import type { MODEL_TYPE } from "$src/data/enums/model.js";
+
   //components
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
@@ -55,14 +35,45 @@
   import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
   import CollectionsDialog from "$lib/components/dialog/CollectionsDialog.svelte";
   import SocialInfo from "$lib/components/social/SocialInfo.svelte";
+  import MenuButton from "$lib/components/other/MenuButton/MenuButton.svelte";
+
   //icons
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
   import DownloadIcon from "$icons/download.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import EditIcon from "$src/icons/edit.svg?raw";
+
+  import { _ } from "svelte-i18n";
+  import { writable, type Writable } from "svelte/store";
+  import { onDestroy, onMount } from "svelte";
+  import { propertyStore } from "svelte-writable-derived";
+  //api
+  import {
+    AddPackageToCollection,
+    RemovePackageFromCollection,
+  } from "$src/api/collection.js";
+  //services
+  import { SetMinecraftSkin } from "$src/data/integration.js";
+  import { replaceState } from "$app/navigation";
+  //consts
+  import {
+    BASE_TEXTURE,
+    CURRENT_APP_STATE,
+    CURRENT_USER,
+    IS_MOBILE_VIEW,
+  } from "$src/data/static.js";
+  //models
+  import type {
+    Cape,
+    MinecraftAccount,
+  } from "$data/models/integration/minecraft";
+  import { OutfitLayer, type OutfitPackage } from "$model/package";
+  import DefaultAnimation from "$src/animation/default.js";
+  import HandsUpAnimation from "$src/animation/handsup";
+  //components
+  //icons
   import { THREE } from "$lib/three.js";
-  import MenuButton from "$lib/components/other/MenuButton/MenuButton.svelte";
 
   interface Props {
     data: any;

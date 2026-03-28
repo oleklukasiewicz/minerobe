@@ -1,10 +1,11 @@
 <svelte:options runes={false} />
 
 <script lang="ts">
-  //main imports
-  import IntersectionObserver from "svelte-intersection-observer";
   //models
   import { PagedResponse } from "$src/data/models/base";
+
+  import IntersectionObserver from "svelte-intersection-observer";
+  //models
 
   export let itemsPages: PagedResponse<any>[] = [];
   export let rootMargin: string = "30px";

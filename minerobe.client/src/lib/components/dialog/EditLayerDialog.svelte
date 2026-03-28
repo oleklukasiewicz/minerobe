@@ -1,14 +1,18 @@
 <script lang="ts">
-  //main imports
-    //consts
+  //services
+  import { ConvertFileToFileData, ImportImages } from "$src/data/import";
+
+  //consts
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
   import { COLORS_ARRAY } from "$src/data/consts/color";
   import { MODEL_TYPE } from "$src/data/enums/model";
-  //services
-  import { ConvertFileToFileData, ImportImages } from "$src/data/import";
+
   //models
   import type { OutfitLayer } from "$data/models/package";
-  //components
+
+  //icons
+  import ImportPackageIcon from "$icons/upload.svg?raw";
+
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
@@ -18,7 +22,6 @@
   import OutfitPackageRender from "../render/OutfitPackageRender.svelte";
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
   //icons
-  import ImportPackageIcon from "$icons/upload.svg?raw";
   import Checkbox from "../base/Checkbox/Checkbox.svelte";
 
   interface Props {

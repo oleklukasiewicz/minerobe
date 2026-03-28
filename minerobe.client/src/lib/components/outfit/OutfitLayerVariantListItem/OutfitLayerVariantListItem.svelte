@@ -1,4 +1,14 @@
 <script lang="ts">
+  //consts
+  import { CAMERA_CONFIG } from "$src/data/consts/render";
+  import type { MODEL_TYPE } from "$src/data/enums/model";
+
+  //models
+  import type { OutfitLayer } from "$data/models/package";
+
+  //components
+  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+
   import { createBubbler } from 'svelte/legacy';
 
   const bubble = createBubbler();
@@ -6,11 +16,7 @@
     click: MouseEvent;
   }
   //models
-  import { CAMERA_CONFIG } from "$src/data/consts/render";
-  import type { MODEL_TYPE } from "$src/data/enums/model";
-  import type { OutfitLayer } from "$data/models/package";
   //components
-  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
 
   interface Props {
     item: OutfitLayer;

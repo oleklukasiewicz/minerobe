@@ -1,15 +1,28 @@
 <script lang="ts">
-  import Button from "$lib/components/base/Button/Button.svelte";
-  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
-  import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
-  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
+  //api
   import { GetCollection, GetCollectionsItems } from "$src/api/collection";
   import { FetchSettings } from "$src/api/settings.js";
+
+  //consts
   import { APP_STATE } from "$src/data/enums/app";
+
+  //models
   import { PagedResponse } from "$src/data/models/base.js";
   import type { OutfitPackageCollection } from "$src/data/models/collection";
   import { OutfitPackage } from "$src/data/models/package.js";
   import type { MinerobeUserSettings } from "$src/data/models/user.js";
+
+  //components
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
+  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
+  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
+  import Label from "$lib/components/base/Label/Label.svelte";
+
+  //icons
+  import EditIcon from "$src/icons/edit.svg?raw";
+
   import {
     CURRENT_APP_STATE,
     CURRENT_USER,
@@ -17,9 +30,6 @@
   } from "$src/data/static";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
-  import EditIcon from "$src/icons/edit.svg?raw";
-  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
-  import Label from "$lib/components/base/Label/Label.svelte";
   import {
     navigateToCollection,
     navigateToOutfitPackage,

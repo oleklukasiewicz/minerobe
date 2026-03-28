@@ -1,37 +1,46 @@
 <script lang="ts">
-  //main imports
-  import { onDestroy, onMount } from "svelte";
-  import { writable, type Writable } from "svelte/store";
   //api
-
   import { FetchSettings } from "$src/api/settings";
   import { GetWardrobePackages } from "$src/api/wardrobe";
-  //services
-  import {
-    navigateToOutfitPackage
-  } from "$src/helpers/other/navigationHelper";
+
   //consts
   import { APP_STATE } from "$src/data/enums/app";
   import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
   import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
+
   //models
-  import {
-    PagedModel,
-    type PagedResponse,
-    type SortOption,
-  } from "$src/data/models/base";
   import { OutfitPackage } from "$src/data/models/package";
   import { OutfitFilter } from "$src/data/models/filter";
   import type { MinerobeUserSettings } from "$src/data/models/user";
+
   //components
   import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
   import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
   import Search from "$lib/components/base/Search/Search.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import OutfitFiltersDialog from "$lib/components/dialog/OutfitFiltersDialog.svelte";
+
   //icons
   import Sliders2Icon from "$icons/sliders-2.svg?raw";
+
+  import { onDestroy, onMount } from "svelte";
+  import { writable, type Writable } from "svelte/store";
+  //api
+
+  //services
+  import {
+    navigateToOutfitPackage
+  } from "$src/helpers/other/navigationHelper";
+  //consts
+  //models
+  import {
+    PagedModel,
+    type PagedResponse,
+    type SortOption,
+  } from "$src/data/models/base";
+  //components
+  //icons
 
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
 

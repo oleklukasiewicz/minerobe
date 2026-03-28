@@ -1,4 +1,16 @@
 <script lang="ts">
+  //consts
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+
+  //models
+  import { OutfitLayer, OutfitPackage } from "$src/data/models/package";
+  import { PagedModel, PagedResponse, SortOption } from "$src/data/models/base";
+  import { OutfitFilter } from "$src/data/models/filter";
+
+  //icons
+  import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
+  import AnimationIcon from "$icons/animation.svg?raw";
+
   import { run } from 'svelte/legacy';
 
   //api
@@ -7,13 +19,7 @@
     GetWardrobePackages,
   } from "$src/api/wardrobe";
   //model
-  import { OutfitLayer, OutfitPackage } from "$src/data/models/package";
-  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
-  import { PagedModel, PagedResponse, SortOption } from "$src/data/models/base";
-  import { OutfitFilter } from "$src/data/models/filter";
   //icons
-  import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
-  import AnimationIcon from "$icons/animation.svg?raw";
   //components
   import MenuItem from "../base/MenuItem/MenuItem.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";

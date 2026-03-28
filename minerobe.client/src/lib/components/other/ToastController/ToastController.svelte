@@ -1,8 +1,10 @@
 <script lang="ts">
   //services
   import { HideToast } from "$src/data/toast";
+
   //consts
   import { IS_MOBILE_VIEW } from "$src/data/static";
+
   //components
   import Toast from "$lib/components/base/Toast/Toast.svelte";
 

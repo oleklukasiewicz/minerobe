@@ -2,9 +2,11 @@
   //components
   import Button from "$lib/components/base/Button/Button.svelte";
   import Select from "$lib/components/base/Select/Select.svelte";
+
   //icons
   import CheckBoxIcon from "$icons/checkbox.svg?raw";
   import CheckBoxOffIcon from "$icons/checkbox-off.svg?raw";
+
   import ColorBadge from "../ColorBadge/ColorBadge.svelte";
 
   interface Props {

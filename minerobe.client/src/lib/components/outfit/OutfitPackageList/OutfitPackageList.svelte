@@ -1,14 +1,18 @@
 <script lang="ts">
-  //main imports
-    //api
+  //api
   import { GetLayer } from "$src/api/pack";
-  //model
-  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
+
+  //consts
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+
+  //models
+  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
+
   //components
   import Resize from "$lib/components/other/Resize/Resize.svelte";
-  import OutfitPackageListItem from "../OutfitPackageListItem/OutfitPackageListItem.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+
+  import OutfitPackageListItem from "../OutfitPackageListItem/OutfitPackageListItem.svelte";
 
   interface Props {
     items: OutfitPackage[];

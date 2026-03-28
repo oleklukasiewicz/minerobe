@@ -1,8 +1,7 @@
 <script lang="ts">
-  //main imports
-    //models
+  //models
   import type { Cape } from "$data/models/integration/minecraft";
-  //components
+
   import CapeListItem from "../CapeListItem/CapeListItem.svelte";
 
   interface Props {

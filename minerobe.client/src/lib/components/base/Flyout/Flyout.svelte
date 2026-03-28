@@ -1,11 +1,17 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
-  import Resize from "$lib/components/other/Resize/Resize.svelte";
-  import { IS_MOBILE_VIEW } from "$src/data/static";
-
   //services
   import { clickOutside } from "$src/helpers/data/componentHelper";
+
+  //consts
+  import { IS_MOBILE_VIEW } from "$src/data/static";
+
+  //components
+  import Resize from "$lib/components/other/Resize/Resize.svelte";
+
+  import { run } from 'svelte/legacy';
+
+
+  //services
 
   interface Props {
     opened?: boolean;

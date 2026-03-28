@@ -1,13 +1,16 @@
 <script lang="ts">
-  //main imports
-    //models
-  import type { OutfitLayer } from "$data/models/package";
+  //consts
   import type { MODEL_TYPE } from "$src/data/enums/model";
   import type { OUTFIT_TYPE } from "$src/data/enums/outfit";
+
+  //models
+  import type { OutfitLayer } from "$data/models/package";
+
   //components
   import Button from "$lib/components/base/Button/Button.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+
   //icons
   import UpIcon from "$src/icons/chevron-up.svg?raw";
   import DownIcon from "$src/icons/chevron-down.svg?raw";

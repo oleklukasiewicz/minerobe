@@ -1,19 +1,25 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
-  //main imports
-    //services
+  //services
   import { clickOutside } from "$src/helpers/data/componentHelper";
-  //components
-  import Button from "../Button/Button.svelte";
+
   //consts
   import { IS_MOBILE_VIEW } from "$src/data/static";
+
   //icons
   import ChevronUpIcon from "$icons/chevron-up.svg?raw";
   import ChevronDownIcon from "$icons/chevron-down.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import CheckBoxIcon from "$icons/checkbox.svg?raw";
   import CheckBoxOffIcon from "$icons/checkbox-off.svg?raw";
+
+  import { run } from 'svelte/legacy';
+
+  //main imports
+    //services
+  //components
+  import Button from "../Button/Button.svelte";
+  //consts
+  //icons
   import Flyout from "../Flyout/Flyout.svelte";
 
 

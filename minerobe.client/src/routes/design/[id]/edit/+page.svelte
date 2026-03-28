@@ -1,5 +1,59 @@
 <script lang="ts">
-  //main imports
+  //api
+  import { FetchSettings } from "$src/api/settings";
+  import { GetAccount } from "$src/api/integration/minecraft.js";
+  import { SharePackage, UnSharePackage } from "$src/api/social.js";
+
+  //services
+  import { ImportImages, ImportImagesFromFiles } from "$src/data/import.js";
+  import { ExportImage } from "$src/data/export.js";
+  import { OutfitPackageToTextureConverter } from "$src/data/render.js";
+  import { ShowToast } from "$src/data/toast.js";
+  import type { RenderAnimation } from "$src/data/animation.js";
+  import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
+
+  //consts
+  import { APP_STATE, CHANGE_TYPE } from "$src/data/enums/app.js";
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit.js";
+  import { COLORS_ARRAY } from "$src/data/consts/color.js";
+
+  //models
+  import { OutfitFilter } from "$data/models/filter.js";
+  import { PagedModel, PagedResponse, PageOptions } from "$data/models/base";
+  import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
+  import { OutfitPackageRenderConfig } from "$data/models/render";
+  import { MinerobeUserSettings } from "$data/models/user";
+
+  //components
+  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
+  import Label from "$lib/components/base/Label/Label.svelte";
+  import OutfitLayerList from "$lib/components/outfit/OutfitLayerList/OutfitLayerList.svelte";
+  import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
+  import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
+  import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
+  import CollectionsDialog from "$lib/components/dialog/CollectionsDialog.svelte";
+  import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
+  import OutfitPickerDialog from "$lib/components/dialog/OutfitPickerDialog.svelte";
+  import OverviewDialog from "$lib/components/dialog/OverviewDialog.svelte";
+  import ConfirmDialog from "$lib/components/dialog/ConfirmDialog.svelte";
+  import ColorSelect from "$lib/components/other/ColorSelect/ColorSelect.svelte";
+  import MenuButton from "$lib/components/other/MenuButton/MenuButton.svelte";
+
+  //icons
+  import TrashIcon from "$icons/trash.svg?raw";
+  import ImportPackageIcon from "$icons/upload.svg?raw";
+  import AddIcon from "$icons/plus.svg?raw";
+  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
+  import DownloadIcon from "$icons/download.svg?raw";
+  import CloudIcon from "$icons/cloud.svg?raw";
+  import ListIcon from "$icons/list.svg?raw";
+  import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
+  import LoaderIcon from "$icons/loader.svg?raw";
+
   import { _ } from "svelte-i18n";
   import { writable, type Writable } from "svelte/store";
   import { onDestroy, onMount } from "svelte";
@@ -17,8 +71,6 @@
     SetLayerAsPrimary,
     RemovePrimaryLayer,
   } from "$src/api/pack";
-  import { FetchSettings } from "$src/api/settings";
-  import { GetAccount } from "$src/api/integration/minecraft.js";
   import {
     GetWadrobeCollectionsWithPackageContext,
     GetWadrobePackagesSingleLayer,
@@ -27,12 +79,7 @@
     AddPackageToCollection,
     RemovePackageFromCollection,
   } from "$src/api/collection.js";
-  import { SharePackage, UnSharePackage } from "$src/api/social.js";
   //services
-  import { ImportImages, ImportImagesFromFiles } from "$src/data/import.js";
-  import { ExportImage } from "$src/data/export.js";
-  import { OutfitPackageToTextureConverter } from "$src/data/render.js";
-  import { ShowToast } from "$src/data/toast.js";
   import { debounce } from "$src/data/base.js";
   import { SetMinecraftSkin } from "$src/data/integration.js";
   //consts
@@ -43,56 +90,20 @@
     IS_MOBILE_VIEW,
   } from "$src/data/static.js";
   //models
-  import { OutfitFilter } from "$data/models/filter.js";
-  import { APP_STATE, CHANGE_TYPE } from "$src/data/enums/app.js";
-  import { PACKAGE_TYPE } from "$src/data/enums/outfit.js";
-  import type { RenderAnimation } from "$src/data/animation.js";
   import type {
     Cape,
     MinecraftAccount,
   } from "$data/models/integration/minecraft";
-  import { PagedModel, PagedResponse, PageOptions } from "$data/models/base";
-  import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
   import { OutfitLayer, type OutfitPackage } from "$model/package";
   import DefaultAnimation from "$src/animation/default.js";
-  import { OutfitPackageRenderConfig } from "$data/models/render";
-  import { MinerobeUserSettings } from "$data/models/user";
   import HandsUpAnimation from "$src/animation/handsup";
   import {
     navigateToOutfitPackage,
     navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper.js";
   //components
-  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
-  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
-  import Label from "$lib/components/base/Label/Label.svelte";
-  import OutfitLayerList from "$lib/components/outfit/OutfitLayerList/OutfitLayerList.svelte";
-  import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
-  import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
-  import Button from "$lib/components/base/Button/Button.svelte";
-  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
-  import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
-  import CollectionsDialog from "$lib/components/dialog/CollectionsDialog.svelte";
-  import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
-  import OutfitPickerDialog from "$lib/components/dialog/OutfitPickerDialog.svelte";
-  import OverviewDialog from "$lib/components/dialog/OverviewDialog.svelte";
-  import ConfirmDialog from "$lib/components/dialog/ConfirmDialog.svelte";
   //icons
-  import TrashIcon from "$icons/trash.svg?raw";
-  import ImportPackageIcon from "$icons/upload.svg?raw";
-  import AddIcon from "$icons/plus.svg?raw";
-  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
-  import DownloadIcon from "$icons/download.svg?raw";
-  import CloudIcon from "$icons/cloud.svg?raw";
-  import ListIcon from "$icons/list.svg?raw";
-  import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
-  import LoaderIcon from "$icons/loader.svg?raw";
-  import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
-  import ColorSelect from "$lib/components/other/ColorSelect/ColorSelect.svelte";
-  import { COLORS_ARRAY } from "$src/data/consts/color.js";
   import { THREE } from "$lib/three.js";
-  import MenuButton from "$lib/components/other/MenuButton/MenuButton.svelte";
 
   interface Props {
     data: any;

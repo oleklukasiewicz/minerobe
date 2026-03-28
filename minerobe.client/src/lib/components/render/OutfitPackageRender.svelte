@@ -1,4 +1,12 @@
 <script lang="ts">
+  //consts
+  import { CAMERA_CONFIG } from "$src/data/consts/render";
+  import { MODEL_TYPE } from "$src/data/enums/model";
+  import { OUTFIT_TYPE } from "$src/data/enums/outfit";
+
+  //models
+  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
+
   import { run } from 'svelte/legacy';
 
   //main imports
@@ -20,11 +28,7 @@
     STEVE_MODELSCENE,
     STEVE_MODELSCENE_BASE,
   } from "$src/data/static";
-  import { CAMERA_CONFIG } from "$src/data/consts/render";
   //models
-  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
-  import { MODEL_TYPE } from "$src/data/enums/model";
-  import { OUTFIT_TYPE } from "$src/data/enums/outfit";
   //components
   import Resize from "../other/Resize/Resize.svelte";
   //icons

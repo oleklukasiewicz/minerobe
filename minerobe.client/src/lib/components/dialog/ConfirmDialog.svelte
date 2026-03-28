@@ -1,10 +1,10 @@
 <script lang="ts">
-  //main imports
-    //components
+  //icons
+  import CancelIcon from "$icons/close.svg?raw";
+
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   //icons
-  import CancelIcon from "$icons/close.svg?raw";
 
   interface Props {
     open?: boolean;
