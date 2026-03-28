@@ -2,11 +2,8 @@
   import { run } from 'svelte/legacy';
 
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //consts
+    //consts
   import { COLORS } from "$src/data/consts/color";
-
-  const dispatch = createEventDispatcher();
 
   interface Props {
     color: string;
@@ -14,6 +11,7 @@
     selected?: boolean;
     selectable?: boolean;
     style?: string;
+    onclick?: (event?: any) => void;
   }
 
   let {
@@ -22,6 +20,8 @@
     selected = false,
     selectable = true,
     style = ""
+  ,
+    onclick = null
   }: Props = $props();
 
   let normalizedColor = $state();
@@ -45,7 +45,7 @@
   const onClick= function (e) {
     if (!selectable) return;
     e.stopPropagation();
-    dispatch("click", { color: color });
+    onclick?.({ detail: { color: color } });
   };
 </script>
 

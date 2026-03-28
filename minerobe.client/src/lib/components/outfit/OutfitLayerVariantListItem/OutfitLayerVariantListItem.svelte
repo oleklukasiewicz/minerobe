@@ -17,13 +17,15 @@
     model: MODEL_TYPE;
     selected?: boolean;
     label?: string;
+    onclick?: (event?: any) => void;
   }
 
   let {
     item,
     model,
     selected = false,
-    label = ""
+    label = "",
+    onclick = null
   }: Props = $props();
 </script>
 
@@ -33,7 +35,10 @@
 <a
   class="outfit-layer-variant-list-item"
   class:selected
-  onclick={bubble('click')}
+  onclick={(event) => {
+    bubble('click')(event);
+    onclick?.(event);
+  }}
   title={label || item.name}
 >
   <OutfitPackageRender

@@ -101,7 +101,7 @@
 <div id="profile-base" class:mobile={$IS_MOBILE_VIEW}>
   <div class="render">
     <Placeholder {loaded}>
-      <DragAndDrop on:drop={DropBaseTexture}>
+      <DragAndDrop ondrop={DropBaseTexture}>
         <OutfitPackageRender
           pauseOnIntersection
           baseTexture={$BASE_TEXTURE}
@@ -125,8 +125,8 @@
             movable={false}
             labels={false}
             removable={true}
-            on:edit={OpenEditBaseTextureDialog}
-            on:delete={RemoveBaseTexture}
+            onedit={OpenEditBaseTextureDialog}
+            ondelete={RemoveBaseTexture}
           /></Placeholder
         >
       </div>
@@ -146,7 +146,7 @@
       <Button
         label="Import base texture"
         size="large"
-        on:click={ImportBaseTexture}
+        onclick={ImportBaseTexture}
         icon={ImportPackageIcon}
       />
     </Placeholder>
@@ -156,14 +156,14 @@
         size="large"
         type="secondary"
         icon={DownloadIcon}
-        on:click={DownloadBaseTexture}
+        onclick={DownloadBaseTexture}
       />
     </Placeholder>
   </div>
   <!-- Dialogs -->
   <EditLayerDialog
     onlyTextures
-    on:edit={EditBaseTexture}
+    onedit={EditBaseTexture}
     bind:open={isBaseTextureEditDialogOpen}
     item={$userSettings?.baseTexture?.layers[0]}
   />

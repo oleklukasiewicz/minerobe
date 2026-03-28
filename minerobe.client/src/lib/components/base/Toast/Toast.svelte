@@ -3,7 +3,6 @@
 
   const bubble = createBubbler();
   //main imports
-  import { createEventDispatcher } from "svelte";
   import { cubicOut } from "svelte/easing";
   //components
   import Button from "../Button/Button.svelte";
@@ -17,6 +16,8 @@
     show?: boolean;
     icon?: string;
     closeable?: boolean;
+    onclose?: (event?: any) => void;
+    onclick?: (event?: any) => void;
   }
 
   let {
@@ -25,10 +26,10 @@
     mobile = false,
     show = false,
     icon = "",
-    closeable = true
+    closeable = true,
+    onclose = null,
+    onclick = null
   }: Props = $props();
-
-  const dispatch = createEventDispatcher();
 
   function fadeInScale(node, { duration }) {
     return {
@@ -38,7 +39,7 @@
     };
   }
   const onClose= () => {
-    dispatch("close");
+    onclose?.();
   };
 </script>
 
@@ -51,7 +52,10 @@
   class:warning={type === "warning"}
   class:info={type === "info"}
   class:hidden={!show}
-  onclick={bubble('click')}
+  onclick={(event) => {
+    bubble('click')(event);
+    onclick?.(event);
+  }}
   class:mobile
   in:fadeInScale={{ duration: 300 }}
   out:fadeInScale={{ duration: 300 }}

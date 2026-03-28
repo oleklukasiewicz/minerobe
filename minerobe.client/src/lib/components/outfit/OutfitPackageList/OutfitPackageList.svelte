@@ -1,7 +1,6 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //api
+    //api
   import { GetLayer } from "$src/api/pack";
   //model
   import type { OutfitLayer, OutfitPackage } from "$data/models/package";
@@ -10,8 +9,6 @@
   import Resize from "$lib/components/other/Resize/Resize.svelte";
   import OutfitPackageListItem from "../OutfitPackageListItem/OutfitPackageListItem.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
-
-  const dispatch = createEventDispatcher();
 
   interface Props {
     items: OutfitPackage[];
@@ -23,6 +20,7 @@
     loading?: boolean;
     pageSize?: number;
     selectable?: boolean;
+    onselect?: (event?: any) => void;
   }
 
   let {
@@ -35,13 +33,15 @@
     loading = false,
     pageSize = 10,
     selectable = false
+  ,
+    onselect = null
   }: Props = $props();
 
   let _component: any = $state(null);
   const selectOutfit = function (e) {
     const item = e.detail.item;
     const layer = e.detail.layer;
-    dispatch("select", { item: item, layer: layer });
+    onselect?.({ detail: { item: item, layer: layer } });
   };
   const fetchLayer = async function (id, item): Promise<OutfitLayer> {
     return await GetLayer(id);
@@ -72,7 +72,7 @@
           currentItem={currentPackageId == item.id}
           {item}
           {fetchLayer}
-          on:click={selectOutfit}
+          onclick={selectOutfit}
           baseTexture={item.type == PACKAGE_TYPE.OUTFIT_SET
             ? baseTexture
             : null}
@@ -83,7 +83,7 @@
   {#if resizable}
     <Resize
       debounce={resizeDebounce}
-      on:resize={onResize}
+      onresize={onResize}
       targetNode={_component}
     />
   {/if}

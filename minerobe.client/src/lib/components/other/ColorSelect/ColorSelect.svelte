@@ -19,6 +19,8 @@
     disabled?: boolean;
     multiple?: boolean;
     autocomplete?: boolean;
+    onselect?: (event?: any) => void;
+    onclear?: (event?: any) => void;
   }
 
   let {
@@ -32,13 +34,15 @@
     dropDownStyle = $bindable(null),
     disabled = $bindable(false),
     multiple = $bindable(false),
-    autocomplete = $bindable(false)
+    autocomplete = $bindable(false),
+    onselect = null,
+    onclear = null
   }: Props = $props();
 </script>
 
 <Select
-  on:select
-  on:clear
+  {onselect}
+  {onclear}
   {items}
   {placeholder}
   bind:selectedItem

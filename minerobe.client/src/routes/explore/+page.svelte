@@ -38,7 +38,7 @@
 
 <div style="width: 50vw;">
   {#if loaded}
-    <LazyList  itemsPages={pages} on:loading={loadNewpage}>
+    <LazyList  itemsPages={pages} onloading={loadNewpage}>
       {#snippet children({ items })}
             <OutfitPackageList {items} />
                 {/snippet}

@@ -2,8 +2,7 @@
   import { run } from 'svelte/legacy';
 
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //consts
+    //consts
   import { COLORS_ARRAY } from "$src/data/consts/color";
   import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
   import { OUTFIT_TYPE_WITH_SET_ARRAY } from "$src/data/consts/outfit";
@@ -22,8 +21,6 @@
   import Button from "../base/Button/Button.svelte";
   import type { OutfitPackageCollection } from "$src/data/models/collection";
 
-  const dispatch = createEventDispatcher();
-
 
   interface Props {
     items: PagedResponse<OutfitPackage>;
@@ -35,6 +32,12 @@
     loading?: boolean;
     baseTexture?: OutfitLayer;
     selectedItems?: OutfitPackage[];
+    onfilter?: (event?: any) => void;
+    onoptionsChanged?: (event?: any) => void;
+    onselect?: (event?: any) => void;
+    onunselect?: (event?: any) => void;
+    onselectClick?: (event?: any) => void;
+    onclose?: (event?: any) => void;
   }
 
   let {
@@ -47,28 +50,35 @@
     loading = true,
     baseTexture = null,
     selectedItems = $bindable([])
+  ,
+    onfilter = null,
+    onoptionsChanged = null,
+    onselect = null,
+    onunselect = null,
+    onselectClick = null,
+    onclose = null
   }: Props = $props();
 
   const onFiltersUpdate= function () {
     if (options.sort[0]?.value == null) options.sort = [];
     options.page = 0;
-    dispatch("filter", { options: options });
+    onfilter?.({ detail: { options: options } });
   };
   const onPageChanged= function (e) {
     const page = e.detail.options;
     options.page = page.options.page;
     options.pageSize = page.options.pageSize;
     if (options.sort[0]?.value == null) options.sort = [];
-    dispatch("optionsChanged", { options: options });
+    onoptionsChanged?.({ detail: { options: options } });
   };
   const onSelect= function (item) {
-    dispatch("select", { items: item });
+    onselect?.({ detail: { items: item } });
   };
   const onUnselect= function (item) {
-    dispatch("unselect", { items: item });
+    onunselect?.({ detail: { items: item } });
   };
   const onSelectClick= function () {
-    dispatch("selectClick", { items: selectedItems });
+    onselectClick?.({ detail: { items: selectedItems } });
   };
 
   const onOpen= function (v) {};
@@ -77,11 +87,11 @@
   });
   const onClose= function () {
     open = false;
-    dispatch("close");
+    onclose?.();
   };
 </script>
 
-<Dialog bind:open {label}  on:close={onClose}>
+<Dialog bind:open {label}  onclose={onClose}>
   {#snippet children({ isMobile })}
     <div id="collection-items-picker-dialog" class:mobile={isMobile}>
       <div class="dialog-filters">
@@ -89,8 +99,8 @@
           clearable
           items={OUTFIT_PACKAGE_SORT_OPTIONS}
           bind:selectedItem={options.sort[0]}
-          on:select={onFiltersUpdate}
-          on:clear={onFiltersUpdate}
+          onselect={onFiltersUpdate}
+          onclear={onFiltersUpdate}
         />
         <ColorSelect
           items={COLORS_ARRAY}
@@ -102,8 +112,8 @@
           dropDownStyle="max-height: 275px"
           multiple
           clearable
-          on:select={onFiltersUpdate}
-          on:clear={onFiltersUpdate}
+          onselect={onFiltersUpdate}
+          onclear={onFiltersUpdate}
         />
         <Select
           items={OUTFIT_TYPE_WITH_SET_ARRAY}
@@ -114,13 +124,13 @@
           clearable
           itemValue="name"
           bind:selectedItem={options.filter.outfitType}
-          on:select={onFiltersUpdate}
-          on:clear={onFiltersUpdate}
+          onselect={onFiltersUpdate}
+          onclear={onFiltersUpdate}
         />
         <Search
           dense
           bind:value={options.filter.phrase}
-          on:search={onFiltersUpdate}
+          onsearch={onFiltersUpdate}
         />
       </div>
       <PagedList
@@ -128,7 +138,7 @@
         pageSize={options.pageSize}
         {pageSizes}
         {loading}
-        on:optionsChanged={onPageChanged}
+        onoptionsChanged={onPageChanged}
         
         
         
@@ -145,8 +155,8 @@
             pageSize={pagedPageSize}
             loading={pagedLoading}
             {baseTexture}
-            on:select={(e) => onSelect(e.detail.items)}
-            on:unselect={(e) => onUnselect(e.detail.items)}
+            onselect={(e) => onSelect(e.detail.items)}
+            onunselect={(e) => onUnselect(e.detail.items)}
           />
           {#if items?.items?.length === 0 && !loading}
             <div class="no-items-error">No items found</div>
@@ -154,7 +164,7 @@
           {/snippet}
           {#snippet footer()}
             <div  id="select-footer">
-            <Button label="Save items" on:click={onClose} />
+            <Button label="Save items" onclick={onClose} />
           </div>
           {/snippet}
       </PagedList>

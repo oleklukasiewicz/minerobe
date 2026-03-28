@@ -94,7 +94,7 @@
             icon={EditIcon}
             type="tertiary"
             size="large"
-            on:click={editCollection}
+            onclick={editCollection}
           />
         {/if}
       </h1>
@@ -115,7 +115,7 @@
   <div id="collection-items">
       <LazyList
         
-        on:loading={fetchItems}
+        onloading={fetchItems}
         itemsPages={$collectionItems}
         rootMargin={"100px"}
         loading={!itemsLoaded}
@@ -127,7 +127,7 @@
           items={items}
           currentPackageId={userSettings?.currentTexture?.packageId}
           baseTexture={userSettings?.baseTexture.layers[0]}
-          on:select={goToItemPage}
+          onselect={goToItemPage}
         />
         <OutfitPackageList
           loading

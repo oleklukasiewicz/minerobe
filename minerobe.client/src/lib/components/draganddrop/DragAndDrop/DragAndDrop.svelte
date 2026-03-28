@@ -1,13 +1,13 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  interface Props {
+    interface Props {
     children?: import('svelte').Snippet;
+    ondrop?: (event?: any) => void;
   }
 
-  let { children }: Props = $props();
-
-  const dispatch = createEventDispatcher();
+  let { children ,
+    ondrop = null
+  }: Props = $props();
 
   let isDragging = $state(false);
 
@@ -26,7 +26,7 @@
       .filter((item) => item.kind === "file")
       .map((item) => item.getAsFile());
 
-    dispatch("drop", { items: items });
+    ondrop?.({ detail: { items: items } });
     isDragging = false;
   };
 </script>

@@ -153,7 +153,7 @@
           icon={EditIcon}
           type="tertiary"
           size="large"
-          on:click={() => (isEditDialogOpen = true)}
+          onclick={() => (isEditDialogOpen = true)}
         />
       </h1>
     </Placeholder>
@@ -168,14 +168,14 @@
     <Placeholder {loaded} style="min-height: 42px;"><p>{$itemCollection.description}</p></Placeholder>
   </div>
   <div id="collection-actions">
-    <Button label="Edit items" icon={EditIcon} on:click={openOutfitPicker} />
+    <Button label="Edit items" icon={EditIcon} onclick={openOutfitPicker} />
     <div></div>
   </div>
   <div id="collection-items">
     {#if loaded}
       <LazyList
         
-        on:loading={fetchItems}
+        onloading={fetchItems}
         itemsPages={$collectionItems}
         rootMargin={"100px"}
         loading={!itemsLoaded}
@@ -187,7 +187,7 @@
             items={pagedItems}
             currentPackageId={userSettings?.currentTexture?.packageId}
             baseTexture={userSettings?.baseTexture.layers[0]}
-            on:select={goToItemPage}
+            onselect={goToItemPage}
           />              {/snippet}
             </LazyList
       >
@@ -196,7 +196,7 @@
   <EditCollectionDialog
     bind:open={isEditDialogOpen}
     collection={$itemCollection}
-    on:save={saveCollection}
+    onsave={saveCollection}
   />
   <CollectionsItemPickerDialog
     pageSizes={[6, 12, 24]}
@@ -206,11 +206,11 @@
     selectedItems={flatCollectionItems}
     loading={dialogOutfitPickerItems?.items == null}
     baseTexture={userSettings?.baseTexture.layers[0]}
-    on:optionsChanged={openOutfitPicker}
-    on:select={addItemToCollection}
-    on:unselect={removeItemFromCollection}
-    on:filter={openOutfitPicker}
-    on:close={refreshItems}
+    onoptionsChanged={openOutfitPicker}
+    onselect={addItemToCollection}
+    onunselect={removeItemFromCollection}
+    onfilter={openOutfitPicker}
+    onclose={refreshItems}
   />
 </div>
 

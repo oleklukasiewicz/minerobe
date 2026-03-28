@@ -1,7 +1,6 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //model
+    //model
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
   //components
   import Dialog from "../base/Dialog/Dialog.svelte";
@@ -10,15 +9,16 @@
   import AnimationIcon from "$icons/animation.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
 
-  const dispatch = createEventDispatcher();
-
   interface Props {
     open?: boolean;
+    onselect?: (event?: any) => void;
   }
 
-  let { open = $bindable(false) }: Props = $props();
+  let { open = $bindable(false) ,
+    onselect = null
+  }: Props = $props();
   const onSelect= function (item) {
-    dispatch("select", { type: item });
+    onselect?.({ detail: { type: item } });
   };
 </script>
 

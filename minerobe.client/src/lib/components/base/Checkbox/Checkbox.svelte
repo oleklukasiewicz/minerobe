@@ -1,26 +1,30 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //icons
+    //icons
   import CheckIcon from "$icons/check.svg?raw";
-
-  const dispatch = createEventDispatcher();
 
   interface Props {
     style?: string;
     value?: boolean;
     label?: string;
+    onchange?: (event?: any) => void;
+    onselect?: (event?: any) => void;
+    onunselect?: (event?: any) => void;
   }
 
-  let { style = "", value = $bindable(false), label = null }: Props = $props();
+  let { style = "", value = $bindable(false), label = null ,
+    onchange = null,
+    onselect = null,
+    onunselect = null
+  }: Props = $props();
   
   const toggleValue = () => {
     value = !value;
-    dispatch("change", { value });
+    onchange?.({ detail: { value } });
     if (value) {
-      dispatch("select");
+      onselect?.();
     } else {
-      dispatch("unselect");
+      onunselect?.();
     }
   };
 </script>

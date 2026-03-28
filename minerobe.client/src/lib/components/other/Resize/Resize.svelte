@@ -2,16 +2,17 @@
   import { run } from 'svelte/legacy';
 
   //main imports
-  import { createEventDispatcher, onDestroy, onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
 
   interface Props {
     debounce?: number;
     targetNode?: any;
+    onresize?: (event?: any) => void;
   }
 
-  let { debounce = 0, targetNode = null }: Props = $props();
-
-  const dispatch = createEventDispatcher();
+  let { debounce = 0, targetNode = null ,
+    onresize = null
+  }: Props = $props();
   let timeout;
   let resizeObserver = null;
   let _targetNode = null;
@@ -42,10 +43,10 @@
           return;
         }
         if (debounce == -1) {
-          dispatch("resize", {});
+          onresize?.({ detail: {} });
         }
         timeout = setTimeout(() => {
-          dispatch("resize", {});
+          onresize?.({ detail: {} });
         }, debounce);
       });
     resizeObserver.observe(_targetNode);

@@ -2,8 +2,7 @@
   import { run } from 'svelte/legacy';
 
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //models
+    //models
   import { SortOption } from "$src/data/models/base";
   //components
   import Button from "../Button/Button.svelte";
@@ -11,8 +10,6 @@
   //icons
   import ArrowUpIcon from "$icons/arrow-up.svg?raw";
   import ArrowDownIcon from "$icons/arrow-down.svg?raw";
-
-  const dispatch = createEventDispatcher();
 
   interface Props {
     items?: any[];
@@ -26,6 +23,8 @@
     disabled?: boolean;
     autocomplete?: boolean;
     isDescending?: boolean;
+    onselect?: (event?: any) => void;
+    onclear?: (event?: any) => void;
   }
 
   let {
@@ -39,7 +38,9 @@
     dropDownStyle = $bindable(null),
     disabled = $bindable(false),
     autocomplete = $bindable(false),
-    isDescending = $bindable(false)
+    isDescending = $bindable(false),
+    onselect = null,
+    onclear = null
   }: Props = $props();
 
   const onSelect= (e) => {
@@ -47,7 +48,7 @@
     sortOption.value = e.detail?.item?.value;
     sortOption.isDesc = isDescending;
     selectedItem = sortOption;
-    dispatch("select", { option: sortOption });
+    onselect?.({ detail: { option: sortOption } });
   };
   const onDirectionClick= () => {
     isDescending = !isDescending;
@@ -55,7 +56,7 @@
     sortOption.value = selectedItem.value;
     sortOption.isDesc = isDescending;
     selectedItem = sortOption;
-    dispatch("select", { option: sortOption });
+    onselect?.({ detail: { option: sortOption } });
   };
 
   const onSelectedUpdate= (v) => {
@@ -70,8 +71,8 @@
 <div class="sort-select">
   <div class="select-container">
     <Select
-      on:clear
-      on:select={onSelect}
+      onclear={onclear}
+      onselect={onSelect}
       {items}
       {placeholder}
       bind:selectedItem

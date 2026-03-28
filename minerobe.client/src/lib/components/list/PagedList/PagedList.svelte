@@ -2,8 +2,7 @@
   import { run } from 'svelte/legacy';
 
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //models
+    //models
   import type { PagedResponse } from "$data/models/base";
   //components
   import Button from "../../base/Button/Button.svelte";
@@ -12,8 +11,6 @@
   import ChevronLeftIcon from "$icons/chevron-left.svg?raw";
   import ChevronRightIcon from "$icons/chevron-right.svg?raw";
 
-  const dispatch = createEventDispatcher();
-
   interface Props {
     items: PagedResponse<any>;
     pageSize?: any;
@@ -21,6 +18,7 @@
     pageSizes?: number[];
     children?: import('svelte').Snippet<[any]>;
     footer?: import('svelte').Snippet;
+    onoptionsChanged?: (event?: any) => void;
   }
 
   let {
@@ -30,6 +28,8 @@
     pageSizes = [10, 20, 50, 100],
     children,
     footer
+  ,
+    onoptionsChanged = null
   }: Props = $props();
 
   let totalPages = $state(0);
@@ -40,7 +40,7 @@
   });
 
   const onOptionsChanged= function () {
-    dispatch("optionsChanged", { options: items });
+    onoptionsChanged?.({ detail: { options: items } });
   };
   const onPrevious= function (event) {
     items.options.page--;
@@ -79,7 +79,7 @@
         iconSize="large"
         icon={ChevronLeftIcon}
         disabled={items?.options.page == 0 || items == null || loading}
-        on:click={onPrevious}
+        onclick={onPrevious}
       />
       <div class="page">
         {items?.options.page + 1 || 0} of {totalPages || 0}
@@ -92,14 +92,14 @@
         disabled={items?.options.page >= totalPages - 1 ||
           items == null ||
           loading}
-        on:click={onNext}
+        onclick={onNext}
       />
       <div>
         <Select
           disabled={loading}
           items={pageSizes}
           selectedItem={pageSize ?? items?.options.pageSize}
-          on:select={onPageSizeChanged}
+          onselect={onPageSizeChanged}
         />
       </div>
     </div>

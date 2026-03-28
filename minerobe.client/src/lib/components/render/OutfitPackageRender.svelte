@@ -2,7 +2,7 @@
   import { run } from 'svelte/legacy';
 
   //main imports
-  import { onDestroy, onMount, createEventDispatcher } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import IntersectionObserver from "svelte-intersection-observer";
   //services
   import {
@@ -28,8 +28,6 @@
   import Resize from "../other/Resize/Resize.svelte";
   //icons
   import floorTexture from "$texture/floor.webp?url";
-
-  const dispatch = createEventDispatcher();
 
   export const addAnimation = function (animation, force = false) {
     if (textureRenderer == null) return;
@@ -57,6 +55,7 @@
     useTextureLighting?: boolean;
     resizable?: boolean;
     resizeDebounce?: number;
+    ontextureUpdate?: (event?: any) => void;
   }
 
   let {
@@ -74,6 +73,8 @@
     useTextureLighting = false,
     resizable = false,
     resizeDebounce = 300
+  ,
+    ontextureUpdate = null
   }: Props = $props();
 
   let _component: any = $state(null);
@@ -113,7 +114,7 @@
   });
 
   const onTextureUpdate= function () {
-    dispatch("textureUpdate", { texture: textureRenderer.GetTexture() });
+    ontextureUpdate?.({ detail: { texture: textureRenderer.GetTexture() } });
   };
 
   const setRenderMode = async (v) => {
@@ -477,7 +478,7 @@
   {/if}
   {#if resizable}
     <Resize
-      on:resize={onResize}
+      onresize={onResize}
       debounce={resizeDebounce}
       targetNode={_component}
     ></Resize>

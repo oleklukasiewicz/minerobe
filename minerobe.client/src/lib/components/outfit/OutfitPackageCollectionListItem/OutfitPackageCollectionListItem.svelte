@@ -1,34 +1,38 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //models
+    //models
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
   //components
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
-
-  const dispatch = createEventDispatcher();
 
   interface Props {
     item: OutfitPackageCollectionWithPackageContext;
     selectable?: boolean;
     dense?: boolean;
+    onselect?: (event?: any) => void;
+    onunselect?: (event?: any) => void;
+    onclick?: (event?: any) => void;
   }
 
-  let { item, selectable = false, dense = true }: Props = $props();
+  let { item, selectable = false, dense = true ,
+    onselect = null,
+    onunselect = null,
+    onclick = null
+  }: Props = $props();
 
   const onSelect= (e) => {
     e.preventDefault();
     e.stopPropagation();
-    dispatch("select", item);
+    onselect?.({ detail: item });
   };
   const onUnselect= () => {
-    dispatch("unselect", item);
+    onunselect?.({ detail: item });
   };
   const onClick= (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (selectable) return;
-    dispatch("click", item);
+    onclick?.({ detail: item });
   };
 </script>
 
@@ -40,8 +44,8 @@
   {#if selectable}
     <div class="items-actions">
       <Checkbox
-        on:select={onSelect}
-        on:unselect={onUnselect}
+        onselect={onSelect}
+        onunselect={onUnselect}
         value={item?.isInCollection}
       />
     </div>

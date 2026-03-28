@@ -301,7 +301,7 @@
           movable={false}
           removable={false}
           editable={false}
-          on:select={setSelectedLayer}
+          onselect={setSelectedLayer}
           model={$itemPackage.model}
         ></OutfitLayerList>
       {/if}
@@ -312,7 +312,7 @@
         <CapeList
           items={integrationSettings?.capes}
           selectedCapeId={$renderConfiguration.cape?.id}
-          on:select={setCape}
+          onselect={setCape}
         />
       </div>
     {/if}
@@ -346,14 +346,14 @@
             type="primary"
             icon={isSkinSetting ? LoaderIcon : HumanHandsUpIcon}
             size="large"
-            on:click={setSkin}
+            onclick={setSkin}
             disabled={isSkinSetting}
           />
         {/if}
         <MenuButton
           hideMenuButton={!isOutfitSet}
           containerStyle={isMinecraftIntegrated && isOutfitSet ? "" : "flex:1"}
-          on:click={exportPackage}
+          onclick={exportPackage}
           label="Download"
           type="primary"
           size="large"
@@ -365,7 +365,7 @@
             type="quaternary"
             size="medium"
             icon={DownloadIcon}
-            on:click={exportPackageWithoutBaseTexture}
+            onclick={exportPackageWithoutBaseTexture}
           />
         </MenuButton>
        {#if $CURRENT_USER?.id != null}
@@ -375,7 +375,7 @@
             size="large"
             onlyIcon={!$IS_MOBILE_VIEW}
             icon={ListIcon}
-            on:click={openCollectionsDialog}
+            onclick={openCollectionsDialog}
           />
         {/if}
         {#if $CURRENT_USER?.id == $itemPackage.publisher.id}
@@ -385,7 +385,7 @@
             size="large"
             onlyIcon={!$IS_MOBILE_VIEW}
             icon={EditIcon}
-            on:click={() =>
+            onclick={() =>
               navigateToOutfitPackage($itemPackage, undefined, true)}
           />
         {/if}
@@ -401,9 +401,9 @@
     bind:open={isCollectionsDialogOpen}
     items={dialogCollections}
     pageSizes={[6, 12, 24]}
-    on:unselect={removeFromCollection}
-    on:select={addToCollection}
-    on:optionsChanged={openCollectionsDialog}
+    onunselect={removeFromCollection}
+    onselect={addToCollection}
+    onoptionsChanged={openCollectionsDialog}
   />
 </div>
 

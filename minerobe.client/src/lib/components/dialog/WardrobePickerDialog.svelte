@@ -26,13 +26,15 @@
     label?: string;
     collectionId?: string;
     baseTexture?: OutfitLayer;
+    onselect?: (event?: any) => void;
   }
 
   let {
     open = $bindable(false),
     label = "Wardrobe",
     collectionId = null,
-    baseTexture = null
+    baseTexture = null,
+    onselect = null
   }: Props = $props();
 
   let items = $state(new PagedResponse<OutfitPackage>());
@@ -82,7 +84,7 @@
             icon={AnimationIcon}
             {opened}
             {top}
-            on:click={() => setFilterType(PACKAGE_TYPE.OUTFIT_SET)}
+            onclick={() => setFilterType(PACKAGE_TYPE.OUTFIT_SET)}
             selected={filter.type == PACKAGE_TYPE.OUTFIT_SET}
           />
           <MenuItem
@@ -90,7 +92,7 @@
             {top}
             label="Outfits"
             icon={ShoppingBagIcon}
-            on:click={() => setFilterType(PACKAGE_TYPE.OUTFIT)}
+            onclick={() => setFilterType(PACKAGE_TYPE.OUTFIT)}
             selected={filter.type == PACKAGE_TYPE.OUTFIT}
           />
                       {/snippet}
@@ -102,7 +104,7 @@
         pageSize={items?.options.pageSize ?? 12}
         loading={items?.items == null}
         pageSizes={[6, 12, 24]}
-        on:optionsChanged={fetchItems}
+        onoptionsChanged={fetchItems}
         
         
         
@@ -118,7 +120,7 @@
             items={pagedItems}
             pageSize={pagedPageSize}
             loading={pagedLoading}
-            on:select
+            {onselect}
           />
                       {/snippet}
             </PagedList>

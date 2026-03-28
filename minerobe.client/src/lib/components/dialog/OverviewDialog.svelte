@@ -1,7 +1,6 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //models
+    //models
   import type { OutfitPackage } from "$data/models/package";
   //components
   import Button from "../base/Button/Button.svelte";
@@ -14,23 +13,28 @@
   import CloseIcon from "$icons/close.svg?raw";
   import SpotlightIcon from "$icons/spotlight.svg?raw";
 
-  const dispatch = createEventDispatcher();
-
   interface Props {
     open: boolean;
     item: OutfitPackage;
+    onunshare?: (event?: any) => void;
+    onshare?: (event?: any) => void;
+    onpage?: (event?: any) => void;
   }
 
-  let { open = $bindable(), item }: Props = $props();
+  let { open = $bindable(), item ,
+    onunshare = null,
+    onshare = null,
+    onpage = null
+  }: Props = $props();
 
   const onUnshare= () => {
-    dispatch("unshare");
+    onunshare?.();
   };
   const onShare= () => {
-    dispatch("share");
+    onshare?.();
   };
   const onItemPage= () => {
-    dispatch("page");
+    onpage?.();
   };
 </script>
 
@@ -51,15 +55,15 @@
     <SectionTitle label="Actions" />
     <div class="item-actions">
       {#if item.social.isShared}
-        <Button label="item page" icon={SpotlightIcon} on:click={onItemPage} />
+        <Button label="item page" icon={SpotlightIcon} onclick={onItemPage} />
         <Button
           label="Unshare"
           type="tertiary"
           icon={CloseIcon}
-          on:click={onUnshare}
+          onclick={onUnshare}
         />
       {:else}
-        <Button label="Share" icon={CloudIcon} on:click={onShare} />
+        <Button label="Share" icon={CloudIcon} onclick={onShare} />
       {/if}
     </div>
   </div>

@@ -50,7 +50,7 @@
       <!-- svelte-ignore a11y_no_static_element_interactions -->
       <Button
         type="quaternary"
-        on:click={toggleExpander}
+        onclick={toggleExpander}
         onlyIcon
         icon={(group == null ? opened : group == value)
           ? ChevronUpIcon

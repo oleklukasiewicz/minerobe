@@ -28,6 +28,7 @@
     target?: "_blank" | "_self";
     hideMenuButton?: boolean;
     opened?: boolean;
+    onclick?: (event?: any) => void;
     children?: import('svelte').Snippet;
   }
 
@@ -50,6 +51,7 @@
     target = null,
     hideMenuButton = false,
     opened = $bindable(false),
+    onclick = null,
     children: menuChildren
   }: Props = $props();
 
@@ -63,7 +65,7 @@
   use:clickOutside={() => (opened = false)}
 >
   <Button
-    on:click
+    {onclick}
     {href}
     {label}
     {icon}

@@ -1,7 +1,6 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //components
+    //components
   import Button from "../Button/Button.svelte";
   //icons
   import SearchIcon from "$icons/search.svg?raw";
@@ -14,6 +13,9 @@
     clearable?: boolean;
     placeholder?: string;
     dark?: boolean;
+    onclear?: (event?: any) => void;
+    oninput?: (event?: any) => void;
+    onsearch?: (event?: any) => void;
   }
 
   let {
@@ -23,9 +25,11 @@
     clearable = true,
     placeholder = "Search",
     dark = false
+  ,
+    onclear = null,
+    oninput = null,
+    onsearch = null
   }: Props = $props();
-
-  const dispatch = createEventDispatcher();
 
   const onKeyDown= (e) => {
     if (e.key === "Enter") {
@@ -35,14 +39,14 @@
 
   const onClear= () => {
     value = "";
-    dispatch("clear", value);
+    onclear?.({ detail: value });
   };
 
   const onInput= (e) => {
-    dispatch("input", value);
+    oninput?.({ detail: value });
   };
   const onSearch= (e) => {
-    dispatch("search", value);
+    onsearch?.({ detail: value });
   };
 </script>
 

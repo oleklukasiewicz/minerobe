@@ -1,7 +1,6 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //models
+    //models
   import type { OutfitLayer } from "$data/models/package";
   import type { MODEL_TYPE } from "$src/data/enums/model";
   import type { OUTFIT_TYPE } from "$src/data/enums/outfit";
@@ -16,8 +15,6 @@
   import EditIcon from "$src/icons/edit.svg?raw";
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
-
-  const dispatch = createEventDispatcher();
 
   interface Props {
     item: OutfitLayer;
@@ -35,6 +32,11 @@
     isPrimary?: boolean;
     dense?: boolean;
     labels?: boolean;
+    onmoveUp?: (event?: any) => void;
+    onmoveDown?: (event?: any) => void;
+    onedit?: (event?: any) => void;
+    ondelete?: (event?: any) => void;
+    onselect?: (event?: any) => void;
   }
 
   let {
@@ -53,27 +55,33 @@
     isPrimary = false,
     dense = false,
     labels = true
+  ,
+    onmoveUp = null,
+    onmoveDown = null,
+    onedit = null,
+    ondelete = null,
+    onselect = null
   }: Props = $props();
 
   const onMoveUp= function (e) {
     e.stopPropagation();
-    dispatch("moveUp", { item: item });
+    onmoveUp?.({ detail: { item: item } });
   };
   const onMoveDown= function (e) {
     e.stopPropagation();
-    dispatch("moveDown", { item: item });
+    onmoveDown?.({ detail: { item: item } });
   };
   const onEdit= function (e) {
     e.stopPropagation();
-    dispatch("edit", { item: item });
+    onedit?.({ detail: { item: item } });
   };
   const onDelete= function (e) {
     e.stopPropagation();
-    dispatch("delete", { item: item });
+    ondelete?.({ detail: { item: item } });
   };
   const onSelect= function (e) {
     e.stopPropagation();
-    dispatch("select", { item: item });
+    onselect?.({ detail: { item: item } });
   };
 </script>
 

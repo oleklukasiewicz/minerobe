@@ -1,18 +1,18 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //models
+    //models
   import type { ValueData } from "$data/models/base";
-
-  const dispatch = createEventDispatcher();
 
   interface Props {
     options: ValueData[];
     disabled?: boolean;
     children?: import('svelte').Snippet;
+    ondrop?: (event?: any) => void;
   }
 
-  let { options, disabled = false, children }: Props = $props();
+  let { options, disabled = false, children ,
+    ondrop = null
+  }: Props = $props();
 
   let isDragging = $state(false);
   let draggingOption: any = $state(null);
@@ -45,7 +45,7 @@
     const items = (Array.from(e.dataTransfer.items) as any[])
       .filter((item) => item.kind === "file")
       .map((item) => item.getAsFile());
-    dispatch("drop", { option: draggingOption.value, items: items });
+    ondrop?.({ detail: { option: draggingOption.value, items: items } });
     draggingOption = null;
     isDragging = false;
   };

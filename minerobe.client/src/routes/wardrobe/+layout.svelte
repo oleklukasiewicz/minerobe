@@ -120,13 +120,13 @@
               label="Wardrobe"
               icon={MenuIcon}
               {opened}
-              on:click={() => (menuOpened = !menuOpened)}
+              onclick={() => (menuOpened = !menuOpened)}
             />
             <div>
               <Button
                 icon={AddIcon}
                 label={"Create new item"}
-                on:click={openOutfitTypePickerDialog}
+                onclick={openOutfitTypePickerDialog}
                 onlyIcon={!menuOpened}
                 disabled={isCreating}
                 size={menuOpened ? "medium" : "auto"}
@@ -170,14 +170,14 @@
     <Button
       icon={AddIcon}
       label={"Create new item"}
-      on:click={openOutfitTypePickerDialog}
+      onclick={openOutfitTypePickerDialog}
       fab={"dynamic"}
       size={"large"}
     />
   {/if}
   <OutfitPackageTypePickerDialog
     bind:open={isTypePickerDialogOpen}
-    on:select={newItem}
+    onselect={newItem}
   />
 </div>
 

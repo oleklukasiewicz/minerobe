@@ -13,6 +13,7 @@
     badgelabel?: string;
     selected?: boolean;
     opened?: boolean;
+    onclick?: (event?: any) => void;
   }
 
   let {
@@ -22,12 +23,22 @@
     disabled = false,
     badgelabel = null,
     selected = false,
-    opened = true
+    opened = true,
+    onclick = null
   }: Props = $props();
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
-<a class="menu-item-header" class:disabled {href} class:selected onclick={bubble('click')}>
+<a
+  class="menu-item-header"
+  class:disabled
+  {href}
+  class:selected
+  onclick={(event) => {
+    bubble('click')(event);
+    onclick?.(event);
+  }}
+>
   {#if icon}
     <div class="icon b-icon-medium">
       {@html icon}

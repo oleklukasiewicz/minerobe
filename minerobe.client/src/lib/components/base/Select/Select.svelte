@@ -2,8 +2,7 @@
   import { run } from 'svelte/legacy';
 
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //services
+    //services
   import { clickOutside } from "$src/helpers/data/componentHelper";
   //components
   import Button from "../Button/Button.svelte";
@@ -16,8 +15,6 @@
   import CheckBoxIcon from "$icons/checkbox.svg?raw";
   import CheckBoxOffIcon from "$icons/checkbox-off.svg?raw";
   import Flyout from "../Flyout/Flyout.svelte";
-
-  const dispatch = createEventDispatcher();
 
 
   interface Props {
@@ -39,6 +36,9 @@
     selected?: import('svelte').Snippet<[any]>;
     actions?: import('svelte').Snippet;
     children?: import('svelte').Snippet<[any]>;
+    onselect?: (event?: any) => void;
+    onselectedClick?: (event?: any) => void;
+    onclear?: (event?: any) => void;
   }
 
   let {
@@ -69,6 +69,10 @@
     selected,
     actions,
     children
+  ,
+    onselect = null,
+    onselectedClick = null,
+    onclear = null
   }: Props = $props();
 
   let selectedItemValue = $state(null);
@@ -104,11 +108,11 @@
     }
     autocompleteInput = null;
     if (!multiple) opened = false;
-    dispatch("select", { item: selectedItemValue });
+    onselect?.({ detail: { item: selectedItemValue } });
   };
   const selectedClick = () => {
     if (clickable) {
-      dispatch("selectedClick", { item: selectedItemValue });
+      onselectedClick?.({ detail: { item: selectedItemValue } });
     } else {
       opened = true;
     }
@@ -122,7 +126,7 @@
     }
     autocompleteInput = null;
     filteredItems = items;
-    dispatch("clear", { item: selectedItemValue });
+    onclear?.({ detail: { item: selectedItemValue } });
   };
   let setSelectedItemValue = (value) => {
     if (itemValue) {

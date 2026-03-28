@@ -1,23 +1,23 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //models
+    //models
   import type { ValueData } from "$data/models/base";
 
   interface Props {
     value?: ValueData;
     label?: string;
     selected?: boolean;
+    onselect?: (event?: any) => void;
   }
 
-  let { value = null, label = null, selected = $bindable(false) }: Props = $props();
-
-  const dispatch = createEventDispatcher();
+  let { value = null, label = null, selected = $bindable(false) ,
+    onselect = null
+  }: Props = $props();
 
   const onSelect= () => {
     if (selected) return;
     selected = true;
-    dispatch("select", { value: value });
+    onselect?.({ detail: { value: value } });
   };
 </script>
 

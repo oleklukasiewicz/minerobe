@@ -52,7 +52,7 @@
           label="Profile"
           icon={MenuIcon}
           opened={false}
-          on:click={() => (menuOpened = !menuOpened)}
+          onclick={() => (menuOpened = !menuOpened)}
         />
       </div>
     {:else}
@@ -63,7 +63,7 @@
               label="Profile"
               icon={MenuIcon}
               {opened}
-              on:click={() => (menuOpened = !menuOpened)}
+              onclick={() => (menuOpened = !menuOpened)}
             />
             <MenuItem
               label="Overview"
@@ -72,7 +72,7 @@
               icon={DashboardIcon}
               href="/profile"
               selected={selectedView == "overview"}
-              on:click={onMenuSelect}
+              onclick={onMenuSelect}
             />
             <MenuItem
               label="Profile Data"
@@ -81,7 +81,7 @@
               icon={ContactIcon}
               selected={selectedView == "info"}
               href="/profile/info"
-              on:click={onMenuSelect}
+              onclick={onMenuSelect}
             />
             <MenuItem
               label="Current Skin"
@@ -90,7 +90,7 @@
               icon={UsersIcon}
               selected={selectedView == "skin"}
               href="/profile/skin"
-              on:click={onMenuSelect}
+              onclick={onMenuSelect}
             />
             <MenuItem
               label="Base Texture"
@@ -99,7 +99,7 @@
               icon={AvatarIcon}
               selected={selectedView == "base"}
               href="/profile/base"
-              on:click={onMenuSelect}
+              onclick={onMenuSelect}
             />
             <MenuSeparator />
             <MenuItem
@@ -109,7 +109,7 @@
               icon={ZapIcon}
               selected={selectedView == "minecraft"}
               href="/profile/minecraft"
-              on:click={onMenuSelect}
+              onclick={onMenuSelect}
             />
             {/snippet}
                   {#snippet footer()}
@@ -118,7 +118,7 @@
               opened={menuOpened}
               label="Sign Out"
               icon={LoginIcon}
-              on:click={SignOut}
+              onclick={SignOut}
             />
                   {/snippet}
         </Menu>

@@ -1,7 +1,6 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //model
+    //model
   import type { OutfitLayer, OutfitPackage } from "$data/models/package";
   //components
   import Label from "$lib/components/base/Label/Label.svelte";
@@ -10,14 +9,15 @@
   //icons
   import CheckIcon from "$icons/check.svg?raw";
 
-  const dispatch = createEventDispatcher();
-
   interface Props {
     item: OutfitPackage;
     disabled?: boolean;
     selected?: boolean;
     selectable?: boolean;
     baseTexture?: OutfitLayer;
+    onselect?: (event?: any) => void;
+    onclick?: (event?: any) => void;
+    onunselect?: (event?: any) => void;
   }
 
   let {
@@ -26,20 +26,24 @@
     selected = $bindable(false),
     selectable = false,
     baseTexture = null
+  ,
+    onselect = null,
+    onclick = null,
+    onunselect = null
   }: Props = $props();
 
   const onClick= function (e) {
     if (selectable) {
-      dispatch("select", { item: item });
+      onselect?.({ detail: { item: item } });
       selected = true;
       return;
     }
-    dispatch("click", { item: item });
+    onclick?.({ detail: { item: item } });
   };
   const onUnSelect= function (e) {
     e.stopPropagation();
     e.preventDefault();
-    dispatch("unselect", { item: item });
+    onunselect?.({ detail: { item: item } });
     selected = false;
   };
 </script>

@@ -78,19 +78,19 @@
     <h2 class="list-title">Most Recent</h2>
     <OutfitPackageList
       items={mostRecent}
-      on:select={goToItemPage}
+      onselect={goToItemPage}
       baseTexture={$userSettings?.baseTexture?.layers[0]}
     />
     <h2 class="list-title">Most Liked</h2>
     <OutfitPackageList
       items={mostLiked}
-      on:select={goToItemPage}
+      onselect={goToItemPage}
       baseTexture={$userSettings?.baseTexture?.layers[0]}
     />
     <h2 class="list-title">Most Downloaded</h2>
     <OutfitPackageList
       items={mostDownloaded}
-      on:select={goToItemPage}
+      onselect={goToItemPage}
       baseTexture={$userSettings?.baseTexture?.layers[0]}
     />
   {:else}

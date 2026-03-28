@@ -1,7 +1,6 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //consts
+    //consts
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
   import { COLORS_ARRAY } from "$src/data/consts/color";
   import { MODEL_TYPE } from "$src/data/enums/model";
@@ -22,22 +21,25 @@
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import Checkbox from "../base/Checkbox/Checkbox.svelte";
 
-  const dispatch = createEventDispatcher();
-
   interface Props {
     open?: boolean;
     item: OutfitLayer;
     onlyTextures?: boolean;
+    onedit?: (event?: any) => void;
+    onprimaryChange?: (event?: any) => void;
   }
 
-  let { open = $bindable(false), item = $bindable(), onlyTextures = false }: Props = $props();
+  let { open = $bindable(false), item = $bindable(), onlyTextures = false ,
+    onedit = null,
+    onprimaryChange = null
+  }: Props = $props();
 
   const onEdit = () => {
-    dispatch("edit", { item: item });
+    onedit?.({ detail: { item: item } });
   };
   const onPrimaryChange = (e) => {
     const value = e.detail.value;
-    dispatch("primaryChange", { item: item, isPrimary: value });
+    onprimaryChange?.({ detail: { item: item, isPrimary: value } });
   };
 
   const onDrop = async function (e, model) {
@@ -57,14 +59,14 @@
     <div class="editItemDialog" class:mobile={isMobile}>
       {#if !onlyTextures}
         <SectionTitle label="Name" />
-        <TextBox bind:value={item.name} on:input={onEdit} />
+        <TextBox bind:value={item.name} oninput={onEdit} />
         <SectionTitle label="Outfit type" />
         <Select
           items={OUTFIT_TYPE_ARRAY}
           bind:selectedItem={item.outfitType}
           itemText="normalizedName"
           itemValue="name"
-          on:select={onEdit}
+          onselect={onEdit}
         />
         <SectionTitle label="color" />
         <ColorSelect
@@ -73,20 +75,20 @@
           itemText="normalizedName"
           itemValue="name"
           dropDownStyle="max-height: 275px"
-          on:select={onEdit}
+          onselect={onEdit}
         />
         <br />
         <Checkbox
           label="Is primary"
           bind:value={item.isPrimary}
-          on:change={onPrimaryChange}
+          onchange={onPrimaryChange}
         />
       {/if}
       <div class="textures">
         <div class="model-selection">
           <SectionTitle label="Classic" />
           <div class="render">
-            <DragAndDrop on:drop={(e) => onDrop(e, MODEL_TYPE.STEVE)}>
+            <DragAndDrop ondrop={(e) => onDrop(e, MODEL_TYPE.STEVE)}>
               <OutfitPackageRender
                 resizable
                 source={item.steve.content}
@@ -106,7 +108,7 @@
         <div class="model-selection">
           <SectionTitle label="Slim" />
           <div class="render">
-            <DragAndDrop on:drop={(e) => onDrop(e, MODEL_TYPE.ALEX)}>
+            <DragAndDrop ondrop={(e) => onDrop(e, MODEL_TYPE.ALEX)}>
               <OutfitPackageRender
                 resizable
                 source={item.alex.content}

@@ -101,19 +101,19 @@
         label="Sort & Filters"
         type="primary"
         icon={Sliders2Icon}
-        on:click={openFilterDialog}
+        onclick={openFilterDialog}
       />
     </div>
     <Search
       bind:value={filter.phrase}
-      on:search={updateFilter}
-      on:clear={updateFilter}
+      onsearch={updateFilter}
+      onclear={updateFilter}
     />
   </div>
   <div id="content-list">
     <LazyList
       
-      on:loading={fetchCollections}
+      onloading={fetchCollections}
       itemsPages={$pageCollections}
       rootMargin={"100px"}
       loading={!itemsLoaded}
@@ -122,8 +122,8 @@
       <OutfitPackageCollectionList
         items={items}
         loading={!itemsLoaded}
-        on:select={goToCollection}
-        on:click={goToCollection}
+        onselect={goToCollection}
+        onclick={goToCollection}
         dense={false}
         columns={$IS_MOBILE_VIEW ? 2 : 4}
       />
@@ -144,7 +144,7 @@
     hideOutfitType
     hideColor
     {filter}
-    on:filter={updateFilter}
+    onfilter={updateFilter}
   />
 </div>
 

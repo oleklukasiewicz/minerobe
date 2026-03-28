@@ -1,7 +1,6 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //models
+    //models
   import type { ValueData } from "$data/models/base";
   //compoennts
   import RadioButton from "../RadioButton/RadioButton.svelte";
@@ -9,16 +8,17 @@
   interface Props {
     options?: ValueData[];
     selectedValue?: any;
+    onselect?: (event?: any) => void;
   }
 
-  let { options = [], selectedValue = $bindable(null) }: Props = $props();
-
-  const dispatch = createEventDispatcher();
+  let { options = [], selectedValue = $bindable(null) ,
+    onselect = null
+  }: Props = $props();
 
   const onSelect= (item) => {
     if (selectedValue.value === item.value) return;
     selectedValue = item.value;
-    dispatch("select", { value: item });
+    onselect?.({ detail: { value: item } });
   };
 </script>
 
@@ -28,7 +28,7 @@
       value={value.value}
       label={value.label}
       selected={value.value === selectedValue}
-      on:select={() => onSelect(value)}
+      onselect={() => onSelect(value)}
     />
   {/each}
 </div>

@@ -1,13 +1,10 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //components
+    //components
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   //icons
   import CancelIcon from "$icons/close.svg?raw";
-
-  const dispatch = createEventDispatcher();
 
   interface Props {
     open?: boolean;
@@ -17,6 +14,8 @@
     confirmIcon?: any;
     cancelLabel?: string;
     cancelIcon?: any;
+    onconfirm?: (event?: any) => void;
+    onclose?: (event?: any) => void;
   }
 
   let {
@@ -27,13 +26,16 @@
     confirmIcon = null,
     cancelLabel = "Cancel",
     cancelIcon = CancelIcon
+  ,
+    onconfirm = null,
+    onclose = null
   }: Props = $props();
 
   const onConfirm= () => {
-    dispatch("confirm");
+    onconfirm?.();
   };
   const onCancel= () => {
-    dispatch("close");
+    onclose?.();
   };
 </script>
 
@@ -41,12 +43,12 @@
   <div id="confirm-dialog">
     <div class="mc-font-simple dialog-message">{message}</div>
     <div class="actions">
-      <Button label={confirmLabel} icon={confirmIcon} on:click={onConfirm} />
+      <Button label={confirmLabel} icon={confirmIcon} onclick={onConfirm} />
       <Button
         label={cancelLabel}
         icon={cancelIcon}
         type={"tertiary"}
-        on:click={onCancel}
+        onclick={onCancel}
       />
     </div>
   </div>

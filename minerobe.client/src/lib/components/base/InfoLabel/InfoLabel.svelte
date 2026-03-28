@@ -32,7 +32,7 @@
     {#if closeable}
       <Button
         type="quaternary"
-        on:click={() => {
+        onclick={() => {
           isClosed = true;
         }}
         icon={DeleteIcon}

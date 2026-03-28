@@ -197,7 +197,7 @@
               type="primary"
               disabled={skinIsSyncing}
               icon={SyncIcon}
-              on:click={SyncCurrentSkin}
+              onclick={SyncCurrentSkin}
             />
           </Placeholder>
           <br />
@@ -209,7 +209,7 @@
               type="primary"
               disabled={skinIsSyncing}
               icon={SyncIcon}
-              on:click={RelinkAccount}
+              onclick={RelinkAccount}
             />
           </Placeholder>
           <br />
@@ -221,7 +221,7 @@
             size="large"
             type="secondary"
             disabled={accountInProgress}
-            on:click={UnlinkMinecraftAccount}
+            onclick={UnlinkMinecraftAccount}
             icon={CloseIcon}
           />
         </Placeholder>
@@ -239,14 +239,14 @@
         size="large"
         type="primary"
         disabled={accountInProgress}
-        on:click={StartLinkMinecraftAccount}
+        onclick={StartLinkMinecraftAccount}
         icon={HumanHandsUpIcon}
       />
     </div>
   {/if}
   <!-- Dialogs -->
   <LinkToMinecraftDialog
-    on:close={CancelLinkToMinecraft}
+    onclose={CancelLinkToMinecraft}
     bind:open={isLinkToMcDialogOpen}
     authStatus={linkingStatus}
     authCode={linkingCode}

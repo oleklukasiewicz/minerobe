@@ -108,19 +108,19 @@
         label="Sort & Filters"
         type="primary"
         icon={Sliders2Icon}
-        on:click={openFilterDialog}
+        onclick={openFilterDialog}
       />
     </div>
     <Search
       bind:value={filter.phrase}
-      on:search={updateFilter}
-      on:clear={updateFilter}
+      onsearch={updateFilter}
+      onclear={updateFilter}
     />
   </div>
   <div id="content-list">
     <LazyList
       
-      on:loading={fetchItems}
+      onloading={fetchItems}
       itemsPages={$pageItems}
       rootMargin={"100px"}
       loading={!itemsLoaded}
@@ -128,7 +128,7 @@
     >
       <OutfitPackageList
         resizable
-        on:select={goToEdit}
+        onselect={goToEdit}
         resizeDebounce={500}
         currentPackageId={userSettings.currentTexture?.packageId}
         baseTexture={userSettings?.baseTexture.layers[0]}
@@ -151,7 +151,7 @@
     sortOptions={sortOption[0]}
     hideType
     {filter}
-    on:filter={updateFilter}
+    onfilter={updateFilter}
   />
 </div>
 

@@ -13,6 +13,9 @@
     items: PagedResponse<OutfitPackageCollectionWithPackageContext>;
     loading?: boolean;
     pageSizes?: number[];
+    onoptionsChanged?: (event?: any) => void;
+    onselect?: (event?: any) => void;
+    onunselect?: (event?: any) => void;
   }
 
   let {
@@ -20,7 +23,10 @@
     label = "Collections",
     items,
     loading = true,
-    pageSizes = [10, 20, 50, 100]
+    pageSizes = [10, 20, 50, 100],
+    onoptionsChanged = null,
+    onselect = null,
+    onunselect = null
   }: Props = $props();
 </script>
 
@@ -28,7 +34,7 @@
   {#snippet children({ isMobile })}
     <div id="collection-dialog" class:mobile={isMobile}>
       <PagedList
-        on:optionsChanged
+        {onoptionsChanged}
         {items}
         {loading}
         {pageSizes}
@@ -42,8 +48,8 @@
             items={pagedItems}
             pageSize={pagedPageSize}
             loading={pagedLoading}
-            on:select
-            on:unselect
+            {onselect}
+            {onunselect}
           />
                   {/snippet}
         </PagedList>

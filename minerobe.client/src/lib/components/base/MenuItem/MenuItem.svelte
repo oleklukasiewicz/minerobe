@@ -14,6 +14,7 @@
     selected?: boolean;
     opened?: boolean;
     top?: boolean;
+    onclick?: (event?: any) => void;
   }
 
   let {
@@ -24,7 +25,8 @@
     badgelabel = null,
     selected = false,
     opened = true,
-    top = false
+    top = false,
+    onclick = null
   }: Props = $props();
 </script>
 
@@ -35,7 +37,10 @@
   {href}
   class:selected
   class:opened
-  onclick={bubble('click')}
+  onclick={(event) => {
+    bubble('click')(event);
+    onclick?.(event);
+  }}
   class:top
   title={label}
 >

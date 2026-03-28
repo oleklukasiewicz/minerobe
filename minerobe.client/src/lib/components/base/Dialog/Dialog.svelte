@@ -3,14 +3,11 @@
 
   const bubble = createBubbler();
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //components
+    //components
   import Button from "../Button/Button.svelte";
   //icons
   import CloseIcon from "$icons/close.svg?raw";
   import { IS_MOBILE_VIEW } from "$src/data/static";
-
-  const dispatch = createEventDispatcher();
 
   interface Props {
     open?: boolean;
@@ -19,6 +16,7 @@
     showTitleBar?: boolean;
     className?: string;
     children?: import('svelte').Snippet<[any]>;
+    onclose?: (event?: any) => void;
   }
 
   let {
@@ -28,11 +26,13 @@
     showTitleBar = true,
     className = "",
     children
+  ,
+    onclose = null
   }: Props = $props();
 
   const onClose= () => {
     open = false;
-    dispatch("close");
+    onclose?.();
   };
 </script>
 

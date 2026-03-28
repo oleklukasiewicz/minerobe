@@ -2,8 +2,7 @@
   import { run } from 'svelte/legacy';
 
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //consts
+    //consts
   import { COLORS_ARRAY } from "$src/data/consts/color";
   import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
@@ -21,8 +20,6 @@
   import SortSelect from "../base/SortSelect/SortSelect.svelte";
   import Button from "../base/Button/Button.svelte";
 
-  const dispatch = createEventDispatcher();
-
   interface Props {
     items: PagedResponse<OutfitPackage>;
     packageContext?: OutfitPackage;
@@ -32,6 +29,9 @@
     label?: string;
     loading?: boolean;
     multiple?: boolean;
+    onfilter?: (event?: any) => void;
+    onoptionsChanged?: (event?: any) => void;
+    onselect?: (event?: any) => void;
   }
 
   let {
@@ -43,6 +43,10 @@
     label = "Outfit Picker",
     loading = true,
     multiple = true
+  ,
+    onfilter = null,
+    onoptionsChanged = null,
+    onselect = null
   }: Props = $props();
 
   let selectedItems: OutfitPackage[] = $state([]);
@@ -50,21 +54,21 @@
   const onFiltersUpdate= function () {
     if (options.sort[0]?.value == null) options.sort = [];
     options.page = 0;
-    dispatch("filter", { options: options });
+    onfilter?.({ detail: { options: options } });
   };
   const onPageChanged= function (e) {
     const page = e.detail.options;
     options.page = page.options.page;
     options.pageSize = page.options.pageSize;
     if (options.sort[0]?.value == null) options.sort = [];
-    dispatch("optionsChanged", { options: options });
+    onoptionsChanged?.({ detail: { options: options } });
   };
   const onSelect= function (items) {
     selectedItems = items;
-    if (!multiple) dispatch("select", { items: items });
+    if (!multiple) onselect?.({ detail: { items: items } });
   };
   const onSelectClick= function () {
-    dispatch("select", { items: selectedItems });
+    onselect?.({ detail: { items: selectedItems } });
   };
 
   const onOpen= function (v) {
@@ -83,8 +87,8 @@
           clearable
           items={OUTFIT_PACKAGE_SORT_OPTIONS}
           bind:selectedItem={options.sort[0]}
-          on:select={onFiltersUpdate}
-          on:clear={onFiltersUpdate}
+          onselect={onFiltersUpdate}
+          onclear={onFiltersUpdate}
         />
         <ColorSelect
           items={COLORS_ARRAY}
@@ -96,8 +100,8 @@
           dropDownStyle="max-height: 275px"
           multiple
           clearable
-          on:select={onFiltersUpdate}
-          on:clear={onFiltersUpdate}
+          onselect={onFiltersUpdate}
+          onclear={onFiltersUpdate}
         />
         <Select
           items={OUTFIT_TYPE_ARRAY}
@@ -108,13 +112,13 @@
           clearable
           itemValue="name"
           bind:selectedItem={options.filter.outfitType}
-          on:select={onFiltersUpdate}
-          on:clear={onFiltersUpdate}
+          onselect={onFiltersUpdate}
+          onclear={onFiltersUpdate}
         />
         <Search
           dense
           bind:value={options.filter.phrase}
-          on:search={onFiltersUpdate}
+          onsearch={onFiltersUpdate}
         />
       </div>
       <PagedList
@@ -122,7 +126,7 @@
         pageSize={options.pageSize}
         {pageSizes}
         {loading}
-        on:optionsChanged={onPageChanged}
+        onoptionsChanged={onPageChanged}
         
         
         
@@ -135,7 +139,7 @@
             items={pagedItems}
             pageSize={pagedPageSize}
             loading={pagedLoading}
-            on:selectionUpdate={(e) => onSelect(e.detail.items)}
+            onselectionUpdate={(e) => onSelect(e.detail.items)}
           />
           {#if items?.items?.length === 0 && !loading}
             <div class="no-items-error">No items found</div>
@@ -145,7 +149,7 @@
             <div  id="select-footer">
             {#if multiple}
               <Button
-                on:click={onSelectClick}
+                onclick={onSelectClick}
                 label={"Add " + "(" + selectedItems.length + ")"}
                 disabled={selectedItems.length === 0}
               />

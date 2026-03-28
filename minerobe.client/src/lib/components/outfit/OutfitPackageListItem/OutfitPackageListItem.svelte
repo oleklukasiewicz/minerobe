@@ -1,6 +1,6 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher, onMount } from "svelte";
+  import { onMount } from "svelte";
   //api
   //services
   import { normalizeNumber } from "$src/helpers/data/dataHelper";
@@ -17,8 +17,6 @@
   import DownloadSmallIcon from "$icons/small/download-micro.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
 
-  const dispatch = createEventDispatcher();
-
 
   interface Props {
     item: OutfitPackage;
@@ -32,6 +30,8 @@
     selected?: boolean;
     fetchLayer?: any;
     resize?: any;
+    onselect?: (event?: any) => void;
+    onclick?: (event?: any) => void;
   }
 
   let {
@@ -48,6 +48,9 @@
     return null;
   },
     resize = $bindable(async () => {})
+  ,
+    onselect = null,
+    onclick = null
   }: Props = $props();
 
   let initialized = $state(false);
@@ -85,12 +88,12 @@
   const onSelectionChange= async function (e) {
     e.preventDefault();
     e.stopPropagation();
-    dispatch("select", { value: selected });
+    onselect?.({ detail: { value: selected } });
   };
   const onClick= async function (e) {
     e.preventDefault();
     e.stopPropagation();
-    dispatch("click", { item: item, layer: currentLayer });
+    onclick?.({ detail: { item: item, layer: currentLayer } });
   };
 </script>
 
@@ -106,7 +109,7 @@
   <div class="render">
     <div class="render-flags">
       {#if selectable}
-        <Checkbox bind:value={selected} on:change={onSelectionChange} />
+        <Checkbox bind:value={selected} onchange={onSelectionChange} />
       {/if}
       {#if currentItem}
         <span class="current-item icon">{@html LoaderIcon}</span>
@@ -137,7 +140,7 @@
             selected={currentLayer?.id == layer.id}
             color={layer.colorName}
             colorName={layer.colorName}
-            on:click={async () => await updateLayerId(layer.id)}
+            onclick={async () => await updateLayerId(layer.id)}
           />
         {/each}
       {/if}

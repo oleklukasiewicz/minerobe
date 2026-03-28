@@ -104,7 +104,7 @@
             <Button
               icon={ImportPackageIcon}
               label={"Upload"}
-              on:click={UploadAvatar}
+              onclick={UploadAvatar}
             />
           </Placeholder>
           <Placeholder
@@ -113,7 +113,7 @@
             width="100%"
             loadedStyle={"flex:1;"}
           >
-            <Button label="Reset" type="tertiary" on:click={ResetAvatar} />
+            <Button label="Reset" type="tertiary" onclick={ResetAvatar} />
           </Placeholder>
         </div>
         <Placeholder {loaded} height="36px" width="100%">
@@ -121,7 +121,7 @@
             icon={DownloadIcon}
             type={"secondary"}
             label={"Download"}
-            on:click={DownloadAvatar}
+            onclick={DownloadAvatar}
           />
         </Placeholder>
       </div>
@@ -144,7 +144,7 @@
         >
           <Button
             label={"Change username"}
-            on:click={UpdateUsername}
+            onclick={UpdateUsername}
             disabled={$profileUser.name == inputProfileUsername ||
               inputProfileUsername.length == 0}
           />
@@ -160,7 +160,7 @@
           icon={AvatarIcon}
           disabled={$userSettings?.currentTexture?.packageId==null}
           label={"Generate from current skin"}
-          on:click={GenerateAvatarFromCurrentSkin}
+          onclick={GenerateAvatarFromCurrentSkin}
         />
       </Placeholder>
       <Placeholder {loaded} height="30px" width="100%">

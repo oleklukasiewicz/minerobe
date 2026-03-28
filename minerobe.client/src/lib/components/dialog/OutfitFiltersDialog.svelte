@@ -1,7 +1,6 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //consts
+    //consts
   import { COLORS_ARRAY } from "$src/data/consts/color";
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
   //model
@@ -18,8 +17,6 @@
   //icons
   import Sliders2Icon from "$icons/sliders-2.svg?raw";
 
-  const dispatch = createEventDispatcher();
-
   interface Props {
     open?: boolean;
     filter?: OutfitFilter;
@@ -30,6 +27,7 @@
     hideSort?: boolean;
     sortItems?: ValueData[];
     sortOptions?: SortOption;
+    onfilter?: (event?: any) => void;
   }
 
   let {
@@ -42,13 +40,15 @@
     hideSort = false,
     sortItems = [],
     sortOptions = $bindable(new SortOption())
+  ,
+    onfilter = null
   }: Props = $props();
 
   const onFilter= () => {
-    dispatch("filter", {
+    onfilter?.({ detail: {
       filter: filter,
       sort: sortOptions ? [sortOptions] : [],
-    });
+    } });
   };
 </script>
 
@@ -122,7 +122,7 @@
         </div>
       {/if}
       <div id="filter-btn">
-        <Button label="Filter items" on:click={onFilter} icon={Sliders2Icon} />
+        <Button label="Filter items" onclick={onFilter} icon={Sliders2Icon} />
       </div>
     </div>
   {/snippet}

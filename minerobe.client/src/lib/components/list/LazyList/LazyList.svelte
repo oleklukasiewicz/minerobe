@@ -1,16 +1,15 @@
-<!-- @migration-task Error while migrating Svelte code: This migration would change the name of a slot making the component unusable -->
+<svelte:options runes={false} />
+
 <script lang="ts">
   //main imports
   import IntersectionObserver from "svelte-intersection-observer";
-  import { createEventDispatcher } from "svelte";
   //models
   import { PagedResponse } from "$src/data/models/base";
-
-  const dispatch = createEventDispatcher();
 
   export let itemsPages: PagedResponse<any>[] = [];
   export let rootMargin: string = "30px";
   export let loading: boolean = false;
+  export let onloading: ((event?: any) => void) | null = null;
 
   let element;
   let itemsList: any[] = [];
@@ -29,7 +28,7 @@
       lastPage.options.page += 1;
     }
     if (lastPage?.items?.length < lastPage?.options.pageSize) return;
-    dispatch("loading", { options: lastPage });
+    onloading?.({ detail: { options: lastPage } });
   };
 </script>
 

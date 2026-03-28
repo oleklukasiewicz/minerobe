@@ -141,7 +141,7 @@
         <CapeList
           items={integrationSettings.capes}
           selectedCapeId={$renderConfiguration.cape?.id}
-          on:select={setCape}
+          onselect={setCape}
         />
       {/if}
     </div>
@@ -169,7 +169,7 @@
         disabled={isSkinSetting}
         icon={isSkinSetting ? LoaderIcon : HumanHandsUpIcon}
         size="large"
-        on:click={UpdateSkin}
+        onclick={UpdateSkin}
       />
     </Placeholder>
     <Placeholder {loaded} height="46px">
@@ -178,7 +178,7 @@
         size="large"
         type="secondary"
         icon={DownloadIcon}
-        on:click={DownloadSkin}
+        onclick={DownloadSkin}
       />
     </Placeholder>
   </div>

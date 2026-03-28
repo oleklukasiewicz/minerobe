@@ -130,8 +130,8 @@
   class:closed={!opened}
   class:mobile={$IS_MOBILE_VIEW}
 >
-  <Resize targetNode={caller} on:resize={onResize} debounce={100}></Resize>
-  <Resize targetNode={componentContent} on:resize={onComponentResize}></Resize>
+  <Resize targetNode={caller} onresize={onResize} debounce={100}></Resize>
+  <Resize targetNode={componentContent} onresize={onComponentResize}></Resize>
   <div bind:this={componentContent} class="flyout-content">
     {@render children?.({ position: actualPosition, })}
   </div>

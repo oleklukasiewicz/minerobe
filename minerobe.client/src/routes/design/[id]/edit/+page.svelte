@@ -475,11 +475,11 @@
     <div id="render">
       <Placeholder {loaded}>
         <div id="render-node">
-          <DragAndDrop on:drop={importLayerFromDrop}>
+          <DragAndDrop ondrop={importLayerFromDrop}>
             <OutfitPackageRender
               bind:this={outfitRender}
               pauseOnIntersection
-              on:textureUpdate={UpdatePackageLayersOrder}
+              ontextureUpdate={UpdatePackageLayersOrder}
               source={$renderConfiguration.item}
               isDynamic
               cape={$renderConfiguration?.cape?.texture}
@@ -505,7 +505,7 @@
           icon={TrashIcon}
           label={"Delete item"}
           type={"tertiary"}
-          on:click={openRemoveDialog}
+          onclick={openRemoveDialog}
         />
       </div>
     </Placeholder>
@@ -538,12 +538,12 @@
           movable={isOutfitSet}
           primaryLayerId={$itemPackageLayers.find((l) => l.isPrimary)?.id}
           dropable
-          on:edit={openLayerEditDialog}
-          on:moveUp={moveLayerUp}
-          on:moveDown={moveLayerDown}
-          on:select={setSelectedLayer}
-          on:delete={removeLayer}
-          on:drop={dropLayer}
+          onedit={openLayerEditDialog}
+          onmoveUp={moveLayerUp}
+          onmoveDown={moveLayerDown}
+          onselect={setSelectedLayer}
+          ondelete={removeLayer}
+          ondrop={dropLayer}
           model={$itemPackage.model}
         ></OutfitLayerList>
       {/if}
@@ -556,7 +556,7 @@
                 icon={AddIcon}
                 iconSize="medium"
                 type={"tertiary"}
-                on:click={openOutfitPickerDialog}
+                onclick={openOutfitPickerDialog}
               />
             {/if}
           </Placeholder>
@@ -567,7 +567,7 @@
             label={isOutfitSet ? "Import image" : "Import variant"}
             icon={ImportPackageIcon}
             type={"tertiary"}
-            on:click={importImage}
+            onclick={importImage}
           />
         {/if}
       </div>
@@ -578,7 +578,7 @@
         <CapeList
           items={integrationSettings?.capes}
           selectedCapeId={$renderConfiguration?.cape?.id}
-          on:select={setCape}
+          onselect={setCape}
         />
       </div>
     {/if}
@@ -626,14 +626,14 @@
             type="primary"
             icon={isSkinSetting ? LoaderIcon : HumanHandsUpIcon}
             size="large"
-            on:click={setSkin}
+            onclick={setSkin}
             disabled={isSkinSetting}
           />
         {/if}
         <MenuButton
           hideMenuButton={!isOutfitSet}
           containerStyle={isMinecraftIntegrated && isOutfitSet ? "" : "flex:1"}
-          on:click={exportPackage}
+          onclick={exportPackage}
           label="Download"
           type="primary"
           size="large"
@@ -645,7 +645,7 @@
             type="quaternary"
             size="medium"
             icon={DownloadIcon}
-            on:click={exportPackageWithoutBaseTexture}
+            onclick={exportPackageWithoutBaseTexture}
           />
         </MenuButton>
         {#if $CURRENT_USER?.id != null}
@@ -655,7 +655,7 @@
             size="large"
             onlyIcon={!$IS_MOBILE_VIEW}
             icon={ListIcon}
-            on:click={openCollectionsDialog}
+            onclick={openCollectionsDialog}
           />
         {/if}
         {#if !$itemPackage?.social?.isShared}
@@ -666,11 +666,11 @@
             onlyIcon={!$IS_MOBILE_VIEW}
             size={"large"}
             type={"tertiary"}
-            on:click={sharePackage}
+            onclick={sharePackage}
           />
         {:else}
           <Button
-            on:click={openOverviewDialog}
+            onclick={openOverviewDialog}
             label="Overview"
             icon={MoreHorizontalIcon}
             onlyIcon={!$IS_MOBILE_VIEW}
@@ -686,17 +686,17 @@
   </div>
   <!-- Dialogs -->
   <EditLayerDialog
-    on:edit={editLayer}
-    on:primaryChange={changeLayerPrimary}
+    onedit={editLayer}
+    onprimaryChange={changeLayerPrimary}
     bind:open={isLayerEditDialogOpen}
     item={dialogSelectedLayer}
   />
   <OverviewDialog
     bind:open={isOverviewDialogOpen}
     item={$itemPackage}
-    on:unshare={unsharePackage}
-    on:share={sharePackage}
-    on:page={goToPackagePage}
+    onunshare={unsharePackage}
+    onshare={sharePackage}
+    onpage={goToPackagePage}
   />
   <ConfirmDialog
     bind:open={isRemoveDialogOpen}
@@ -704,16 +704,16 @@
     label={"Delete item"}
     cancelIcon={null}
     confirmLabel={"Delete"}
-    on:confirm={deletePackage}
+    onconfirm={deletePackage}
   />
   <CollectionsDialog
     loading={dialogCollections?.items == null}
     bind:open={isCollectionsDialogOpen}
     items={dialogCollections}
     pageSizes={[6, 12, 24]}
-    on:unselect={removeFromCollection}
-    on:select={addToCollection}
-    on:optionsChanged={openCollectionsDialog}
+    onunselect={removeFromCollection}
+    onselect={addToCollection}
+    onoptionsChanged={openCollectionsDialog}
   />
   <OutfitPickerDialog
     items={dialogOutfitPickerItems}
@@ -722,9 +722,9 @@
     pageSizes={[6, 12, 24]}
     bind:open={isOutfitPickerDialogOpen}
     loading={dialogOutfitPickerItems?.items == null}
-    on:optionsChanged={openOutfitPickerDialog}
-    on:select={addPackageLayer}
-    on:filter={openOutfitPickerDialog}
+    onoptionsChanged={openOutfitPickerDialog}
+    onselect={addPackageLayer}
+    onfilter={openOutfitPickerDialog}
   />
 </div>
 

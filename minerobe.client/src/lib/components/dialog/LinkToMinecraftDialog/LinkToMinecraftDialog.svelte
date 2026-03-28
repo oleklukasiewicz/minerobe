@@ -23,6 +23,7 @@
     authStatus?: string;
     profile?: MinecraftAccount;
     skin?: MinecraftSkin;
+    onclose?: (event?: any) => void;
   }
 
   let {
@@ -31,7 +32,8 @@
     authCode = "",
     authStatus = "",
     profile = null,
-    skin = null
+    skin = null,
+    onclose = null
   }: Props = $props();
 
   let linkButtonLabel = $state("Link");
@@ -74,7 +76,7 @@
   });
 </script>
 
-<Dialog {open} label="Link to Minecraft" on:close>
+<Dialog {open} label="Link to Minecraft" {onclose}>
   <div id="link-to-mc-dialog">
     {#if authStatus != "Ready"}
       <div class="description">
@@ -87,7 +89,7 @@
           label={"Copy code"}
           type="tertiary"
           icon={ArticleMultipleIcon}
-          on:click={CopyCode}
+          onclick={CopyCode}
         />
       </div>
       <div>

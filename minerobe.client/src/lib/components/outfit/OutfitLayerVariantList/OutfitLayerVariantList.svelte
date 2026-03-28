@@ -1,19 +1,17 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //model
+    //model
   import type { OutfitLayer } from "$data/models/package";
   import type { MODEL_TYPE } from "$src/data/enums/model";
   //components
   import OutfitLayerVariantListItem from "../OutfitLayerVariantListItem/OutfitLayerVariantListItem.svelte";
-
-  const dispatch = createEventDispatcher();
 
   interface Props {
     items: OutfitLayer[];
     model: MODEL_TYPE;
     selectedLayerId?: string;
     selectable?: boolean;
+    onselect?: (event?: any) => void;
   }
 
   let {
@@ -21,18 +19,20 @@
     model,
     selectedLayerId = "",
     selectable = true
+  ,
+    onselect = null
   }: Props = $props();
 
   const onSelect= function (layer: OutfitLayer) {
     if (!selectable) return;
-    dispatch("select", { item: layer });
+    onselect?.({ detail: { item: layer } });
   };
 </script>
 
 <div class="outfit-layer-variant-list">
   {#each items as item (item.id)}
     <OutfitLayerVariantListItem
-      on:click={() => onSelect(item)}
+      onclick={() => onSelect(item)}
       {item}
       {model}
       selected={item.id == selectedLayerId}

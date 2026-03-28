@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { OutfitPackageCollection } from "$src/data/models/collection";
-  import { createEventDispatcher } from "svelte";
-  import Button from "../base/Button/Button.svelte";
+    import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
   import TextBox from "../base/TextBox/TextBox.svelte";
@@ -11,14 +10,15 @@
     open?: boolean;
     label?: string;
     collection?: OutfitPackageCollection;
+    onsave?: (event?: any) => void;
   }
 
-  let { open = $bindable(false), label = "Edit Collection", collection = $bindable(null) }: Props = $props();
-
-  const dispatch = createEventDispatcher();
+  let { open = $bindable(false), label = "Edit Collection", collection = $bindable(null) ,
+    onsave = null
+  }: Props = $props();
 
   const handleSave = () => {
-    dispatch("save", { collection });
+    onsave?.({ detail: { collection } });
     open = false;
   };
 </script>
@@ -36,7 +36,7 @@
     </div>
     <Checkbox label="Is Shared" bind:value={collection.social.isShared} />
     <div id="actions">
-      <Button label="Save" on:click={handleSave} />
+      <Button label="Save" onclick={handleSave} />
     </div>
   </div>
 </Dialog>

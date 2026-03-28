@@ -1,7 +1,6 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //components
+    //components
   import Button from "../Button/Button.svelte";
   //icons
   import CloseIcon from "$icons/close.svg?raw";
@@ -10,18 +9,19 @@
     value?: string;
     clearable?: boolean;
     placeholder?: string;
+    oninput?: (event?: any) => void;
   }
 
-  let { value = $bindable(""), clearable = false, placeholder = "" }: Props = $props();
-
-  const dispatch = createEventDispatcher();
+  let { value = $bindable(""), clearable = false, placeholder = "" ,
+    oninput = null
+  }: Props = $props();
 
   const handleInput = (event) => {
-    dispatch("input", event.target.value);
+    oninput?.({ detail: event.target.value });
   };
   const clear = () => {
     value = "";
-    dispatch("input", "");
+    oninput?.({ detail: "" });
   };
 </script>
 

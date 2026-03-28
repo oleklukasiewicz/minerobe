@@ -1,14 +1,11 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //models
+    //models
   import type { OutfitLayer, OutfitPackage } from "$data/models/package";
   //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import OutfitPackageSingleLayerListItem from "../OutfitPackageSingleLayerListItem/OutfitPackageSingleLayerListItem.svelte";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
-
-  const dispatch = createEventDispatcher();
 
   interface Props {
     items: OutfitPackage[];
@@ -19,6 +16,10 @@
     selectable?: boolean;
     selectedItems?: OutfitPackage[];
     baseTexture?: OutfitLayer;
+    onselectClick?: (event?: any) => void;
+    onunselect?: (event?: any) => void;
+    onselectionUpdate?: (event?: any) => void;
+    onselect?: (event?: any) => void;
   }
 
   let {
@@ -34,22 +35,27 @@
     selectable = false,
     selectedItems = $bindable([]),
     baseTexture = null
+  ,
+    onselectClick = null,
+    onunselect = null,
+    onselectionUpdate = null,
+    onselect = null
   }: Props = $props();
 
   const onSelect= (item: OutfitPackage) => {
-    dispatch("selectClick", { items: [item] });
+    onselectClick?.({ detail: { items: [item] } });
   };
   const onRemoveFromSelected= (item: OutfitPackage) => {
     selectedItems = selectedItems.filter(
       (i) => i.id !== item.id || i.layers[0]?.id !== item.layers[0]?.id
     );
-    dispatch("unselect", { items: [item] });
-    dispatch("selectionUpdate", { items: selectedItems });
+    onunselect?.({ detail: { items: [item] } });
+    onselectionUpdate?.({ detail: { items: selectedItems } });
   };
   const onAddToSelected= (item: OutfitPackage) => {
     selectedItems = [...selectedItems, item];
-    dispatch("select", { items: [item] });
-    dispatch("selectionUpdate", { items: selectedItems });
+    onselect?.({ detail: { items: [item] } });
+    onselectionUpdate?.({ detail: { items: selectedItems } });
   };
 </script>
 
@@ -68,9 +74,9 @@
         ) != null && selectable}
         disabled={disableFunction(disableContext, item)}
         {item}
-        on:click={() => onSelect(item)}
-        on:unselect={() => onRemoveFromSelected(item)}
-        on:select={() => onAddToSelected(item)}
+        onclick={() => onSelect(item)}
+        onunselect={() => onRemoveFromSelected(item)}
+        onselect={() => onAddToSelected(item)}
       />
     {/each}
   {/if}

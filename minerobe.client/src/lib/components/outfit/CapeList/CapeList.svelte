@@ -1,24 +1,24 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher } from "svelte";
-  //models
+    //models
   import type { Cape } from "$data/models/integration/minecraft";
   //components
   import CapeListItem from "../CapeListItem/CapeListItem.svelte";
-
-  const dispatch = createEventDispatcher();
 
   interface Props {
     items: Cape[];
     selectedCapeId: string;
     readonly?: boolean;
+    onselect?: (event?: any) => void;
   }
 
-  let { items, selectedCapeId = $bindable(), readonly = false }: Props = $props();
+  let { items, selectedCapeId = $bindable(), readonly = false ,
+    onselect = null
+  }: Props = $props();
 
   const onSelect= function (item: Cape) {
     selectedCapeId = item?.id;
-    dispatch("select", { item: item });
+    onselect?.({ detail: { item: item } });
   };
 </script>
 
@@ -28,14 +28,14 @@
       {readonly}
       {item}
       selected={item.id === selectedCapeId}
-      on:click={() => onSelect(item)}
+      onclick={() => onSelect(item)}
     />
   {/each}
   {#if !readonly}
     <CapeListItem
       {readonly}
       selected={selectedCapeId === undefined || selectedCapeId === null}
-      on:click={() => onSelect(null)}
+      onclick={() => onSelect(null)}
     />
   {/if}
 </div>

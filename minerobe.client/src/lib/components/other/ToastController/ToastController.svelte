@@ -22,8 +22,8 @@
       show={true}
       closeable={toast.closeable}
       type={toast.type}
-      on:click={toast.action}
-      on:close={() => HideToast(toast)}
+      onclick={toast.action}
+      onclose={() => HideToast(toast)}
     />
   {/each}
 </div>

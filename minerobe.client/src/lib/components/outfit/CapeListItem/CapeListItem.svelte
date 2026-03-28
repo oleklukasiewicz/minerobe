@@ -18,6 +18,7 @@
     selected?: boolean;
     readonly?: boolean;
     autoSize?: boolean;
+    onclick?: (event?: any) => void;
   }
 
   let {
@@ -25,7 +26,8 @@
     crop = true,
     selected = false,
     readonly = false,
-    autoSize = false
+    autoSize = false,
+    onclick = null
   }: Props = $props();
 
   const normalizeCape = async function (cape: Cape) {
@@ -42,7 +44,10 @@
   class:selected
   class:autoSize
   title={item.name}
-  onclick={bubble('click')}
+  onclick={(event) => {
+    bubble('click')(event);
+    onclick?.(event);
+  }}
   class:readonly
   draggable="false"
 >
