@@ -13,17 +13,31 @@
 
   const dispatch = createEventDispatcher();
 
-  export let items: OutfitPackage[];
-  export let baseTexture: OutfitLayer | string = null;
-  export let columns: number = -1;
-  export let resizable = true;
-  export let resizeDebounce = 300;
-  export let currentPackageId: string = null;
-  export let loading = false;
-  export let pageSize: number = 10;
-  export let selectable = false;
+  interface Props {
+    items: OutfitPackage[];
+    baseTexture?: OutfitLayer | string;
+    columns?: number;
+    resizable?: boolean;
+    resizeDebounce?: number;
+    currentPackageId?: string;
+    loading?: boolean;
+    pageSize?: number;
+    selectable?: boolean;
+  }
 
-  let _component: any = null;
+  let {
+    items,
+    baseTexture = null,
+    columns = -1,
+    resizable = true,
+    resizeDebounce = 300,
+    currentPackageId = null,
+    loading = false,
+    pageSize = 10,
+    selectable = false
+  }: Props = $props();
+
+  let _component: any = $state(null);
   const selectOutfit = function (e) {
     const item = e.detail.item;
     const layer = e.detail.layer;
@@ -32,9 +46,9 @@
   const fetchLayer = async function (id, item): Promise<OutfitLayer> {
     return await GetLayer(id);
   };
-  let renderList: any[] = [];
+  let renderList: any[] = $state([]);
 
-  const onResize = async function () {
+  const onResize= async function () {
     for (let i = 0; i < items.length; i++) {
       await renderList[i]();
     }

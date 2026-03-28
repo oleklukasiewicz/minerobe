@@ -48,8 +48,8 @@
     if (stateSub) stateSub();
   });
 
-  let loaded = false;
-  let inputProfileUsername = "";
+  let loaded = $state(false);
+  let inputProfileUsername = $state("");
 
   const DownloadAvatar = async () => {
     await ExportImage($profileUser.avatar, "avatar.png");

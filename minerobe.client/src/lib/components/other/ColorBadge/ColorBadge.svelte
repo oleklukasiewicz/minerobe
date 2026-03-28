@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   //main imports
   import { createEventDispatcher } from "svelte";
   //consts
@@ -6,13 +8,23 @@
 
   const dispatch = createEventDispatcher();
 
-  export let color: string;
-  export let colorName: string;
-  export let selected: boolean = false;
-  export let selectable: boolean = true;
-  export let style: string = "";
+  interface Props {
+    color: string;
+    colorName: string;
+    selected?: boolean;
+    selectable?: boolean;
+    style?: string;
+  }
 
-  let normalizedColor;
+  let {
+    color,
+    colorName,
+    selected = false,
+    selectable = true,
+    style = ""
+  }: Props = $props();
+
+  let normalizedColor = $state();
   const normalizeColor = function (v) {
     const colorFromArray = COLORS[color];
     if (colorFromArray)
@@ -26,20 +38,22 @@
         ")";
     else normalizedColor = color;
   };
-  $: normalizeColor(color);
+  run(() => {
+    normalizeColor(color);
+  });
 
-  const onClick = function (e) {
+  const onClick= function (e) {
     if (!selectable) return;
     e.stopPropagation();
     dispatch("click", { color: color });
   };
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <span
-  on:click={onClick}
+  onclick={onClick}
   class="color-badge"
   title={colorName || color}
   class:selected

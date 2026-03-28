@@ -1,6 +1,10 @@
 <script lang="ts">
-  export let label: string;
-  export let opened = true;
+  interface Props {
+    label: string;
+    opened?: boolean;
+  }
+
+  let { label, opened = true }: Props = $props();
 </script>
 
 <div class="menu-header" class:opened>

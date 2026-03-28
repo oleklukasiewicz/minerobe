@@ -12,13 +12,23 @@
 
   const dispatch = createEventDispatcher();
 
-  export let item: OutfitPackage;
-  export let disabled = false;
-  export let selected = false;
-  export let selectable = false;
-  export let baseTexture: OutfitLayer = null;
+  interface Props {
+    item: OutfitPackage;
+    disabled?: boolean;
+    selected?: boolean;
+    selectable?: boolean;
+    baseTexture?: OutfitLayer;
+  }
 
-  const onClick = function (e) {
+  let {
+    item,
+    disabled = false,
+    selected = $bindable(false),
+    selectable = false,
+    baseTexture = null
+  }: Props = $props();
+
+  const onClick= function (e) {
     if (selectable) {
       dispatch("select", { item: item });
       selected = true;
@@ -26,7 +36,7 @@
     }
     dispatch("click", { item: item });
   };
-  const onUnSelect = function (e) {
+  const onUnSelect= function (e) {
     e.stopPropagation();
     e.preventDefault();
     dispatch("unselect", { item: item });
@@ -36,16 +46,16 @@
 
 <!-- svelte-ignore a11y_consider_explicit_label -->
 <!-- svelte-ignore a11y_missing_attribute -->
-<!-- svelte-ignore a11y-missing-attribute -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_missing_attribute -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <a
   class="outfit-package-single-layer-list-item"
-  on:click={onClick}
+  onclick={onClick}
   class:disabled
 >
   {#if selectable && selected}
-    <div class="item-selected" on:click={onUnSelect}>
+    <div class="item-selected" onclick={onUnSelect}>
       <div>{@html CheckIcon}</div>
     </div>
   {/if}

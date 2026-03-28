@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { createBubbler } from 'svelte/legacy';
+
+  const bubble = createBubbler();
   //main imports
   import { createEventDispatcher } from "svelte";
   import { cubicOut } from "svelte/easing";
@@ -7,12 +10,23 @@
   //icons
   import CloseIcon from "$icons/close.svg?raw";
 
-  export let message: string;
-  export let type: "success" | "error" | "warning" | "info" = "info";
-  export let mobile = false;
-  export let show: boolean = false;
-  export let icon: string = "";
-  export let closeable: boolean = true;
+  interface Props {
+    message: string;
+    type?: "success" | "error" | "warning" | "info";
+    mobile?: boolean;
+    show?: boolean;
+    icon?: string;
+    closeable?: boolean;
+  }
+
+  let {
+    message,
+    type = "info",
+    mobile = false,
+    show = false,
+    icon = "",
+    closeable = true
+  }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
@@ -23,13 +37,13 @@
       css: (t) => `opacity: ${t}; transform: scale(${0.9 + t * 0.1})`,
     };
   }
-  const onClose = () => {
+  const onClose= () => {
     dispatch("close");
   };
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="toast"
   class:success={type === "success"}
@@ -37,7 +51,7 @@
   class:warning={type === "warning"}
   class:info={type === "info"}
   class:hidden={!show}
-  on:click
+  onclick={bubble('click')}
   class:mobile
   in:fadeInScale={{ duration: 300 }}
   out:fadeInScale={{ duration: 300 }}
@@ -57,7 +71,7 @@
       <Button
         type="quaternary"
         whiteText
-        on:click={onClose}
+        onclick={onClose}
         icon={CloseIcon}
         onlyIcon
       />

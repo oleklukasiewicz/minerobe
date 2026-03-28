@@ -64,7 +64,11 @@
   import { THREE } from "$lib/three.js";
   import MenuButton from "$lib/components/other/MenuButton/MenuButton.svelte";
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   const renderConfiguration: Writable<OutfitPackageRenderConfig> = writable(
     new OutfitPackageRenderConfig()
@@ -77,25 +81,21 @@
     itemPackage,
     "layers"
   );
-  let loaded = false;
-  let isOutfitSet = false;
-  let isMinecraftIntegrated = false;
-  let userSettings: MinerobeUserSettings = null;
-  let integrationSettings: MinecraftAccount = null;
-  let renderer: any = null;
+  let loaded = $state(false);
+  let isOutfitSet = $state(false);
+  let isMinecraftIntegrated = $state(false);
+  let userSettings: MinerobeUserSettings = $state(null);
+  let integrationSettings: MinecraftAccount = $state(null);
+  let renderer: any = $state(null);
 
   // dialog data
   let dialogCollections: PagedResponse<OutfitPackageCollectionWithPackageContext> =
-    null;
-  let isCollectionsDialogOpen = false;
+    $state(null);
+  let isCollectionsDialogOpen = $state(false);
 
   //others
-  let isSkinSetting = false;
-
-  let __addAnimation = function (
-    animation: RenderAnimation,
-    force: boolean = false
-  ) {};
+  let isSkinSetting = $state(false);
+  let outfitRender = $state(null);
 
   let stateSub = null;
   onMount(async () => {
@@ -180,8 +180,8 @@
 
   //animations
   const addAnimation = (animation: RenderAnimation) => {
-    if (animation) __addAnimation(animation, false);
-    __addAnimation(DefaultAnimation, true);
+    if (animation) outfitRender?.addAnimation?.(animation, false);
+    outfitRender?.addAnimation?.(DefaultAnimation, true);
   };
 
   //dialogs
@@ -245,8 +245,8 @@
       <Placeholder {loaded}>
         <div id="render-node">
           <OutfitPackageRender
+            bind:this={outfitRender}
             pauseOnIntersection
-            bind:addAnimation={__addAnimation}
             source={$renderConfiguration.item}
             isDynamic
             cape={$renderConfiguration?.cape?.texture}

@@ -7,63 +7,81 @@
   import CheckBoxOffIcon from "$icons/checkbox-off.svg?raw";
   import ColorBadge from "../ColorBadge/ColorBadge.svelte";
 
-  export let items: any[] = [];
-  export let placeholder: string = "Select";
-  export let selectedItem = null;
-  export let opened = false;
-  export let itemText = "label";
-  export let itemValue = "value";
-  export let clearable = false;
-  export let dropDownStyle = null;
-  export let disabled = false;
-  export let multiple = false;
-  export let autocomplete = false;
+  interface Props {
+    items?: any[];
+    placeholder?: string;
+    selectedItem?: any;
+    opened?: boolean;
+    itemText?: string;
+    itemValue?: string;
+    clearable?: boolean;
+    dropDownStyle?: any;
+    disabled?: boolean;
+    multiple?: boolean;
+    autocomplete?: boolean;
+  }
+
+  let {
+    items = $bindable([]),
+    placeholder = $bindable("Select"),
+    selectedItem = $bindable(null),
+    opened = $bindable(false),
+    itemText = $bindable("label"),
+    itemValue = $bindable("value"),
+    clearable = $bindable(false),
+    dropDownStyle = $bindable(null),
+    disabled = $bindable(false),
+    multiple = $bindable(false),
+    autocomplete = $bindable(false)
+  }: Props = $props();
 </script>
 
 <Select
   on:select
   on:clear
-  bind:items
-  bind:placeholder
+  {items}
+  {placeholder}
   bind:selectedItem
   bind:opened
-  bind:itemText
-  bind:itemValue
-  bind:clearable
-  bind:dropDownStyle
-  bind:disabled
-  bind:autocomplete
-  bind:multiple
-  let:item
-  let:selectedItemValue
-  let:comparer
-  let:multiple
-  let:index
-  let:focusedIndex
+  {itemText}
+  {itemValue}
+  {clearable}
+  {dropDownStyle}
+  {disabled}
+  {autocomplete}
+  {multiple}
+  
+  
+  
+  
+  
+  
 >
-  <Button
-    size="medium"
-    flat
-    noBorder
-    style="height: 40px;"
-    focused={index === focusedIndex}
-    type={comparer(selectedItemValue, item, multiple)
-      ? "primary"
-      : "quaternary"}
-    icon={multiple
-      ? comparer(selectedItemValue, item, multiple)
-        ? CheckBoxIcon
-        : CheckBoxOffIcon
-      : null}
-    label={itemText == null ? item : item[itemText]}
-    textAlign="left"
-  >
-    <div>
-      <ColorBadge
-        color={item.name}
-        colorName={item.name}
-        style={"margin-right:4px;"}
-      />
-    </div>
-  </Button>
+  {#snippet children({ item, selectedItemValue, comparer, multiple, index, focusedIndex })}
+    <Button
+      size="medium"
+      flat
+      noBorder
+      style="height: 40px;"
+      focused={index === focusedIndex}
+      type={comparer(selectedItemValue, item, multiple)
+        ? "primary"
+        : "quaternary"}
+      icon={multiple
+        ? comparer(selectedItemValue, item, multiple)
+          ? CheckBoxIcon
+          : CheckBoxOffIcon
+        : null}
+      label={itemText == null ? item : item[itemText]}
+      textAlign="left"
+    >
+      <div>
+        <ColorBadge
+          color={item.name}
+          colorName={item.name}
+          style={"margin-right:4px;"}
+        />
+      </div>
+    </Button>
+  {/snippet}
 </Select>

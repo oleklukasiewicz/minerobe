@@ -6,7 +6,11 @@
   //components
   import Toast from "$lib/components/base/Toast/Toast.svelte";
 
-  export let items = [];
+  interface Props {
+    items?: any;
+  }
+
+  let { items = [] }: Props = $props();
 </script>
 
 <div>

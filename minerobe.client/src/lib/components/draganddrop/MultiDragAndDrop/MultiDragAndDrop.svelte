@@ -6,11 +6,16 @@
 
   const dispatch = createEventDispatcher();
 
-  export let options: ValueData[];
-  export let disabled: boolean = false;
+  interface Props {
+    options: ValueData[];
+    disabled?: boolean;
+    children?: import('svelte').Snippet;
+  }
 
-  let isDragging = false;
-  let draggingOption: any = null;
+  let { options, disabled = false, children }: Props = $props();
+
+  let isDragging = $state(false);
+  let draggingOption: any = $state(null);
 
   const handleDragStart = (e) => {
     if (disabled) return;
@@ -46,24 +51,24 @@
   };
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="multi-drag-and-drop"
   class:dragging={(isDragging || draggingOption != null) && disabled == false}
-  on:dragenter={handleDragStart}
-  on:dragend={handleDragEnd}
-  on:dragover={handleDragOver}
-  on:dragleave={handleDragEnd}
+  ondragenter={handleDragStart}
+  ondragend={handleDragEnd}
+  ondragover={handleDragOver}
+  ondragleave={handleDragEnd}
 >
   {#if (isDragging || draggingOption != null) && disabled == false}
     <div class="option-selection">
       {#each options as option (option.value)}
         <div
           class="drag-option"
-          on:dragover={handleDragOver}
-          on:drop={handleOptionDrop}
-          on:dragenter={() => handleOptionDragStart(option)}
-          on:dragleave={() => handleOptionDragEnd(option)}
+          ondragover={handleDragOver}
+          ondrop={handleOptionDrop}
+          ondragenter={() => handleOptionDragStart(option)}
+          ondragleave={() => handleOptionDragEnd(option)}
           class:dragging={draggingOption?.value == option.value}
         >
           {option.label}
@@ -71,7 +76,7 @@
       {/each}
     </div>
   {/if}
-  <slot></slot>
+  {@render children?.()}
 </div>
 
 <style lang="scss">

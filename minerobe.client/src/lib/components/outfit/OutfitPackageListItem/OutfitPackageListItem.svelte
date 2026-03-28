@@ -19,23 +19,46 @@
 
   const dispatch = createEventDispatcher();
 
-  export let item: OutfitPackage;
-  export let layerId: string = null;
-  export let baseTexture: OutfitLayer | string = null;
-  export let layerCount = 2;
-  export let style = "";
-  export let currentItem = false;
-  export let moreLayersIndicator = true;
-  export let selectable = false;
-  export let selected = false;
 
-  export let fetchLayer = async function (id, item): Promise<OutfitLayer> {
+  interface Props {
+    item: OutfitPackage;
+    layerId?: string;
+    baseTexture?: OutfitLayer | string;
+    layerCount?: number;
+    style?: string;
+    currentItem?: boolean;
+    moreLayersIndicator?: boolean;
+    selectable?: boolean;
+    selected?: boolean;
+    fetchLayer?: any;
+    resize?: any;
+  }
+
+  let {
+    item = $bindable(),
+    layerId = $bindable(null),
+    baseTexture = null,
+    layerCount = 2,
+    style = "",
+    currentItem = false,
+    moreLayersIndicator = true,
+    selectable = false,
+    selected = $bindable(false),
+    fetchLayer = async function (id, item): Promise<OutfitLayer> {
     return null;
-  };
-  export let resize = async () => {};
+  },
+    resize = $bindable(async () => {})
+  }: Props = $props();
 
-  let initialized = false;
-  let currentLayer: OutfitLayer;
+  let initialized = $state(false);
+  let currentLayer: OutfitLayer = $state();
+  let renderComponent = $state(null);
+
+  $effect(() => {
+    resize = async () => {
+      await renderComponent?.resize?.();
+    };
+  });
 
   const setCurrentLayer = async function (v) {
     const targetId = layerId || item?.layers[0]?.id;
@@ -59,25 +82,25 @@
     initialized = true;
   });
 
-  const onSelectionChange = async function (e) {
+  const onSelectionChange= async function (e) {
     e.preventDefault();
     e.stopPropagation();
     dispatch("select", { value: selected });
   };
-  const onClick = async function (e) {
+  const onClick= async function (e) {
     e.preventDefault();
     e.stopPropagation();
     dispatch("click", { item: item, layer: currentLayer });
   };
 </script>
 
-<!-- svelte-ignore a11y-missing-attribute -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_missing_attribute -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <a
   {style}
   class="outfit-package-list-item"
-  on:click={onClick}
+  onclick={onClick}
   class:selected={selectable && selected}
 >
   <div class="render">
@@ -91,7 +114,7 @@
     </div>
     {#if initialized}
       <OutfitPackageRender
-        bind:resize
+        bind:this={renderComponent}
         source={item}
         outfitType={item.type == PACKAGE_TYPE.OUTFIT_SET
           ? OUTFIT_TYPE.OUTFIT_SET

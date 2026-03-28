@@ -2,7 +2,13 @@
   //components
   import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
 
-  export let label;
+  interface Props {
+    label: any;
+    children?: import('svelte').Snippet;
+    actions?: import('svelte').Snippet;
+  }
+
+  let { label, children, actions }: Props = $props();
 </script>
 
 <!-- svelte-ignore a11y_consider_explicit_label -->
@@ -12,11 +18,11 @@
     <SectionTitle {label} />
   </div>
   <div class="data">
-    <slot></slot>
+    {@render children?.()}
   </div>
   <div class="data">
     <div class="actions">
-      <slot name="actions"></slot>
+      {@render actions?.()}
     </div>
   </div>
 </div>

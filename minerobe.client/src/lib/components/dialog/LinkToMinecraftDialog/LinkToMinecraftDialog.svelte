@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   //services
   import { ShowToast } from "$src/data/toast";
   import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
@@ -14,15 +16,26 @@
   //icons
   import ArticleMultipleIcon from "$icons/article-multiple.svg?raw";
 
-  export let open = false;
-  export let authUrl = "";
-  export let authCode = "";
-  export let authStatus = "";
-  export let profile: MinecraftAccount = null;
-  export let skin: MinecraftSkin = null;
+  interface Props {
+    open?: boolean;
+    authUrl?: string;
+    authCode?: string;
+    authStatus?: string;
+    profile?: MinecraftAccount;
+    skin?: MinecraftSkin;
+  }
 
-  let linkButtonLabel = "Link";
-  let isLinkingButtonDisabled = false;
+  let {
+    open = $bindable(false),
+    authUrl = "",
+    authCode = "",
+    authStatus = "",
+    profile = null,
+    skin = null
+  }: Props = $props();
+
+  let linkButtonLabel = $state("Link");
+  let isLinkingButtonDisabled = $state(false);
 
   const GetLinkButtonLabel = function (status) {
     switch (authStatus) {
@@ -56,7 +69,9 @@
     ShowToast("Code copied to clipboard");
   };
 
-  $: GetLinkButtonLabel(authStatus);
+  run(() => {
+    GetLinkButtonLabel(authStatus);
+  });
 </script>
 
 <Dialog {open} label="Link to Minecraft" on:close>
@@ -89,7 +104,7 @@
         <div>
           {#if skin?.texture != null}
             {#await GetImageFaceArea(skin?.texture) then skin}
-              <!-- svelte-ignore a11y-missing-attribute -->
+              <!-- svelte-ignore a11y_missing_attribute -->
               <img src={skin} style="width:100%;image-rendering: pixelated; " />
             {/await}
           {/if}

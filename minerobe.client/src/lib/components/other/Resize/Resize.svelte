@@ -1,9 +1,15 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   //main imports
   import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
-  export let debounce = 0;
-  export let targetNode: any=null;
+  interface Props {
+    debounce?: number;
+    targetNode?: any;
+  }
+
+  let { debounce = 0, targetNode = null }: Props = $props();
 
   const dispatch = createEventDispatcher();
   let timeout;
@@ -51,7 +57,9 @@
       },
     };
   }
-  $: updateTargetNode(targetNode);
+  run(() => {
+    updateTargetNode(targetNode);
+  });
 </script>
 
 <div></div>

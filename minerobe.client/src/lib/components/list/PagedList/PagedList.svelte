@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   //main imports
   import { createEventDispatcher } from "svelte";
   //models
@@ -12,28 +14,43 @@
 
   const dispatch = createEventDispatcher();
 
-  export let items: PagedResponse<any>;
-  export let pageSize = null;
-  export let loading: boolean = false;
-  export let pageSizes: number[] = [10, 20, 50, 100];
+  interface Props {
+    items: PagedResponse<any>;
+    pageSize?: any;
+    loading?: boolean;
+    pageSizes?: number[];
+    children?: import('svelte').Snippet<[any]>;
+    footer?: import('svelte').Snippet;
+  }
 
-  let totalPages = 0;
-  $: totalPages = Math.ceil(
-    items?.options.total / (pageSize ?? items?.options.pageSize)
-  );
+  let {
+    items = $bindable(),
+    pageSize = null,
+    loading = false,
+    pageSizes = [10, 20, 50, 100],
+    children,
+    footer
+  }: Props = $props();
 
-  const onOptionsChanged = function () {
+  let totalPages = $state(0);
+  run(() => {
+    totalPages = Math.ceil(
+      items?.options.total / (pageSize ?? items?.options.pageSize)
+    );
+  });
+
+  const onOptionsChanged= function () {
     dispatch("optionsChanged", { options: items });
   };
-  const onPrevious = function (event) {
+  const onPrevious= function (event) {
     items.options.page--;
     onOptionsChanged();
   };
-  const onNext = function (event) {
+  const onNext= function (event) {
     items.options.page++;
     onOptionsChanged();
   };
-  const onPageSizeChanged = function (event) {
+  const onPageSizeChanged= function (event) {
     const pageSize = event.detail.item;
     items.options.pageSize = pageSize;
     //check if the current page is valid
@@ -49,16 +66,11 @@
 
 <div class="paged-list">
   <div class="list-items">
-    <slot
-      items={items?.items}
-      pageSize={pageSize ?? items?.options.pageSize}
-      page={items.options.page}
-      {loading}
-    ></slot>
+    {@render children?.({ items: items?.items, pageSize: pageSize ?? items?.options.pageSize, page: items.options.page, loading, })}
   </div>
   <div class="list-actions">
     <div>
-      <slot name="footer"></slot>
+      {@render footer?.()}
     </div>
     <div class="footer-actions">
       <Button

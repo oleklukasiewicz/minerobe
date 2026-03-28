@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   //services
   import { normalizeNumber } from "$src/helpers/data/dataHelper";
   //model
@@ -7,16 +9,26 @@
   import HeartSmallIcon from "$icons/small/heart.svg?raw";
   import DownloadSmallIcon from "$icons/small/download.svg?raw";
 
-  export let data: PackageSocialData;
-  export let dense = false;
-  export let style = "";
-  export let showLikes = true;
-  export let showDownloads = true;
+  interface Props {
+    data: PackageSocialData;
+    dense?: boolean;
+    style?: string;
+    showLikes?: boolean;
+    showDownloads?: boolean;
+  }
 
-  let normalizedLikes: string = "";
-  let normalizedDownloads: string = "";
+  let {
+    data,
+    dense = false,
+    style = "",
+    showLikes = true,
+    showDownloads = true
+  }: Props = $props();
 
-  $: {
+  let normalizedLikes: string = $state("");
+  let normalizedDownloads: string = $state("");
+
+  run(() => {
     if (data) {
       if (data.likes != null) {
         normalizedLikes = normalizeNumber(data.likes);
@@ -25,7 +37,7 @@
         normalizedDownloads = normalizeNumber(data.downloads);
       }
     }
-  }
+  });
 </script>
 
 <div class="social-info" class:dense {style}>

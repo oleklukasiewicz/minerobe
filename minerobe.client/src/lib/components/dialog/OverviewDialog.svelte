@@ -16,16 +16,20 @@
 
   const dispatch = createEventDispatcher();
 
-  export let open: boolean;
-  export let item: OutfitPackage;
+  interface Props {
+    open: boolean;
+    item: OutfitPackage;
+  }
 
-  const onUnshare = () => {
+  let { open = $bindable(), item }: Props = $props();
+
+  const onUnshare= () => {
     dispatch("unshare");
   };
-  const onShare = () => {
+  const onShare= () => {
     dispatch("share");
   };
-  const onItemPage = () => {
+  const onItemPage= () => {
     dispatch("page");
   };
 </script>

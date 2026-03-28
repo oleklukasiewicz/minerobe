@@ -31,12 +31,13 @@
 
   let userSettings: MinerobeUserSettings = null;
   let loaded = false;
-  let itemsLoaded = false;
-  let isFilterDialogOpen = false;
+  let itemsLoaded = $state(false);
+  let isFilterDialogOpen = $state(false);
   let stateSub = null;
 
-  let filter: OutfitFilter = new OutfitFilter();
-  filter.type = PACKAGE_TYPE.OUTFIT_COLLECTION;
+  const initialFilter = new OutfitFilter();
+  initialFilter.type = PACKAGE_TYPE.OUTFIT_COLLECTION;
+  let filter: OutfitFilter = $state(initialFilter);
   let abortController = new AbortController();
 
   onMount(async () => {
@@ -111,14 +112,15 @@
   </div>
   <div id="content-list">
     <LazyList
-      let:items={pagedCollections}
+      
       on:loading={fetchCollections}
       itemsPages={$pageCollections}
       rootMargin={"100px"}
       loading={!itemsLoaded}
+      let:items
     >
       <OutfitPackageCollectionList
-        items={pagedCollections}
+        items={items}
         loading={!itemsLoaded}
         on:select={goToCollection}
         on:click={goToCollection}

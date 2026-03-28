@@ -10,30 +10,43 @@
 
   const dispatch = createEventDispatcher();
 
-  export let items: OutfitPackage[];
-  export let pageSize: number = 25;
-  export let disableContext: any = null;
-  export let disableFunction = function (context, item) {
+  interface Props {
+    items: OutfitPackage[];
+    pageSize?: number;
+    disableContext?: any;
+    disableFunction?: any;
+    loading?: boolean;
+    selectable?: boolean;
+    selectedItems?: OutfitPackage[];
+    baseTexture?: OutfitLayer;
+  }
+
+  let {
+    items,
+    pageSize = 25,
+    disableContext = null,
+    disableFunction = function (context, item) {
     return (
       context?.layers.find((layer) => layer.id === item.layers[0]?.id) != null
     );
-  };
-  export let loading = true;
-  export let selectable = false;
-  export let selectedItems: OutfitPackage[] = [];
-  export let baseTexture: OutfitLayer = null;
+  },
+    loading = true,
+    selectable = false,
+    selectedItems = $bindable([]),
+    baseTexture = null
+  }: Props = $props();
 
-  const onSelect = (item: OutfitPackage) => {
+  const onSelect= (item: OutfitPackage) => {
     dispatch("selectClick", { items: [item] });
   };
-  const onRemoveFromSelected = (item: OutfitPackage) => {
+  const onRemoveFromSelected= (item: OutfitPackage) => {
     selectedItems = selectedItems.filter(
       (i) => i.id !== item.id || i.layers[0]?.id !== item.layers[0]?.id
     );
     dispatch("unselect", { items: [item] });
     dispatch("selectionUpdate", { items: selectedItems });
   };
-  const onAddToSelected = (item: OutfitPackage) => {
+  const onAddToSelected= (item: OutfitPackage) => {
     selectedItems = [...selectedItems, item];
     dispatch("select", { items: [item] });
     dispatch("selectionUpdate", { items: selectedItems });

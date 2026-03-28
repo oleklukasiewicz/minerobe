@@ -46,10 +46,10 @@
     new OutfitPackageRenderConfig()
   );
 
-  let loaded = false;
-  let dynamicRenderer = null;
-  let integrationSettings: MinecraftAccount = null;
-  let isSkinSetting = false;
+  let loaded = $state(false);
+  let dynamicRenderer = $state(null);
+  let integrationSettings: MinecraftAccount = $state(null);
+  let isSkinSetting = $state(false);
 
   let stateSub = null;
   onMount(async () => {
@@ -90,14 +90,11 @@
     if (stateSub) stateSub();
   });
 
-  let __addAnimation = function (
-    animation: RenderAnimation,
-    force: boolean = false
-  ) {};
+  let outfitRender = $state(null);
 
   const addAnimation = (animation: RenderAnimation) => {
-    if (animation) __addAnimation(animation, false);
-    __addAnimation(DefaultAnimation, true);
+    if (animation) outfitRender?.addAnimation?.(animation, false);
+    outfitRender?.addAnimation?.(DefaultAnimation, true);
   };
 
   const DownloadSkin = async function () {
@@ -124,8 +121,8 @@
   <div class="render">
     <Placeholder {loaded}>
       <OutfitPackageRender
+        bind:this={outfitRender}
         pauseOnIntersection
-        bind:addAnimation={__addAnimation}
         baseTexture={$userSettings?.baseTexture.layers[0] || $BASE_TEXTURE}
         source={$renderConfiguration.item}
         isFlatten={$renderConfiguration.isFlatten}

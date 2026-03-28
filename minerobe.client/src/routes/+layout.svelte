@@ -12,8 +12,13 @@
     IS_MOBILE_VIEW,
   } from "$src/data/static";
   import { TOAST_LIST } from "$src/data/toast";
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
 
-  let ToastController;
+  let { children }: Props = $props();
+
+  let ToastController: any = $state(null);
 
   export const load = async () => {
     if (browser) {
@@ -38,11 +43,11 @@
 
 <div id="app">
   {#if ToastController}
-    <svelte:component this={ToastController} items={$TOAST_LIST} />
+    <ToastController items={$TOAST_LIST} />
   {/if}
   <Navigation />
   <div id="view" class:mobile={$IS_MOBILE_VIEW}>
-    <slot />
+    {@render children?.()}
   </div>
 </div>
 

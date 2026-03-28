@@ -24,17 +24,21 @@
     navigateToCollection,
     navigateToOutfitPackage,
   } from "$src/helpers/other/navigationHelper.js";
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   const itemCollection: Writable<OutfitPackageCollection> = writable(null);
   const collectionItems: Writable<PagedResponse<OutfitPackage>[]> = writable(
     []
   );
 
-  let userSettings: MinerobeUserSettings = null;
+  let userSettings: MinerobeUserSettings = $state(null);
   let stateSub = null;
-  let itemsLoaded = false;
-  let loaded = false;
+  let itemsLoaded = $state(false);
+  let loaded = $state(false);
   let collectionLoaded = false;
 
   onMount(async () => {
@@ -110,16 +114,17 @@
   </div>
   <div id="collection-items">
       <LazyList
-        let:items={pagedItems}
+        
         on:loading={fetchItems}
         itemsPages={$collectionItems}
         rootMargin={"100px"}
         loading={!itemsLoaded}
+        let:items
       >
         <OutfitPackageList
           columns={$IS_MOBILE_VIEW ? 3 : 6}
           resizable
-          items={pagedItems}
+          items={items}
           currentPackageId={userSettings?.currentTexture?.packageId}
           baseTexture={userSettings?.baseTexture.layers[0]}
           on:select={goToItemPage}

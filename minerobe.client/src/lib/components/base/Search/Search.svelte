@@ -7,30 +7,41 @@
   import SearchIcon from "$icons/search.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
 
-  export let value = null;
-  export let dense = true;
-  export let style = "";
-  export let clearable = true;
-  export let placeholder = "Search";
-  export let dark = false;
+  interface Props {
+    value?: any;
+    dense?: boolean;
+    style?: string;
+    clearable?: boolean;
+    placeholder?: string;
+    dark?: boolean;
+  }
+
+  let {
+    value = $bindable(null),
+    dense = true,
+    style = "",
+    clearable = true,
+    placeholder = "Search",
+    dark = false
+  }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
-  const onKeyDown = (e) => {
+  const onKeyDown= (e) => {
     if (e.key === "Enter") {
       onSearch(e);
     }
   };
 
-  const onClear = () => {
+  const onClear= () => {
     value = "";
     dispatch("clear", value);
   };
 
-  const onInput = (e) => {
+  const onInput= (e) => {
     dispatch("input", value);
   };
-  const onSearch = (e) => {
+  const onSearch= (e) => {
     dispatch("search", value);
   };
 </script>
@@ -41,8 +52,8 @@
     {placeholder}
     bind:value
     class="search-input"
-    on:input={onInput}
-    on:keydown={onKeyDown}
+    oninput={onInput}
+    onkeydown={onKeyDown}
   />
   {#if clearable && value}
     <Button
@@ -52,11 +63,11 @@
       size="auto"
       noBorder
       label="Clear"
-      on:click={onClear}
+      onclick={onClear}
     />
   {/if}
   <Button
-    on:click={onSearch}
+    onclick={onSearch}
     onlyIcon
     size="auto"
     icon={SearchIcon}

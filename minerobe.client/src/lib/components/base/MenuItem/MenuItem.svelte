@@ -1,12 +1,31 @@
 <script lang="ts">
-  export let label: string;
-  export let icon: string = null;
-  export let href: string = null;
-  export let disabled: boolean = false;
-  export let badgelabel: string = null;
-  export let selected: boolean = false;
-  export let opened = true;
-  export let top = false;
+  import { createBubbler } from 'svelte/legacy';
+
+  const bubble = createBubbler();
+  interface $$Events {
+    click: MouseEvent;
+  }
+  interface Props {
+    label: string;
+    icon?: string;
+    href?: string;
+    disabled?: boolean;
+    badgelabel?: string;
+    selected?: boolean;
+    opened?: boolean;
+    top?: boolean;
+  }
+
+  let {
+    label,
+    icon = null,
+    href = null,
+    disabled = false,
+    badgelabel = null,
+    selected = false,
+    opened = true,
+    top = false
+  }: Props = $props();
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
@@ -16,7 +35,7 @@
   {href}
   class:selected
   class:opened
-  on:click
+  onclick={bubble('click')}
   class:top
   title={label}
 >

@@ -4,12 +4,21 @@
   //icons
   import DeleteIcon from "$src/icons/close.svg?raw";
 
-  export let label = "";
-  export let type: "warning" | "info" = "info";
-  export let description = "";
-  export let closeable = true;
+  interface Props {
+    label?: string;
+    type?: "warning" | "info";
+    description?: string;
+    closeable?: boolean;
+  }
 
-  let isClosed = false;
+  let {
+    label = "",
+    type = "info",
+    description = "",
+    closeable = true
+  }: Props = $props();
+
+  let isClosed = $state(false);
 </script>
 
 <div

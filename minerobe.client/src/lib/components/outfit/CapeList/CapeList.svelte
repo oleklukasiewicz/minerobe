@@ -8,11 +8,15 @@
 
   const dispatch = createEventDispatcher();
 
-  export let items: Cape[];
-  export let selectedCapeId: string;
-  export let readonly: boolean = false;
+  interface Props {
+    items: Cape[];
+    selectedCapeId: string;
+    readonly?: boolean;
+  }
 
-  const onSelect = function (item: Cape) {
+  let { items, selectedCapeId = $bindable(), readonly = false }: Props = $props();
+
+  const onSelect= function (item: Cape) {
     selectedCapeId = item?.id;
     dispatch("select", { item: item });
   };

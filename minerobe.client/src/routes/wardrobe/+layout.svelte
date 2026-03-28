@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   //main imports
   import { page } from "$app/stores";
   //api
@@ -34,14 +36,21 @@
   import AddIcon from "$icons/plus.svg?raw";
   import { OutfitPackageCollection } from "$src/data/models/collection";
   import { AddCollection } from "$src/api/collection";
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
 
-  let menuOpened = true;
-  let isCreating = false;
-  let isTypePickerDialogOpen = false;
+  let { children }: Props = $props();
 
-  let selectedView = "sets";
+  let menuOpened = $state(true);
+  let isCreating = $state(false);
+  let isTypePickerDialogOpen = $state(false);
 
-  $: selectedView = $page.route.id.split("/")[2] || "sets";
+  let selectedView = $state("sets");
+
+  run(() => {
+    selectedView = $page.route.id.split("/")[2] || "sets";
+  });
 
   const openOutfitTypePickerDialog = function () {
     isTypePickerDialogOpen = true;
@@ -104,56 +113,58 @@
 <div id="wardrobe-view" class:mobile={$IS_MOBILE_VIEW}>
   <div id="navigation" class:opened={menuOpened}>
     <div>
-      <Menu let:opened let:top opened={menuOpened} top={$IS_MOBILE_VIEW}>
-        {#if !$IS_MOBILE_VIEW}
-          <MenuItemHeader
-            label="Wardrobe"
-            icon={MenuIcon}
-            {opened}
-            on:click={() => (menuOpened = !menuOpened)}
-          />
-          <div>
-            <Button
-              icon={AddIcon}
-              label={"Create new item"}
-              on:click={openOutfitTypePickerDialog}
-              onlyIcon={!menuOpened}
-              disabled={isCreating}
-              size={menuOpened ? "medium" : "auto"}
-              style="height: 40px"
+      <Menu   opened={menuOpened} top={$IS_MOBILE_VIEW}>
+        {#snippet children({ opened, top })}
+                {#if !$IS_MOBILE_VIEW}
+            <MenuItemHeader
+              label="Wardrobe"
+              icon={MenuIcon}
+              {opened}
+              on:click={() => (menuOpened = !menuOpened)}
             />
-          </div>
-          <MenuSeparator />
-        {/if}
-        <MenuItem
-          label="Sets"
-          icon={AnimationIcon}
-          {opened}
-          {top}
-          selected={selectedView == "sets"}
-          href="/wardrobe"
-        />
-        <MenuItem
-          {opened}
-          {top}
-          label="Outfits"
-          icon={ShoppingBagIcon}
-          selected={selectedView == "outfits"}
-          href="/wardrobe/outfits"
-        />
-        <MenuItem
-          {opened}
-          {top}
-          label="Collections"
-          icon={ListIcon}
-          selected={selectedView == "collections"}
-          href="/wardrobe/collections"
-        />
-      </Menu>
+            <div>
+              <Button
+                icon={AddIcon}
+                label={"Create new item"}
+                on:click={openOutfitTypePickerDialog}
+                onlyIcon={!menuOpened}
+                disabled={isCreating}
+                size={menuOpened ? "medium" : "auto"}
+                style="height: 40px"
+              />
+            </div>
+            <MenuSeparator />
+          {/if}
+          <MenuItem
+            label="Sets"
+            icon={AnimationIcon}
+            {opened}
+            {top}
+            selected={selectedView == "sets"}
+            href="/wardrobe"
+          />
+          <MenuItem
+            {opened}
+            {top}
+            label="Outfits"
+            icon={ShoppingBagIcon}
+            selected={selectedView == "outfits"}
+            href="/wardrobe/outfits"
+          />
+          <MenuItem
+            {opened}
+            {top}
+            label="Collections"
+            icon={ListIcon}
+            selected={selectedView == "collections"}
+            href="/wardrobe/collections"
+          />
+                      {/snippet}
+            </Menu>
     </div>
   </div>
   <div id="content">
-    <slot></slot>
+    {@render children?.()}
   </div>
   {#if $IS_MOBILE_VIEW}
     <Button

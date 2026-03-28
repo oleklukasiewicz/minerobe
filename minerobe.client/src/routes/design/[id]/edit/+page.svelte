@@ -94,7 +94,11 @@
   import { THREE } from "$lib/three.js";
   import MenuButton from "$lib/components/other/MenuButton/MenuButton.svelte";
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   const renderConfiguration: Writable<OutfitPackageRenderConfig> = writable(
     new OutfitPackageRenderConfig()
@@ -107,29 +111,30 @@
     itemPackage,
     "layers"
   );
-  let loaded = false;
-  let isOutfitSet = false;
-  let isMinecraftIntegrated = false;
-  let userSettings: MinerobeUserSettings = null;
-  let integrationSettings: MinecraftAccount = null;
-  let renderer: any = null;
+  let loaded = $state(false);
+  let isOutfitSet = $state(false);
+  let isMinecraftIntegrated = $state(false);
+  let userSettings: MinerobeUserSettings = $state(null);
+  let integrationSettings: MinecraftAccount = $state(null);
+  let renderer: any = $state(null);
 
   // dialog data
-  let dialogSelectedLayer: OutfitLayer = null;
+  let dialogSelectedLayer: OutfitLayer = $state(null);
   let dialogCollections: PagedResponse<OutfitPackageCollectionWithPackageContext> =
-    null;
+    $state(null);
   let dialogOutfitPickerItems: PagedResponse<OutfitPackage> =
-    new PagedResponse<OutfitPackage>();
+    $state(new PagedResponse<OutfitPackage>());
   let dialogOutfitsPickerOptions: PagedModel<OutfitFilter> =
-    new PagedModel<OutfitFilter>();
-  let isLayerEditDialogOpen = false;
-  let isOverviewDialogOpen = false;
-  let isRemoveDialogOpen = false;
-  let isCollectionsDialogOpen = false;
-  let isOutfitPickerDialogOpen = false;
+    $state(new PagedModel<OutfitFilter>());
+  let isLayerEditDialogOpen = $state(false);
+  let isOverviewDialogOpen = $state(false);
+  let isRemoveDialogOpen = $state(false);
+  let isCollectionsDialogOpen = $state(false);
+  let isOutfitPickerDialogOpen = $state(false);
 
   //others
-  let isSkinSetting = false;
+  let isSkinSetting = $state(false);
+  let outfitRender = $state(null);
 
   //api helpers
   const UpdatePackageDebounced = debounce(async () => {
@@ -143,11 +148,6 @@
       layers.map((x) => x.id)
     );
   }, 500);
-
-  let __addAnimation = function (
-    animation: RenderAnimation,
-    force: boolean = false
-  ) {};
 
   let stateSub = null;
   onMount(async () => {
@@ -347,8 +347,8 @@
 
   //animations
   const addAnimation = (animation: RenderAnimation) => {
-    if (animation) __addAnimation(animation, false);
-    __addAnimation(DefaultAnimation, true);
+    if (animation) outfitRender?.addAnimation?.(animation, false);
+    outfitRender?.addAnimation?.(DefaultAnimation, true);
   };
 
   //dialogs
@@ -477,9 +477,9 @@
         <div id="render-node">
           <DragAndDrop on:drop={importLayerFromDrop}>
             <OutfitPackageRender
+              bind:this={outfitRender}
               pauseOnIntersection
               on:textureUpdate={UpdatePackageLayersOrder}
-              bind:addAnimation={__addAnimation}
               source={$renderConfiguration.item}
               isDynamic
               cape={$renderConfiguration?.cape?.texture}

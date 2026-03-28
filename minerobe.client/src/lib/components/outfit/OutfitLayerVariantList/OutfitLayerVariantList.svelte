@@ -9,12 +9,21 @@
 
   const dispatch = createEventDispatcher();
 
-  export let items: OutfitLayer[];
-  export let model: MODEL_TYPE;
-  export let selectedLayerId: string = "";
-  export let selectable: boolean = true;
+  interface Props {
+    items: OutfitLayer[];
+    model: MODEL_TYPE;
+    selectedLayerId?: string;
+    selectable?: boolean;
+  }
 
-  const onSelect = function (layer: OutfitLayer) {
+  let {
+    items,
+    model,
+    selectedLayerId = "",
+    selectable = true
+  }: Props = $props();
+
+  const onSelect= function (layer: OutfitLayer) {
     if (!selectable) return;
     dispatch("select", { item: layer });
   };

@@ -9,20 +9,31 @@
 
   const dispatch = createEventDispatcher();
 
-  export let items: OutfitPackageCollectionWithPackageContext[];
-  export let pageSize: number = 10;
-  export let selectable: boolean = false;
-  export let loading = true;
-  export let dense = true;
-  export let columns: number = -1;
+  interface Props {
+    items: OutfitPackageCollectionWithPackageContext[];
+    pageSize?: number;
+    selectable?: boolean;
+    loading?: boolean;
+    dense?: boolean;
+    columns?: number;
+  }
 
-  const onSelect = (item: OutfitPackageCollectionWithPackageContext) => {
+  let {
+    items,
+    pageSize = 10,
+    selectable = false,
+    loading = true,
+    dense = true,
+    columns = -1
+  }: Props = $props();
+
+  const onSelect= (item: OutfitPackageCollectionWithPackageContext) => {
     dispatch("select", { item: item });
   };
-  const onUnselect = (item: OutfitPackageCollectionWithPackageContext) => {
+  const onUnselect= (item: OutfitPackageCollectionWithPackageContext) => {
     dispatch("unselect", { item: item });
   };
-  const onClick = (item: OutfitPackageCollectionWithPackageContext) => {
+  const onClick= (item: OutfitPackageCollectionWithPackageContext) => {
     dispatch("click", { item: item });
   };
 </script>

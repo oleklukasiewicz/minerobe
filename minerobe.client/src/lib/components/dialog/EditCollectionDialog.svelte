@@ -7,9 +7,13 @@
   import TextBox from "../base/TextBox/TextBox.svelte";
   import Checkbox from "../base/Checkbox/Checkbox.svelte";
 
-  export let open = false;
-  export let label = "Edit Collection";
-  export let collection: OutfitPackageCollection = null;
+  interface Props {
+    open?: boolean;
+    label?: string;
+    collection?: OutfitPackageCollection;
+  }
+
+  let { open = $bindable(false), label = "Edit Collection", collection = $bindable(null) }: Props = $props();
 
   const dispatch = createEventDispatcher();
 

@@ -6,12 +6,16 @@
   //compoennts
   import RadioButton from "../RadioButton/RadioButton.svelte";
 
-  export let options: ValueData[] = [];
-  export let selectedValue = null;
+  interface Props {
+    options?: ValueData[];
+    selectedValue?: any;
+  }
+
+  let { options = [], selectedValue = $bindable(null) }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
-  const onSelect = (item) => {
+  const onSelect= (item) => {
     if (selectedValue.value === item.value) return;
     selectedValue = item.value;
     dispatch("select", { value: item });

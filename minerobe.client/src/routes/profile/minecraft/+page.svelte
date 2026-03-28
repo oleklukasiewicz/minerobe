@@ -83,20 +83,20 @@
     if (stateSub) stateSub();
   });
 
-  let loaded = false;
-  let dynamicRenderer = null;
-  let currentCape: Cape = null;
-  let currentMinecraftSkin: MinecraftSkin = null;
-  let accountInProgress = false;
-  let isAccountLinked = true;
-  let skinIsSyncing = false;
+  let loaded = $state(false);
+  let dynamicRenderer = $state(null);
+  let currentCape: Cape = $state(null);
+  let currentMinecraftSkin: MinecraftSkin = $state(null);
+  let accountInProgress = $state(false);
+  let isAccountLinked = $state(true);
+  let skinIsSyncing = $state(false);
 
   //linking account data
-  let isLinkToMcDialogOpen = false;
-  let linkingStatus = "";
+  let isLinkToMcDialogOpen = $state(false);
+  let linkingStatus = $state("");
   let linkingAbordController = null;
-  let linkingCode = "";
-  let linkingUrl = "";
+  let linkingCode = $state("");
+  let linkingUrl = $state("");
 
   const UnlinkMinecraftAccount = async () => {
     accountInProgress = true;

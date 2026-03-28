@@ -20,17 +20,31 @@
 
   const dispatch = createEventDispatcher();
 
-  export let open = false;
-  export let filter: OutfitFilter = new OutfitFilter();
-  export let hideType = false;
-  export let hideColor = false;
-  export let hideIsShared = false;
-  export let hideOutfitType = false;
-  export let hideSort = false;
-  export let sortItems: ValueData[] = [];
-  export let sortOptions: SortOption = new SortOption();
+  interface Props {
+    open?: boolean;
+    filter?: OutfitFilter;
+    hideType?: boolean;
+    hideColor?: boolean;
+    hideIsShared?: boolean;
+    hideOutfitType?: boolean;
+    hideSort?: boolean;
+    sortItems?: ValueData[];
+    sortOptions?: SortOption;
+  }
 
-  const onFilter = () => {
+  let {
+    open = $bindable(false),
+    filter = $bindable(new OutfitFilter()),
+    hideType = false,
+    hideColor = false,
+    hideIsShared = false,
+    hideOutfitType = false,
+    hideSort = false,
+    sortItems = [],
+    sortOptions = $bindable(new SortOption())
+  }: Props = $props();
+
+  const onFilter= () => {
     dispatch("filter", {
       filter: filter,
       sort: sortOptions ? [sortOptions] : [],
@@ -38,78 +52,80 @@
   };
 </script>
 
-<Dialog bind:open label="Sort & Filters" let:isMobile>
-  <div id="outfit-filters-dialog" class:mobile={isMobile}>
-    {#if !hideSort && sortItems.length > 0}
-      <SectionTitle label="Sort" />
-      <SortSelect clearable items={sortItems} bind:selectedItem={sortOptions} />
-    {/if}
-    {#if !hideType}
-      <div>
-        <SectionTitle label="Type" />
-        <Select
-          placeholder="Type"
-          itemText="name"
-          itemValue="value"
-          clearable
-          items={[
-            { name: "Set", value: PACKAGE_TYPE.OUTFIT_SET },
-            { name: "Outfit", value: PACKAGE_TYPE.OUTFIT },
-          ]}
-          bind:selectedItem={filter.type}
-        />
+<Dialog bind:open label="Sort & Filters" >
+  {#snippet children({ isMobile })}
+    <div id="outfit-filters-dialog" class:mobile={isMobile}>
+      {#if !hideSort && sortItems.length > 0}
+        <SectionTitle label="Sort" />
+        <SortSelect clearable items={sortItems} bind:selectedItem={sortOptions} />
+      {/if}
+      {#if !hideType}
+        <div>
+          <SectionTitle label="Type" />
+          <Select
+            placeholder="Type"
+            itemText="name"
+            itemValue="value"
+            clearable
+            items={[
+              { name: "Set", value: PACKAGE_TYPE.OUTFIT_SET },
+              { name: "Outfit", value: PACKAGE_TYPE.OUTFIT },
+            ]}
+            bind:selectedItem={filter.type}
+          />
+        </div>
+      {/if}
+      {#if !hideColor}
+        <div>
+          <SectionTitle label="Color" />
+          <ColorSelect
+            placeholder="Color"
+            multiple
+            items={COLORS_ARRAY}
+            itemText="normalizedName"
+            itemValue="name"
+            clearable
+            autocomplete
+            bind:selectedItem={filter.colors}
+          />
+        </div>
+      {/if}
+      {#if !hideOutfitType}
+        <div>
+          <SectionTitle label="Outfit Type" />
+          <Select
+            placeholder="Outfit Type"
+            items={OUTFIT_TYPE_ARRAY}
+            itemText="normalizedName"
+            itemValue="name"
+            multiple
+            clearable
+            autocomplete
+            bind:selectedItem={filter.outfitType}
+          />
+        </div>
+      {/if}
+      {#if !hideIsShared}
+        <div>
+          <SectionTitle label="Is Shared" />
+          <Select
+            placeholder="Is Shared"
+            itemText="name"
+            itemValue="value"
+            clearable
+            items={[
+              { name: "Shared", value: true },
+              { name: "Not shared", value: false },
+            ]}
+            bind:selectedItem={filter.isShared}
+          />
+        </div>
+      {/if}
+      <div id="filter-btn">
+        <Button label="Filter items" on:click={onFilter} icon={Sliders2Icon} />
       </div>
-    {/if}
-    {#if !hideColor}
-      <div>
-        <SectionTitle label="Color" />
-        <ColorSelect
-          placeholder="Color"
-          multiple
-          items={COLORS_ARRAY}
-          itemText="normalizedName"
-          itemValue="name"
-          clearable
-          autocomplete
-          bind:selectedItem={filter.colors}
-        />
-      </div>
-    {/if}
-    {#if !hideOutfitType}
-      <div>
-        <SectionTitle label="Outfit Type" />
-        <Select
-          placeholder="Outfit Type"
-          items={OUTFIT_TYPE_ARRAY}
-          itemText="normalizedName"
-          itemValue="name"
-          multiple
-          clearable
-          autocomplete
-          bind:selectedItem={filter.outfitType}
-        />
-      </div>
-    {/if}
-    {#if !hideIsShared}
-      <div>
-        <SectionTitle label="Is Shared" />
-        <Select
-          placeholder="Is Shared"
-          itemText="name"
-          itemValue="value"
-          clearable
-          items={[
-            { name: "Shared", value: true },
-            { name: "Not shared", value: false },
-          ]}
-          bind:selectedItem={filter.isShared}
-        />
-      </div>
-    {/if}
-    <div id="filter-btn">
-      <Button label="Filter items" on:click={onFilter} icon={Sliders2Icon} />
     </div>
-  </div>
+  {/snippet}
 </Dialog>
 
 <style lang="scss">

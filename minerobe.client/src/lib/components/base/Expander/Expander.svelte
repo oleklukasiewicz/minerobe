@@ -5,11 +5,23 @@
   import ChevronUpIcon from "$icons/chevron-up.svg?raw";
   import ChevronDownIcon from "$icons/chevron-down.svg?raw";
 
-  export let icon = null;
-  export let label = null;
-  export let group = null;
-  export let opened = false;
-  export let value = null;
+  interface Props {
+    icon?: any;
+    label?: any;
+    group?: any;
+    opened?: boolean;
+    value?: any;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    icon = null,
+    label = null,
+    group = $bindable(null),
+    opened = $bindable(false),
+    value = null,
+    children
+  }: Props = $props();
 
   const toggleExpander = () => {
     if (group == null) {
@@ -34,8 +46,8 @@
       {/if}
     </div>
     <span class="expander-toggle">
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
       <Button
         type="quaternary"
         on:click={toggleExpander}
@@ -48,7 +60,7 @@
   </div>
   <div class="expander-content">
     <div>
-      <slot />
+      {@render children?.()}
     </div>
   </div>
 </div>

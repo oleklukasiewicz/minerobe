@@ -13,45 +13,65 @@
 
   const dispatch = createEventDispatcher();
 
-  export let items: OutfitLayer[];
-  export let packageId: string = null;
-  export let model: MODEL_TYPE;
-  export let selectedLayerId: string = "";
-  export let selectable: boolean = true;
-  export let movable: boolean = true;
-  export let editable: boolean = true;
-  export let readonly: boolean = false;
-  export let removable: boolean = true;
-  export let dropable: boolean = false;
-  export let resizable: boolean = false;
-  export let dense: boolean = false;
-  export let primaryLayerId: string = null;
-  export let resizeDebounce = 300;
-  export let link = null;
+  interface Props {
+    items: OutfitLayer[];
+    packageId?: string;
+    model: MODEL_TYPE;
+    selectedLayerId?: string;
+    selectable?: boolean;
+    movable?: boolean;
+    editable?: boolean;
+    readonly?: boolean;
+    removable?: boolean;
+    dropable?: boolean;
+    resizable?: boolean;
+    dense?: boolean;
+    primaryLayerId?: string;
+    resizeDebounce?: number;
+    link?: any;
+  }
 
-  const onSelect = function (layer: OutfitLayer) {
+  let {
+    items = $bindable(),
+    packageId = null,
+    model,
+    selectedLayerId = "",
+    selectable = true,
+    movable = true,
+    editable = true,
+    readonly = false,
+    removable = true,
+    dropable = false,
+    resizable = false,
+    dense = false,
+    primaryLayerId = null,
+    resizeDebounce = 300,
+    link = null
+  }: Props = $props();
+
+  const onSelect= function (layer: OutfitLayer) {
     if (!selectable) return;
     dispatch("select", { item: layer });
   };
-  const onMoveUp = function (layer: OutfitLayer, index: number) {
+  const onMoveUp= function (layer: OutfitLayer, index: number) {
     if (!movable) return;
     dispatch("moveUp", { item: layer, index: index });
   };
-  const onMoveDown = function (layer: OutfitLayer, index: number) {
+  const onMoveDown= function (layer: OutfitLayer, index: number) {
     if (!movable) return;
     dispatch("moveDown", { item: layer, index: index });
   };
-  const onEdit = function (layer: OutfitLayer, index: number) {
+  const onEdit= function (layer: OutfitLayer, index: number) {
     dispatch("edit", { item: layer, index: index });
   };
-  const onDelete = function (layer: OutfitLayer, index: number) {
+  const onDelete= function (layer: OutfitLayer, index: number) {
     dispatch("delete", { item: layer, index: index });
   };
-  const onDrop = async function (layer: OutfitLayer, option: any) {
+  const onDrop= async function (layer: OutfitLayer, option: any) {
     const items = await ConvertFileToFileData(option.items[0]);
     dispatch("drop", { item: layer, option: option.option, file: items });
   };
-  const onResize = function () {
+  const onResize= function () {
     items = [...items];
   };
 </script>

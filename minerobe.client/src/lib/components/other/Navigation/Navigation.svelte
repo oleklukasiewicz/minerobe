@@ -58,7 +58,7 @@
         href={$CURRENT_USER?.id ? "/profile" : null}
         icon={$CURRENT_USER?.avatar ? null : AvatarIcon}
         iconImage={$CURRENT_USER?.avatar}
-        on:click={profileAction}
+        onclick={profileAction}
       />
     </div>
   </div>

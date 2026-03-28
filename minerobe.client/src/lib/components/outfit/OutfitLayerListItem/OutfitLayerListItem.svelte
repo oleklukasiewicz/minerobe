@@ -19,39 +19,59 @@
 
   const dispatch = createEventDispatcher();
 
-  export let item: OutfitLayer;
-  export let outfitType: OUTFIT_TYPE = null;
-  export let model: MODEL_TYPE;
-  export let readonly = false;
-  export let movable = true;
-  export let canUp = true;
-  export let canDown = true;
-  export let editable = true;
-  export let removable = false;
-  export let link = null;
-  export let selected = false;
-  export let packageId: string = null;
-  export let isPrimary: boolean = false;
-  export let dense = false;
-  export let labels = true;
+  interface Props {
+    item: OutfitLayer;
+    outfitType?: OUTFIT_TYPE;
+    model: MODEL_TYPE;
+    readonly?: boolean;
+    movable?: boolean;
+    canUp?: boolean;
+    canDown?: boolean;
+    editable?: boolean;
+    removable?: boolean;
+    link?: any;
+    selected?: boolean;
+    packageId?: string;
+    isPrimary?: boolean;
+    dense?: boolean;
+    labels?: boolean;
+  }
 
-  const onMoveUp = function (e) {
+  let {
+    item,
+    outfitType = null,
+    model,
+    readonly = false,
+    movable = true,
+    canUp = true,
+    canDown = true,
+    editable = true,
+    removable = false,
+    link = null,
+    selected = false,
+    packageId = null,
+    isPrimary = false,
+    dense = false,
+    labels = true
+  }: Props = $props();
+
+  const onMoveUp= function (e) {
     e.stopPropagation();
     dispatch("moveUp", { item: item });
   };
-  const onMoveDown = function (e) {
+  const onMoveDown= function (e) {
     e.stopPropagation();
     dispatch("moveDown", { item: item });
   };
-  const onEdit = function (e) {
+  const onEdit= function (e) {
     e.stopPropagation();
     dispatch("edit", { item: item });
   };
-  const onDelete = function (e) {
+  const onDelete= function (e) {
     e.stopPropagation();
     dispatch("delete", { item: item });
   };
-  const onSelect = function (e) {
+  const onSelect= function (e) {
     e.stopPropagation();
     dispatch("select", { item: item });
   };
@@ -60,16 +80,16 @@
 <!-- svelte-ignore a11y_missing_attribute -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-missing-attribute -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_missing_attribute -->
 <a
   class="outfit-layer-list-item"
   class:selected
   class:readonly
   class:dense
   title={item.name}
-  on:click={onSelect}
+  onclick={onSelect}
 >
   <div class="render">
     {#if isPrimary}
@@ -102,7 +122,7 @@
             size="large"
             type="quaternary"
             label="Edit"
-            on:click={onEdit}
+            onclick={onEdit}
           />
         {/if}
         {#if editable && (movable || removable || link)}
@@ -117,7 +137,7 @@
             type="quaternary"
             disabled={!canUp}
             whiteText={selected}
-            on:click={onMoveUp}
+            onclick={onMoveUp}
           />
           <Button
             onlyIcon
@@ -127,7 +147,7 @@
             type="quaternary"
             disabled={!canDown}
             whiteText={selected}
-            on:click={onMoveDown}
+            onclick={onMoveDown}
           />
         {/if}
         {#if movable && (removable || link)}
@@ -141,7 +161,7 @@
             size="large"
             label="Delete"
             type="quaternary"
-            on:click={onDelete}
+            onclick={onDelete}
           />
         {/if}
         {#if removable && link}

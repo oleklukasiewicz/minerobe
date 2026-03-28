@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   //main imports
   import { createEventDispatcher } from "svelte";
   //services
@@ -17,40 +19,66 @@
 
   const dispatch = createEventDispatcher();
 
-  export let items: any[] = [];
-  export let placeholder: string = "Select";
-  export let multiple: boolean = false;
-  export let selectedItem = null;
-  export let clickable = false;
-  export let opened = false;
-  export let itemText = null;
-  export let itemValue = null;
-  export let clearable = false;
-  export let dropDownStyle = null;
-  export let disabled = false;
-  export let autocomplete = false;
-  export let defaultValue = null;
 
-  export let sorter = function (a, b) {
+  interface Props {
+    items?: any[];
+    placeholder?: string;
+    multiple?: boolean;
+    selectedItem?: any;
+    clickable?: boolean;
+    opened?: boolean;
+    itemText?: any;
+    itemValue?: any;
+    clearable?: boolean;
+    dropDownStyle?: any;
+    disabled?: boolean;
+    autocomplete?: boolean;
+    defaultValue?: any;
+    sorter?: any;
+    comparer?: any;
+    selected?: import('svelte').Snippet<[any]>;
+    actions?: import('svelte').Snippet;
+    children?: import('svelte').Snippet<[any]>;
+  }
+
+  let {
+    items = [],
+    placeholder = "Select",
+    multiple = false,
+    selectedItem = $bindable(null),
+    clickable = false,
+    opened = $bindable(false),
+    itemText = null,
+    itemValue = null,
+    clearable = false,
+    dropDownStyle = null,
+    disabled = false,
+    autocomplete = false,
+    defaultValue = null,
+    sorter = function (a, b) {
     if (a < b) return -1;
     if (a > b) return 1;
     return 0;
-  };
-  export let comparer = function (selectedItemValue, item, isMultiple = false) {
+  },
+    comparer = function (selectedItemValue, item, isMultiple = false) {
     if (isMultiple) {
       return selectedItemValue?.includes(item);
     }
     return selectedItemValue == item;
-  };
+  },
+    selected,
+    actions,
+    children
+  }: Props = $props();
 
-  let selectedItemValue = defaultValue;
+  let selectedItemValue = $state(null);
   let menuWidth = 0;
-  let menu = null;
-  let itemsContainer = null;
-  let autocompleteInput = null;
-  let inputComponent = null;
-  let filteredItems = items;
-  let focusedIndex = -1;
+  let menu = $state(null);
+  let itemsContainer = $state(null);
+  let autocompleteInput = $state(null);
+  let inputComponent = $state(null);
+  let filteredItems = $state([]);
+  let focusedIndex = $state(-1);
 
   const select = (item) => {
     if (multiple) {
@@ -152,10 +180,16 @@
     focusedItem?.scrollIntoView({ block: "nearest" });
   };
 
-  $: setSelectedItemValue(selectedItem);
+  run(() => {
+    setSelectedItemValue(selectedItem ?? defaultValue);
+  });
 
-  $: filteredItems = items;
-  $: filterByAutocomplete(autocompleteInput);
+  run(() => {
+    filteredItems = items;
+  });
+  run(() => {
+    filterByAutocomplete(autocompleteInput);
+  });
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
@@ -167,18 +201,17 @@
   class:autocomplete
   class:mobile={$IS_MOBILE_VIEW}
   bind:this={menu}
-  use:clickOutside
+  use:clickOutside={() => (opened = false)}
   tabindex="0"
-  on:keydown={handleKeyDown}
-  on:click_outside={() => (opened = false)}
+  onkeydown={handleKeyDown}
 >
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
   <div class="selected-item-container">
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="selected-item" on:click={selectedClick}>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="selected-item" onclick={selectedClick}>
       {#if selectedItemValue != null && (multiple ? selectedItemValue.length > 0 : true)}
-        <slot name="selected" {selectedItemValue} {itemText} {multiple}>
+        {#if selected}{@render selected({ selectedItemValue, itemText, multiple, })}{:else}
           {#if clickable && selectedItemValue != null}
             <Button
               textAlign="left"
@@ -202,7 +235,7 @@
               {/if}
             </div>
           {/if}
-        </slot>
+        {/if}
       {:else if !autocomplete}
         <div class="select-placeholder">{placeholder}</div>
       {/if}
@@ -214,13 +247,13 @@
         {placeholder}
         bind:value={autocompleteInput}
         class="autocomplete-input"
-        on:input={(e) => (opened = true)}
-        on:click={(e) => (opened = true)}
+        oninput={(e) => (opened = true)}
+        onclick={(e) => (opened = true)}
       />
     {:else if autocomplete}
       <div
         class="autocomplete-placeholder"
-        on:click={() => (opened = true)}
+        onclick={() => (opened = true)}
       ></div>
     {/if}
     {#if clearable && selectedItemValue != null && (multiple ? selectedItemValue.length > 0 : true)}
@@ -232,7 +265,7 @@
         type="secondary"
         iconSize="auto"
         noBorder
-        on:click={clear}
+        onclick={clear}
       ></Button>
     {/if}
     <Button
@@ -243,63 +276,57 @@
       icon={opened ? ChevronUpIcon : ChevronDownIcon}
       type="primary"
       noBorder
-      on:click={() => (opened = !opened)}
+      onclick={() => (opened = !opened)}
     ></Button>
-    <slot name="actions"></slot>
+    {@render actions?.()}
   </div>
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <Flyout
     bind:opened
     caller={menu}
     preventClickOutsideClose
     resizable
-    let:position
+    
   >
-    <div
-      class:pos-bottom={position == "bottom"}
-      class:pos-top={position == "top"}
-      class="items"
-      style={dropDownStyle}
-      class:opened
-      class:hidden={!opened}
-      bind:this={itemsContainer}
-    >
-      {#each filteredItems.sort(sorter) as item, index}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <div class="selected item" on:click={() => select(item)}>
-          <slot
-            {item}
-            {multiple}
-            {itemText}
-            {selectedItemValue}
-            {comparer}
-            {index}
-            {focusedIndex}
-          >
-            <Button
-              size="medium"
-              flat
-              noBorder
-              type={comparer(selectedItemValue, item, multiple) ||
-              index == focusedIndex
-                ? "primary"
-                : "quaternary"}
-              icon={multiple
-                ? comparer(selectedItemValue, item, multiple)
-                  ? CheckBoxIcon
-                  : CheckBoxOffIcon
-                : null}
-              focused={index == focusedIndex}
-              label={itemText == null ? item : item[itemText]}
-              textAlign="left"
-            ></Button>
-          </slot>
-        </div>
-      {/each}
-    </div>
-  </Flyout>
+    {#snippet children({ position })}
+        <div
+        class:pos-bottom={position == "bottom"}
+        class:pos-top={position == "top"}
+        class="items"
+        style={dropDownStyle}
+        class:opened
+        class:hidden={!opened}
+        bind:this={itemsContainer}
+      >
+        {#each filteredItems.sort(sorter) as item, index}
+          <!-- svelte-ignore a11y_click_events_have_key_events -->
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <div class="selected item" onclick={() => select(item)}>
+            {#if children}{@render children({ item, multiple, itemText, selectedItemValue, comparer, index, focusedIndex, })}{:else}
+              <Button
+                size="medium"
+                flat
+                noBorder
+                type={comparer(selectedItemValue, item, multiple) ||
+                index == focusedIndex
+                  ? "primary"
+                  : "quaternary"}
+                icon={multiple
+                  ? comparer(selectedItemValue, item, multiple)
+                    ? CheckBoxIcon
+                    : CheckBoxOffIcon
+                  : null}
+                focused={index == focusedIndex}
+                label={itemText == null ? item : item[itemText]}
+                textAlign="left"
+              ></Button>
+            {/if}
+          </div>
+        {/each}
+      </div>
+          {/snippet}
+    </Flyout>
 </div>
 
 <style lang="scss">

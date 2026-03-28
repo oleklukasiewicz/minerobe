@@ -16,10 +16,10 @@
 
   const userSettings: Writable<MinerobeUserSettings> = writable(null);
 
-  let mostLiked = [];
-  let mostRecent = [];
-  let mostDownloaded = [];
-  let listsLoaded = false;
+  let mostLiked = $state([]);
+  let mostRecent = $state([]);
+  let mostDownloaded = $state([]);
+  let listsLoaded = $state(false);
   let loaded = false;
 
   let stateSub;

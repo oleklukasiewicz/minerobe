@@ -1,14 +1,36 @@
 <script lang="ts">
+  import { createBubbler } from 'svelte/legacy';
+
+  const bubble = createBubbler();
+  interface $$Events {
+    click: MouseEvent;
+  }
   //main imports
   import { page } from "$app/stores";
 
-  export let label = "";
-  export let icon = "";
-  export let iconImage = "";
-  export let href = "";
-  export let viewId = "";
-  export let disabled = false;
-  export let onlyIcon = false;
+  interface Props {
+    label?: string;
+    icon?: string;
+    iconImage?: string;
+    href?: string;
+    viewId?: string;
+    disabled?: boolean;
+    onlyIcon?: boolean;
+    onclick?: (event: MouseEvent) => void;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    label = "",
+    icon = "",
+    iconImage = "",
+    href = "",
+    viewId = "",
+    disabled = false,
+    onlyIcon= false,
+    onclick = null,
+    children
+  }: Props = $props();
 </script>
 
 <a
@@ -18,10 +40,13 @@
     ? $page.route?.id?.startsWith("/" + viewId)
     : $page.route?.id == "/"}
   class:disabled
-  on:click
+  onclick={(event) => {
+    bubble('click')(event);
+    onclick?.(event);
+  }}
   title={label}
 >
-  <!-- svelte-ignore a11y-missing-attribute -->
+  <!-- svelte-ignore a11y_missing_attribute -->
   {#if iconImage}
     <img src={iconImage} />
   {/if}
@@ -31,7 +56,7 @@
   {#if label && !onlyIcon}
     <span class="item-label">{label}</span>
   {/if}
-  <slot />
+  {@render children?.()}
 </a>
 
 <style lang="scss">

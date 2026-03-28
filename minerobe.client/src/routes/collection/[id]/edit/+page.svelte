@@ -29,24 +29,28 @@
   import type { OutfitFilter } from "$src/data/models/filter";
   import { GetWardrobeItemsWithCollectionContext } from "$src/api/wardrobe";
   import CollectionsItemPickerDialog from "$lib/components/dialog/CollectionItemsPickerDialog.svelte";
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   const itemCollection: Writable<OutfitPackageCollection> = writable(null);
   const collectionItems: Writable<PagedResponse<OutfitPackage>[]> = writable(
     []
   );
 
-  let userSettings: MinerobeUserSettings = null;
+  let userSettings: MinerobeUserSettings = $state(null);
   let stateSub = null;
-  let itemsLoaded = false;
-  let loaded = false;
+  let itemsLoaded = $state(false);
+  let loaded = $state(false);
   let collectionLoaded = false;
-  let isEditDialogOpen = false;
-  let isEditItemsDialogOpen = false;
+  let isEditDialogOpen = $state(false);
+  let isEditItemsDialogOpen = $state(false);
   let dialogOutfitsPickerOptions: PagedModel<OutfitFilter> =
-    new PagedModel<OutfitFilter>();
+    $state(new PagedModel<OutfitFilter>());
   let dialogOutfitPickerItems: PagedResponse<OutfitPackage> =
-    new PagedResponse<OutfitPackage>();
+    $state(new PagedResponse<OutfitPackage>());
 
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
@@ -170,20 +174,22 @@
   <div id="collection-items">
     {#if loaded}
       <LazyList
-        let:items={pagedItems}
+        
         on:loading={fetchItems}
         itemsPages={$collectionItems}
         rootMargin={"100px"}
         loading={!itemsLoaded}
       >
-        <OutfitPackageList
-          columns={$IS_MOBILE_VIEW ? 3 : 6}
-          resizable
-          items={pagedItems}
-          currentPackageId={userSettings?.currentTexture?.packageId}
-          baseTexture={userSettings?.baseTexture.layers[0]}
-          on:select={goToItemPage}
-        /></LazyList
+        {#snippet children({ items: pagedItems })}
+                <OutfitPackageList
+            columns={$IS_MOBILE_VIEW ? 3 : 6}
+            resizable
+            items={pagedItems}
+            currentPackageId={userSettings?.currentTexture?.packageId}
+            baseTexture={userSettings?.baseTexture.layers[0]}
+            on:select={goToItemPage}
+          />              {/snippet}
+            </LazyList
       >
     {/if}
   </div>

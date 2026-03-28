@@ -53,11 +53,11 @@
     if (stateSub) stateSub();
   });
 
-  let loaded = false;
-  let dynamicRenderer = null;
+  let loaded = $state(false);
+  let dynamicRenderer = $state(null);
 
   //base texture dialogs
-  let isBaseTextureEditDialogOpen = false;
+  let isBaseTextureEditDialogOpen = $state(false);
 
   //base texture
   const DropBaseTexture = async function (e) {

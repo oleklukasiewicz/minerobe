@@ -4,40 +4,63 @@
   //services
   import { clickOutside } from "$src/helpers/data/componentHelper";
 
-  export let href: string = null;
-  export let label: string = null;
-  export let icon: string = null;
-  export let disabled: boolean = false;
-  export let onlyIcon: boolean = false;
-  export let noBorder = false;
-  export let style = null;
-  export let containerStyle = null;
-  export let whiteText = false;
-  export let flat = false;
-  export let focused = false;
-  export let type: "primary" | "secondary" | "tertiary" | "quaternary" =
-    "primary";
-  export let size: "small" | "medium" | "large" | "auto" = "medium";
-  export let iconSize: "small" | "medium" | "large" | "auto" = size;
-  export let textAlign: "left" | "center" | "right" = "center";
-  export let target: "_blank" | "_self" = null;
-  export let hideMenuButton: boolean = false;
 
-  export let opened: boolean = false;
 
   import ChevronUpIcon from "$icons/chevron-up.svg?raw";
   import ChevronDownIcon from "$icons/chevron-down.svg?raw";
   import Flyout from "$lib/components/base/Flyout/Flyout.svelte";
+  interface Props {
+    href?: string;
+    label?: string;
+    icon?: string;
+    disabled?: boolean;
+    onlyIcon?: boolean;
+    noBorder?: boolean;
+    style?: any;
+    containerStyle?: any;
+    whiteText?: boolean;
+    flat?: boolean;
+    focused?: boolean;
+    type?: "primary" | "secondary" | "tertiary" | "quaternary";
+    size?: "small" | "medium" | "large" | "auto";
+    iconSize?: "small" | "medium" | "large" | "auto";
+    textAlign?: "left" | "center" | "right";
+    target?: "_blank" | "_self";
+    hideMenuButton?: boolean;
+    opened?: boolean;
+    children?: import('svelte').Snippet;
+  }
 
-  let component = null;
+  let {
+    href = null,
+    label = null,
+    icon = null,
+    disabled = false,
+    onlyIcon= false,
+    noBorder = false,
+    style = null,
+    containerStyle = null,
+    whiteText = false,
+    flat = false,
+    focused = false,
+    type = "primary",
+    size = "medium",
+    iconSize = size,
+    textAlign = "center",
+    target = null,
+    hideMenuButton = false,
+    opened = $bindable(false),
+    children: menuChildren
+  }: Props = $props();
+
+  let component = $state(null);
 </script>
 
 <div
   class="menu-button"
   style={containerStyle}
   bind:this={component}
-  use:clickOutside
-  on:click_outside={() => (opened = false)}
+  use:clickOutside={() => (opened = false)}
 >
   <Button
     on:click
@@ -67,7 +90,7 @@
         icon={opened ? ChevronUpIcon : ChevronDownIcon}
         type="primary"
         noBorder
-        on:click={() => (opened = !opened)}
+        onclick={() => (opened = !opened)}
       ></Button>
     </div>
   {/if}
@@ -77,16 +100,18 @@
     bind:opened
     caller={component}
     resizable
-    let:position
+    
   >
-    <div
-      class="menu-button-content"
-      class:pos-bottom={position == "bottom"}
-      class:pos-top={position == "top"}
-    >
-      <slot />
-    </div>
-  </Flyout>
+    {#snippet children({ position })}
+        <div
+        class="menu-button-content"
+        class:pos-bottom={position == "bottom"}
+        class:pos-top={position == "top"}
+      >
+        {@render menuChildren?.()}
+      </div>
+          {/snippet}
+    </Flyout>
 </div>
 
 <style lang="scss">

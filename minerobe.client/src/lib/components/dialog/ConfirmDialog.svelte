@@ -9,18 +9,30 @@
 
   const dispatch = createEventDispatcher();
 
-  export let open = false;
-  export let message = "Are you sure?";
-  export let label = "Confirm";
-  export let confirmLabel = "Yes";
-  export let confirmIcon = null;
-  export let cancelLabel = "Cancel";
-  export let cancelIcon = CancelIcon;
+  interface Props {
+    open?: boolean;
+    message?: string;
+    label?: string;
+    confirmLabel?: string;
+    confirmIcon?: any;
+    cancelLabel?: string;
+    cancelIcon?: any;
+  }
 
-  const onConfirm = () => {
+  let {
+    open = $bindable(false),
+    message = "Are you sure?",
+    label = "Confirm",
+    confirmLabel = "Yes",
+    confirmIcon = null,
+    cancelLabel = "Cancel",
+    cancelIcon = CancelIcon
+  }: Props = $props();
+
+  const onConfirm= () => {
     dispatch("confirm");
   };
-  const onCancel = () => {
+  const onCancel= () => {
     dispatch("close");
   };
 </script>

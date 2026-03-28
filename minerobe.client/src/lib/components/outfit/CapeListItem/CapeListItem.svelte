@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { createBubbler } from 'svelte/legacy';
+
+  const bubble = createBubbler();
+  interface $$Events {
+    click: MouseEvent;
+  }
   //services
   import { GetImageArea } from "$src/helpers/image/imageDataHelpers";
   //models
@@ -6,11 +12,21 @@
   //icons
   import CloseBoxIcon from "$icons/close-box.svg?raw";
 
-  export let item: Cape = new Cape();
-  export let crop: boolean = true;
-  export let selected: boolean = false;
-  export let readonly = false;
-  export let autoSize = false;
+  interface Props {
+    item?: Cape;
+    crop?: boolean;
+    selected?: boolean;
+    readonly?: boolean;
+    autoSize?: boolean;
+  }
+
+  let {
+    item = new Cape(),
+    crop = true,
+    selected = false,
+    readonly = false,
+    autoSize = false
+  }: Props = $props();
 
   const normalizeCape = async function (cape: Cape) {
     if (!crop) return cape.texture;
@@ -18,15 +34,15 @@
   };
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-missing-attribute -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_missing_attribute -->
 <a
   class="cape-list-item"
   class:selected
   class:autoSize
   title={item.name}
-  on:click
+  onclick={bubble('click')}
   class:readonly
   draggable="false"
 >

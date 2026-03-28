@@ -1,28 +1,43 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import Resize from "$lib/components/other/Resize/Resize.svelte";
   import { IS_MOBILE_VIEW } from "$src/data/static";
 
   //services
   import { clickOutside } from "$src/helpers/data/componentHelper";
-  import { fly } from "svelte/transition";
 
-  export let opened = false;
-  export let caller = null;
-  export let position: "top" | "left" | "right" | "bottom" | "auto" = "auto";
-  export let align: "left" | "right" | "center" = "right";
-  export let preventClickOutsideClose = false;
-  export let autoWidth = true;
-  export let resizable = false;
+  interface Props {
+    opened?: boolean;
+    caller?: any;
+    position?: "top" | "left" | "right" | "bottom" | "auto";
+    align?: "left" | "right" | "center";
+    preventClickOutsideClose?: boolean;
+    autoWidth?: boolean;
+    resizable?: boolean;
+    children?: import('svelte').Snippet<[any]>;
+  }
 
-  let actualPosition = position;
+  let {
+    opened = $bindable(false),
+    caller = null,
+    position = "auto",
+    align = "right",
+    preventClickOutsideClose = false,
+    autoWidth = true,
+    resizable = false,
+    children
+  }: Props = $props();
 
-  let component = null;
-  let componentContent = null;
+  let actualPosition = $state("auto");
 
-  const onClose = () => {
+  let component = $state(null);
+  let componentContent = $state(null);
+
+  const onClose= () => {
     if (opened && !preventClickOutsideClose) opened = false;
   };
-  const onStateChanged = (v) => {
+  const onStateChanged= (v) => {
     let parentNode = document.body;
     if (!component || !parentNode) return;
     if (caller) {
@@ -82,7 +97,7 @@
       component.style.right = null;
     }
   };
-  const onResize = () => {
+  const onResize= () => {
     if (!resizable) return;
     const callerRect = caller?.getBoundingClientRect();
     if (autoWidth) {
@@ -93,32 +108,36 @@
       component.style.maxWidth = null;
     }
   };
-  const onComponentResize = () => {
+  const onComponentResize= () => {
     if (!opened) return;
     requestAnimationFrame(() => {
       calculatePosition();
     });
   };
-  $: onStateChanged(opened);
+  run(() => {
+    onStateChanged(opened);
+  });
+  run(() => {
+    actualPosition = position;
+  });
 </script>
 
 <div
   bind:this={component}
-  use:clickOutside
+  use:clickOutside={onClose}
   class:opened
   class="flyout"
   class:closed={!opened}
   class:mobile={$IS_MOBILE_VIEW}
-  on:click_outside={onClose}
 >
   <Resize targetNode={caller} on:resize={onResize} debounce={100}></Resize>
   <Resize targetNode={componentContent} on:resize={onComponentResize}></Resize>
   <div bind:this={componentContent} class="flyout-content">
-    <slot position={actualPosition} />
+    {@render children?.({ position: actualPosition, })}
   </div>
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="flyout-mobile-bg" on:click={() => (opened = false)}></div>
+  <div class="flyout-mobile-bg" onclick={() => (opened = false)}></div>
 </div>
 
 <style lang="scss">

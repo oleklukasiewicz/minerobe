@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { createBubbler } from 'svelte/legacy';
+
+  const bubble = createBubbler();
   //main imports
   import { createEventDispatcher } from "svelte";
   //components
@@ -9,30 +12,48 @@
 
   const dispatch = createEventDispatcher();
 
-  export let open = false;
-  export let style = "";
-  export let label = "";
-  export let showTitleBar = true;
-  export let className = "";
+  interface Props {
+    open?: boolean;
+    style?: string;
+    label?: string;
+    showTitleBar?: boolean;
+    className?: string;
+    children?: import('svelte').Snippet<[any]>;
+  }
 
-  const onClose = () => {
+  let {
+    open = $bindable(false),
+    style = "",
+    label = "",
+    showTitleBar = true,
+    className = "",
+    children
+  }: Props = $props();
+
+  const onClose= () => {
     open = false;
     dispatch("close");
   };
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="dialog {className}"
   class:open
-  on:click={onClose}
+  onclick={onClose}
   class:mobile={$IS_MOBILE_VIEW}
 >
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   {#if open}
-    <div class="dialog-content" on:click|stopPropagation>
+    <div
+      class="dialog-content"
+      onclick={(event) => {
+        event.stopPropagation();
+        bubble('click')(event);
+      }}
+    >
       {#if showTitleBar}
         <div class="dialog-title-bar">
           <span>{label || ""}</span>
@@ -42,12 +63,12 @@
             label="Close"
             iconSize="large"
             onlyIcon
-            on:click={onClose}
+            onclick={onClose}
           />
         </div>
       {/if}
       <div class="dialog-content-container" {style}>
-        <slot isMobile={$IS_MOBILE_VIEW} />
+        {@render children?.({ isMobile: $IS_MOBILE_VIEW, })}
       </div>
     </div>
   {/if}

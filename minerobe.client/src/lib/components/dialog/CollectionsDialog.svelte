@@ -7,34 +7,48 @@
   import PagedList from "../list/PagedList/PagedList.svelte";
   import OutfitPackageCollectionList from "../outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
 
-  export let open = false;
-  export let label = "Collections";
-  export let items: PagedResponse<OutfitPackageCollectionWithPackageContext>;
-  export let loading = true;
-  export let pageSizes: number[] = [10, 20, 50, 100];
+  interface Props {
+    open?: boolean;
+    label?: string;
+    items: PagedResponse<OutfitPackageCollectionWithPackageContext>;
+    loading?: boolean;
+    pageSizes?: number[];
+  }
+
+  let {
+    open = $bindable(false),
+    label = "Collections",
+    items,
+    loading = true,
+    pageSizes = [10, 20, 50, 100]
+  }: Props = $props();
 </script>
 
-<Dialog bind:open {label} let:isMobile>
-  <div id="collection-dialog" class:mobile={isMobile}>
-    <PagedList
-      on:optionsChanged
-      {items}
-      {loading}
-      {pageSizes}
-      let:items={pagedItems}
-      let:pageSize={pagedPageSize}
-      let:loading={pagedLoading}
-    >
-      <OutfitPackageCollectionList
-        selectable
-        items={pagedItems}
-        pageSize={pagedPageSize}
-        loading={pagedLoading}
-        on:select
-        on:unselect
-      />
-    </PagedList>
-  </div>
+<Dialog bind:open {label} >
+  {#snippet children({ isMobile })}
+    <div id="collection-dialog" class:mobile={isMobile}>
+      <PagedList
+        on:optionsChanged
+        {items}
+        {loading}
+        {pageSizes}
+        
+        
+        
+      >
+        {#snippet children({ items: pagedItems, pageSize: pagedPageSize, loading: pagedLoading })}
+            <OutfitPackageCollectionList
+            selectable
+            items={pagedItems}
+            pageSize={pagedPageSize}
+            loading={pagedLoading}
+            on:select
+            on:unselect
+          />
+                  {/snippet}
+        </PagedList>
+    </div>
+  {/snippet}
 </Dialog>
 
 <style lang="scss">

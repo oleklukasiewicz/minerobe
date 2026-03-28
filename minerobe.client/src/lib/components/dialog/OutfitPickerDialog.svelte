@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   //main imports
   import { createEventDispatcher } from "svelte";
   //consts
@@ -21,117 +23,138 @@
 
   const dispatch = createEventDispatcher();
 
-  export let items: PagedResponse<OutfitPackage>;
-  export let packageContext: OutfitPackage = null;
-  export let options: PagedModel<OutfitFilter> = new PagedModel<OutfitFilter>();
-  export let pageSizes = [5, 10, 15, 20];
-  export let open = false;
-  export let label = "Outfit Picker";
-  export let loading = true;
-  export let multiple = true;
+  interface Props {
+    items: PagedResponse<OutfitPackage>;
+    packageContext?: OutfitPackage;
+    options?: PagedModel<OutfitFilter>;
+    pageSizes?: any;
+    open?: boolean;
+    label?: string;
+    loading?: boolean;
+    multiple?: boolean;
+  }
 
-  let selectedItems: OutfitPackage[] = [];
+  let {
+    items,
+    packageContext = null,
+    options = $bindable(new PagedModel<OutfitFilter>()),
+    pageSizes = [5, 10, 15, 20],
+    open = $bindable(false),
+    label = "Outfit Picker",
+    loading = true,
+    multiple = true
+  }: Props = $props();
 
-  const onFiltersUpdate = function () {
+  let selectedItems: OutfitPackage[] = $state([]);
+
+  const onFiltersUpdate= function () {
     if (options.sort[0]?.value == null) options.sort = [];
     options.page = 0;
     dispatch("filter", { options: options });
   };
-  const onPageChanged = function (e) {
+  const onPageChanged= function (e) {
     const page = e.detail.options;
     options.page = page.options.page;
     options.pageSize = page.options.pageSize;
     if (options.sort[0]?.value == null) options.sort = [];
     dispatch("optionsChanged", { options: options });
   };
-  const onSelect = function (items) {
+  const onSelect= function (items) {
     selectedItems = items;
     if (!multiple) dispatch("select", { items: items });
   };
-  const onSelectClick = function () {
+  const onSelectClick= function () {
     dispatch("select", { items: selectedItems });
   };
 
-  const onOpen = function (v) {
+  const onOpen= function (v) {
     selectedItems = [];
   };
-  $: onOpen(open);
+  run(() => {
+    onOpen(open);
+  });
 </script>
 
-<Dialog bind:open {label} let:isMobile>
-  <div id="outfit-picker-dialog" class:mobile={isMobile}>
-    <div class="dialog-filters">
-      <SortSelect
-        clearable
-        items={OUTFIT_PACKAGE_SORT_OPTIONS}
-        bind:selectedItem={options.sort[0]}
-        on:select={onFiltersUpdate}
-        on:clear={onFiltersUpdate}
-      />
-      <ColorSelect
-        items={COLORS_ARRAY}
-        autocomplete
-        bind:selectedItem={options.filter.colors}
-        placeholder="Colors"
-        itemText="normalizedName"
-        itemValue="name"
-        dropDownStyle="max-height: 275px"
-        multiple
-        clearable
-        on:select={onFiltersUpdate}
-        on:clear={onFiltersUpdate}
-      />
-      <Select
-        items={OUTFIT_TYPE_ARRAY}
-        placeholder="Outfit type"
-        autocomplete
-        itemText="normalizedName"
-        multiple
-        clearable
-        itemValue="name"
-        bind:selectedItem={options.filter.outfitType}
-        on:select={onFiltersUpdate}
-        on:clear={onFiltersUpdate}
-      />
-      <Search
-        dense
-        bind:value={options.filter.phrase}
-        on:search={onFiltersUpdate}
-      />
-    </div>
-    <PagedList
-      {items}
-      pageSize={options.pageSize}
-      {pageSizes}
-      {loading}
-      on:optionsChanged={onPageChanged}
-      let:items={pagedItems}
-      let:pageSize={pagedPageSize}
-      let:loading={pagedLoading}
-    >
-      <OutfitPackagePickerList
-        bind:selectedItems
-        selectable={multiple}
-        disableContext={packageContext}
-        items={pagedItems}
-        pageSize={pagedPageSize}
-        loading={pagedLoading}
-        on:selectionUpdate={(e) => onSelect(e.detail.items)}
-      />
-      {#if items?.items?.length === 0 && !loading}
-        <div class="no-items-error">No items found</div>
-      {/if}
-      <div slot="footer" id="select-footer">
-        {#if multiple}
-          <Button
-            on:click={onSelectClick}
-            label={"Add " + "(" + selectedItems.length + ")"}
-            disabled={selectedItems.length === 0}
-          />
-        {/if}
+<Dialog bind:open {label} >
+  {#snippet children({ isMobile })}
+    <div id="outfit-picker-dialog" class:mobile={isMobile}>
+      <div class="dialog-filters">
+        <SortSelect
+          clearable
+          items={OUTFIT_PACKAGE_SORT_OPTIONS}
+          bind:selectedItem={options.sort[0]}
+          on:select={onFiltersUpdate}
+          on:clear={onFiltersUpdate}
+        />
+        <ColorSelect
+          items={COLORS_ARRAY}
+          autocomplete
+          bind:selectedItem={options.filter.colors}
+          placeholder="Colors"
+          itemText="normalizedName"
+          itemValue="name"
+          dropDownStyle="max-height: 275px"
+          multiple
+          clearable
+          on:select={onFiltersUpdate}
+          on:clear={onFiltersUpdate}
+        />
+        <Select
+          items={OUTFIT_TYPE_ARRAY}
+          placeholder="Outfit type"
+          autocomplete
+          itemText="normalizedName"
+          multiple
+          clearable
+          itemValue="name"
+          bind:selectedItem={options.filter.outfitType}
+          on:select={onFiltersUpdate}
+          on:clear={onFiltersUpdate}
+        />
+        <Search
+          dense
+          bind:value={options.filter.phrase}
+          on:search={onFiltersUpdate}
+        />
       </div>
-    </PagedList>
-  </div>
+      <PagedList
+        {items}
+        pageSize={options.pageSize}
+        {pageSizes}
+        {loading}
+        on:optionsChanged={onPageChanged}
+        
+        
+        
+      >
+        {#snippet children({ items: pagedItems, pageSize: pagedPageSize, loading: pagedLoading })}
+            <OutfitPackagePickerList
+            bind:selectedItems
+            selectable={multiple}
+            disableContext={packageContext}
+            items={pagedItems}
+            pageSize={pagedPageSize}
+            loading={pagedLoading}
+            on:selectionUpdate={(e) => onSelect(e.detail.items)}
+          />
+          {#if items?.items?.length === 0 && !loading}
+            <div class="no-items-error">No items found</div>
+          {/if}
+          {/snippet}
+          {#snippet footer()}
+            <div  id="select-footer">
+            {#if multiple}
+              <Button
+                on:click={onSelectClick}
+                label={"Add " + "(" + selectedItems.length + ")"}
+                disabled={selectedItems.length === 0}
+              />
+            {/if}
+          </div>
+          {/snippet}
+      </PagedList>
+    </div>
+  {/snippet}
 </Dialog>
 
 <style lang="scss">

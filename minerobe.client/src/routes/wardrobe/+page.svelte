@@ -35,15 +35,16 @@
 
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
 
-  let userSettings: MinerobeUserSettings = null;
+  let userSettings: MinerobeUserSettings = $state(null);
   let loaded = false;
-  let itemsLoaded = false;
-  let isFilterDialogOpen = false;
+  let itemsLoaded = $state(false);
+  let isFilterDialogOpen = $state(false);
   let stateSub = null;
 
-  let filter: OutfitFilter = new OutfitFilter();
-  let sortOption: SortOption[] = [];
-  filter.type = PACKAGE_TYPE.OUTFIT_SET;
+  const initialFilter = new OutfitFilter();
+  initialFilter.type = PACKAGE_TYPE.OUTFIT_SET;
+  let filter: OutfitFilter = $state(initialFilter);
+  let sortOption: SortOption[] = $state([]);
   let abortController = new AbortController();
 
   onMount(async () => {
@@ -121,11 +122,12 @@
   </div>
   <div id="content-list">
     <LazyList
-      let:items={pagedItems}
+      
       on:loading={fetchItems}
       itemsPages={$pageItems}
       rootMargin={"100px"}
       loading={!itemsLoaded}
+      let:items
     >
       <OutfitPackageList
         resizable
@@ -133,7 +135,7 @@
         resizeDebounce={500}
         currentPackageId={userSettings.currentTexture?.packageId}
         baseTexture={userSettings?.baseTexture.layers[0]}
-        items={pagedItems}
+        items={items}
         columns={$IS_MOBILE_VIEW ? 3 : 6}
       />
       <OutfitPackageList

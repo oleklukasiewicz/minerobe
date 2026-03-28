@@ -12,34 +12,38 @@
 
   const dispatch = createEventDispatcher();
 
-  export let open = false;
-  const onSelect = function (item) {
+  interface Props {
+    open?: boolean;
+  }
+
+  let { open = $bindable(false) }: Props = $props();
+  const onSelect= function (item) {
     dispatch("select", { type: item });
   };
 </script>
 
 <Dialog bind:open label="Select type">
   <div id="outfit-type-dialog">
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-missing-attribute -->
-    <a class="type-item" on:click={() => onSelect(PACKAGE_TYPE.OUTFIT_SET)}>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_missing_attribute -->
+    <a class="type-item" onclick={() => onSelect(PACKAGE_TYPE.OUTFIT_SET)}>
       <div class="icon-big">{@html AnimationIcon}</div>
       <b>Set</b>
     </a>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-missing-attribute -->
-    <a class="type-item" on:click={() => onSelect(PACKAGE_TYPE.OUTFIT)}>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_missing_attribute -->
+    <a class="type-item" onclick={() => onSelect(PACKAGE_TYPE.OUTFIT)}>
       <div class="icon-big">{@html ShoppingBagIcon}</div>
       <b>Outfit</b>
     </a>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-missing-attribute -->
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_missing_attribute -->
     <a
       class="type-item"
-      on:click={() => onSelect(PACKAGE_TYPE.OUTFIT_COLLECTION)}
+      onclick={() => onSelect(PACKAGE_TYPE.OUTFIT_COLLECTION)}
     >
       <div class="icon-big">{@html ListIcon}</div>
       <b>Collection</b>

@@ -8,19 +8,23 @@
 
   const dispatch = createEventDispatcher();
 
-  export let item: OutfitPackageCollectionWithPackageContext;
-  export let selectable = false;
-  export let dense = true;
+  interface Props {
+    item: OutfitPackageCollectionWithPackageContext;
+    selectable?: boolean;
+    dense?: boolean;
+  }
 
-  const onSelect = (e) => {
+  let { item, selectable = false, dense = true }: Props = $props();
+
+  const onSelect= (e) => {
     e.preventDefault();
     e.stopPropagation();
     dispatch("select", item);
   };
-  const onUnselect = () => {
+  const onUnselect= () => {
     dispatch("unselect", item);
   };
-  const onClick = (e) => {
+  const onClick= (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (selectable) return;
@@ -29,10 +33,10 @@
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
-<!-- svelte-ignore a11y-missing-attribute -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<a class="outfit-package-collection-list-item" class:dense on:click={onClick}>
+<!-- svelte-ignore a11y_missing_attribute -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<a class="outfit-package-collection-list-item" class:dense onclick={onClick}>
   {#if selectable}
     <div class="items-actions">
       <Checkbox

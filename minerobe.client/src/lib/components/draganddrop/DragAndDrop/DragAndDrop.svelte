@@ -1,10 +1,15 @@
 <script lang="ts">
   //main imports
   import { createEventDispatcher } from "svelte";
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
-  let isDragging = false;
+  let isDragging = $state(false);
 
   const handleDragEnter = function () {
     isDragging = true;
@@ -26,16 +31,16 @@
   };
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="drag-and-drop"
   class:isDragging
-  on:drop={handleDrop}
-  on:dragover={handleDragOver}
-  on:dragenter={handleDragEnter}
-  on:dragleave={handleDragLeave}
+  ondrop={handleDrop}
+  ondragover={handleDragOver}
+  ondragenter={handleDragEnter}
+  ondragleave={handleDragLeave}
 >
-  <slot></slot>
+  {@render children?.()}
 </div>
 
 <style lang="scss">

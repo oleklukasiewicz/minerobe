@@ -6,9 +6,13 @@
 
   const dispatch = createEventDispatcher();
 
-  export let style = "";
-  export let value: boolean = false;
-  export let label: string = null;
+  interface Props {
+    style?: string;
+    value?: boolean;
+    label?: string;
+  }
+
+  let { style = "", value = $bindable(false), label = null }: Props = $props();
   
   const toggleValue = () => {
     value = !value;
@@ -21,9 +25,9 @@
   };
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="checkbox-container" {style} on:click={toggleValue}>
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div class="checkbox-container" {style} onclick={toggleValue}>
   <div class="checkbox" class:selected={value}>
     {#if value}
       {@html CheckIcon}

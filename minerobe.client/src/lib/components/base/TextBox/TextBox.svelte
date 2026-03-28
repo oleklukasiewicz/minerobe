@@ -6,9 +6,13 @@
   //icons
   import CloseIcon from "$icons/close.svg?raw";
 
-  export let value = "";
-  export let clearable = false;
-  export let placeholder = "";
+  interface Props {
+    value?: string;
+    clearable?: boolean;
+    placeholder?: string;
+  }
+
+  let { value = $bindable(""), clearable = false, placeholder = "" }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
@@ -22,7 +26,7 @@
 </script>
 
 <div class="text-box">
-  <input bind:value on:input={handleInput} {placeholder} />
+  <input bind:value oninput={handleInput} {placeholder} />
   {#if clearable && value?.length > 0}
     <Button
       onlyIcon
@@ -31,7 +35,7 @@
       type="secondary"
       iconSize="auto"
       noBorder
-      on:click={clear}
+      onclick={clear}
     ></Button>
   {/if}
 </div>

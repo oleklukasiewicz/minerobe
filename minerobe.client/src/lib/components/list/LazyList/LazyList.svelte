@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: This migration would change the name of a slot making the component unusable -->
 <script lang="ts">
   //main imports
   import IntersectionObserver from "svelte-intersection-observer";
@@ -20,7 +21,7 @@
     itemsList = pages.flat();
   };
 
-  const onNewPageNeeded = (e) => {
+  const onNewPageNeeded= (e) => {
     if (loading) return;
     if (e.detail.isIntersecting == false) return;
     const lastPage = itemsPages[itemsPages.length - 1];
@@ -47,5 +48,4 @@
   </IntersectionObserver>
 </div>
 
-<style lang="scss">
-</style>
+<style lang="scss">/*$$__STYLE_CONTENT__$$*/</style>

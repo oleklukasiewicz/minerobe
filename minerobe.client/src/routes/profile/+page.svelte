@@ -66,15 +66,15 @@
     if (stateSub) stateSub();
   });
 
-  let currentCape: Cape = new Cape();
-  let currentTexture: OutfitPackage;
-  let currentMinecraftSkin: MinecraftSkin = null;
-  let loaded = false;
+  let currentCape: Cape = $state(new Cape());
+  let currentTexture: OutfitPackage = $state();
+  let currentMinecraftSkin: MinecraftSkin = $state(null);
+  let loaded = $state(false);
 </script>
 
 <div id="profile-overview">
   <div id="overview-header">
-    <!-- svelte-ignore a11y-missing-attribute -->
+    <!-- svelte-ignore a11y_missing_attribute -->
     <Placeholder
       loaded={$profileUser != null}
       width="96px"
@@ -115,11 +115,13 @@
           <div class="mc-font">No skin setted</div>
         {/if}
       </Placeholder>
-      <Button
-        slot="actions"
-        href={"/profile/skin"}
-        label={"Edit current skin"}
-      />
+      {#snippet actions()}
+            <Button
+          
+          href={"/profile/skin"}
+          label={"Edit current skin"}
+        />
+          {/snippet}
     </StatusCard>
     <!-- Base texture card-->
     <StatusCard label={"base texture"}>
@@ -141,11 +143,13 @@
           <div class="mc-font font-center">No texture</div>
         {/if}
       </Placeholder>
-      <Button
-        slot="actions"
-        label={"Change base texture"}
-        href="/profile/base"
-      />
+      {#snippet actions()}
+            <Button
+          
+          label={"Change base texture"}
+          href="/profile/base"
+        />
+          {/snippet}
     </StatusCard>
     <!-- Cape card-->
     {#if currentCape != null}
@@ -163,7 +167,9 @@
             </div>
           </div>
         </Placeholder>
-        <Button slot="actions" label={"Change cape"} href="/profile/skin" />
+        {#snippet actions()}
+                <Button  label={"Change cape"} href="/profile/skin" />
+              {/snippet}
       </StatusCard>
     {/if}
     <!-- Minecraft account card-->
@@ -171,7 +177,7 @@
       <Placeholder {loaded} height="100%" width="100%">
         {#if currentMinecraftSkin?.texture != null}
           {#await GetImageFaceArea(currentMinecraftSkin?.texture) then skin}
-            <!-- svelte-ignore a11y-missing-attribute -->
+            <!-- svelte-ignore a11y_missing_attribute -->
             <img src={skin} style="width:100%;image-rendering: pixelated; " />
           {/await}
         {/if}
@@ -183,11 +189,13 @@
           <div class="mc-font">No account linked</div>
         {/if}
       </Placeholder>
-      <Button
-        slot="actions"
-        label={"manage account"}
-        href="/profile/minecraft"
-      />
+      {#snippet actions()}
+            <Button
+          
+          label={"manage account"}
+          href="/profile/minecraft"
+        />
+          {/snippet}
     </StatusCard>
   </div>
 </div>

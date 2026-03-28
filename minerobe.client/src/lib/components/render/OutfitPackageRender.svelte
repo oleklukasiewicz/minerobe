@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   //main imports
   import { onDestroy, onMount, createEventDispatcher } from "svelte";
   import IntersectionObserver from "svelte-intersection-observer";
@@ -29,18 +31,6 @@
 
   const dispatch = createEventDispatcher();
 
-  export let source: string | OutfitPackage;
-  export let model: MODEL_TYPE | "source" = "source";
-  export let outfitType: string = null;
-  export let isDynamic: boolean = false;
-  export let isFlatten: boolean = false;
-  export let layerId: string = "";
-  export let cameraOptions: CameraConfig | "auto" = "auto";
-  export let renderer = $DEFAULT_RENDERER;
-  export let cape: string = null;
-  export let baseTexture: OutfitLayer | string = null;
-  export let pauseOnIntersection = false;
-  export let useTextureLighting = false;
   export const addAnimation = function (animation, force = false) {
     if (textureRenderer == null) return;
     textureRenderer.AddAnimation(animation, force);
@@ -52,26 +42,65 @@
   export const getCurrentTexture = function () {
     return textureRenderer.GetTexture();
   };
-  export let resizable = false;
-  export let resizeDebounce = 300;
+  interface Props {
+    source: string | OutfitPackage;
+    model?: MODEL_TYPE | "source";
+    outfitType?: string;
+    isDynamic?: boolean;
+    isFlatten?: boolean;
+    layerId?: string;
+    cameraOptions?: CameraConfig | "auto";
+    renderer?: any;
+    cape?: string;
+    baseTexture?: OutfitLayer | string;
+    pauseOnIntersection?: boolean;
+    useTextureLighting?: boolean;
+    resizable?: boolean;
+    resizeDebounce?: number;
+  }
 
-  let _component: any = null;
+  let {
+    source,
+    model = "source",
+    outfitType = null,
+    isDynamic = false,
+    isFlatten = false,
+    layerId = "",
+    cameraOptions = "auto",
+    renderer = $DEFAULT_RENDERER,
+    cape = null,
+    baseTexture = null,
+    pauseOnIntersection = false,
+    useTextureLighting = false,
+    resizable = false,
+    resizeDebounce = 300
+  }: Props = $props();
 
-  let _source: string | OutfitPackage = structuredClone(source);
-  let _model: MODEL_TYPE | "source" = structuredClone(model);
-  let _isFlatten: boolean = isFlatten;
-  let _baseTexture: OutfitLayer | string = baseTexture;
-  let _layerId: string = layerId;
-  let _cape: string = cape;
-  let renderReady = false;
+  let _component: any = $state(null);
+
+  let _source: string | OutfitPackage = null;
+  let _model: MODEL_TYPE | "source" = "source";
+  let _isFlatten: boolean = false;
+  let _baseTexture: OutfitLayer | string = null;
+  let _layerId: string = "";
+  let _cape: string = null;
+  let renderReady = $state(false);
   let cachedtexture: string = null;
-  let renderNode: any;
+  let renderNode: any = $state();
   let merger: OutfitPackageToTextureConverter =
     new OutfitPackageToTextureConverter();
-  const textureRenderer = new TextureRender(renderer);
+  let textureRenderer: TextureRender;
   let initialized = false;
 
   onMount(async () => {
+    _source = structuredClone(source);
+    _model = structuredClone(model);
+    _isFlatten = isFlatten;
+    _baseTexture = baseTexture;
+    _layerId = layerId;
+    _cape = cape;
+    textureRenderer = new TextureRender(renderer);
+
     textureRenderer.SetNode(renderNode);
     await loadInitialParams();
     await setRenderMode(isDynamic);
@@ -83,7 +112,7 @@
     textureRenderer.StopRendering();
   });
 
-  const onTextureUpdate = function () {
+  const onTextureUpdate= function () {
     dispatch("textureUpdate", { texture: textureRenderer.GetTexture() });
   };
 
@@ -401,19 +430,29 @@
     return false;
   };
 
-  $: syncModelSource(model, source, layerId, cape);
-  $: setBaseTexture(baseTexture);
-  $: setOutfitType(outfitType);
+  run(() => {
+    syncModelSource(model, source, layerId, cape);
+  });
+  run(() => {
+    setBaseTexture(baseTexture);
+  });
+  run(() => {
+    setOutfitType(outfitType);
+  });
 
-  $: setFlatten(isFlatten);
-  $: setCameraOptions(cameraOptions);
+  run(() => {
+    setFlatten(isFlatten);
+  });
+  run(() => {
+    setCameraOptions(cameraOptions);
+  });
 
-  const onResize = async function () {
+  const onResize= async function () {
     if (!initialized) return;
     await textureRenderer.Resize();
     renderReady = true;
   };
-  const onObserve = function (e) {
+  const onObserve= function (e) {
     if (pauseOnIntersection) {
       if (!e.detail.isIntersecting) textureRenderer.PauseRendering();
       else textureRenderer.ResumeRendering();
@@ -423,7 +462,7 @@
 
 <div class="outfit-render" bind:this={_component}>
   {#if !isDynamic}
-    <!-- svelte-ignore a11y-missing-attribute -->
+    <!-- svelte-ignore a11y_missing_attribute -->
     <img
       bind:this={renderNode}
       class:renderReady

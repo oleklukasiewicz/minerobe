@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   //main imports
   import { createEventDispatcher } from "svelte";
   //models
@@ -12,26 +14,42 @@
 
   const dispatch = createEventDispatcher();
 
-  export let items: any[] = [];
-  export let placeholder: string = "Sort by";
-  export let selectedItem = null;
-  export let opened = false;
-  export let itemText = "label";
-  export let itemValue = "value";
-  export let clearable = false;
-  export let dropDownStyle = null;
-  export let disabled = false;
-  export let autocomplete = false;
-  export let isDescending = false;
+  interface Props {
+    items?: any[];
+    placeholder?: string;
+    selectedItem?: any;
+    opened?: boolean;
+    itemText?: string;
+    itemValue?: string;
+    clearable?: boolean;
+    dropDownStyle?: any;
+    disabled?: boolean;
+    autocomplete?: boolean;
+    isDescending?: boolean;
+  }
 
-  const onSelect = (e) => {
+  let {
+    items = $bindable([]),
+    placeholder = $bindable("Sort by"),
+    selectedItem = $bindable(null),
+    opened = $bindable(false),
+    itemText = $bindable("label"),
+    itemValue = $bindable("value"),
+    clearable = $bindable(false),
+    dropDownStyle = $bindable(null),
+    disabled = $bindable(false),
+    autocomplete = $bindable(false),
+    isDescending = $bindable(false)
+  }: Props = $props();
+
+  const onSelect= (e) => {
     var sortOption: SortOption = new SortOption();
     sortOption.value = e.detail?.item?.value;
     sortOption.isDesc = isDescending;
     selectedItem = sortOption;
     dispatch("select", { option: sortOption });
   };
-  const onDirectionClick = () => {
+  const onDirectionClick= () => {
     isDescending = !isDescending;
     var sortOption: SortOption = new SortOption();
     sortOption.value = selectedItem.value;
@@ -40,11 +58,13 @@
     dispatch("select", { option: sortOption });
   };
 
-  const onSelectedUpdate = (v) => {
+  const onSelectedUpdate= (v) => {
     isDescending = v?.isDesc;
   };
 
-  $: onSelectedUpdate(selectedItem);
+  run(() => {
+    onSelectedUpdate(selectedItem);
+  });
 </script>
 
 <div class="sort-select">
@@ -52,28 +72,30 @@
     <Select
       on:clear
       on:select={onSelect}
-      bind:items
-      bind:placeholder
+      {items}
+      {placeholder}
       bind:selectedItem
       bind:opened
-      bind:itemText
-      bind:itemValue
-      bind:clearable
-      bind:dropDownStyle
-      bind:disabled
-      bind:autocomplete
+      {itemText}
+      {itemValue}
+      {clearable}
+      {dropDownStyle}
+      {disabled}
+      {autocomplete}
       defaultValue={new SortOption()}
     >
-      <div class="direction" slot="actions">
-        <Button
-          disabled={!selectedItem?.value}
-          onlyIcon
-          size="auto"
-          noBorder
-          icon={isDescending ? ArrowDownIcon : ArrowUpIcon}
-          on:click={onDirectionClick}
-        ></Button>
-      </div>
+      {#snippet actions()}
+            <div class="direction" >
+          <Button
+            disabled={!selectedItem?.value}
+            onlyIcon
+            size="auto"
+            noBorder
+            icon={isDescending ? ArrowDownIcon : ArrowUpIcon}
+            onclick={onDirectionClick}
+          ></Button>
+        </div>
+          {/snippet}
     </Select>
   </div>
 </div>

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import Menu from "$lib/components/base/Menu/Menu.svelte";
   import MenuItem from "$lib/components/base/MenuItem/MenuItem.svelte";
   import MenuItemHeader from "$lib/components/base/MenuItemHeader/MenuItemHeader.svelte";
@@ -15,12 +17,19 @@
   import { logoutUser } from "$src/api/auth";
   import { navigateToHome } from "$src/helpers/other/navigationHelper";
   import { onMount } from "svelte";
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
 
-  let selectedView = "overview";
+  let { children }: Props = $props();
 
-  $: selectedView = $page.route.id.split("/")[2] || "overview";
+  let selectedView = $state("overview");
 
-  let menuOpened = false;
+  run(() => {
+    selectedView = $page.route.id.split("/")[2] || "overview";
+  });
+
+  let menuOpened = $state(false);
 
   onMount(() => {
     menuOpened = !$IS_MOBILE_VIEW;
@@ -30,7 +39,7 @@
     await logoutUser();
     navigateToHome();
   };
-  const onMenuSelect = () => {
+  const onMenuSelect= () => {
     if ($IS_MOBILE_VIEW) menuOpened = false;
   };
 </script>
@@ -48,72 +57,76 @@
       </div>
     {:else}
       <div>
-        <Menu let:opened let:top opened={menuOpened}>
-          <MenuItemHeader
-            label="Profile"
-            icon={MenuIcon}
-            {opened}
-            on:click={() => (menuOpened = !menuOpened)}
-          />
-          <MenuItem
-            label="Overview"
-            {opened}
-            {top}
-            icon={DashboardIcon}
-            href="/profile"
-            selected={selectedView == "overview"}
-            on:click={onMenuSelect}
-          />
-          <MenuItem
-            label="Profile Data"
-            {opened}
-            {top}
-            icon={ContactIcon}
-            selected={selectedView == "info"}
-            href="/profile/info"
-            on:click={onMenuSelect}
-          />
-          <MenuItem
-            label="Current Skin"
-            {opened}
-            {top}
-            icon={UsersIcon}
-            selected={selectedView == "skin"}
-            href="/profile/skin"
-            on:click={onMenuSelect}
-          />
-          <MenuItem
-            label="Base Texture"
-            {opened}
-            {top}
-            icon={AvatarIcon}
-            selected={selectedView == "base"}
-            href="/profile/base"
-            on:click={onMenuSelect}
-          />
-          <MenuSeparator />
-          <MenuItem
-            label="Minecraft Account"
-            {opened}
-            {top}
-            icon={ZapIcon}
-            selected={selectedView == "minecraft"}
-            href="/profile/minecraft"
-            on:click={onMenuSelect}
-          />
-          <MenuItem
-            slot="footer"
-            opened={menuOpened}
-            label="Sign Out"
-            icon={LoginIcon}
-            on:click={SignOut}
-          />
+        <Menu   opened={menuOpened}>
+          {#snippet children({ opened, top })}
+                    <MenuItemHeader
+              label="Profile"
+              icon={MenuIcon}
+              {opened}
+              on:click={() => (menuOpened = !menuOpened)}
+            />
+            <MenuItem
+              label="Overview"
+              {opened}
+              {top}
+              icon={DashboardIcon}
+              href="/profile"
+              selected={selectedView == "overview"}
+              on:click={onMenuSelect}
+            />
+            <MenuItem
+              label="Profile Data"
+              {opened}
+              {top}
+              icon={ContactIcon}
+              selected={selectedView == "info"}
+              href="/profile/info"
+              on:click={onMenuSelect}
+            />
+            <MenuItem
+              label="Current Skin"
+              {opened}
+              {top}
+              icon={UsersIcon}
+              selected={selectedView == "skin"}
+              href="/profile/skin"
+              on:click={onMenuSelect}
+            />
+            <MenuItem
+              label="Base Texture"
+              {opened}
+              {top}
+              icon={AvatarIcon}
+              selected={selectedView == "base"}
+              href="/profile/base"
+              on:click={onMenuSelect}
+            />
+            <MenuSeparator />
+            <MenuItem
+              label="Minecraft Account"
+              {opened}
+              {top}
+              icon={ZapIcon}
+              selected={selectedView == "minecraft"}
+              href="/profile/minecraft"
+              on:click={onMenuSelect}
+            />
+            {/snippet}
+                  {#snippet footer()}
+                    <MenuItem
+              
+              opened={menuOpened}
+              label="Sign Out"
+              icon={LoginIcon}
+              on:click={SignOut}
+            />
+                  {/snippet}
         </Menu>
       </div>
     {/if}
   </div>
   <div id="profile-content">
-    <slot />
+    {@render children?.()}
   </div>
 </div>
 
