@@ -25,7 +25,7 @@
       .filter((item) => item.kind === "file")
       .map((item) => item.getAsFile());
 
-    ondrop?.({ detail: { items: items } });
+    ondrop?.({ items: items });
     isDragging = false;
   };
 </script>

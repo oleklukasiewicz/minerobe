@@ -1,12 +1,12 @@
 <script lang="ts">
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
 
-  interface Props {
+  interface SectionTitleProps {
     label: string;
     placeholder?: boolean;
   }
 
-  let { label, placeholder = false }: Props = $props();
+  let { label, placeholder = false }: SectionTitleProps = $props();
 </script>
 
 <span class="section-title">

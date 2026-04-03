@@ -138,12 +138,12 @@
   const onSelectionChange= async function (e) {
     e.preventDefault();
     e.stopPropagation();
-    onselect?.({ detail: { value: selected } });
+    onselect?.({ value: selected });
   };
   const onClick= async function (e) {
     e.preventDefault();
     e.stopPropagation();
-    onclick?.({ detail: { item: item, layer: currentLayer } });
+    onclick?.({ item: item, layer: currentLayer });
   };
 </script>
 

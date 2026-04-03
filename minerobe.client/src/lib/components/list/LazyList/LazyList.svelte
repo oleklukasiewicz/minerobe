@@ -29,7 +29,7 @@
       lastPage.options.page += 1;
     }
     if (lastPage?.items?.length < lastPage?.options.pageSize) return;
-    onloading?.({ detail: { options: lastPage } });
+    onloading?.({ options: lastPage });
   };
 </script>
 

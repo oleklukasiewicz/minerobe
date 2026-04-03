@@ -1,5 +1,5 @@
 <script lang="ts">
-  interface Props {
+  interface LabelProps {
     variant?: "unique" | "rare" | "common" | "legendary" | "ancient";
     dense?: boolean;
     text?: string;
@@ -13,7 +13,7 @@
     text = "",
     style = "",
     children
-  }: Props = $props();
+  }: LabelProps = $props();
 </script>
 
 <div class="label {variant}" class:dense {style}>

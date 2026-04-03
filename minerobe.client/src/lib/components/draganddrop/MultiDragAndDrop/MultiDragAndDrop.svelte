@@ -44,7 +44,7 @@
     const items = (Array.from(e.dataTransfer.items) as any[])
       .filter((item) => item.kind === "file")
       .map((item) => item.getAsFile());
-    ondrop?.({ detail: { option: draggingOption.value, items: items } });
+    ondrop?.({ option: draggingOption.value, items: items });
     draggingOption = null;
     isDragging = false;
   };

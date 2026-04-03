@@ -19,7 +19,7 @@
     onselect = null
   }: Props = $props();
   const onSelect= function (item) {
-    onselect?.({ detail: { type: item } });
+     onselect?.({ type: item });
   };
 </script>
 

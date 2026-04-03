@@ -26,7 +26,7 @@
   import Button from "../base/Button/Button.svelte";
 
 
-  interface Props {
+  interface CollectionItemsPickerDialogProps {
     items: PagedResponse<OutfitPackage>;
     packageContext?: OutfitPackageCollection;
     options?: PagedModel<OutfitFilter>;
@@ -61,7 +61,7 @@
     onunselect = null,
     onselectClick = null,
     onclose = null
-  }: Props = $props();
+  }: CollectionItemsPickerDialogProps = $props();
 
   let selectedSort = $state(null);
   let selectedColors = $state([]);
@@ -102,23 +102,23 @@
   const onFiltersUpdate= function () {
     syncOptionsFromLocalFilters();
     options.page = 0;
-    onfilter?.({ detail: { options: options } });
+    onfilter?.({ options: options });
   };
   const onPageChanged= function (e) {
-    const page = e.detail.options;
+    const page = e.options;
     syncOptionsFromLocalFilters();
     options.page = page.options.page;
     options.pageSize = page.options.pageSize;
-    onoptionsChanged?.({ detail: { options: options } });
+    onoptionsChanged?.({ options: options });
   };
   const onSelect= function (item) {
-    onselect?.({ detail: { items: item } });
+    onselect?.({ items: item });
   };
   const onUnselect= function (item) {
-    onunselect?.({ detail: { items: item } });
+    onunselect?.({ items: item });
   };
   const onSelectClick= function () {
-    onselectClick?.({ detail: { items: selectedItems } });
+    onselectClick?.({ items: selectedItems });
   };
 
   const onOpen= function (v) {};
@@ -138,14 +138,14 @@
         <SortSelect
           clearable
           items={OUTFIT_PACKAGE_SORT_OPTIONS}
-          bind:selectedItem={selectedSort}
+          bind:value={selectedSort}
           onselect={onFiltersUpdate}
           onclear={onFiltersUpdate}
         />
         <ColorSelect
           items={COLORS_ARRAY}
           autocomplete
-          bind:selectedItem={selectedColors}
+          bind:value={selectedColors}
           placeholder="Colors"
           itemText="normalizedName"
           itemValue="name"
@@ -163,7 +163,7 @@
           multiple
           clearable
           itemValue="name"
-          bind:selectedItem={selectedOutfitTypes}
+          bind:value={selectedOutfitTypes}
           onselect={onFiltersUpdate}
           onclear={onFiltersUpdate}
         />
@@ -195,8 +195,8 @@
             pageSize={pagedPageSize}
             loading={pagedLoading}
             {baseTexture}
-            onselect={(e) => onSelect(e.detail.items)}
-            onunselect={(e) => onUnselect(e.detail.items)}
+            onselect={(e) => onSelect(e.items)}
+            onunselect={(e) => onUnselect(e.items)}
           />
           {#if items?.items?.length === 0 && !loading}
             <div class="no-items-error">No items found</div>

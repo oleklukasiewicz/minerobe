@@ -4,15 +4,16 @@
   import ChevronDownIcon from "$icons/chevron-down.svg?raw";
 
   import Button from "../Button/Button.svelte";
+  import { BaseProps } from "$src/data/components";
   //icons
 
-  interface Props {
+  interface ExpanderProps extends BaseProps {
     icon?: any;
     label?: any;
     group?: any;
     opened?: boolean;
     value?: any;
-    children?: import('svelte').Snippet;
+    children?: import("svelte").Snippet;
   }
 
   let {
@@ -21,20 +22,24 @@
     group = $bindable(null),
     opened = $bindable(false),
     value = null,
-    children
-  }: Props = $props();
+    children,
+    disabled = false,
+  }: ExpanderProps = $props();
 
   const toggleExpander = () => {
-    if (group == null) {
-      opened = !opened;
-    } else {
+    if (group == null) opened = !opened;
+    else {
       if (group != value) group = value;
       else group = "none";
     }
   };
 </script>
 
-<div class="expander" class:opened={group == null ? opened : group == value}>
+<div
+  class="expander"
+  class:opened={group == null ? opened : group == value}
+  class:disabled
+>
   <div class="expander-header">
     <div class="expander-header-data">
       {#if icon}

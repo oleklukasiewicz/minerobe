@@ -8,19 +8,10 @@
   import CheckBoxOffIcon from "$icons/checkbox-off.svg?raw";
 
   import ColorBadge from "../ColorBadge/ColorBadge.svelte";
+  import type { BaseSelectProps } from "$src/data/components";
 
-  interface Props {
-    items?: any[];
-    placeholder?: string;
-    selectedItem?: any;
-    opened?: boolean;
-    itemText?: string;
-    itemValue?: string;
-    clearable?: boolean;
-    dropDownStyle?: any;
-    disabled?: boolean;
+  interface ColorSelectProps extends BaseSelectProps {
     multiple?: boolean;
-    autocomplete?: boolean;
     onselect?: (event?: any) => void;
     onclear?: (event?: any) => void;
   }
@@ -28,7 +19,7 @@
   let {
     items = $bindable([]),
     placeholder = $bindable("Select"),
-    selectedItem = $bindable(),
+    value = $bindable(null),
     opened = $bindable(false),
     itemText = $bindable("label"),
     itemValue = $bindable("value"),
@@ -38,8 +29,8 @@
     multiple = $bindable(false),
     autocomplete = $bindable(false),
     onselect = null,
-    onclear = null
-  }: Props = $props();
+    onclear = null,
+  }: ColorSelectProps = $props();
 </script>
 
 <Select
@@ -47,7 +38,7 @@
   {onclear}
   {items}
   {placeholder}
-  bind:selectedItem
+  bind:value
   bind:opened
   {itemText}
   {itemValue}
@@ -56,25 +47,24 @@
   {disabled}
   {autocomplete}
   {multiple}
-  
-  
-  
-  
-  
-  
 >
-  {#snippet children({ item, selectedItemValue, comparer, multiple, index, focusedIndex })}
+  {#snippet children({
+    item,
+    selectedItems,
+    comparer,
+    multiple,
+    index,
+    focusedIndex,
+  })}
     <Button
       size="medium"
       flat
       noBorder
       style="height: 40px;"
       focused={index === focusedIndex}
-      type={comparer(selectedItemValue, item, multiple)
-        ? "primary"
-        : "quaternary"}
+      type={comparer(selectedItems, item, multiple) ? "primary" : "quaternary"}
       icon={multiple
-        ? comparer(selectedItemValue, item, multiple)
+        ? comparer(selectedItems, item, multiple)
           ? CheckBoxIcon
           : CheckBoxOffIcon
         : null}
@@ -83,6 +73,7 @@
     >
       <div>
         <ColorBadge
+          selectable={false}
           color={item.name}
           colorName={item.name}
           style={"margin-right:4px;"}

@@ -156,7 +156,7 @@
 
   //layers
   const setSelectedLayer = (e) => {
-    const layerId = e.detail.item.id;
+    const layerId = e.item.id;
     renderConfiguration.update((config) => {
       config.selectedLayerId = layerId;
       return config;
@@ -215,7 +215,7 @@
 
   //actions
   const addToCollection = async function (e) {
-    const collection = e.detail.item;
+    const collection = e.item;
     await AddPackageToCollection(collection.id, $itemPackage.id);
     ShowToast("Item added to collection");
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
@@ -226,7 +226,7 @@
     );
   };
   const removeFromCollection = async function (e) {
-    const collection = e.detail.item;
+    const collection = e.item;
     await RemovePackageFromCollection(collection.id, $itemPackage.id);
     ShowToast("Item removed from collection", "info");
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
@@ -245,7 +245,7 @@
     isSkinSetting = false;
   };
   const setCape = function (e) {
-    const item = e.detail.item as Cape;
+    const item = e.item as Cape;
     $renderConfiguration.cape = item;
   };
 </script>

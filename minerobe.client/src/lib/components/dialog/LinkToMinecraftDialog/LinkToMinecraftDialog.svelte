@@ -11,8 +11,6 @@
   //icons
   import ArticleMultipleIcon from "$icons/article-multiple.svg?raw";
 
-  import { run } from 'svelte/legacy';
-
   //services
   //models
   import type {
@@ -22,7 +20,7 @@
   //components
   //icons
 
-  interface Props {
+  interface LinkToMinecraftDialogProps {
     open?: boolean;
     authUrl?: string;
     authCode?: string;
@@ -40,7 +38,7 @@
     profile = null,
     skin = null,
     onclose = null
-  }: Props = $props();
+  }: LinkToMinecraftDialogProps = $props();
 
   let linkButtonLabel = $state("Link");
   let isLinkingButtonDisabled = $state(false);
@@ -77,7 +75,7 @@
     ShowToast("Code copied to clipboard");
   };
 
-  run(() => {
+  $effect(() => {
     GetLinkButtonLabel(authStatus);
   });
 </script>

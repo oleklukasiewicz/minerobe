@@ -46,19 +46,19 @@
   }: Props = $props();
 
   const onSelect= (item: OutfitPackage) => {
-    onselectClick?.({ detail: { items: [item] } });
+    onselectClick?.({ items: [item] });
   };
   const onRemoveFromSelected= (item: OutfitPackage) => {
     selectedItems = selectedItems.filter(
       (i) => i.id !== item.id || i.layers[0]?.id !== item.layers[0]?.id
     );
-    onunselect?.({ detail: { items: [item] } });
-    onselectionUpdate?.({ detail: { items: selectedItems } });
+    onunselect?.({ items: [item] });
+    onselectionUpdate?.({ items: selectedItems });
   };
   const onAddToSelected= (item: OutfitPackage) => {
     selectedItems = [...selectedItems, item];
-    onselect?.({ detail: { items: [item] } });
-    onselectionUpdate?.({ detail: { items: selectedItems } });
+    onselect?.({ items: [item] });
+    onselectionUpdate?.({ items: selectedItems });
   };
 </script>
 
@@ -68,12 +68,12 @@
       <Placeholder width="100%" height="68px" />
     {/each}
   {:else}
-    {#each items as item (item.id + item.layers[0].id)}
+    {#each items as item (item.id + item.layers[0]?.id)}
       <OutfitPackageSingleLayerListItem
         {selectable}
         baseTexture={item.type === PACKAGE_TYPE.OUTFIT_SET ? baseTexture : null}
         selected={selectedItems.find(
-          (i) => i.id === item.id && i.layers[0].id == item.layers[0].id
+          (i) => i.id === item.id && i.layers[0]?.id == item.layers[0]?.id
         ) != null && selectable}
         disabled={disableFunction(disableContext, item)}
         {item}

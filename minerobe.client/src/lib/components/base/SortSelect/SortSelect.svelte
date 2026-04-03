@@ -6,24 +6,15 @@
   import ArrowUpIcon from "$icons/arrow-up.svg?raw";
   import ArrowDownIcon from "$icons/arrow-down.svg?raw";
 
-  import { run } from 'svelte/legacy';
-
   //main imports
     //models
   //components
   import Button from "../Button/Button.svelte";
   import Select from "../Select/Select.svelte";
+  import type { BaseSelectProps } from "$src/data/components";
   //icons
 
-  interface Props {
-    items?: any[];
-    placeholder?: string;
-    selectedItem?: any;
-    opened?: boolean;
-    itemText?: string;
-    itemValue?: string;
-    clearable?: boolean;
-    dropDownStyle?: any;
+  interface SortSelectProps extends BaseSelectProps{
     disabled?: boolean;
     autocomplete?: boolean;
     isDescending?: boolean;
@@ -34,7 +25,7 @@
   let {
     items = $bindable([]),
     placeholder = $bindable("Sort by"),
-    selectedItem = $bindable(),
+    value = $bindable(),
     opened = $bindable(false),
     itemText = $bindable("label"),
     itemValue = $bindable("value"),
@@ -45,30 +36,31 @@
     isDescending = $bindable(false),
     onselect = null,
     onclear = null
-  }: Props = $props();
+  }: SortSelectProps = $props();
 
   const onSelect= (e) => {
+    const selectedValue = e?.item;
     var sortOption: SortOption = new SortOption();
-    sortOption.value = e.detail?.item?.value;
+    sortOption.value = selectedValue?.value ?? selectedValue;
     sortOption.isDesc = isDescending;
-    selectedItem = sortOption;
-    onselect?.({ detail: { option: sortOption } });
+    value = sortOption;
+    onselect?.({ option: sortOption });
   };
   const onDirectionClick= () => {
     isDescending = !isDescending;
     var sortOption: SortOption = new SortOption();
-    sortOption.value = selectedItem?.value;
+    sortOption.value = value?.value;
     sortOption.isDesc = isDescending;
-    selectedItem = sortOption;
-    onselect?.({ detail: { option: sortOption } });
+    value = sortOption;
+    onselect?.({ option: sortOption });
   };
 
   const onSelectedUpdate= (v) => {
     isDescending = v?.isDesc;
   };
 
-  run(() => {
-    onSelectedUpdate(selectedItem);
+  $effect(() => {
+    onSelectedUpdate(value);
   });
 </script>
 
@@ -79,7 +71,7 @@
       onselect={onSelect}
       {items}
       {placeholder}
-      bind:selectedItem
+      bind:value
       bind:opened
       {itemText}
       {itemValue}
@@ -92,7 +84,7 @@
       {#snippet actions()}
             <div class="direction" >
           <Button
-            disabled={!selectedItem?.value}
+            disabled={!value?.value}
             onlyIcon
             size="auto"
             noBorder

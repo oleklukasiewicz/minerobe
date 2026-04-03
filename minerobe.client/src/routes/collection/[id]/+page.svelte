@@ -73,7 +73,7 @@
 
   const fetchItems = async (e) => {
     itemsLoaded = false;
-    const options: PagedResponse<OutfitPackage> = e?.detail?.options;
+      const options: PagedResponse<OutfitPackage> = e?.options;
     const pagedItems = await GetCollectionsItems(
       $itemCollection.id,
       null,
@@ -85,8 +85,8 @@
     itemsLoaded = true;
   };
   const goToItemPage = (e) => {
-    const item = e.detail.item;
-    const layer = e.detail.layer;
+    const item = e.item;
+      const layer = e.layer;
     navigateToOutfitPackage(item, layer?.id);
   };
 </script>

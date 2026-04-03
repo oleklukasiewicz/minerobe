@@ -49,7 +49,7 @@
 
   const itemCollection: Writable<OutfitPackageCollection> = writable(null);
   const collectionItems: Writable<PagedResponse<OutfitPackage>[]> = writable(
-    []
+    [],
   );
 
   let userSettings: MinerobeUserSettings = $state(null);
@@ -59,10 +59,12 @@
   let collectionLoaded = false;
   let isEditDialogOpen = $state(false);
   let isEditItemsDialogOpen = $state(false);
-  let dialogOutfitsPickerOptions: PagedModel<OutfitFilter> =
-    $state(new PagedModel<OutfitFilter>());
-  let dialogOutfitPickerItems: PagedResponse<OutfitPackage> =
-    $state(new PagedResponse<OutfitPackage>());
+  let dialogOutfitsPickerOptions: PagedModel<OutfitFilter> = $state(
+    new PagedModel<OutfitFilter>(),
+  );
+  let dialogOutfitPickerItems: PagedResponse<OutfitPackage> = $state(
+    new PagedResponse<OutfitPackage>(),
+  );
 
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
@@ -81,13 +83,13 @@
 
   const fetchItems = async (e) => {
     itemsLoaded = false;
-    const options: PagedResponse<OutfitPackage> = e?.detail?.options;
+    const options: PagedResponse<OutfitPackage> = e?.options;
     const pagedItems = await GetCollectionsItems(
       $itemCollection.id,
       null,
       options?.options.page || 0,
       options?.options.pageSize || 36,
-      null
+      null,
     );
     collectionItems.update((items) => [...items, pagedItems]);
     itemsLoaded = true;
@@ -97,7 +99,7 @@
     await fetchItems(null);
   };
   const saveCollection = async (e) => {
-    const collection = e.detail.collection;
+    const collection = e.collection;
     itemCollection.set(collection);
     await UpdateCollection(collection);
     if (collection.social.isShared) {
@@ -109,12 +111,12 @@
     }
   };
   const goToItemPage = (e) => {
-    const item = e.detail.item;
-    const layer = e.detail.layer;
+    const item = e.item;
+    const layer = e.layer;
     navigateToOutfitPackage(item, layer?.id);
   };
   const openOutfitPicker = async (e) => {
-    let options = e?.detail?.options;
+    let options = e?.options;
     if (!options) {
       options = new PagedModel<OutfitFilter>();
       options.filter.type = null;
@@ -126,15 +128,17 @@
     dialogOutfitPickerItems.items = null;
     isEditItemsDialogOpen = true;
 
-    dialogOutfitPickerItems = await GetWardrobeItemsWithCollectionContext(
+    const items = await GetWardrobeItemsWithCollectionContext(
       $itemCollection.id,
-      dialogOutfitsPickerOptions
+      dialogOutfitsPickerOptions,
     );
+    items.items = items.items.filter((i) => i.layers.length > 0);
+    dialogOutfitPickerItems = items;
     dialogOutfitPickerItems.items.forEach((item) => {
       if (item.isInCollection) {
         if (
           flatCollectionItems.find(
-            (i) => i.id === item.id && i.layers[0]?.id === item.layers[0]?.id
+            (i) => i.id === item.id && i.layers[0]?.id === item.layers[0]?.id,
           ) == null
         ) {
           flatCollectionItems.push(item);
@@ -143,11 +147,11 @@
     });
   };
   const addItemToCollection = async (e) => {
-    const item = e.detail.items[0];
+    const item = e.items[0];
     await AddPackageToCollection($itemCollection.id, item.id);
   };
   const removeItemFromCollection = async (e) => {
-    const item = e.detail.items[0];
+    const item = e.items[0];
     await RemovePackageFromCollection($itemCollection.id, item.id);
   };
   let flatCollectionItems: OutfitPackage[] = [];
@@ -156,7 +160,7 @@
 <div id="collection-view" class:mobile={$IS_MOBILE_VIEW}>
   <div id="collection-header">
     <SectionTitle label="Collection" placeholder={!loaded} />
-    <Placeholder {loaded}  style="min-height: 46px; max-width:50%;"
+    <Placeholder {loaded} style="min-height: 46px; max-width:50%;"
       ><h1>
         {$itemCollection.name}
         <Button
@@ -177,7 +181,9 @@
         <Label variant={"rare"}>Shared</Label>
       {/if}
     </div>
-    <Placeholder {loaded} style="min-height: 42px;"><p>{$itemCollection.description}</p></Placeholder>
+    <Placeholder {loaded} style="min-height: 42px;"
+      ><p>{$itemCollection.description}</p></Placeholder
+    >
   </div>
   <div id="collection-actions">
     <Button label="Edit items" icon={EditIcon} onclick={openOutfitPicker} />
@@ -186,23 +192,22 @@
   <div id="collection-items">
     {#if loaded}
       <LazyList
-        
         onloading={fetchItems}
         itemsPages={$collectionItems}
         rootMargin={"100px"}
         loading={!itemsLoaded}
       >
         {#snippet children({ items: pagedItems })}
-                <OutfitPackageList
+          <OutfitPackageList
             columns={$IS_MOBILE_VIEW ? 3 : 6}
             resizable
             items={pagedItems}
             currentPackageId={userSettings?.currentTexture?.packageId}
             baseTexture={userSettings?.baseTexture.layers[0]}
             onselect={goToItemPage}
-          />              {/snippet}
-            </LazyList
-      >
+          />
+        {/snippet}
+      </LazyList>
     {/if}
   </div>
   <EditCollectionDialog

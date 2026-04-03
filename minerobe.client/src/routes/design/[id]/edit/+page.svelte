@@ -202,14 +202,14 @@
 
   //layers
   const setSelectedLayer = (e) => {
-    const layerId = e.detail.item.id;
+    const layerId = e.item.id;
     renderConfiguration.update((config) => {
       config.selectedLayerId = layerId;
       return config;
     });
   };
   const moveLayerDown = async (e) => {
-    const layer = e.detail.item;
+    const layer = e.item;
     const index = e.detail.index;
     itemPackage.update((item) => {
       const layers = [...item.layers];
@@ -225,7 +225,7 @@
     );
   };
   const moveLayerUp = (e) => {
-    const layer = e.detail.item;
+    const layer = e.item;
     const index = e.detail.index;
     itemPackage.update((item) => {
       const layers = [...item.layers];
@@ -241,7 +241,7 @@
     );
   };
   const removeLayer = async (e) => {
-    const layer = e.detail.item;
+    const layer = e.item;
     await RemovePackageLayerWithPackageContext(layer, $itemPackage.id);
     itemPackage.update((item) => {
       item.layers = item.layers.filter((l) => l.id !== layer.id);
@@ -254,7 +254,7 @@
     );
   };
   const editLayer = async function (e) {
-    const item = e.detail.item;
+    const item = e.item;
     itemPackageLayers.update((layers) => {
       const index = layers.findIndex((x) => x.id == item.id);
       layers[index] = item;
@@ -267,7 +267,7 @@
     );
   };
   const changeLayerPrimary = async function (e) {
-    const item = e.detail.item;
+    const item = e.item;
     const isPrimary = e.detail.isPrimary;
 
     if (isPrimary) await SetLayerAsPrimary($itemPackage.id, item.id);
@@ -283,7 +283,7 @@
     });
   };
   const dropLayer = async (e) => {
-    const layer = e.detail.item;
+    const layer = e.item;
     const option = e.detail.option;
     const file = e.detail.file;
 
@@ -327,7 +327,7 @@
     );
   };
   const importLayerFromDrop = async (e) => {
-    const files = e.detail.items;
+    const files = e.items;
     const layers = await ImportImagesFromFiles(files);
     const addedlayers = await Promise.all(
       layers.map(async (layer) => {
@@ -386,19 +386,19 @@
 
   //dialogs
   const openLayerEditDialog = (e) => {
-    const layer = e.detail.item;
+    const layer = e.item;
     dialogSelectedLayer = structuredClone(layer);
     isLayerEditDialogOpen = true;
   };
   const openOverviewDialog = () => (isOverviewDialogOpen = true);
   const openRemoveDialog = () => (isRemoveDialogOpen = true);
   const openCollectionsDialog = async (e) => {
-    let options = e?.detail?.options?.options;
+    let options = e?.options?.options;
     if (!options) options = { page: 0, pageSize: 6, total: 0 };
 
     dialogCollections =
       new PagedResponse<OutfitPackageCollectionWithPackageContext>();
-    dialogCollections.options = options.page;
+    dialogCollections.options = options;
     dialogCollections.items = null;
     dialogCollections.sort = [];
 
@@ -411,7 +411,8 @@
     );
   };
   const openOutfitPickerDialog = async (e) => {
-    let options = e?.detail?.options;
+    let options = e?.options;
+    if (options?.options) options = options.options;
     if (!options) {
       options = new PagedModel<OutfitFilter>();
       options.page = 0;
@@ -433,7 +434,7 @@
     navigateToWardrobe();
   };
   const addToCollection = async function (e) {
-    const collection = e.detail.item;
+    const collection = e.item;
     await AddPackageToCollection(collection.id, $itemPackage.id);
     ShowToast("Item added to collection");
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
@@ -444,7 +445,7 @@
     );
   };
   const removeFromCollection = async function (e) {
-    const collection = e.detail.item;
+    const collection = e.item;
     await RemovePackageFromCollection(collection.id, $itemPackage.id);
     ShowToast("Item removed from collection", "info");
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
@@ -474,7 +475,7 @@
     navigateToOutfitPackage($itemPackage);
   };
   const addPackageLayer = async function (e) {
-    const packs = e.detail.items;
+    const packs = e.items;
     for (let pack of packs) {
       const newPack = pack;
       const layer = newPack.layers[0];
@@ -498,7 +499,7 @@
     isSkinSetting = false;
   };
   const setCape = function (e) {
-    const item = e.detail.item as Cape;
+    const item = e.item as Cape;
     $renderConfiguration.cape = item;
   };
 </script>
@@ -627,7 +628,7 @@
       {#if loaded && isOutfitSet}
         <SectionTitle label="Color" />
         <ColorSelect
-          bind:selectedItem={$itemPackage.colorName}
+          bind:value={$itemPackage.colorName}
           placeholder="Select color"
           items={COLORS_ARRAY}
           autocomplete
@@ -720,6 +721,7 @@
   <!-- Dialogs -->
   <EditLayerDialog
     onedit={editLayer}
+    onlyTextures={isOutfitSet}
     onprimaryChange={changeLayerPrimary}
     bind:open={isLayerEditDialogOpen}
     bind:item={dialogSelectedLayer}

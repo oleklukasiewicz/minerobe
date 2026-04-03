@@ -72,7 +72,7 @@
 
   //base texture
   const DropBaseTexture = async function (e) {
-    const files = e.detail.items;
+    const files = e.items;
     const textures = await ImportImagesFromFiles(files);
     $userSettings.baseTexture.layers = [textures[0]];
     await UpdateBaseTexture($userSettings.baseTexture);
@@ -86,7 +86,7 @@
     ShowToast("Base texture updated");
   };
   const EditBaseTexture = async function (e) {
-    const layer = e.detail.item;
+    const layer = e.item;
     $userSettings.baseTexture.layers[0] = layer;
     await UpdateBaseTexture($userSettings.baseTexture);
     ShowToast("Base texture updated");

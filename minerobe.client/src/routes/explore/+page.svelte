@@ -35,7 +35,7 @@
     if (stateSub) stateSub();
   });
   const loadNewpage = async (e) => {
-    const lastPage = e.detail.options;
+    const lastPage = e.options;
     const model = new PagedModel<OutfitFilter>();
     model.page = lastPage?.page || 0;
     model.pageSize = lastPage?.pageSize || 10;

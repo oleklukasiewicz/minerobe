@@ -73,11 +73,11 @@
   });
 
   const goToEdit = function (e) {
-    const item = e.detail.item;
+    const item = e.item;
     navigateToOutfitPackage(item, undefined, true);
   };
   const fetchItems = async (e) => {
-    const options: PagedResponse<OutfitPackage> = e?.detail?.options;
+    const options: PagedResponse<OutfitPackage> = e?.options;
     const pagedModel = new PagedModel<OutfitFilter>();
     pagedModel.page = options?.options.page || 0;
     pagedModel.pageSize = options?.options.pageSize || 36;
@@ -91,14 +91,14 @@
       abortController.abort();
       abortController = new AbortController();
       isFilterDialogOpen = false;
-      const newFilter = e?.detail?.filter;
+      const newFilter = e?.filter;
       if (newFilter) {
         filter = {
           ...newFilter,
           phrase: newFilter.phrase ?? filter.phrase ?? "",
         };
       }
-      const newSort = e?.detail?.sort;
+      const newSort = e?.sort;
       if (newSort) {
         sortOption = newSort;
       }

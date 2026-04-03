@@ -43,9 +43,9 @@
 
   let _component: any = $state(null);
   const selectOutfit = function (e) {
-    const item = e.detail.item;
-    const layer = e.detail.layer;
-    onselect?.({ detail: { item: item, layer: layer } });
+    const item = e.item;
+    const layer = e.layer;
+    onselect?.({ item: item, layer: layer });
   };
   const fetchLayer = async function (id, item): Promise<OutfitLayer> {
     return await GetLayer(id);

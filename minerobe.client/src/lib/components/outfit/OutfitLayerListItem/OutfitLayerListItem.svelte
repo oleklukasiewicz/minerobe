@@ -68,23 +68,23 @@
 
   const onMoveUp= function (e) {
     e.stopPropagation();
-    onmoveUp?.({ detail: { item: item } });
+    onmoveUp?.({ item: item });
   };
   const onMoveDown= function (e) {
     e.stopPropagation();
-    onmoveDown?.({ detail: { item: item } });
+    onmoveDown?.({ item: item });
   };
   const onEdit= function (e) {
     e.stopPropagation();
-    onedit?.({ detail: { item: item } });
+    onedit?.({ item: item });
   };
   const onDelete= function (e) {
     e.stopPropagation();
-    ondelete?.({ detail: { item: item } });
+    ondelete?.({ item: item });
   };
   const onSelect= function (e) {
     e.stopPropagation();
-    onselect?.({ detail: { item: item } });
+    onselect?.({ item: item });
   };
 </script>
 

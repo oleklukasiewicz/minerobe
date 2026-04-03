@@ -8,12 +8,9 @@
   //components
   import Resize from "$lib/components/other/Resize/Resize.svelte";
 
-  import { run } from 'svelte/legacy';
-
-
   //services
 
-  interface Props {
+  interface FlyoutProps {
     opened?: boolean;
     caller?: any;
     position?: "top" | "left" | "right" | "bottom" | "auto";
@@ -21,7 +18,7 @@
     preventClickOutsideClose?: boolean;
     autoWidth?: boolean;
     resizable?: boolean;
-    children?: import('svelte').Snippet<[any]>;
+    children?: import("svelte").Snippet<[any]>;
   }
 
   let {
@@ -32,22 +29,32 @@
     preventClickOutsideClose = false,
     autoWidth = true,
     resizable = false,
-    children
-  }: Props = $props();
+    children,
+  }: FlyoutProps = $props();
 
   let actualPosition = $state("auto");
+  let isPositioned = $state(false);
 
   let component = $state(null);
   let componentContent = $state(null);
 
-  const onClose= () => {
+  const onClose = () => {
     if (opened && !preventClickOutsideClose) opened = false;
   };
-  const onStateChanged= (v) => {
+  const schedulePosition = () => {
     if (!component) return;
-    if (!v) return;
+    isPositioned = false;
+
+    if ($IS_MOBILE_VIEW) {
+      actualPosition = position;
+      isPositioned = true;
+      return;
+    }
+
     requestAnimationFrame(() => {
+      if (!opened || !component) return;
       calculatePosition();
+      isPositioned = true;
     });
   };
   const calculatePosition = () => {
@@ -68,9 +75,8 @@
       component.style.minWidth = callerRect?.width + "px";
     else component.style.minWidth = null;
 
-    if ($IS_MOBILE_VIEW) {
-      return;
-    }
+    if ($IS_MOBILE_VIEW) return;
+
     //calculate needed space
     if (position == "auto") {
       if (
@@ -109,7 +115,7 @@
       component.style.right = null;
     }
   };
-  const onResize= () => {
+  const onResize = () => {
     if (!resizable) return;
     const callerRect = caller?.getBoundingClientRect();
     if (autoWidth) {
@@ -120,29 +126,18 @@
       component.style.maxWidth = null;
     }
   };
-  const onComponentResize= () => {
+  const onComponentResize = () => {
     if (!opened) return;
-    requestAnimationFrame(() => {
-      calculatePosition();
-    });
+    requestAnimationFrame(() => calculatePosition());
   };
-  run(() => {
-    onStateChanged(opened);
-  });
-  run(() => {
-    actualPosition = position;
-    if (opened) {
-      requestAnimationFrame(() => {
-        calculatePosition();
-      });
+
+  $effect(() => {
+    if (!opened) {
+      isPositioned = false;
+      return;
     }
-  });
-  run(() => {
-    if (opened) {
-      requestAnimationFrame(() => {
-        calculatePosition();
-      });
-    }
+
+    schedulePosition();
   });
 </script>
 
@@ -150,14 +145,15 @@
   bind:this={component}
   use:clickOutside={onClose}
   class:opened
+  class:positioned={isPositioned || $IS_MOBILE_VIEW}
   class="flyout"
   class:closed={!opened}
   class:mobile={$IS_MOBILE_VIEW}
 >
-  <Resize targetNode={caller} onresize={onResize} debounce={100}></Resize>
+  <Resize targetNode={caller} onresize={onResize} debounce={0}></Resize>
   <Resize targetNode={componentContent} onresize={onComponentResize}></Resize>
   <div bind:this={componentContent} class="flyout-content">
-    {@render children?.({ position: actualPosition, })}
+    {@render children?.({ position: actualPosition })}
   </div>
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -168,6 +164,10 @@
   .flyout {
     position: absolute;
     z-index: 20;
+    &:not(.positioned) {
+      visibility: hidden;
+      pointer-events: none;
+    }
     &.opened {
       display: flex;
     }

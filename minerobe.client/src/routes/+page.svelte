@@ -73,9 +73,8 @@
   };
 
   const goToItemPage = (e) => {
-    const item = e.detail.item;
-    console.log("goToItemPage", e.detail);
-    const variant = e.detail?.layer as OutfitLayer;
+    const item = e.item;
+    const variant = e.layer as OutfitLayer;
     navigateToOutfitPackage(item, variant?.id);
   };
 </script>

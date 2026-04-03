@@ -4,9 +4,10 @@
   import CloseIcon from "$icons/close.svg?raw";
 
   import Button from "../Button/Button.svelte";
+  import type { BaseProps } from "$src/data/components";
   //icons
 
-  interface Props {
+  interface SearchProps extends BaseProps {
     value?: any;
     dense?: boolean;
     style?: string;
@@ -21,36 +22,30 @@
   let {
     value = $bindable(),
     dense = true,
+    disabled = false,
     style = "",
     clearable = true,
     placeholder = "Search",
-    dark = false
-  ,
+    dark = false,
     onclear = null,
     oninput = null,
-    onsearch = null
-  }: Props = $props();
+    onsearch = null,
+  }: SearchProps = $props();
 
-  const onKeyDown= (e) => {
-    if (e.key === "Enter") {
-      onSearch(e);
-    }
+  const onKeyDown = (e) => {
+    if (e.key === "Enter") onSearch(e);
   };
 
-  const onClear= () => {
+  const onClear = () => {
     value = "";
-    onclear?.({ detail: value });
+    onclear?.({ value });
   };
 
-  const onInput= (e) => {
-    oninput?.({ detail: value });
-  };
-  const onSearch= (e) => {
-    onsearch?.({ detail: value });
-  };
+  const onInput = (e) => oninput?.({ value });
+  const onSearch = (e) => onsearch?.({ value });
 </script>
 
-<div class="search" class:dense {style} class:dark>
+<div class="search" class:dense {style} class:dark class:disabled>
   <input
     type="text"
     {placeholder}

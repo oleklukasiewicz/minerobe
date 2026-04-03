@@ -38,15 +38,15 @@
   }: Props = $props();
 
   const onEdit = () => {
-    onedit?.({ detail: { item: item } });
+    onedit?.({ item: item });
   };
   const onPrimaryChange = (e) => {
-    const value = e.detail.value;
-    onprimaryChange?.({ detail: { item: item, isPrimary: value } });
+    const value = e.value;
+    onprimaryChange?.({ item: item, isPrimary: value });
   };
 
   const onDrop = async function (e, model) {
-    const droppped = e.detail.items[0];
+    const droppped = e.items[0];
     item[model] = await ConvertFileToFileData(droppped);
     onEdit();
   };
@@ -66,7 +66,7 @@
         <SectionTitle label="Outfit type" />
         <Select
           items={OUTFIT_TYPE_ARRAY}
-          bind:selectedItem={item.outfitType}
+          bind:value={item.outfitType}
           itemText="normalizedName"
           itemValue="name"
           onselect={onEdit}
@@ -74,7 +74,7 @@
         <SectionTitle label="color" />
         <ColorSelect
           items={COLORS_ARRAY}
-          bind:selectedItem={item.colorName}
+          bind:value={item.colorName}
           itemText="normalizedName"
           itemValue="name"
           dropDownStyle="max-height: 275px"
@@ -82,7 +82,7 @@
         />
         <br />
         <Checkbox
-          label="Is primary"
+          label="Is primary layer"
           bind:value={item.isPrimary}
           onchange={onPrimaryChange}
         />

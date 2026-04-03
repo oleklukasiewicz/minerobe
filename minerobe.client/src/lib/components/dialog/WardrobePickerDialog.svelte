@@ -50,7 +50,7 @@
   let abortController = new AbortController();
 
   const fetchItems = async (e) => {
-    const options: PagedResponse<OutfitPackage> = e?.detail?.options;
+    const options: PagedResponse<OutfitPackage> = e?.options;
     items.items = null;
     const pagedModel = new PagedModel<OutfitFilter>();
     pagedModel.page = options?.options.page || 0;

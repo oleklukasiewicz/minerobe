@@ -1,15 +1,9 @@
 <script lang="ts">
-  import { createBubbler } from 'svelte/legacy';
-
-  const bubble = createBubbler();
   //main imports
+  import type { BaseButtonProps } from "$data/components";
   import { onMount } from "svelte";
 
-  interface Props {
-    href?: string;
-    label?: string;
-    icon?: string;
-    disabled?: boolean;
+  interface ButtonProps extends BaseButtonProps {
     onlyIcon?: boolean;
     noBorder?: boolean;
     style?: any;
@@ -22,16 +16,10 @@
     textAlign?: "left" | "center" | "right";
     target?: "_blank" | "_self";
     fab?: "static" | "dynamic" | "expanded" | null;
-    onclick?: (event: MouseEvent) => void;
     oncontextmenu?: (event: MouseEvent) => void;
     onmouseenter?: (event: MouseEvent) => void;
     onmouseleave?: (event: MouseEvent) => void;
-    children?: import('svelte').Snippet;
-  }
-
-  interface $$Events {
-    click: MouseEvent;
-    contextmenu: MouseEvent;
+    children?: import("svelte").Snippet;
   }
 
   let {
@@ -39,7 +27,7 @@
     label = null,
     icon = null,
     disabled = false,
-    onlyIcon= false,
+    onlyIcon = false,
     noBorder = false,
     style = null,
     whiteText = false,
@@ -55,38 +43,27 @@
     oncontextmenu = null,
     onmouseenter = null,
     onmouseleave = null,
-    children
-  }: Props = $props();
+    children,
+  }: ButtonProps = $props();
 
-  let component = $state(null);
   let componentLabel = $state(null);
-  const onHoverOut= function () {
-    if (componentLabel && fab === "dynamic") {
-      const labelWidth = componentLabel.offsetWidth;
-      const marginRight = size === "small" ? 6 : size === "medium" ? 12 : 14;
-      componentLabel.style.marginRight = `-${labelWidth + marginRight}px`;
-    }
+
+  const onHoverOut = function () {
+    if (componentLabel == null || fab !== "dynamic") return;
+    const labelWidth = componentLabel.offsetWidth;
+    const marginRight = size === "small" ? 6 : size === "medium" ? 12 : 14;
+    componentLabel.style.marginRight = `-${labelWidth + marginRight}px`;
   };
-  const onHover= function () {
-    if (componentLabel && fab === "dynamic") {
-      componentLabel.style.marginRight = null;
-    }
+  const onHover = function () {
+    if (componentLabel == null || fab !== "dynamic") return;
+    componentLabel.style.marginRight = null;
   };
-  onMount(() => {
-    setTimeout(onHoverOut, 1000);
-  });
+  onMount(() => setTimeout(onHoverOut, 1000));
 </script>
 
 <a
-  bind:this={component}
-  onclick={(event) => {
-    bubble('click')(event);
-    onclick?.(event);
-  }}
-  oncontextmenu={(event) => {
-    bubble('contextmenu')(event);
-    oncontextmenu?.(event);
-  }}
+  {onclick}
+  {oncontextmenu}
   onmouseenter={(event) => {
     onHover();
     onmouseenter?.(event);
@@ -100,7 +77,7 @@
   {style}
   {href}
   {target}
-  class:focused={focused}
+  class:focused
   class:flat
   class:white-text={whiteText}
   class:link={href != null}

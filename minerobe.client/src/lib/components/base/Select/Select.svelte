@@ -12,65 +12,34 @@
   import CheckBoxIcon from "$icons/checkbox.svg?raw";
   import CheckBoxOffIcon from "$icons/checkbox-off.svg?raw";
 
-  import { run } from 'svelte/legacy';
-
   //main imports
-    //services
+  //services
   //components
   import Button from "../Button/Button.svelte";
   //consts
   //icons
   import Flyout from "../Flyout/Flyout.svelte";
+  import type { BaseSelectProps } from "$src/data/components";
 
-
-  interface Props {
-    items?: any[];
-    placeholder?: string;
-    multiple?: boolean;
-    selectedItem?: any;
+  interface SelectProps extends BaseSelectProps {
     clickable?: boolean;
-    opened?: boolean;
-    itemText?: any;
-    itemValue?: any;
-    clearable?: boolean;
-    dropDownStyle?: any;
-    disabled?: boolean;
-    autocomplete?: boolean;
-    defaultValue?: any;
     sorter?: any;
     comparer?: any;
-    selected?: import('svelte').Snippet<[any]>;
-    actions?: import('svelte').Snippet;
-    children?: import('svelte').Snippet<[any]>;
-    onselect?: (event?: any) => void;
+    separator?: string;
+    multiple?: boolean;
+    selected?: import("svelte").Snippet<[any]>;
+    actions?: import("svelte").Snippet;
+    children?: import("svelte").Snippet<[any]>;
     onselectedClick?: (event?: any) => void;
-    onclear?: (event?: any) => void;
   }
-
-  const equalsValue = (a, b) => {
-    if (a == null || b == null) return a == b;
-
-    if (typeof a !== "object" && typeof b !== "object") {
-      return a === b;
-    }
-
-    if (typeof a === "object" && typeof b === "object") {
-      try {
-        return JSON.stringify(a) === JSON.stringify(b);
-      } catch {
-        return false;
-      }
-    }
-
-    return false;
-  };
 
   let {
     items = [],
+    value = $bindable(),
     placeholder = "Select",
     multiple = false,
-    selectedItem = $bindable(),
     clickable = false,
+    separator = ", ",
     opened = $bindable(false),
     itemText = null,
     itemValue = null,
@@ -79,105 +48,135 @@
     disabled = false,
     autocomplete = false,
     defaultValue = null,
-    sorter = function (a, b) {
-    if (a < b) return -1;
-    if (a > b) return 1;
-    return 0;
-  },
-    comparer = function (selectedItemValue, item, isMultiple = false) {
-    if (isMultiple) {
-      return selectedItemValue?.some((selectedItem) =>
-        equalsValue(selectedItem, item)
-      );
-    }
-    return equalsValue(selectedItemValue, item);
-  },
+    sorter = (a, b) => (a < b ? -1 : a > b ? 1 : 0),
+    comparer = (selectedValues, item, isMultiple = false) => {
+      return isMultiple
+        ? selectedValues?.some((selectedItem) =>
+            equalsValue(selectedItem, item),
+          )
+        : equalsValue(selectedValues, item);
+    },
     selected,
     actions,
-    children
-  ,
+    children,
     onselect = null,
     onselectedClick = null,
-    onclear = null
-  }: Props = $props();
+    onclear = null,
+  }: SelectProps = $props();
 
-  let selectedItemValue = $state(null);
-  let menuWidth = 0;
+  const normalizeValue = (valueToNormalize) => {
+    if (!itemValue) return valueToNormalize;
+
+    if (valueToNormalize != null && typeof valueToNormalize === "object")
+      return valueToNormalize[itemValue];
+
+    return valueToNormalize;
+  };
+
+  const getItemValue = (item) => normalizeValue(item);
+
+  const getItemText = (item) => {
+    if (item == null) return "";
+    if (itemText == null) return item;
+    return item[itemText];
+  };
+
+  const equalsValue = (a, b) => normalizeValue(a) === normalizeValue(b);
+
   let menu = $state(null);
   let itemsContainer = $state(null);
-  let autocompleteInput = $state(null);
   let inputComponent = $state(null);
-  let filteredItems = $state([]);
+  let autocompleteInput = $state(null);
+  let filteredItems = $derived.by(() => {
+    if (!autocomplete) return items;
+
+    if (autocompleteInput?.length == 0 || autocompleteInput == null)
+      return items;
+
+    const normalizedInput = autocompleteInput.toLowerCase();
+    return items.filter((i) => {
+      return String(getItemText(i)).toLowerCase().includes(normalizedInput);
+    });
+  });
   const sortedFilteredItems = $derived([...filteredItems].sort(sorter));
   let focusedIndex = $state(-1);
 
+  let selectedItems = $state([]);
+  let selectedItemValues = $derived(selectedItems.map((i) => getItemValue(i)));
+  let selectedItemsText = $derived(
+    selectedItems.map((i) => getItemText(i)).join(separator ?? ", "),
+  );
+  let selectedItemValue: any | any[] = $derived(
+    multiple ? selectedItemValues : selectedItemValues[0],
+  );
+  let selectedItemText: any | any[] = $derived(selectedItemsText);
+  let hasSelection = $derived(
+    multiple
+      ? Array.isArray(selectedItemValue) && selectedItemValue.length > 0
+      : selectedItemValue != null,
+  );
+
   const select = (item) => {
+    const alreadySelected = selectedItems.some((i) => equalsValue(i, item));
+    let nextSelectedItems = [];
+
     if (multiple) {
-      if (Array.isArray(selectedItemValue) === false) {
-        if (selectedItemValue == null) selectedItemValue = [];
-        selectedItemValue = [selectedItemValue];
-      }
-      if (selectedItemValue.some((i) => equalsValue(i, item))) {
-        selectedItemValue = selectedItemValue.filter(
-          (i) => !equalsValue(i, item)
-        );
-      } else {
-        selectedItemValue = [...selectedItemValue, item];
-      }
+      if (alreadySelected)
+        nextSelectedItems = selectedItems.filter((i) => !equalsValue(i, item));
+      else nextSelectedItems = [...selectedItems, item];
     } else {
-      selectedItemValue = item;
+      nextSelectedItems = [item];
+      opened = autocomplete;
     }
 
-    if (itemValue) {
-      if (multiple) selectedItem = selectedItemValue.map((i) => i[itemValue]);
-      else selectedItem = selectedItemValue[itemValue];
-    }
+    selectedItems = nextSelectedItems;
+
+    const nextSelectedValues = nextSelectedItems.map((i) => getItemValue(i));
+    const nextValue = multiple
+      ? nextSelectedValues
+      : (nextSelectedValues[0] ?? null);
+
     if (autocomplete) {
-      inputComponent.focus();
+      autocompleteInput = "";
+      requestAnimationFrame(() => {
+        inputComponent?.focus();
+      });
     }
-    autocompleteInput = null;
-    if (!multiple) opened = false;
-    onselect?.({ detail: { item: selectedItemValue } });
+
+    value = nextValue;
+    onselect?.({ item: nextValue });
   };
   const selectedClick = () => {
     if (clickable) {
-      onselectedClick?.({ detail: { item: selectedItemValue } });
+      onselectedClick?.({ item: selectedItemValue });
     } else {
       opened = true;
     }
   };
   const clear = () => {
-    if (multiple) selectedItemValue = [];
-    else selectedItemValue = defaultValue;
+    selectedItems = [];
+    const clearedValue = multiple ? [] : null;
+    value = clearedValue;
+    onclear?.({ item: clearedValue });
+  };
+  const isSelected = (item) => comparer(selectedItems, item, multiple);
+  let updateSelectedItem = (value) => {
+    const values = (Array.isArray(value) ? value : [value]).filter(
+      (v) => v != null,
+    );
 
-    if (itemValue) {
-      selectedItem = selectedItemValue;
-    }
-    autocompleteInput = null;
-    filteredItems = items;
-    onclear?.({ detail: { item: selectedItemValue } });
-  };
-  let setSelectedItemValue = (value) => {
-    if (itemValue) {
-      if (multiple)
-        selectedItemValue = items.filter((i) => value?.includes(i[itemValue]));
-      else
-        selectedItemValue = items.find(
-          (i) =>
-            equalsValue(i[itemValue], value) ||
-            (value ? equalsValue(i[itemValue], value[itemValue]) : false),
-        );
-    } else selectedItemValue = items.find((i) => equalsValue(i, value));
-  };
-  const filterByAutocomplete = (value) => {
-    if (autocomplete) {
-      filteredItems = items.filter((i) => {
-        if (value?.length == 0 || value == null) return true;
-        if (itemText) {
-          return i[itemText]?.toLowerCase().includes(value?.toLowerCase());
-        }
-        return i?.toLowerCase().includes(value?.toLowerCase());
-      });
+    const nextSelectedItems = items.filter((i) =>
+      values.some((v) => equalsValue(i, v)),
+    );
+
+    const hasSameSelection =
+      selectedItems.length === nextSelectedItems.length &&
+      selectedItems.every((selectedItem, index) =>
+        equalsValue(selectedItem, nextSelectedItems[index]),
+      );
+
+    if (!hasSameSelection) {
+      selectedItems = nextSelectedItems;
     }
   };
 
@@ -213,15 +212,8 @@
     focusedItem?.scrollIntoView({ block: "nearest" });
   };
 
-  run(() => {
-    setSelectedItemValue(selectedItem ?? defaultValue);
-  });
-
-  run(() => {
-    filteredItems = items;
-  });
-  run(() => {
-    filterByAutocomplete(autocompleteInput);
+  $effect(() => {
+    updateSelectedItem(value ?? defaultValue);
   });
 </script>
 
@@ -243,45 +235,39 @@
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="selected-item" onclick={selectedClick}>
-      {#if selectedItemValue != null && (multiple ? selectedItemValue.length > 0 : true)}
-        {#if selected}{@render selected({ selectedItemValue, itemText, multiple, })}{:else}
-          {#if clickable && selectedItemValue != null}
-            <Button
-              textAlign="left"
-              size="small"
-              type={clickable ? "primary" : "quaternary"}
-            >
-              {itemText == null
-                ? selectedItemValue
-                : selectedItemValue[itemText]}</Button
-            >
-          {:else}
-            <div class="selected-item-default">
-              {#if selectedItemValue != null || selectedItemValue.length > 0}
-                {multiple == false
-                  ? itemText == null
-                    ? selectedItemValue
-                    : selectedItemValue[itemText]
-                  : itemText == null
-                    ? selectedItemValue
-                    : selectedItemValue.map((i) => i[itemText]).join(", ")}
-              {/if}
-            </div>
-          {/if}
+      {#if hasSelection}
+        {#if selected}{@render selected({
+            selectedItemValue,
+            itemText,
+            multiple,
+          })}{:else if clickable && selectedItemValue != null}
+          <Button
+            textAlign="left"
+            size="small"
+            type={clickable ? "primary" : "quaternary"}
+          >
+            {selectedItemText}</Button
+          >
+        {:else}
+          <div class="selected-item-default">
+            {#if hasSelection}
+              {selectedItemText}
+            {/if}
+          </div>
         {/if}
       {:else if !autocomplete}
         <div class="select-placeholder">{placeholder}</div>
       {/if}
     </div>
-    {#if autocomplete && (multiple ? true : selectedItemValue == null)}
+    {#if autocomplete && (multiple ? true : !hasSelection)}
       <input
         bind:this={inputComponent}
         type="text"
         {placeholder}
         bind:value={autocompleteInput}
         class="autocomplete-input"
-        oninput={(e) => (opened = true)}
-        onclick={(e) => (opened = true)}
+        oninput={() => (opened = true)}
+        onclick={() => (opened = true)}
       />
     {:else if autocomplete}
       <div
@@ -289,7 +275,7 @@
         onclick={() => (opened = true)}
       ></div>
     {/if}
-    {#if clearable && selectedItemValue != null && (multiple ? selectedItemValue.length > 0 : true)}
+    {#if clearable && hasSelection}
       <Button
         onlyIcon
         style="height: 30px;"
@@ -315,15 +301,9 @@
   </div>
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <Flyout
-    bind:opened
-    caller={menu}
-    preventClickOutsideClose
-    resizable
-    
-  >
+  <Flyout bind:opened caller={menu} preventClickOutsideClose resizable>
     {#snippet children({ position })}
-        <div
+      <div
         class:pos-bottom={position == "bottom"}
         class:pos-top={position == "top"}
         class="items"
@@ -336,30 +316,37 @@
           <!-- svelte-ignore a11y_click_events_have_key_events -->
           <!-- svelte-ignore a11y_no_static_element_interactions -->
           <div class="selected item" onclick={() => select(item)}>
-            {#if children}{@render children({ item, multiple, itemText, selectedItemValue, comparer, index, focusedIndex, })}{:else}
+            {#if children}{@render children({
+                item,
+                multiple,
+                itemText,
+                selectedItems,
+                comparer,
+                index,
+                focusedIndex,
+              })}{:else}
               <Button
                 size="medium"
                 flat
                 noBorder
-                type={comparer(selectedItemValue, item, multiple) ||
-                index == focusedIndex
+                type={isSelected(item) || index == focusedIndex
                   ? "primary"
                   : "quaternary"}
                 icon={multiple
-                  ? comparer(selectedItemValue, item, multiple)
+                  ? isSelected(item)
                     ? CheckBoxIcon
                     : CheckBoxOffIcon
                   : null}
                 focused={index == focusedIndex}
-                label={itemText == null ? item : item[itemText]}
+                label={getItemText(item)}
                 textAlign="left"
               ></Button>
             {/if}
           </div>
         {/each}
       </div>
-          {/snippet}
-    </Flyout>
+    {/snippet}
+  </Flyout>
 </div>
 
 <style lang="scss">

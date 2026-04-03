@@ -1,8 +1,9 @@
 <script lang="ts">
   //icons
   import CheckIcon from "$icons/check.svg?raw";
+  import type { BaseProps } from "$src/data/components";
 
-  interface Props {
+  interface CheckBoxProps extends BaseProps {
     style?: string;
     value?: boolean;
     label?: string;
@@ -11,26 +12,27 @@
     onunselect?: (event?: any) => void;
   }
 
-  let { style = "", value = $bindable(false), label = null ,
+  let {
+    style = "",
+    value = $bindable(false),
+    label = null,
+    disabled = false,
     onchange = null,
     onselect = null,
-    onunselect = null
-  }: Props = $props();
-  
+    onunselect = null,
+  }: CheckBoxProps = $props();
+
   const toggleValue = () => {
     value = !value;
-    onchange?.({ detail: { value } });
-    if (value) {
-      onselect?.();
-    } else {
-      onunselect?.();
-    }
+    onchange?.({ value });
+    if (value) onselect?.();
+    else onunselect?.();
   };
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="checkbox-container" {style} onclick={toggleValue}>
+<div class="checkbox-container" {style} onclick={toggleValue} class:disabled>
   <div class="checkbox" class:selected={value}>
     {#if value}
       {@html CheckIcon}

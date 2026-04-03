@@ -33,13 +33,13 @@
   }: Props = $props();
 
   const onSelect= (item: OutfitPackageCollectionWithPackageContext) => {
-    onselect?.({ detail: { item: item } });
+    onselect?.({ item: item });
   };
   const onUnselect= (item: OutfitPackageCollectionWithPackageContext) => {
-    onunselect?.({ detail: { item: item } });
+    onunselect?.({ item: item });
   };
   const onClick= (item: OutfitPackageCollectionWithPackageContext) => {
-    onclick?.({ detail: { item: item } });
+    onclick?.({ item: item });
   };
 </script>
 

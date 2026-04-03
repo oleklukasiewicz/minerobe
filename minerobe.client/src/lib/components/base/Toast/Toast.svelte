@@ -1,17 +1,13 @@
 <script lang="ts">
   //icons
   import CloseIcon from "$icons/close.svg?raw";
-
-  import { createBubbler } from 'svelte/legacy';
-
-  const bubble = createBubbler();
   //main imports
   import { cubicOut } from "svelte/easing";
   //components
   import Button from "../Button/Button.svelte";
   //icons
 
-  interface Props {
+  interface ToastProps {
     message: string;
     type?: "success" | "error" | "warning" | "info";
     mobile?: boolean;
@@ -30,8 +26,8 @@
     icon = "",
     closeable = true,
     onclose = null,
-    onclick = null
-  }: Props = $props();
+    onclick = null,
+  }: ToastProps = $props();
 
   function fadeInScale(node, { duration }) {
     return {
@@ -40,7 +36,7 @@
       css: (t) => `opacity: ${t}; transform: scale(${0.9 + t * 0.1})`,
     };
   }
-  const onClose= () => {
+  const onClose = () => {
     onclose?.();
   };
 </script>
@@ -54,10 +50,7 @@
   class:warning={type === "warning"}
   class:info={type === "info"}
   class:hidden={!show}
-  onclick={(event) => {
-    bubble('click')(event);
-    onclick?.(event);
-  }}
+  {onclick}
   class:mobile
   in:fadeInScale={{ duration: 300 }}
   out:fadeInScale={{ duration: 300 }}

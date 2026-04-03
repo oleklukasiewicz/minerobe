@@ -47,10 +47,10 @@
   }: Props = $props();
 
   const onFilter= () => {
-    onfilter?.({ detail: {
+    onfilter?.({
       filter: filter,
       sort: sortOptions ? [sortOptions] : [],
-    } });
+    });
   };
 </script>
 
@@ -59,7 +59,7 @@
     <div id="outfit-filters-dialog" class:mobile={isMobile}>
       {#if !hideSort && sortItems.length > 0}
         <SectionTitle label="Sort" />
-        <SortSelect clearable items={sortItems} bind:selectedItem={sortOptions} />
+        <SortSelect clearable items={sortItems} bind:value={sortOptions} />
       {/if}
       {#if !hideType}
         <div>
@@ -73,7 +73,7 @@
               { name: "Set", value: PACKAGE_TYPE.OUTFIT_SET },
               { name: "Outfit", value: PACKAGE_TYPE.OUTFIT },
             ]}
-            bind:selectedItem={filter.type}
+            bind:value={filter.type}
           />
         </div>
       {/if}
@@ -88,7 +88,7 @@
             itemValue="name"
             clearable
             autocomplete
-            bind:selectedItem={filter.colors}
+            bind:value={filter.colors}
           />
         </div>
       {/if}
@@ -103,7 +103,7 @@
             multiple
             clearable
             autocomplete
-            bind:selectedItem={filter.outfitType}
+            bind:value={filter.outfitType}
           />
         </div>
       {/if}
@@ -114,12 +114,11 @@
             placeholder="Is Shared"
             itemText="name"
             itemValue="value"
-            clearable
             items={[
               { name: "Shared", value: true },
               { name: "Not shared", value: false },
             ]}
-            bind:selectedItem={filter.isShared}
+            bind:value={filter.isShared}
           />
         </div>
       {/if}

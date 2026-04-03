@@ -35,16 +35,16 @@
 
   const onClick= function (e) {
     if (selectable) {
-      onselect?.({ detail: { item: item } });
+      onselect?.({ item: item });
       selected = true;
       return;
     }
-    onclick?.({ detail: { item: item } });
+    onclick?.({ item: item });
   };
   const onUnSelect= function (e) {
     e.stopPropagation();
     e.preventDefault();
-    onunselect?.({ detail: { item: item } });
+    onunselect?.({ item: item });
     selected = false;
   };
 </script>
@@ -71,9 +71,9 @@
     <span>{item.name}</span>
     <div>
       <ColorBadge
-        color={item.layers[0].colorName}
+        color={item.layers[0]?.colorName}
         selectable={false}
-        colorName={item.layers[0].colorName}
+        colorName={item.layers[0]?.colorName}
       />
       <Label dense>{item.outfitType}</Label>
     </div>

@@ -93,21 +93,21 @@
   const onFiltersUpdate= function () {
     syncOptionsFromLocalFilters();
     options.page = 0;
-    onfilter?.({ detail: { options: options } });
+    onfilter?.({ options: options });
   };
   const onPageChanged= function (e) {
-    const page = e.detail.options;
+    const page = e.options;
     syncOptionsFromLocalFilters();
     options.page = page.options.page;
     options.pageSize = page.options.pageSize;
-    onoptionsChanged?.({ detail: { options: options } });
+    onoptionsChanged?.({ options: options });
   };
   const onSelect= function (items) {
     selectedItems = items;
-    if (!multiple) onselect?.({ detail: { items: items } });
+    if (!multiple) onselect?.({ items: items });
   };
   const onSelectClick= function () {
-    onselect?.({ detail: { items: selectedItems } });
+    onselect?.({ items: selectedItems });
   };
 
   const onOpen= function (v) {
@@ -125,14 +125,14 @@
         <SortSelect
           clearable
           items={OUTFIT_PACKAGE_SORT_OPTIONS}
-          bind:selectedItem={selectedSort}
+          bind:value={selectedSort}
           onselect={onFiltersUpdate}
           onclear={onFiltersUpdate}
         />
         <ColorSelect
           items={COLORS_ARRAY}
           autocomplete
-          bind:selectedItem={selectedColors}
+          bind:value={selectedColors}
           placeholder="Colors"
           itemText="normalizedName"
           itemValue="name"
@@ -150,7 +150,7 @@
           multiple
           clearable
           itemValue="name"
-          bind:selectedItem={selectedOutfitTypes}
+          bind:value={selectedOutfitTypes}
           onselect={onFiltersUpdate}
           onclear={onFiltersUpdate}
         />
@@ -178,7 +178,7 @@
             items={pagedItems}
             pageSize={pagedPageSize}
             loading={pagedLoading}
-            onselectionUpdate={(e) => onSelect(e.detail.items)}
+            onselectionUpdate={(e) => onSelect(e.items)}
           />
           {#if items?.items?.length === 0 && !loading}
             <div class="no-items-error">No items found</div>

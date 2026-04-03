@@ -69,10 +69,10 @@
   });
 
   const goToCollection = function (e) {
-    navigateToCollection(e.detail.item.id, true);
+    navigateToCollection(e.item.id, true);
   };
   const fetchCollections = async (e) => {
-    const options = e?.detail?.options;
+    const options = e?.options;
     const pagedCollections = (await GetWadrobeCollections(
       filter.phrase,
       options?.page || 0,
@@ -86,7 +86,7 @@
       abortController.abort();
       abortController = new AbortController();
       isFilterDialogOpen = false;
-      const newFilter = e?.detail?.filter;
+      const newFilter = e?.filter;
       if (newFilter) {
         filter = {
           ...newFilter,

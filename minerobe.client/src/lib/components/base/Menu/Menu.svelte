@@ -1,5 +1,5 @@
 <script lang="ts">
-  interface Props {
+  interface MenuProps {
     opened?: boolean;
     top?: boolean;
     children?: import('svelte').Snippet<[any]>;
@@ -7,11 +7,11 @@
   }
 
   let {
-    opened = true,
+    opened = $bindable(false),
     top = false,
     children,
     footer
-  }: Props = $props();
+  }: MenuProps = $props();
 </script>
 
 <div class="menu" class:opened class:top class:left={!top}>
@@ -31,7 +31,7 @@
     .menu-items {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 8px;
     }
     .menu-footer {
       margin-top: auto;

@@ -1,12 +1,12 @@
 <script lang="ts">
-  interface Props {
+  interface PlaceholderProps {
     style?: string;
     loadedStyle?: any;
     loaded?: boolean;
     width?: string;
     aspectRatio?: any;
     height?: string;
-    children?: import('svelte').Snippet;
+    children?: import("svelte").Snippet;
   }
 
   let {
@@ -16,8 +16,8 @@
     width = "100%",
     aspectRatio = null,
     height = "100%",
-    children
-  }: Props = $props();
+    children,
+  }: PlaceholderProps = $props();
 </script>
 
 <div

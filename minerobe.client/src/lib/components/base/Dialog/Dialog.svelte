@@ -5,21 +5,18 @@
   //icons
   import CloseIcon from "$icons/close.svg?raw";
 
-  import { createBubbler } from 'svelte/legacy';
-
-  const bubble = createBubbler();
   //main imports
-    //components
+  //components
   import Button from "../Button/Button.svelte";
   //icons
 
-  interface Props {
+  interface DialogProps {
     open?: boolean;
     style?: string;
     label?: string;
     showTitleBar?: boolean;
     className?: string;
-    children?: import('svelte').Snippet<[any]>;
+    children?: import("svelte").Snippet<[any]>;
     onclose?: (event?: any) => void;
   }
 
@@ -29,12 +26,11 @@
     label = "",
     showTitleBar = true,
     className = "",
-    children
-  ,
-    onclose = null
-  }: Props = $props();
+    children,
+    onclose = null,
+  }: DialogProps = $props();
 
-  const onClose= () => {
+  const onClose = () => {
     open = false;
     onclose?.();
   };
@@ -55,7 +51,6 @@
       class="dialog-content"
       onclick={(event) => {
         event.stopPropagation();
-        bubble('click')(event);
       }}
     >
       {#if showTitleBar}
@@ -72,7 +67,7 @@
         </div>
       {/if}
       <div class="dialog-content-container" {style}>
-        {@render children?.({ isMobile: $IS_MOBILE_VIEW, })}
+        {@render children?.({ isMobile: $IS_MOBILE_VIEW })}
       </div>
     </div>
   {/if}

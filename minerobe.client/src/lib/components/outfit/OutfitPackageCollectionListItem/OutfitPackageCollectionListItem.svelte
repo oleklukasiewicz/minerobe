@@ -23,16 +23,16 @@
   const onSelect= (e?: Event) => {
     e?.preventDefault?.();
     e?.stopPropagation?.();
-    onselect?.({ detail: item });
+    onselect?.({ item });
   };
   const onUnselect= () => {
-    onunselect?.({ detail: item });
+    onunselect?.({ item });
   };
   const onClick= (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (selectable) return;
-    onclick?.({ detail: item });
+    onclick?.({ item });
   };
 </script>
 

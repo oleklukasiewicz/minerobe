@@ -1,10 +1,10 @@
 <script lang="ts">
-  interface Props {
+  interface MenuHeaderProps {
     label: string;
     opened?: boolean;
   }
 
-  let { label, opened = true }: Props = $props();
+  let { label, opened = $bindable(false) }: MenuHeaderProps = $props();
 </script>
 
 <div class="menu-header" class:opened>

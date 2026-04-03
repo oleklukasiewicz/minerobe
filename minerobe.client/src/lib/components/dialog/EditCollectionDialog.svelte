@@ -2,9 +2,9 @@
   //models
   import type { OutfitPackageCollection } from "$src/data/models/collection";
 
-  import { run } from 'svelte/legacy';
+  import { run } from "svelte/legacy";
 
-    import Button from "../base/Button/Button.svelte";
+  import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
   import TextBox from "../base/TextBox/TextBox.svelte";
@@ -17,8 +17,11 @@
     onsave?: (event?: any) => void;
   }
 
-  let { open = $bindable(false), label = "Edit Collection", collection = $bindable(null) ,
-    onsave = null
+  let {
+    open = $bindable(false),
+    label = "Edit Collection",
+    collection = $bindable(null),
+    onsave = null,
   }: Props = $props();
 
   let name = $state("");
@@ -47,7 +50,7 @@
     } as OutfitPackageCollection;
 
     collection = nextCollection;
-    onsave?.({ detail: { collection: nextCollection } });
+    onsave?.({ collection: nextCollection });
     open = false;
   };
 </script>
@@ -60,8 +63,7 @@
     </div>
     <div>
       <SectionTitle label="description" />
-      <textarea placeholder="Description" bind:value={description}
-      ></textarea>
+      <textarea placeholder="Description" bind:value={description}></textarea>
     </div>
     <Checkbox label="Is Shared" bind:value={isShared} />
     <div id="actions">

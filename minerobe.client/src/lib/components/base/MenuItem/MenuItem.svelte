@@ -1,20 +1,12 @@
 <script lang="ts">
-  import { createBubbler } from 'svelte/legacy';
+  import type { BaseButtonProps } from "$src/data/components";
 
-  const bubble = createBubbler();
-  interface $$Events {
-    click: MouseEvent;
-  }
-  interface Props {
-    label: string;
-    icon?: string;
-    href?: string;
+  interface MenuItemProps extends BaseButtonProps {
     disabled?: boolean;
     badgelabel?: string;
     selected?: boolean;
     opened?: boolean;
     top?: boolean;
-    onclick?: (event?: any) => void;
   }
 
   let {
@@ -24,10 +16,10 @@
     disabled = false,
     badgelabel = null,
     selected = false,
-    opened = true,
+    opened = $bindable(true),
     top = false,
-    onclick = null
-  }: Props = $props();
+    onclick = null,
+  }: MenuItemProps = $props();
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
@@ -37,10 +29,7 @@
   {href}
   class:selected
   class:opened
-  onclick={(event) => {
-    bubble('click')(event);
-    onclick?.(event);
-  }}
+  {onclick}
   class:top
   title={label}
 >

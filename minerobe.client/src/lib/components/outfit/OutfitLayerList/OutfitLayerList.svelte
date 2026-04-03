@@ -65,25 +65,25 @@
 
   const onSelect= function (layer: OutfitLayer) {
     if (!selectable) return;
-    onselect?.({ detail: { item: layer } });
+    onselect?.({ item: layer });
   };
   const onMoveUp= function (layer: OutfitLayer, index: number) {
     if (!movable) return;
-    onmoveUp?.({ detail: { item: layer, index: index } });
+    onmoveUp?.({ item: layer, index: index });
   };
   const onMoveDown= function (layer: OutfitLayer, index: number) {
     if (!movable) return;
-    onmoveDown?.({ detail: { item: layer, index: index } });
+    onmoveDown?.({ item: layer, index: index });
   };
   const onEdit= function (layer: OutfitLayer, index: number) {
-    onedit?.({ detail: { item: layer, index: index } });
+    onedit?.({ item: layer, index: index });
   };
   const onDelete= function (layer: OutfitLayer, index: number) {
-    ondelete?.({ detail: { item: layer, index: index } });
+    ondelete?.({ item: layer, index: index });
   };
   const onDrop= async function (layer: OutfitLayer, option: any) {
     const items = await ConvertFileToFileData(option.items[0]);
-    ondrop?.({ detail: { item: layer, option: option.option, file: items } });
+    ondrop?.({ item: layer, option: option.option, file: items });
   };
   const onResize= function () {
     items = [...items];
@@ -94,7 +94,7 @@
   <div class="outfit-layer-list-items" class:dense>
     {#each [...items].reverse() as item, index (item.id)}
       <MultiDragAndDrop
-        ondrop={(e) => onDrop(item, e.detail)}
+        ondrop={(e) => onDrop(item, e)}
         disabled={!dropable || !editable || item.sourcePackageId != packageId}
         options={[
           { label: "Classic", value: MODEL_TYPE.STEVE },

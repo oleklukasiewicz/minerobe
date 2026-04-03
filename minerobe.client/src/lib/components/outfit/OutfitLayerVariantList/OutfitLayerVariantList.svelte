@@ -26,7 +26,7 @@
 
   const onSelect= function (layer: OutfitLayer) {
     if (!selectable) return;
-    onselect?.({ detail: { item: layer } });
+     onselect?.({ item: layer });
   };
 </script>
 

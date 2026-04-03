@@ -43,10 +43,10 @@
           return;
         }
         if (debounce == -1) {
-          onresize?.({ detail: {} });
+          onresize?.({});
         }
         timeout = setTimeout(() => {
-          onresize?.({ detail: {} });
+          onresize?.({});
         }, debounce);
       });
     resizeObserver.observe(_targetNode);

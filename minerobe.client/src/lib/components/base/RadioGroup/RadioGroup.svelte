@@ -4,20 +4,22 @@
 
   import RadioButton from "../RadioButton/RadioButton.svelte";
 
-  interface Props {
+  interface RadioGroupProps {
     options?: ValueData[];
     selectedValue?: any;
     onselect?: (event?: any) => void;
   }
 
-  let { options = [], selectedValue = $bindable(null) ,
-    onselect = null
-  }: Props = $props();
+  let {
+    options = [],
+    selectedValue = $bindable(null),
+    onselect = null,
+  }: RadioGroupProps = $props();
 
-  const onSelect= (item) => {
+  const onSelect = (item) => {
     if (selectedValue.value === item.value) return;
     selectedValue = item.value;
-    onselect?.({ detail: { value: item } });
+    onselect?.({ value: item });
   };
 </script>
 

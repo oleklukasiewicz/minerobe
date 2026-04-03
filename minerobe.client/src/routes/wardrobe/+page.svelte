@@ -74,11 +74,11 @@
   });
 
   const goToEdit = function (e) {
-    const item = e.detail.item;
+    const item = e.item;
     navigateToOutfitPackage(item, undefined, true);
   };
   const fetchItems = async (e) => {
-    const options = e?.detail?.options;
+    const options = e?.options;
     const pagedModel = new PagedModel<OutfitFilter>();
     pagedModel.page = options?.page || 0;
     pagedModel.pageSize = options?.pageSize || 36;
@@ -92,8 +92,8 @@
       abortController.abort();
       abortController = new AbortController();
       isFilterDialogOpen = false;
-      const newFilter = e?.detail?.filter;
-      const newSort = e?.detail?.sort;
+      const newFilter = e?.filter;
+      const newSort = e?.sort;
       if (newFilter) {
         filter = {
           ...newFilter,

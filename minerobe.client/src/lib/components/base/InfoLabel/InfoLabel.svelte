@@ -5,9 +5,10 @@
   import Button from "../Button/Button.svelte";
   //icons
 
-  interface Props {
+  interface InfoLabelProps {
     label?: string;
     type?: "warning" | "info";
+    isClosed?: boolean;
     description?: string;
     closeable?: boolean;
   }
@@ -16,10 +17,9 @@
     label = "",
     type = "info",
     description = "",
-    closeable = true
-  }: Props = $props();
-
-  let isClosed = $state(false);
+    closeable = true,
+    isClosed = $bindable(false),
+  }: InfoLabelProps = $props();
 </script>
 
 <div

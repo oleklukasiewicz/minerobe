@@ -1,19 +1,11 @@
 <script lang="ts">
-  import { createBubbler } from 'svelte/legacy';
+  import type { BaseButtonProps } from "$src/data/components";
 
-  const bubble = createBubbler();
-  interface $$Events {
-    click: MouseEvent;
-  }
-  interface Props {
-    label: string;
-    icon?: string;
-    href?: string;
+  interface MenuItemHeaderProps extends BaseButtonProps {
     disabled?: boolean;
     badgelabel?: string;
     selected?: boolean;
     opened?: boolean;
-    onclick?: (event?: any) => void;
   }
 
   let {
@@ -24,21 +16,12 @@
     badgelabel = null,
     selected = false,
     opened = true,
-    onclick = null
-  }: Props = $props();
+    onclick = null,
+  }: MenuItemHeaderProps = $props();
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
-<a
-  class="menu-item-header"
-  class:disabled
-  {href}
-  class:selected
-  onclick={(event) => {
-    bubble('click')(event);
-    onclick?.(event);
-  }}
->
+<a class="menu-item-header" class:disabled {href} class:selected {onclick}>
   {#if icon}
     <div class="icon b-icon-medium">
       {@html icon}
@@ -54,7 +37,7 @@
 
 <style lang="scss">
   .menu-item-header {
-    color:var(--color-theme-font);
+    color: var(--color-theme-font);
     user-select: none;
     cursor: pointer;
     display: flex;
@@ -81,9 +64,8 @@
     .badge {
       margin: 5px 8px 5px 0px;
     }
-    .icon
-    {
-        height: 24px;
+    .icon {
+      height: 24px;
     }
     &.selected {
       background: var(--color-accent);

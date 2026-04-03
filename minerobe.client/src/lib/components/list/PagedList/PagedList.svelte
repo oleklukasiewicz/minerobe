@@ -6,8 +6,6 @@
   import ChevronLeftIcon from "$icons/chevron-left.svg?raw";
   import ChevronRightIcon from "$icons/chevron-right.svg?raw";
 
-  import { run } from 'svelte/legacy';
-
   //main imports
     //models
   //components
@@ -36,41 +34,70 @@
     onoptionsChanged = null
   }: Props = $props();
 
-  let totalPages = $state(0);
-  run(() => {
-    totalPages = Math.ceil(
-      items?.options.total / (pageSize ?? items?.options.pageSize)
-    );
+  let selectedPageSize = $state(0);
+  const totalPages = $derived.by(() => {
+    const total = items?.options.total ?? 0;
+    return selectedPageSize > 0 ? Math.ceil(total / selectedPageSize) : 0;
+  });
+
+  $effect(() => {
+    if (selectedPageSize !== 0) return;
+    selectedPageSize = pageSize ?? items?.options.pageSize ?? 0;
+  });
+
+  $effect(() => {
+    if (items?.options.pageSize != null && items.options.pageSize !== selectedPageSize) {
+      selectedPageSize = items.options.pageSize;
+    }
   });
 
   const onOptionsChanged= function () {
-    onoptionsChanged?.({ detail: { options: items } });
+    onoptionsChanged?.({ options: items });
   };
   const onPrevious= function (event) {
-    items.options.page--;
+    items = {
+      ...items,
+      options: {
+        ...items.options,
+        page: Math.max(0, (items?.options.page ?? 0) - 1),
+      },
+    };
     onOptionsChanged();
   };
   const onNext= function (event) {
-    items.options.page++;
+    items = {
+      ...items,
+      options: {
+        ...items.options,
+        page: (items?.options.page ?? 0) + 1,
+      },
+    };
     onOptionsChanged();
   };
   const onPageSizeChanged= function (event) {
-    const pageSize = event.detail.item;
-    items.options.pageSize = pageSize;
-    //check if the current page is valid
-    if (
-      items.options.page >=
-      Math.ceil(items?.options.total / (pageSize ?? items?.options.pageSize))
-    ) {
-      items.options.page = 0;
-    }
+    const pageSize = event.item;
+    selectedPageSize = pageSize;
+    const nextPage =
+      (items?.options.page ?? 0) >=
+      Math.ceil((items?.options.total ?? 0) / (pageSize || 1))
+        ? 0
+        : items?.options.page ?? 0;
+
+    items = {
+      ...items,
+      options: {
+        ...items.options,
+        pageSize,
+        page: nextPage,
+      },
+    };
     onOptionsChanged();
   };
 </script>
 
 <div class="paged-list">
   <div class="list-items">
-    {@render children?.({ items: items?.items, pageSize: pageSize ?? items?.options.pageSize, page: items.options.page, loading, })}
+    {@render children?.({ items: items?.items, pageSize: selectedPageSize, page: items.options.page, loading, })}
   </div>
   <div class="list-actions">
     <div>
@@ -102,7 +129,7 @@
         <Select
           disabled={loading}
           items={pageSizes}
-          selectedItem={pageSize ?? items?.options.pageSize}
+          value={selectedPageSize}
           onselect={onPageSizeChanged}
         />
       </div>

@@ -1,23 +1,32 @@
 <script lang="ts">
   //models
   import type { ValueData } from "$data/models/base";
+  import type { BaseSelectableProps } from "$src/data/components";
+  import { on } from "svelte/events";
 
-  interface Props {
+  interface RadioButtonProps extends BaseSelectableProps {
     value?: ValueData;
     label?: string;
-    selected?: boolean;
-    onselect?: (event?: any) => void;
   }
 
-  let { value = null, label = null, selected = $bindable(false) ,
-    onselect = null
-  }: Props = $props();
+  let {
+    value = null,
+    label = null,
+    selected = $bindable(false),
+    onselect = null,
+    onunselect = null,
+    onchange = null,
+  }: RadioButtonProps = $props();
 
-  const onSelect= () => {
-    if (selected) return;
+  const onSelect = () => {
+    onchange?.({ value });
     selected = true;
-    onselect?.({ detail: { value: value } });
+    onselect?.({ value });
   };
+
+  $effect(() => {
+    if (!selected) onunselect?.({ value });
+  });
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->

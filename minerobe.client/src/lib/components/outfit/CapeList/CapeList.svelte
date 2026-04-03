@@ -17,7 +17,7 @@
 
   const onSelect= function (item: Cape) {
     selectedCapeId = item?.id;
-    onselect?.({ detail: { item: item } });
+    onselect?.({ item: item });
   };
 </script>
 
