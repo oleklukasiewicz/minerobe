@@ -7,8 +7,6 @@
   //models
   import type { OutfitLayer, OutfitPackage } from "$data/models/package";
 
-  import { run } from 'svelte/legacy';
-
   //main imports
   import { onDestroy, onMount } from "svelte";
   import { get, type Readable } from "svelte/store";
@@ -494,20 +492,20 @@
     return false;
   };
 
-  run(() => {
+  $effect(() => {
     syncModelSource(model, source, layerId, cape);
   });
-  run(() => {
+  $effect(() => {
     setBaseTexture(baseTexture);
   });
-  run(() => {
+  $effect(() => {
     setOutfitType(outfitType);
   });
 
-  run(() => {
+  $effect(() => {
     setFlatten(isFlatten);
   });
-  run(() => {
+  $effect(() => {
     setCameraOptions(cameraOptions);
   });
 

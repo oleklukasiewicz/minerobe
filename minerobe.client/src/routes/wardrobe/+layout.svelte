@@ -30,10 +30,8 @@
   import ListIcon from "$icons/list.svg?raw";
   import AddIcon from "$icons/plus.svg?raw";
 
-  import { run } from 'svelte/legacy';
-
   //main imports
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   //api
   import {
     AddCollectionToWardrobe,
@@ -60,8 +58,8 @@
 
   let selectedView = $state("sets");
 
-  run(() => {
-    selectedView = $page.route.id.split("/")[2] || "sets";
+  $effect(() => {
+    selectedView =  page.route.id.split("/")[2] || "sets";
   });
 
   const openOutfitTypePickerDialog = function () {

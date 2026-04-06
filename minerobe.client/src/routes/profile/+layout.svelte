@@ -23,9 +23,7 @@
   import UsersIcon from "$icons/users.svg?raw";
   import DashboardIcon from "$icons/dashboard.svg?raw";
 
-  import { run } from 'svelte/legacy';
-
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import { onMount } from "svelte";
   interface Props {
     children?: import('svelte').Snippet;
@@ -35,8 +33,8 @@
 
   let selectedView = $state("overview");
 
-  run(() => {
-    selectedView = $page.route.id.split("/")[2] || "overview";
+  $effect(() => {
+    selectedView = page.route.id.split("/")[2] || "overview";
   });
 
   let menuOpened = $state(false);

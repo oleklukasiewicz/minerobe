@@ -23,19 +23,23 @@
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
   //icons
   import Checkbox from "../base/Checkbox/Checkbox.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
 
-  interface Props {
-    open?: boolean;
+  interface EditLayerDialogProps extends BaseDialogProps {
     item: OutfitLayer;
     onlyTextures?: boolean;
     onedit?: (event?: any) => void;
     onprimaryChange?: (event?: any) => void;
   }
 
-  let { open = $bindable(false), item = $bindable(), onlyTextures = false ,
+  let {
+    open = $bindable(false),
+    item = $bindable(),
+    onlyTextures = false,
     onedit = null,
-    onprimaryChange = null
-  }: Props = $props();
+    onprimaryChange = null,
+    label = "Edit layer",
+  }: EditLayerDialogProps = $props();
 
   const onEdit = () => {
     onedit?.({ item: item });
@@ -57,7 +61,7 @@
   };
 </script>
 
-<Dialog bind:open label="Edit layer" >
+<Dialog bind:open {label}>
   {#snippet children({ isMobile })}
     <div class="editItemDialog" class:mobile={isMobile}>
       {#if !onlyTextures}

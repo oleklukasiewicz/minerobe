@@ -15,18 +15,21 @@ export interface BaseSelectableProps {
   onchange?: (event?: any) => void;
 }
 
-export interface BaseSelectProps extends BaseProps
-{
-    items?: any[];
-    placeholder?: string;
-    value?: any;
-    opened?: boolean;
-    itemText?: string;
-    itemValue?: string;
-    clearable?: boolean;
-    dropDownStyle?: any;
-    autocomplete?: boolean;
-    defaultValue?: any;
-    onclear?: (event?: any) => void;
-    onselect?: (event?: any) => void;
+export interface BaseSelectProps extends BaseProps {
+  items?: any[];
+  placeholder?: string;
+  value?: any;
+  opened?: boolean;
+  itemText?: string;
+  itemValue?: string;
+  clearable?: boolean;
+  dropDownStyle?: any;
+  autocomplete?: boolean;
+  defaultValue?: any;
+  onclear?: (event?: any) => void;
+  onselect?: (event?: any) => void;
+}
+export interface BaseDialogProps {
+  open?: boolean;
+  label?: string;
 }

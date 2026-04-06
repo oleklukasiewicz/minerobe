@@ -1,15 +1,14 @@
 <script lang="ts">
   //icons
   import CancelIcon from "$icons/close.svg?raw";
+  import type { BaseDialogProps } from "$src/data/components";
 
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   //icons
 
-  interface Props {
-    open?: boolean;
+  interface ConfirmDialogProps  extends BaseDialogProps {
     message?: string;
-    label?: string;
     confirmLabel?: string;
     confirmIcon?: any;
     cancelLabel?: string;
@@ -29,7 +28,7 @@
   ,
     onconfirm = null,
     onclose = null
-  }: Props = $props();
+  }: ConfirmDialogProps = $props();
 
   const onConfirm= () => {
     onconfirm?.();

@@ -10,8 +10,6 @@
   import type { OutfitLayer, OutfitPackage } from "$src/data/models/package";
   import type { OutfitPackageCollection } from "$src/data/models/collection";
 
-  import { run } from 'svelte/legacy';
-
   //main imports
     //consts
   //model
@@ -24,15 +22,14 @@
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
   import SortSelect from "../base/SortSelect/SortSelect.svelte";
   import Button from "../base/Button/Button.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
 
 
-  interface CollectionItemsPickerDialogProps {
+  interface CollectionItemsPickerDialogProps  extends BaseDialogProps{
     items: PagedResponse<OutfitPackage>;
     packageContext?: OutfitPackageCollection;
     options?: PagedModel<OutfitFilter>;
     pageSizes?: any;
-    open?: boolean;
-    label?: string;
     loading?: boolean;
     baseTexture?: OutfitLayer;
     selectedItems?: OutfitPackage[];
@@ -95,7 +92,7 @@
     options.filter.phrase = phrase ?? "";
   };
 
-  run(() => {
+  $effect(() => {
     syncLocalFiltersFromOptions();
   });
 
@@ -122,7 +119,7 @@
   };
 
   const onOpen= function (v) {};
-  run(() => {
+  $effect(() => {
     onOpen(open);
   });
   const onClose= function () {

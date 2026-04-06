@@ -9,8 +9,6 @@
   import HeartSmallIcon from "$icons/small/heart.svg?raw";
   import DownloadSmallIcon from "$icons/small/download.svg?raw";
 
-  import { run } from 'svelte/legacy';
-
   //services
   //model
   //icons
@@ -34,7 +32,7 @@
   let normalizedLikes: string = $state("");
   let normalizedDownloads: string = $state("");
 
-  run(() => {
+  $effect(() => {
     if (data) {
       if (data.likes != null) {
         normalizedLikes = normalizeNumber(data.likes);

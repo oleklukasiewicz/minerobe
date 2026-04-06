@@ -8,22 +8,25 @@
   import ListIcon from "$icons/list.svg?raw";
 
   import Dialog from "../base/Dialog/Dialog.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
   //icons
 
-  interface Props {
+  interface OutfitPackageTypePickerDialogProps extends BaseDialogProps {
     open?: boolean;
     onselect?: (event?: any) => void;
   }
 
-  let { open = $bindable(false) ,
-    onselect = null
-  }: Props = $props();
-  const onSelect= function (item) {
-     onselect?.({ type: item });
+  let {
+    open = $bindable(false),
+    label = "Select type",
+    onselect = null,
+  }: OutfitPackageTypePickerDialogProps = $props();
+  const onSelect = function (item) {
+    onselect?.({ type: item });
   };
 </script>
 
-<Dialog bind:open label="Select type">
+<Dialog bind:open {label}>
   <div id="outfit-type-dialog">
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->

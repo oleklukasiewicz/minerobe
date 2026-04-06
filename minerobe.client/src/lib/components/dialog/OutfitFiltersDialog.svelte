@@ -17,10 +17,10 @@
   import Select from "../base/Select/Select.svelte";
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
   import SortSelect from "../base/SortSelect/SortSelect.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
   //icons
 
-  interface Props {
-    open?: boolean;
+  interface OutfitFiltersDialogProps extends BaseDialogProps {
     filter?: OutfitFilter;
     hideType?: boolean;
     hideColor?: boolean;
@@ -33,6 +33,7 @@
   }
 
   let {
+    label = "Sort & Filters",
     open = $bindable(false),
     filter = $bindable(new OutfitFilter()),
     hideType = false,
@@ -41,12 +42,11 @@
     hideOutfitType = false,
     hideSort = false,
     sortItems = [],
-    sortOptions = $bindable(new SortOption())
-  ,
-    onfilter = null
-  }: Props = $props();
+    sortOptions = $bindable(new SortOption()),
+    onfilter = null,
+  }: OutfitFiltersDialogProps = $props();
 
-  const onFilter= () => {
+  const onFilter = () => {
     onfilter?.({
       filter: filter,
       sort: sortOptions ? [sortOptions] : [],
@@ -54,7 +54,7 @@
   };
 </script>
 
-<Dialog bind:open label="Sort & Filters" >
+<Dialog bind:open {label}>
   {#snippet children({ isMobile })}
     <div id="outfit-filters-dialog" class:mobile={isMobile}>
       {#if !hideSort && sortItems.length > 0}

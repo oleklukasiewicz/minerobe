@@ -2,14 +2,13 @@
   //models
   import type { PagedResponse } from "$data/models/base";
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
+  import type { BaseDialogProps } from "$src/data/components";
 
   import Dialog from "../base/Dialog/Dialog.svelte";
   import PagedList from "../list/PagedList/PagedList.svelte";
   import OutfitPackageCollectionList from "../outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
 
-  interface Props {
-    open?: boolean;
-    label?: string;
+  interface CollectionsDialogProps extends BaseDialogProps {
     items: PagedResponse<OutfitPackageCollectionWithPackageContext>;
     loading?: boolean;
     pageSizes?: number[];
@@ -27,7 +26,7 @@
     onoptionsChanged = null,
     onselect = null,
     onunselect = null
-  }: Props = $props();
+  }: CollectionsDialogProps = $props();
 </script>
 
 <Dialog bind:open {label} >

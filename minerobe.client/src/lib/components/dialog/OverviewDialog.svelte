@@ -12,9 +12,10 @@
   import Label from "../base/Label/Label.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
   import SocialInfo from "../social/SocialInfo.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
   //icons
 
-  interface Props {
+  interface OverviewDialogProps extends BaseDialogProps {
     open: boolean;
     item: OutfitPackage;
     onunshare?: (event?: any) => void;
@@ -22,24 +23,27 @@
     onpage?: (event?: any) => void;
   }
 
-  let { open = $bindable(), item ,
+  let {
+    open = $bindable(),
+    item,
+    label = "Overview",
     onunshare = null,
     onshare = null,
-    onpage = null
-  }: Props = $props();
+    onpage = null,
+  }: OverviewDialogProps = $props();
 
-  const onUnshare= () => {
+  const onUnshare = () => {
     onunshare?.();
   };
-  const onShare= () => {
+  const onShare = () => {
     onshare?.();
   };
-  const onItemPage= () => {
+  const onItemPage = () => {
     onpage?.();
   };
 </script>
 
-<Dialog bind:open label="Overview">
+<Dialog bind:open {label}>
   <div id="overview-dialog">
     <div class="item-data">
       <div class="title-section">

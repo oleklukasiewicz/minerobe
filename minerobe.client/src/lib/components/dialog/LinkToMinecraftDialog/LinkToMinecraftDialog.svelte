@@ -17,11 +17,11 @@
     MinecraftAccount,
     MinecraftSkin,
   } from "$src/data/models/integration/minecraft";
+  import type { BaseDialogProps } from "$src/data/components";
   //components
   //icons
 
-  interface LinkToMinecraftDialogProps {
-    open?: boolean;
+  interface LinkToMinecraftDialogProps extends BaseDialogProps {
     authUrl?: string;
     authCode?: string;
     authStatus?: string;
@@ -32,12 +32,13 @@
 
   let {
     open = $bindable(false),
+    label = "Link to Minecraft",
     authUrl = "",
     authCode = "",
     authStatus = "",
     profile = null,
     skin = null,
-    onclose = null
+    onclose = null,
   }: LinkToMinecraftDialogProps = $props();
 
   let linkButtonLabel = $state("Link");
@@ -80,7 +81,7 @@
   });
 </script>
 
-<Dialog {open} label="Link to Minecraft" {onclose}>
+<Dialog {open} {label} {onclose}>
   <div id="link-to-mc-dialog">
     {#if authStatus != "Ready"}
       <div class="description">

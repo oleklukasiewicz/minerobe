@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   //main imports
   import { onDestroy, onMount } from "svelte";
 
@@ -58,7 +56,7 @@
       },
     };
   }
-  run(() => {
+  $effect(() => {
     updateTargetNode(targetNode);
   });
 </script>

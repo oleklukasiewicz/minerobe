@@ -2,17 +2,14 @@
   //models
   import type { OutfitPackageCollection } from "$src/data/models/collection";
 
-  import { run } from "svelte/legacy";
-
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
   import TextBox from "../base/TextBox/TextBox.svelte";
   import Checkbox from "../base/Checkbox/Checkbox.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
 
-  interface Props {
-    open?: boolean;
-    label?: string;
+  interface EditCollectionDialogProps extends BaseDialogProps {
     collection?: OutfitPackageCollection;
     onsave?: (event?: any) => void;
   }
@@ -22,7 +19,7 @@
     label = "Edit Collection",
     collection = $bindable(null),
     onsave = null,
-  }: Props = $props();
+  }: EditCollectionDialogProps = $props();
 
   let name = $state("");
   let description = $state("");
@@ -34,7 +31,7 @@
     isShared = collection?.social?.isShared ?? false;
   };
 
-  run(() => {
+  $effect(() => {
     syncFormFromCollection();
   });
 

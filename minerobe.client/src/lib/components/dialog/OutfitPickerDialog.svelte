@@ -9,8 +9,6 @@
   import { OutfitFilter } from "$src/data/models/filter";
   import type { OutfitPackage } from "$src/data/models/package";
 
-  import { run } from 'svelte/legacy';
-
   //main imports
     //consts
   //model
@@ -23,8 +21,9 @@
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
   import SortSelect from "../base/SortSelect/SortSelect.svelte";
   import Button from "../base/Button/Button.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
 
-  interface Props {
+  interface OutfitPickerDialogProps extends BaseDialogProps {
     items: PagedResponse<OutfitPackage>;
     packageContext?: OutfitPackage;
     options?: PagedModel<OutfitFilter>;
@@ -51,7 +50,7 @@
     onfilter = null,
     onoptionsChanged = null,
     onselect = null
-  }: Props = $props();
+  }: OutfitPickerDialogProps = $props();
 
   let selectedItems: OutfitPackage[] = $state([]);
   let selectedSort = $state(null);
@@ -86,7 +85,7 @@
     options.filter.phrase = phrase ?? "";
   };
 
-  run(() => {
+  $effect(() => {
     syncLocalFiltersFromOptions();
   });
 
@@ -113,7 +112,7 @@
   const onOpen= function (v) {
     selectedItems = [];
   };
-  run(() => {
+  $effect(() => {
     onOpen(open);
   });
 </script>

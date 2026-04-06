@@ -2,7 +2,6 @@
   //consts
   import { COLORS } from "$src/data/consts/color";
 
-  import { run } from 'svelte/legacy';
 
   //main imports
     //consts
@@ -40,7 +39,7 @@
         ")";
     else normalizedColor = color;
   };
-  run(() => {
+  $effect(() => {
     normalizeColor(color);
   });
 

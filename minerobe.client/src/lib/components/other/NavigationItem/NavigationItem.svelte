@@ -6,7 +6,7 @@
     click: MouseEvent;
   }
   //main imports
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
 
   interface Props {
     label?: string;
@@ -37,8 +37,8 @@
   {href}
   class:onlyIcon
   class:selected={viewId?.length > 0
-    ? $page.route?.id?.startsWith("/" + viewId)
-    : $page.route?.id == "/"}
+    ? page.route?.id?.startsWith("/" + viewId)
+    : page.route?.id == "/"}
   class:disabled
   onclick={(event) => {
     bubble('click')(event);

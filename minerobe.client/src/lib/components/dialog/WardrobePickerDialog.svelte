@@ -11,8 +11,6 @@
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import AnimationIcon from "$icons/animation.svg?raw";
 
-  import { run } from 'svelte/legacy';
-
   //api
   import {
     GetWardrobeItemsWithCollectionContext,
@@ -26,8 +24,9 @@
   import Menu from "../base/Menu/Menu.svelte";
   import PagedList from "../list/PagedList/PagedList.svelte";
   import OutfitPackagePickerList from "../outfit/OutfitPackagePickerList/OutfitPackagePickerList.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
 
-  interface Props {
+  interface WardrobePickerDialogProps extends BaseDialogProps {
     open?: boolean;
     label?: string;
     collectionId?: string;
@@ -40,8 +39,8 @@
     label = "Wardrobe",
     collectionId = null,
     baseTexture = null,
-    onselect = null
-  }: Props = $props();
+    onselect = null,
+  }: WardrobePickerDialogProps = $props();
 
   let items = $state(new PagedResponse<OutfitPackage>());
   let filter: OutfitFilter = $state(new OutfitFilter());
@@ -62,7 +61,7 @@
       ? await GetWardrobeItemsWithCollectionContext(
           collectionId,
           pagedModel,
-          abortController
+          abortController,
         )
       : await GetWardrobePackages(pagedModel, abortController);
     items = pagedItems;
@@ -72,10 +71,10 @@
     await fetchItems(null);
   };
 
-  const onOpen= async (v) => {
+  const onOpen = async (v) => {
     if (v) await fetchItems(null);
   };
-  run(() => {
+  $effect(() => {
     onOpen(open);
   });
 </script>
@@ -83,9 +82,9 @@
 <Dialog bind:open {label}>
   <div id="wardrobe-picker-dialog">
     <div id="wardrobe-picker-navigation">
-      <Menu  >
+      <Menu>
         {#snippet children({ opened, top })}
-                <MenuItem
+          <MenuItem
             label="Sets"
             icon={AnimationIcon}
             {opened}
@@ -101,22 +100,23 @@
             onclick={() => setFilterType(PACKAGE_TYPE.OUTFIT)}
             selected={filter.type == PACKAGE_TYPE.OUTFIT}
           />
-                      {/snippet}
-            </Menu>
+        {/snippet}
+      </Menu>
     </div>
     <div id="wardrobe-picker-items">
       <PagedList
-        bind:items={items}
+        bind:items
         pageSize={items?.options.pageSize ?? 12}
         loading={items?.items == null}
         pageSizes={[6, 12, 24]}
         onoptionsChanged={fetchItems}
-        
-        
-        
       >
-        {#snippet children({ items: pagedItems, pageSize: pagedPageSize, loading: pagedLoading })}
-                <OutfitPackagePickerList
+        {#snippet children({
+          items: pagedItems,
+          pageSize: pagedPageSize,
+          loading: pagedLoading,
+        })}
+          <OutfitPackagePickerList
             baseTexture={filter.type == PACKAGE_TYPE.OUTFIT_SET
               ? baseTexture
               : null}
@@ -128,8 +128,8 @@
             loading={pagedLoading}
             {onselect}
           />
-                      {/snippet}
-            </PagedList>
+        {/snippet}
+      </PagedList>
     </div>
   </div>
 </Dialog>
