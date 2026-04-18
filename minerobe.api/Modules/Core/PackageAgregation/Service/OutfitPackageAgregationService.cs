@@ -9,6 +9,12 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
     public class OutfitPackageAgregationService : IOutfitPackageAgregationService
     {
         private readonly BaseDbContext _context;
+        private IQueryable<OutfitPackage> _FromAgregation(IQueryable<OutfitPackageAgregation> agregations)
+        {
+            var ids = agregations.GroupBy(x => x.Id).Select(x => x.Key);
+            return FromIdList(ids);
+        }
+        
         public OutfitPackageAgregationService(BaseDbContext context)
         {
             _context = context;
@@ -74,11 +80,6 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
 
             }
             return outfits;
-        }
-        public IQueryable<OutfitPackage> FromAgregation(IQueryable<OutfitPackageAgregation> agregations)
-        {
-            var ids = agregations.GroupBy(x => x.Id).Select(x => x.Key);
-            return FromIdList(ids);
         }
         public IQueryable<OutfitPackage> FromIdList(IQueryable<Guid> ids)
         {
@@ -147,7 +148,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
         }
         public IQueryable<OutfitPackageAgregationResponse> FromAgregationWithUserContext(IQueryable<OutfitPackageAgregation> agregations, Guid? wardobeId = null)
         {
-            var fromAggr = FromAgregation(agregations);
+            var fromAggr = _FromAgregation(agregations);
             var aggrWithUserContext = from p in fromAggr
                                       join w in _context.WardrobeMatchings on p.Id equals w.OutfitPackageId into wmGroup
                                       select new OutfitPackageAgregationResponse
@@ -161,7 +162,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
         }
         public IQueryable<OutfitPackageAgregationResponse> FromAgregationWithCollectionContext(IQueryable<OutfitPackageAgregation> agregations, Guid collectionId)
         {
-            var fromAggr = FromAgregation(agregations);
+            var fromAggr = _FromAgregation(agregations);
             var aggrWithCollectionContext = from p in fromAggr
                                             join c in _context.OutfitPackageCollectionMatchings on p.Id equals c.PackageId into collectionGroup
                                             select new OutfitPackageAgregationResponse
