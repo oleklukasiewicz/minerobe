@@ -476,18 +476,25 @@
   };
   const addPackageLayer = async function (e) {
     const packs = e.items;
+    const addedLayers: OutfitLayer[] = [];
+
     for (let pack of packs) {
       const newPack = pack;
       const layer = newPack.layers[0];
       await AddRemoteLayerToPackage(layer.id, $itemPackage.id);
-      itemPackage.update((pack) => {
-        pack.layers.push(layer);
-        return pack;
-      });
+      addedLayers.push(layer);
       addAnimation(
         GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layer.outfitType)
       );
     }
+
+    if (addedLayers.length > 0) {
+      itemPackage.update((pack) => ({
+        ...pack,
+        layers: [...pack.layers, ...addedLayers],
+      }));
+    }
+
     isOutfitPickerDialogOpen = false;
   };
   const setSkin = async function () {

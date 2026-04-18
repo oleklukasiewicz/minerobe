@@ -2,8 +2,7 @@ import { goto } from "$app/navigation";
 import type { OutfitPackage } from "$data/models/package";
 
 export const navigateToWardrobe = function (
-  page: string = "",
-  params?: string
+  page: string = ""
 ) {
   goto(`/wardrobe/${page}`);
 };
@@ -18,12 +17,6 @@ export const navigateToOutfitPackage = function (
   }
   const varaint = variantId ? variantId : packag.layers[0]?.id;
   goto(`/design/${packag.id}/${varaint || ""}`);
-};
-export const navigate = function (path: string) {
-  goto(path);
-};
-export const navigateToProfile = function () {
-  goto(`/profile`);
 };
 export const navigateToHome = function () {
   goto(`/`);

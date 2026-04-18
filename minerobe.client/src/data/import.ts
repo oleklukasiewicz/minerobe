@@ -49,7 +49,7 @@ const ConvertFileToLayer = async function (file: any): Promise<OutfitLayer> {
   const context = await GetContextFromBase64(base64Data);
   const outfitType = await GetOutfitType(context);
   const color = await ColorHelper.GetDominantFromImageContext(context);
-  const colorName = await ColorHelper.GetColor(color).name;
+  const colorName = await ColorHelper.GetClosestColor(color).name;
   const layerName = file.name.replace(/\.[^/.]+$/, "");
   const newLayer = new OutfitLayer();
 

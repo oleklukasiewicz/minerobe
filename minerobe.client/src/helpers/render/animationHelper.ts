@@ -8,12 +8,21 @@ import HatAnimation from "$src/animation/hat";
 import WavingAnimation from "$src/animation/waving";
 import {
   isNextStepReady,
+  lerp,
   lerpOutCubic,
   type RenderAnimation,
 } from "$src/data/animation";
 import { CHANGE_TYPE } from "$src/data/enums/app";
 import { MODEL_TYPE } from "$src/data/enums/model";
 import { OUTFIT_TYPE } from "$src/data/enums/outfit";
+
+const LAYER_CHANGE_TYPES = [
+  CHANGE_TYPE.LAYER_ADD,
+  CHANGE_TYPE.LAYER_DOWN,
+  CHANGE_TYPE.LAYER_UP,
+  CHANGE_TYPE.LAYER_REMOVE,
+];
+
 const CreatePropertyStep = function (
   data,
   part,
@@ -24,16 +33,27 @@ const CreatePropertyStep = function (
   ease: "direct" | "ease" = "ease",
   clock
 ) {
-  if (data[part] == undefined) return;
+  const partData = data[part];
+  if (partData == undefined) return;
+
+  // Smooth target changes between animation steps to avoid visible snapping.
+  const targetCache = (data.__stepTargetCache ??= {});
+  const targetKey = `${part}.${property}.${value}`;
+  const currentSmoothedTarget =
+    targetCache[targetKey] ?? partData[property][value];
+  const targetBlend = Math.min(1, Math.max(0, clock * 18));
+  const smoothedTarget = lerp(currentSmoothedTarget, targetValue, targetBlend);
+  targetCache[targetKey] = smoothedTarget;
+
   if (ease == "ease") {
-    data[part][property][value] = lerpOutCubic(
+    partData[property][value] = lerpOutCubic(
       clock,
-      data[part][property][value],
-      targetValue,
+      partData[property][value],
+      smoothedTarget,
       duration
     );
   } else {
-    data[part][property][value] = targetValue;
+    partData[property][value] = smoothedTarget;
   }
 };
 
@@ -80,59 +100,51 @@ export const GetAnimationForPackageChange = function (
   if (type == CHANGE_TYPE.MODEL_TYPE_CHANGE) {
     return NewOutfitBottomAnimation;
   }
-  if (type == CHANGE_TYPE.LAYER_ADD) {
+
+  if (LAYER_CHANGE_TYPES.includes(type)) {
     return GetAnimationForType(outfitType);
   }
-  if (type == CHANGE_TYPE.LAYER_DOWN) {
-    return GetAnimationForType(outfitType);
-  }
-  if (type == CHANGE_TYPE.LAYER_UP) {
-    return GetAnimationForType(outfitType);
-  }
-  if (type == CHANGE_TYPE.LAYER_REMOVE) {
-    return GetAnimationForType(outfitType);
-  }
+
   if (type == CHANGE_TYPE.PACKAGE_IMPORT) {
     const random = Math.random();
 
-    if (random < 0.2) {
-      return HandsUpAnimation;
-    } else {
-      if (random < 0.4) return WavingAnimation;
-      else ClapAnimation;
-    }
+    if (random < 0.2) return HandsUpAnimation;
+    if (random < 0.4) return WavingAnimation;
+    return ClapAnimation;
   }
+
   if (type == CHANGE_TYPE.SHARE) {
     return WavingAnimation;
   }
+
   if (type == CHANGE_TYPE.DOWNLOAD) {
     return HandsUpAnimation;
   }
+
   if (type == CHANGE_TYPE.SKIN_SET) {
     return ClapAnimation;
   }
+
   return null;
 };
 export const GetAnimationForType = function (type: string) {
   const random = Math.random();
+
   switch (type) {
     case OUTFIT_TYPE.HAT:
       return HatAnimation;
+
     case OUTFIT_TYPE.TOP:
     case OUTFIT_TYPE.HOODIE:
       return NewOutfitBottomAnimation;
+
     case OUTFIT_TYPE.SHOES:
-      if (random < 0.5) {
-        return NewOutfitBottomAlt2Animation;
-      } else {
-        return WavingAnimation;
-      }
+      return random < 0.5 ? NewOutfitBottomAlt2Animation : WavingAnimation;
+
     case OUTFIT_TYPE.BOTTOM:
-      if (random < 0.5) {
-        return NewOutfitBottomAlt2Animation;
-      } else {
-        return NewOutfitBottomAltAnimation;
-      }
+      return random < 0.5
+        ? NewOutfitBottomAlt2Animation
+        : NewOutfitBottomAltAnimation;
   }
 };
 export const CreatePivotPart = async function (
@@ -147,10 +159,8 @@ export const CreatePivotPart = async function (
   targetPart.position.set(partPosition.x, partPosition.y, partPosition.z);
 
   const threeModule = await THREE.getThree();
-  let pivot = new threeModule.Object3D();
-  pivot.position.y = pivotPosition.y;
-  pivot.position.x = pivotPosition.x;
-  pivot.position.z = pivotPosition.z;
+  const pivot = new threeModule.Object3D();
+  pivot.position.set(pivotPosition.x, pivotPosition.y, pivotPosition.z);
   pivot.add(targetPart);
   basePart.add(pivot);
 
@@ -159,7 +169,7 @@ export const CreatePivotPart = async function (
     pivot.add(axisHelper);
   }
 
-  return { part: targetPart, pivot: pivot };
+  return { part: targetPart, pivot };
 };
 export const CreateModelAnimationData = async function (
   scene,
@@ -248,31 +258,28 @@ export const AnimationStep = function (
       clock
     );
   });
-  if (
-    isNextStepReady(
-      props.map((prop) => {
-        if (data[prop.part] == undefined) return { value: 0, target: 0 };
-        return {
-          value: data[prop.part][prop.property][prop.value],
-          target: prop.targetValue,
-        };
-      }),
-      epsilon
-    )
-  ) {
-    return true;
-  }
-  return false;
+  return isNextStepReady(
+    props.map((prop) => {
+      if (data[prop.part] == undefined) return { value: 0, target: 0 };
+      return {
+        value: data[prop.part][prop.property][prop.value],
+        target: prop.targetValue,
+      };
+    }),
+    epsilon
+  );
 };
 export const AnimationStepManager = function (data, steps, startState) {
-  let findStep = (name) => steps.find((step) => step.name == name);
+  const findStep = (name) => steps.find((step) => step.name == name);
   let currentStep = findStep(startState);
+
   return {
-    currentStep: currentStep,
+    currentStep,
     run: (clock) => {
       if (AnimationStep(data, currentStep.step, clock, currentStep.epsilon)) {
         currentStep = findStep(currentStep.onFinished());
       }
+
       if (currentStep == undefined) {
         return true;
       }

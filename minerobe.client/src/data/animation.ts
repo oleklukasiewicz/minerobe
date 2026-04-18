@@ -14,8 +14,12 @@ export function lerp(start, end, factor) {
 export function easeOutCubic(t) {
   return (1 - Math.pow(1 - t, 3));
 }
-export function lerpOutCubic(clock,prop, target, speed) {
-  return lerp(prop, target, easeOutCubic(speed*(clock*130)));
+const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
+export function lerpOutCubic(clock, prop, target, speed) {
+  // Clamp interpolation to avoid overshoot/jitter on unstable frame deltas.
+  const normalizedClock = Math.max(0, clock);
+  const interpolationFactor = clamp01(speed * (normalizedClock * 130));
+  return lerp(prop, target, easeOutCubic(interpolationFactor));
 }
 export function isPoseReady(poses, epsilon = 0.003) {
   let isPoseReady = true;

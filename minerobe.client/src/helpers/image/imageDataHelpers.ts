@@ -1,8 +1,3 @@
-import HatIcon from "$icons/clothes/hat.svg?raw";
-import TopIcon from "$icons/clothes/top.svg?raw";
-import BottomIcon from "$icons/clothes/bottom.svg?raw";
-import ShoesIcon from "$icons/clothes/shoes.svg?raw";
-import HoodieIcon from "$icons/clothes/hoodie.svg?raw";
 import { OUTFIT_TYPE } from "$src/data/enums/outfit";
 
 export const GetOutfitType = function (imageContext: any) {
@@ -36,28 +31,25 @@ export const GetOutfitType = function (imageContext: any) {
   if (bodyPercentage > 0.3 && legsPercentage > 0.3 && shoesPercentage > 0.3) {
     return OUTFIT_TYPE.SUIT;
   }
+
   if (hatPercentage > 0.01) {
     if (bodyPercentage > 0.3) {
-      if (legsPercentage > 0.3) return OUTFIT_TYPE.SUIT;
-      else return OUTFIT_TYPE.HOODIE;
-    } else {
-      if (legsPercentage > 0) return OUTFIT_TYPE.SUIT;
-      else return OUTFIT_TYPE.HAT;
+      return legsPercentage > 0.3 ? OUTFIT_TYPE.SUIT : OUTFIT_TYPE.HOODIE;
     }
+
+    return legsPercentage > 0 ? OUTFIT_TYPE.SUIT : OUTFIT_TYPE.HAT;
   }
+
   //body
   if (bodyPercentage > 0.3) {
-    if (legsPercentage > 0.3) return OUTFIT_TYPE.SUIT;
-    return OUTFIT_TYPE.TOP;
+    return legsPercentage > 0.3 ? OUTFIT_TYPE.SUIT : OUTFIT_TYPE.TOP;
   }
+
   //shoes / bottom
   if (shoesPercentage > 0.2) {
-    if (legsPercentage > 0.5) {
-      return OUTFIT_TYPE.BOTTOM;
-    } else {
-      return OUTFIT_TYPE.SHOES;
-    }
+    return legsPercentage > 0.5 ? OUTFIT_TYPE.BOTTOM : OUTFIT_TYPE.SHOES;
   }
+
   return OUTFIT_TYPE.DEFAULT;
 };
 export const GetPixelCountInArea = function (
@@ -67,13 +59,10 @@ export const GetPixelCountInArea = function (
   width: number,
   height: number
 ) {
-  const imageData = imageContext.getImageData(x, y, width, height);
+  const data = imageContext.getImageData(x, y, width, height).data;
   let nonTransparentPixelsCount = 0;
-  for (let i = 0; i < imageData.data.length; i += 4) {
-    const alpha = imageData.data[i + 3];
-    if (alpha !== 0) {
-      nonTransparentPixelsCount++;
-    }
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] !== 0) nonTransparentPixelsCount++;
   }
 
   return nonTransparentPixelsCount;
@@ -93,69 +82,6 @@ export const GetContextFromBase64 = async function (base64): Promise<CanvasRende
     img.src = base64;
   });
 };
-export const GetOutfitIconFromType = function (type: string) {
-  switch (type.toLowerCase()) {
-    case OUTFIT_TYPE.HAT:
-      return HatIcon;
-    case OUTFIT_TYPE.TOP:
-      return TopIcon;
-    case OUTFIT_TYPE.HOODIE:
-      return HoodieIcon;
-    case OUTFIT_TYPE.SHOES:
-      return ShoesIcon;
-    case OUTFIT_TYPE.BOTTOM:
-      return BottomIcon;
-    default:
-      return TopIcon;
-  }
-};
-export const GetFaceOfRemoteSkin = async function (skinUrl) {
-  //fetch skin
-  let blob;
-  try {
-    const response = await fetch(skinUrl);
-    blob = await response.blob();
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-
-  // Create an image bitmap from the Blob
-  const bitmap = await createImageBitmap(blob);
-
-  // Create a canvas and draw the image bitmap on it
-  const canvas = document.createElement("canvas");
-  canvas.width = bitmap.width;
-  canvas.height = bitmap.height;
-  const context = canvas.getContext("2d", {
-    willReadFrequently: true,
-  });
-  context.drawImage(bitmap, 0, 0);
-
-  const scale = 10;
-  const face = context.getImageData(8, 8, 8, 8);
-  const faceCanvas = document.createElement("canvas");
-  faceCanvas.width = face.width * scale;
-  faceCanvas.height = face.height * scale;
-  const faceContext = faceCanvas.getContext("2d", {
-    willReadFrequently: true,
-  });
-  faceContext.imageSmoothingEnabled = false; // Keep the image sharp when scaling
-  faceContext.drawImage(
-    canvas,
-    8,
-    8,
-    8,
-    8,
-    0,
-    0,
-    faceCanvas.width,
-    faceCanvas.height
-  );
-  const faceUrl = faceCanvas.toDataURL();
-
-  return faceUrl;
-};
 export const GetImageArea = function (
   base64Image,
   x,
@@ -165,6 +91,7 @@ export const GetImageArea = function (
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
+
     img.onload = () => {
       const canvas = document.createElement("canvas");
       canvas.width = width;
@@ -179,9 +106,8 @@ export const GetImageArea = function (
         reject(new Error("Failed to get 2D context"));
       }
     };
-    img.onerror = (error) => {
-      reject(error);
-    };
+
+    img.onerror = reject;
     img.src = base64Image;
   });
 };
