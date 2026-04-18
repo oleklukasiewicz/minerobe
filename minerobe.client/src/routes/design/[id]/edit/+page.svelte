@@ -210,7 +210,12 @@
   };
   const moveLayerDown = async (e) => {
     const layer = e.item;
-    const index = e.detail.index;
+    const index =
+      typeof e?.index === "number"
+        ? e.index
+        : $itemPackage.layers.findIndex((x) => x.id === layer.id);
+    if (index <= 0) return;
+
     itemPackage.update((item) => {
       const layers = [...item.layers];
       layers.splice(index, 1);
@@ -220,13 +225,19 @@
         layers,
       };
     });
+    await UpdatePackageLayersOrder();
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_DOWN, layer.outfitType)
     );
   };
-  const moveLayerUp = (e) => {
+  const moveLayerUp = async (e) => {
     const layer = e.item;
-    const index = e.detail.index;
+    const index =
+      typeof e?.index === "number"
+        ? e.index
+        : $itemPackage.layers.findIndex((x) => x.id === layer.id);
+    if (index < 0 || index >= $itemPackage.layers.length - 1) return;
+
     itemPackage.update((item) => {
       const layers = [...item.layers];
       layers.splice(index, 1);
@@ -236,6 +247,7 @@
         layers,
       };
     });
+    await UpdatePackageLayersOrder();
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_UP, layer.outfitType)
     );
