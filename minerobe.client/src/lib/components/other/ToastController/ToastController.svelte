@@ -8,11 +8,11 @@
   //components
   import Toast from "$lib/components/base/Toast/Toast.svelte";
 
-  interface Props {
+  interface ToastControllerProps {
     items?: any;
   }
 
-  let { items = [] }: Props = $props();
+  let { items = [] }: ToastControllerProps = $props();
 </script>
 
 <div>

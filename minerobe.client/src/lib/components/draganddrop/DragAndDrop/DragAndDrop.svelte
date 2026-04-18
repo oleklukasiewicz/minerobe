@@ -1,21 +1,15 @@
 <script lang="ts">
-    interface Props {
-    children?: import('svelte').Snippet;
+  interface DragAndDropProps {
+    children?: import("svelte").Snippet;
     ondrop?: (event?: any) => void;
   }
 
-  let { children ,
-    ondrop = null
-  }: Props = $props();
+  let { children, ondrop = null }: DragAndDropProps = $props();
 
   let isDragging = $state(false);
 
-  const handleDragEnter = function () {
-    isDragging = true;
-  };
-  const handleDragLeave = function () {
-    isDragging = false;
-  };
+  const handleDragEnter = () => (isDragging = true);
+  const handleDragLeave = () => (isDragging = false);
   const handleDragOver = function (e) {
     e.preventDefault();
   };

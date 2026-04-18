@@ -129,23 +129,25 @@
         itemsPages={$collectionItems}
         rootMargin={"100px"}
         loading={!itemsLoaded}
-        let:items
       >
-        <OutfitPackageList
-          columns={$IS_MOBILE_VIEW ? 3 : 6}
-          resizable
-          items={items}
-          currentPackageId={userSettings?.currentTexture?.packageId}
-          baseTexture={userSettings?.baseTexture.layers[0]}
-          onselect={goToItemPage}
-        />
-        <OutfitPackageList
-          loading
-          items={[]}
-          pageSize={36}
-          slot="loading"
-          columns={$IS_MOBILE_VIEW ? 3 : 6}
-        />
+        {#snippet children({ items })}
+          <OutfitPackageList
+            columns={$IS_MOBILE_VIEW ? 3 : 6}
+            resizable
+            items={items}
+            currentPackageId={userSettings?.currentTexture?.packageId}
+            baseTexture={userSettings?.baseTexture.layers[0]}
+            onselect={goToItemPage}
+          />
+        {/snippet}
+        {#snippet loadingContent()}
+          <OutfitPackageList
+            loading
+            items={[]}
+            pageSize={36}
+            columns={$IS_MOBILE_VIEW ? 3 : 6}
+          />
+        {/snippet}
       </LazyList>
   </div>
 </div>

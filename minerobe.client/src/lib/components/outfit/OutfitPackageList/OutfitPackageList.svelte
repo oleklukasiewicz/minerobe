@@ -14,7 +14,7 @@
 
   import OutfitPackageListItem from "../OutfitPackageListItem/OutfitPackageListItem.svelte";
 
-  interface Props {
+  interface OutfitPackageListProps {
     items: OutfitPackage[];
     baseTexture?: OutfitLayer | string;
     columns?: number;
@@ -36,10 +36,9 @@
     currentPackageId = null,
     loading = false,
     pageSize = 10,
-    selectable = false
-  ,
-    onselect = null
-  }: Props = $props();
+    selectable = false,
+    onselect = null,
+  }: OutfitPackageListProps = $props();
 
   let _component: any = $state(null);
   const selectOutfit = function (e) {
@@ -47,12 +46,11 @@
     const layer = e.layer;
     onselect?.({ item: item, layer: layer });
   };
-  const fetchLayer = async function (id, item): Promise<OutfitLayer> {
-    return await GetLayer(id);
-  };
+  const fetchLayer = async (id, item): Promise<OutfitLayer> =>
+    await GetLayer(id);
   let renderList: any[] = $state([]);
 
-  const onResize= async function () {
+  const onResize = async function () {
     for (let i = 0; i < items.length; i++) {
       await renderList[i]();
     }
@@ -66,7 +64,12 @@
   >
     {#if loading}
       {#each Array(pageSize || 10) as _}
-        <Placeholder width="100%" aspectRatio={"0.73"} height="100%" />
+        <Placeholder
+          width="auto"
+          aspectRatio={"0.72"}
+          height="auto"
+          style={"margin:2px;"}
+        />
       {/each}
     {:else}
       {#each items as item, index (item.id + item?.layers[0]?.id)}

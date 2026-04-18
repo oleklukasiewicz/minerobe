@@ -13,7 +13,7 @@
   import Select from "../../base/Select/Select.svelte";
   //icons
 
-  interface Props {
+  interface PagedListProps {
     items: PagedResponse<any>;
     pageSize?: any;
     loading?: boolean;
@@ -32,7 +32,7 @@
     footer
   ,
     onoptionsChanged = null
-  }: Props = $props();
+  }: PagedListProps = $props();
 
   let selectedPageSize = $state(0);
   const totalPages = $derived.by(() => {

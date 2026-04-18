@@ -14,7 +14,7 @@
 
   import OutfitLayerListItem from "../OutfitLayerListItem/OutfitLayerListItem.svelte";
 
-  interface Props {
+  interface OutfitLayerListProps {
     items: OutfitLayer[];
     packageId?: string;
     model: MODEL_TYPE;
@@ -61,7 +61,7 @@
     onedit = null,
     ondelete = null,
     ondrop = null
-  }: Props = $props();
+  }: OutfitLayerListProps = $props();
 
   const onSelect= function (layer: OutfitLayer) {
     if (!selectable) return;

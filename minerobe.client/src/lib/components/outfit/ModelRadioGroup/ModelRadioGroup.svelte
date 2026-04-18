@@ -8,11 +8,11 @@
   //components
   import RadioGroup from "$lib/components/base/RadioGroup/RadioGroup.svelte";
 
-  interface Props {
+  interface ModelRadioGroupProps {
     selectedValue?: string;
   }
 
-  let { selectedValue = $bindable("") }: Props = $props();
+  let { selectedValue = $bindable("") }: ModelRadioGroupProps = $props();
 </script>
 
 <RadioGroup

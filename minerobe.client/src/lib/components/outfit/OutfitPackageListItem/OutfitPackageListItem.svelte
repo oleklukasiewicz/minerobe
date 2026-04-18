@@ -19,15 +19,8 @@
   import LoaderIcon from "$icons/loader.svg?raw";
 
   import { onMount } from "svelte";
-  //api
-  //services
-  //consts
-  //model
-  //components
-  //icons
 
-
-  interface Props {
+  interface OutfitPackageListItemProps {
     item: OutfitPackage;
     layerId?: string;
     baseTexture?: OutfitLayer | string;
@@ -60,7 +53,7 @@
   ,
     onselect = null,
     onclick = null
-  }: Props = $props();
+  }: OutfitPackageListItemProps = $props();
 
   let initialized = $state(false);
   let currentLayer: OutfitLayer = $state();

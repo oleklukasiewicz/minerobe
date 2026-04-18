@@ -157,6 +157,7 @@
           dense
           bind:value={phrase}
           onsearch={onFiltersUpdate}
+          onclear={onFiltersUpdate}
         />
       </div>
       <PagedList

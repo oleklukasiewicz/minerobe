@@ -2,16 +2,16 @@
   //models
   import type { ValueData } from "$data/models/base";
 
-  interface Props {
+  interface MultiDragAndDropProps {
     options: ValueData[];
     disabled?: boolean;
-    children?: import('svelte').Snippet;
+    children?: import("svelte").Snippet;
     ondrop?: (event?: any) => void;
   }
 
   let { options, disabled = false, children ,
     ondrop = null
-  }: Props = $props();
+  }: MultiDragAndDropProps = $props();
 
   let isDragging = $state(false);
   let draggingOption: any = $state(null);

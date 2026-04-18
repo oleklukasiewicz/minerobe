@@ -2,7 +2,7 @@
   //main imports
   import { onDestroy, onMount } from "svelte";
 
-  interface Props {
+  interface ResizeProps {
     debounce?: number;
     targetNode?: any;
     onresize?: (event?: any) => void;
@@ -10,7 +10,7 @@
 
   let { debounce = 0, targetNode = null ,
     onresize = null
-  }: Props = $props();
+  }: ResizeProps = $props();
   let timeout;
   let resizeObserver = null;
   let _targetNode = null;

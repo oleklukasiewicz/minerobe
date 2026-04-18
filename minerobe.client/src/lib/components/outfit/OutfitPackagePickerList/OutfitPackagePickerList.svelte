@@ -10,7 +10,7 @@
 
   import OutfitPackageSingleLayerListItem from "../OutfitPackageSingleLayerListItem/OutfitPackageSingleLayerListItem.svelte";
 
-  interface Props {
+  interface OutfitPackagePickerListProps {
     items: OutfitPackage[];
     pageSize?: number;
     disableContext?: any;
@@ -43,7 +43,7 @@
     onunselect = null,
     onselectionUpdate = null,
     onselect = null
-  }: Props = $props();
+  }: OutfitPackagePickerListProps = $props();
 
   const onSelect= (item: OutfitPackage) => {
     onselectClick?.({ items: [item] });

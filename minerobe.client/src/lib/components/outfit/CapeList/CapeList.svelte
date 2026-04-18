@@ -4,18 +4,21 @@
 
   import CapeListItem from "../CapeListItem/CapeListItem.svelte";
 
-  interface Props {
+  interface CapeListProps {
     items: Cape[];
     selectedCapeId: string;
     readonly?: boolean;
     onselect?: (event?: any) => void;
   }
 
-  let { items, selectedCapeId = $bindable(), readonly = false ,
-    onselect = null
-  }: Props = $props();
+  let {
+    items,
+    selectedCapeId = $bindable(),
+    readonly = false,
+    onselect = null,
+  }: CapeListProps = $props();
 
-  const onSelect= function (item: Cape) {
+  const onSelect = function (item: Cape) {
     selectedCapeId = item?.id;
     onselect?.({ item: item });
   };

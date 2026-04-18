@@ -43,7 +43,7 @@
   export const getCurrentTexture = function () {
     return textureRenderer.GetTexture();
   };
-  interface Props {
+  interface OutfitPackageRenderProps {
     source: string | OutfitPackage;
     model?: MODEL_TYPE | "source";
     outfitType?: string;
@@ -78,7 +78,7 @@
     resizeDebounce = 300
   ,
     ontextureUpdate = null
-  }: Props = $props();
+  }: OutfitPackageRenderProps = $props();
 
   let _component: any = $state(null);
 

@@ -884,12 +884,17 @@ export class OutfitPackageToTextureConverter {
   };
 }
 const mergeTextures = async function (textures: string[], modelMap) {
+  type LoadedTexture = {
+    textureSrc: string;
+    img: HTMLImageElement | null;
+  };
+
   const canvas = document.createElement("canvas");
   const windowImage = window.Image;
 
   //load textures to canvas
-  var layerPromises = textures.map(async (texture) => {
-    return new Promise((resolve) => {
+  const layerPromises: Promise<LoadedTexture>[] = textures.map((texture) => {
+    return new Promise<LoadedTexture>((resolve) => {
       const img = new windowImage();
       img.onload = () => {
         return resolve({ textureSrc: texture, img: img });
@@ -906,16 +911,15 @@ const mergeTextures = async function (textures: string[], modelMap) {
   const tempCtx = tempCanvas.getContext("2d", { willReadFrequently: true });
 
   const images = await Promise.all(layerPromises);
-  const validImages = images.filter((image: any) => image?.img != null);
+  const validImages = images.filter((image): image is LoadedTexture & { img: HTMLImageElement } => image.img != null);
 
   if (validImages.length === 0) return null;
 
   //get canvas size
-  const getSize = function (dim) {
+  const getSize = function (dim: "width" | "height") {
     return Math.max.apply(
       Math,
-      validImages.map(function (image: any) {
-        if (image?.img == null) return 0;
+      validImages.map(function (image) {
         return image.img[dim];
       })
     );
@@ -925,7 +929,7 @@ const mergeTextures = async function (textures: string[], modelMap) {
   canvas.height = getSize("height");
 
   //draw images
-  validImages.forEach(function (image: any) {
+  validImages.forEach(function (image) {
     ctx.globalAlpha = 1;
     tempCtx.drawImage(image.img, 0, 0);
     //replace lower parts based on modelMap

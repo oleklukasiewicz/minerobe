@@ -19,7 +19,7 @@
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
 
-  interface Props {
+  interface OutfitLayerListItemProps {
     item: OutfitLayer;
     outfitType?: OUTFIT_TYPE;
     model: MODEL_TYPE;
@@ -64,7 +64,7 @@
     onedit = null,
     ondelete = null,
     onselect = null
-  }: Props = $props();
+  }: OutfitLayerListItemProps = $props();
 
   const onMoveUp= function (e) {
     e.stopPropagation();

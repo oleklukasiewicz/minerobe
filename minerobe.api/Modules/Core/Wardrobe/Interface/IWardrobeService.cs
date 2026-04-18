@@ -16,7 +16,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Interface
         Task<SocialData> AddCollectionToWadrobe(Guid wardrobeId, Guid collectionId);
         Task<SocialData> RemoveCollectionFromWardrobe(Guid wardrobeId, Guid collectionId);
         Task<IQueryable<OutfitPackageCollection>> GetWardrobeCollections(Guid wardrobeId, SimpleFilter filter);
-        Task<IQueryable<OutfitPackage>> GetWardrobeOutfitsSingleLayer(Guid wardrobeId, OutfitFilter filter);
+        Task<IQueryable<OutfitPackageAgregationResponse>> GetWardrobeOutfitsSingleLayer(Guid wardrobeId, OutfitFilter filter);
 
         Task<bool> RemovePackageFromAllWadrobes(Guid packageId);
         Task<bool> RemoveCollectionFromAllWadrobes(Guid collectionId);

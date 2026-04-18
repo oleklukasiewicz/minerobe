@@ -133,24 +133,26 @@
       itemsPages={$pageCollections}
       rootMargin={"100px"}
       loading={!itemsLoaded}
-      let:items
     >
-      <OutfitPackageCollectionList
-        items={items}
-        loading={!itemsLoaded}
-        onselect={goToCollection}
-        onclick={goToCollection}
-        dense={false}
-        columns={$IS_MOBILE_VIEW ? 2 : 4}
-      />
-      <OutfitPackageCollectionList
-        pageSize={48}
-        loading
-        items={[]}
-        slot="loading"
-        dense={false}
-        columns={$IS_MOBILE_VIEW ? 2 : 4}
-      />
+      {#snippet children({ items })}
+        <OutfitPackageCollectionList
+          items={items}
+          loading={!itemsLoaded}
+          onselect={goToCollection}
+          onclick={goToCollection}
+          dense={false}
+          columns={$IS_MOBILE_VIEW ? 2 : 4}
+        />
+      {/snippet}
+      {#snippet loadingContent()}
+        <OutfitPackageCollectionList
+          pageSize={48}
+          loading
+          items={[]}
+          dense={false}
+          columns={$IS_MOBILE_VIEW ? 2 : 4}
+        />
+      {/snippet}
     </LazyList>
   </div>
   <!--Dialogs-->

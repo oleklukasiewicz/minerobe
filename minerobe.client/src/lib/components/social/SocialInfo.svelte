@@ -8,12 +8,7 @@
   //icons
   import HeartSmallIcon from "$icons/small/heart.svg?raw";
   import DownloadSmallIcon from "$icons/small/download.svg?raw";
-
-  //services
-  //model
-  //icons
-
-  interface Props {
+  interface SocialInfoProps {
     data: PackageSocialData;
     dense?: boolean;
     style?: string;
@@ -27,7 +22,7 @@
     style = "",
     showLikes = true,
     showDownloads = true
-  }: Props = $props();
+  }: SocialInfoProps = $props();
 
   let normalizedLikes: string = $state("");
   let normalizedDownloads: string = $state("");

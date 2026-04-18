@@ -1,12 +1,7 @@
 <script lang="ts">
   //consts
   import { COLORS } from "$src/data/consts/color";
-
-
-  //main imports
-    //consts
-
-  interface Props {
+  interface ColorBadgeProps {
     color: string;
     colorName: string;
     selected?: boolean;
@@ -20,10 +15,9 @@
     colorName,
     selected = false,
     selectable = true,
-    style = ""
-  ,
-    onclick = null
-  }: Props = $props();
+    style = "",
+    onclick = null,
+  }: ColorBadgeProps = $props();
 
   let normalizedColor = $state();
   const normalizeColor = function (v) {
@@ -39,11 +33,9 @@
         ")";
     else normalizedColor = color;
   };
-  $effect(() => {
-    normalizeColor(color);
-  });
+  $effect(() => normalizeColor(color));
 
-  const onClick= function (e) {
+  const onClick = function (e) {
     if (!selectable) return;
     e.stopPropagation();
     onclick?.({ detail: { color: color } });

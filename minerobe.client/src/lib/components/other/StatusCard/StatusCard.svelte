@@ -2,13 +2,13 @@
   //components
   import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
 
-  interface Props {
+  interface StatusCardProps {
     label: any;
-    children?: import('svelte').Snippet;
-    actions?: import('svelte').Snippet;
+    children?: import("svelte").Snippet;
+    actions?: import("svelte").Snippet;
   }
 
-  let { label, children, actions }: Props = $props();
+  let { label, children, actions }: StatusCardProps = $props();
 </script>
 
 <!-- svelte-ignore a11y_consider_explicit_label -->

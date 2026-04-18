@@ -10,7 +10,7 @@
   //icons
   import CheckIcon from "$icons/check.svg?raw";
 
-  interface Props {
+  interface OutfitPackageSingleLayerListItemProps {
     item: OutfitPackage;
     disabled?: boolean;
     selected?: boolean;
@@ -31,7 +31,7 @@
     onselect = null,
     onclick = null,
     onunselect = null
-  }: Props = $props();
+  }: OutfitPackageSingleLayerListItemProps = $props();
 
   const onClick= function (e) {
     if (selectable) {

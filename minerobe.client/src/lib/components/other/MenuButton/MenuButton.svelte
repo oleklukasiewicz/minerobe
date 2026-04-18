@@ -9,12 +9,9 @@
   //icons
   import ChevronUpIcon from "$icons/chevron-up.svg?raw";
   import ChevronDownIcon from "$icons/chevron-down.svg?raw";
+  import type { BaseButtonProps } from "$src/data/components";
 
-  interface Props {
-    href?: string;
-    label?: string;
-    icon?: string;
-    disabled?: boolean;
+  interface MenuButtonProps extends BaseButtonProps {
     onlyIcon?: boolean;
     noBorder?: boolean;
     style?: any;
@@ -29,8 +26,7 @@
     target?: "_blank" | "_self";
     hideMenuButton?: boolean;
     opened?: boolean;
-    onclick?: (event?: any) => void;
-    children?: import('svelte').Snippet;
+    children?: import("svelte").Snippet;
   }
 
   let {
@@ -38,7 +34,7 @@
     label = null,
     icon = null,
     disabled = false,
-    onlyIcon= false,
+    onlyIcon = false,
     noBorder = false,
     style = null,
     containerStyle = null,
@@ -53,8 +49,8 @@
     hideMenuButton = false,
     opened = $bindable(false),
     onclick = null,
-    children: menuChildren
-  }: Props = $props();
+    children: menuChildren,
+  }: MenuButtonProps = $props();
 
   let component = $state(null);
 </script>
@@ -103,18 +99,17 @@
     bind:opened
     caller={component}
     resizable
-    
   >
     {#snippet children({ position })}
-        <div
+      <div
         class="menu-button-content"
         class:pos-bottom={position == "bottom"}
         class:pos-top={position == "top"}
       >
         {@render menuChildren?.()}
       </div>
-          {/snippet}
-    </Flyout>
+    {/snippet}
+  </Flyout>
 </div>
 
 <style lang="scss">

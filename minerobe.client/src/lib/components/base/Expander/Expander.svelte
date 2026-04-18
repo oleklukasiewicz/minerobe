@@ -4,7 +4,7 @@
   import ChevronDownIcon from "$icons/chevron-down.svg?raw";
 
   import Button from "../Button/Button.svelte";
-  import { BaseProps } from "$src/data/components";
+  import type { BaseProps } from "$src/data/components";
   //icons
 
   interface ExpanderProps extends BaseProps {

@@ -7,7 +7,7 @@
 
   import OutfitPackageCollectionListItem from "../OutfitPackageCollectionListItem/OutfitPackageCollectionListItem.svelte";
 
-  interface Props {
+  interface OutfitPackageCollectionListProps {
     items: OutfitPackageCollectionWithPackageContext[];
     pageSize?: number;
     selectable?: boolean;
@@ -25,22 +25,18 @@
     selectable = false,
     loading = true,
     dense = true,
-    columns = -1
-  ,
+    columns = -1,
     onselect = null,
     onunselect = null,
-    onclick = null
-  }: Props = $props();
+    onclick = null,
+  }: OutfitPackageCollectionListProps = $props();
 
-  const onSelect= (item: OutfitPackageCollectionWithPackageContext) => {
+  const onSelect = (item: OutfitPackageCollectionWithPackageContext) =>
     onselect?.({ item: item });
-  };
-  const onUnselect= (item: OutfitPackageCollectionWithPackageContext) => {
+  const onUnselect = (item: OutfitPackageCollectionWithPackageContext) =>
     onunselect?.({ item: item });
-  };
-  const onClick= (item: OutfitPackageCollectionWithPackageContext) => {
+  const onClick = (item: OutfitPackageCollectionWithPackageContext) =>
     onclick?.({ item: item });
-  };
 </script>
 
 <div

@@ -140,24 +140,26 @@
       itemsPages={$pageItems}
       rootMargin={"100px"}
       loading={!itemsLoaded}
-      let:items
     >
-      <OutfitPackageList
-        resizable
-        onselect={goToEdit}
-        resizeDebounce={500}
-        currentPackageId={userSettings.currentTexture?.packageId}
-        baseTexture={userSettings?.baseTexture.layers[0]}
-        items={items}
-        columns={$IS_MOBILE_VIEW ? 3 : 6}
-      />
-      <OutfitPackageList
-        loading
-        items={[]}
-        pageSize={36}
-        slot="loading"
-        columns={$IS_MOBILE_VIEW ? 3 : 6}
-      />
+      {#snippet children({ items })}
+        <OutfitPackageList
+          resizable
+          onselect={goToEdit}
+          resizeDebounce={500}
+          currentPackageId={userSettings.currentTexture?.packageId}
+          baseTexture={userSettings?.baseTexture.layers[0]}
+          items={items}
+          columns={$IS_MOBILE_VIEW ? 3 : 6}
+        />
+      {/snippet}
+      {#snippet loadingContent()}
+        <OutfitPackageList
+          loading
+          items={[]}
+          pageSize={36}
+          columns={$IS_MOBILE_VIEW ? 3 : 6}
+        />
+      {/snippet}
     </LazyList>
   </div>
   <!--Dialogs-->

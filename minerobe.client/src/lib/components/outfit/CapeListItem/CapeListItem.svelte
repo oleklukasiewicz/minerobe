@@ -7,18 +7,7 @@
 
   //icons
   import CloseBoxIcon from "$icons/close-box.svg?raw";
-
-  import { createBubbler } from 'svelte/legacy';
-
-  const bubble = createBubbler();
-  interface $$Events {
-    click: MouseEvent;
-  }
-  //services
-  //models
-  //icons
-
-  interface Props {
+  interface CapeListItemProps {
     item?: Cape;
     crop?: boolean;
     selected?: boolean;
@@ -33,8 +22,8 @@
     selected = false,
     readonly = false,
     autoSize = false,
-    onclick = null
-  }: Props = $props();
+    onclick = null,
+  }: CapeListItemProps = $props();
 
   const normalizeCape = async function (cape: Cape) {
     if (!crop) return cape.texture;
@@ -50,10 +39,7 @@
   class:selected
   class:autoSize
   title={item.name}
-  onclick={(event) => {
-    bubble('click')(event);
-    onclick?.(event);
-  }}
+  onclick={(event) => onclick?.(event)}
   class:readonly
   draggable="false"
 >

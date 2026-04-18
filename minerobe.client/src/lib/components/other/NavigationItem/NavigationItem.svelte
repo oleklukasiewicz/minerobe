@@ -1,23 +1,13 @@
 <script lang="ts">
-  import { createBubbler } from 'svelte/legacy';
-
-  const bubble = createBubbler();
-  interface $$Events {
-    click: MouseEvent;
-  }
   //main imports
   import { page } from "$app/state";
+  import type { BaseButtonProps } from "$src/data/components";
 
-  interface Props {
-    label?: string;
-    icon?: string;
+  interface NavigationItemProps extends BaseButtonProps {
     iconImage?: string;
-    href?: string;
     viewId?: string;
-    disabled?: boolean;
     onlyIcon?: boolean;
-    onclick?: (event: MouseEvent) => void;
-    children?: import('svelte').Snippet;
+    children?: import("svelte").Snippet;
   }
 
   let {
@@ -27,10 +17,10 @@
     href = "",
     viewId = "",
     disabled = false,
-    onlyIcon= false,
+    onlyIcon = false,
     onclick = null,
-    children
-  }: Props = $props();
+    children,
+  }: NavigationItemProps = $props();
 </script>
 
 <a
@@ -40,10 +30,7 @@
     ? page.route?.id?.startsWith("/" + viewId)
     : page.route?.id == "/"}
   class:disabled
-  onclick={(event) => {
-    bubble('click')(event);
-    onclick?.(event);
-  }}
+  onclick={(event) => onclick?.(event)}
   title={label}
 >
   <!-- svelte-ignore a11y_missing_attribute -->

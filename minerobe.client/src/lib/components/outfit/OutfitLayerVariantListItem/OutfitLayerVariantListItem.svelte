@@ -9,16 +9,7 @@
   //components
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
 
-  import { createBubbler } from 'svelte/legacy';
-
-  const bubble = createBubbler();
-  interface $$Events {
-    click: MouseEvent;
-  }
-  //models
-  //components
-
-  interface Props {
+  interface OutfitLayerVariantListItemProps {
     item: OutfitLayer;
     model: MODEL_TYPE;
     selected?: boolean;
@@ -31,8 +22,8 @@
     model,
     selected = false,
     label = "",
-    onclick = null
-  }: Props = $props();
+    onclick = null,
+  }: OutfitLayerVariantListItemProps = $props();
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
@@ -41,10 +32,7 @@
 <a
   class="outfit-layer-variant-list-item"
   class:selected
-  onclick={(event) => {
-    bubble('click')(event);
-    onclick?.(event);
-  }}
+  onclick={(event) => onclick?.(event)}
   title={label || item.name}
 >
   <OutfitPackageRender

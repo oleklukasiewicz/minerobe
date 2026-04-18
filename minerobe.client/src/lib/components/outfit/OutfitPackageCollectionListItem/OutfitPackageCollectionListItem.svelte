@@ -5,7 +5,7 @@
   //components
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
 
-  interface Props {
+  interface OutfitPackageCollectionListItemProps {
     item: OutfitPackageCollectionWithPackageContext;
     selectable?: boolean;
     dense?: boolean;
@@ -14,21 +14,23 @@
     onclick?: (event?: any) => void;
   }
 
-  let { item, selectable = false, dense = true ,
+  let {
+    item,
+    selectable = false,
+    dense = true,
     onselect = null,
     onunselect = null,
-    onclick = null
-  }: Props = $props();
+    onclick = null,
+  }: OutfitPackageCollectionListItemProps = $props();
 
-  const onSelect= (e?: Event) => {
+  const onSelect = (e?: Event) => {
     e?.preventDefault?.();
     e?.stopPropagation?.();
     onselect?.({ item });
   };
-  const onUnselect= () => {
-    onunselect?.({ item });
-  };
-  const onClick= (e) => {
+  const onUnselect = () => onunselect?.({ item });
+
+  const onClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (selectable) return;
