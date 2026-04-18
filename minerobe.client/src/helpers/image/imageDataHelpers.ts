@@ -67,9 +67,7 @@ export const GetPixelCountInArea = function (
   width: number,
   height: number
 ) {
-  const imageData = imageContext.getImageData(x, y, width, height, {
-    willReadFrequently: true,
-  });
+  const imageData = imageContext.getImageData(x, y, width, height);
   let nonTransparentPixelsCount = 0;
   for (let i = 0; i < imageData.data.length; i += 4) {
     const alpha = imageData.data[i + 3];
@@ -80,7 +78,7 @@ export const GetPixelCountInArea = function (
 
   return nonTransparentPixelsCount;
 };
-export const GetContextFromBase64 = async function (base64) {
+export const GetContextFromBase64 = async function (base64): Promise<CanvasRenderingContext2D> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {

@@ -1,6 +1,7 @@
 <script lang="ts">
   //consts
   import { COLORS } from "$src/data/consts/color";
+  import { ColorHelper } from "$src/helpers/image/colorHelper";
   interface ColorBadgeProps {
     color: string;
     colorName: string;
@@ -22,15 +23,7 @@
   let normalizedColor = $state();
   const normalizeColor = function (v) {
     const colorFromArray = COLORS[color];
-    if (colorFromArray)
-      normalizedColor =
-        "rgb(" +
-        colorFromArray.r +
-        "," +
-        colorFromArray.g +
-        "," +
-        colorFromArray.b +
-        ")";
+    if (colorFromArray) normalizedColor = ColorHelper.ToRgbaString(colorFromArray);
     else normalizedColor = color;
   };
   $effect(() => normalizeColor(color));

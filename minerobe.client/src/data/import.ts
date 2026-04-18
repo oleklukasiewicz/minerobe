@@ -1,7 +1,6 @@
 import type { OUTFIT_TYPE } from "$src/data/enums/outfit";
 import {
-  FindColorTitle,
-  GetDominantColorFromImageContext,
+  ColorHelper
 } from "$src/helpers/image/colorHelper";
 import {
   GetContextFromBase64,
@@ -49,8 +48,8 @@ const ConvertFileToLayer = async function (file: any): Promise<OutfitLayer> {
   const base64Data = await readerPromise;
   const context = await GetContextFromBase64(base64Data);
   const outfitType = await GetOutfitType(context);
-  const color = await GetDominantColorFromImageContext(context);
-  const colorName = await FindColorTitle(color);
+  const color = await ColorHelper.GetDominantFromImageContext(context);
+  const colorName = await ColorHelper.GetColor(color).name;
   const layerName = file.name.replace(/\.[^/.]+$/, "");
   const newLayer = new OutfitLayer();
 

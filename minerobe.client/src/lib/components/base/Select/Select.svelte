@@ -29,7 +29,14 @@
     multiple?: boolean;
     selected?: import("svelte").Snippet<[any]>;
     actions?: import("svelte").Snippet;
-    children?: import("svelte").Snippet<[any]>;
+    children?: import("svelte").Snippet<[{
+      item: any;
+      multiple: boolean;
+      itemText: any;
+      index: number;
+      focusedIndex: number;
+      selected: boolean;
+    }]>;
     onselectedClick?: (event?: any) => void;
   }
 
@@ -159,7 +166,8 @@
     value = clearedValue;
     onclear?.({ item: clearedValue });
   };
-  const isSelected = (item) => comparer(selectedItems, item, multiple);
+  const isSelected = (item) =>
+    comparer(multiple ? selectedItems : selectedItems[0], item, multiple);
   let updateSelectedItem = (value) => {
     const values = (Array.isArray(value) ? value : [value]).filter(
       (v) => v != null,
@@ -320,10 +328,9 @@
                 item,
                 multiple,
                 itemText,
-                selectedItems,
-                comparer,
                 index,
                 focusedIndex,
+                selected: isSelected(item),
               })}{:else}
               <Button
                 size="medium"

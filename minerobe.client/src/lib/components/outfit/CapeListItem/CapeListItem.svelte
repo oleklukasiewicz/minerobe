@@ -1,6 +1,7 @@
 <script lang="ts">
   //services
   import { GetImageArea } from "$src/helpers/image/imageDataHelpers";
+  import { ColorHelper } from "$src/helpers/image/colorHelper";
 
   //models
   import { Cape } from "$data/models/integration/minecraft";

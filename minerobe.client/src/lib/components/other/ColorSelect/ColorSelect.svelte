@@ -50,8 +50,7 @@
 >
   {#snippet children({
     item,
-    selectedItems,
-    comparer,
+    selected,
     multiple,
     index,
     focusedIndex,
@@ -62,9 +61,9 @@
       noBorder
       style="height: 40px;"
       focused={index === focusedIndex}
-      type={comparer(selectedItems, item, multiple) ? "primary" : "quaternary"}
+      type={selected ? "primary" : "quaternary"}
       icon={multiple
-        ? comparer(selectedItems, item, multiple)
+        ? selected
           ? CheckBoxIcon
           : CheckBoxOffIcon
         : null}
