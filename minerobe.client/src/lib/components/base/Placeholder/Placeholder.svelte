@@ -1,10 +1,23 @@
 <script lang="ts">
-  export let style = "";
-  export let loadedStyle = null;
-  export let loaded = false;
-  export let width = "100%";
-  export let aspectRatio = null;
-  export let height = "100%";
+  interface PlaceholderProps {
+    style?: string;
+    loadedStyle?: any;
+    loaded?: boolean;
+    width?: string;
+    aspectRatio?: any;
+    height?: string;
+    children?: import("svelte").Snippet;
+  }
+
+  let {
+    style = "",
+    loadedStyle = null,
+    loaded = false,
+    width = "100%",
+    aspectRatio = null,
+    height = "100%",
+    children,
+  }: PlaceholderProps = $props();
 </script>
 
 <div
@@ -13,7 +26,7 @@
   style={`${loaded ? loadedStyle : style + `width: ${width}; height: ${height}; ${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ""}`}`}
 >
   {#if loaded}
-    <slot />
+    {@render children?.()}
   {/if}
 </div>
 

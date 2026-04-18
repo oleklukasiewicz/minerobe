@@ -1,11 +1,16 @@
 <script lang="ts">
   //main imports
-  import { createEventDispatcher, onDestroy, onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
 
-  export let debounce = 0;
-  export let targetNode: any=null;
+  interface ResizeProps {
+    debounce?: number;
+    targetNode?: any;
+    onresize?: (event?: any) => void;
+  }
 
-  const dispatch = createEventDispatcher();
+  let { debounce = 0, targetNode = null ,
+    onresize = null
+  }: ResizeProps = $props();
   let timeout;
   let resizeObserver = null;
   let _targetNode = null;
@@ -36,10 +41,10 @@
           return;
         }
         if (debounce == -1) {
-          dispatch("resize", {});
+          onresize?.({});
         }
         timeout = setTimeout(() => {
-          dispatch("resize", {});
+          onresize?.({});
         }, debounce);
       });
     resizeObserver.observe(_targetNode);
@@ -51,7 +56,9 @@
       },
     };
   }
-  $: updateTargetNode(targetNode);
+  $effect(() => {
+    updateTargetNode(targetNode);
+  });
 </script>
 
 <div></div>

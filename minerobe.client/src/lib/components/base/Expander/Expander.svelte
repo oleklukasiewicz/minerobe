@@ -1,27 +1,45 @@
 <script lang="ts">
-  //components
-  import Button from "../Button/Button.svelte";
   //icons
   import ChevronUpIcon from "$icons/chevron-up.svg?raw";
   import ChevronDownIcon from "$icons/chevron-down.svg?raw";
 
-  export let icon = null;
-  export let label = null;
-  export let group = null;
-  export let opened = false;
-  export let value = null;
+  import Button from "../Button/Button.svelte";
+  import type { BaseProps } from "$src/data/components";
+  //icons
+
+  interface ExpanderProps extends BaseProps {
+    icon?: any;
+    label?: any;
+    group?: any;
+    opened?: boolean;
+    value?: any;
+    children?: import("svelte").Snippet;
+  }
+
+  let {
+    icon = null,
+    label = null,
+    group = $bindable(null),
+    opened = $bindable(false),
+    value = null,
+    children,
+    disabled = false,
+  }: ExpanderProps = $props();
 
   const toggleExpander = () => {
-    if (group == null) {
-      opened = !opened;
-    } else {
+    if (group == null) opened = !opened;
+    else {
       if (group != value) group = value;
       else group = "none";
     }
   };
 </script>
 
-<div class="expander" class:opened={group == null ? opened : group == value}>
+<div
+  class="expander"
+  class:opened={group == null ? opened : group == value}
+  class:disabled
+>
   <div class="expander-header">
     <div class="expander-header-data">
       {#if icon}
@@ -34,11 +52,11 @@
       {/if}
     </div>
     <span class="expander-toggle">
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
       <Button
         type="quaternary"
-        on:click={toggleExpander}
+        onclick={toggleExpander}
         onlyIcon
         icon={(group == null ? opened : group == value)
           ? ChevronUpIcon
@@ -48,7 +66,7 @@
   </div>
   <div class="expander-content">
     <div>
-      <slot />
+      {@render children?.()}
     </div>
   </div>
 </div>

@@ -2,39 +2,58 @@
   //models
   import type { PagedResponse } from "$data/models/base";
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
-  //components
+  import type { BaseDialogProps } from "$src/data/components";
+
   import Dialog from "../base/Dialog/Dialog.svelte";
   import PagedList from "../list/PagedList/PagedList.svelte";
   import OutfitPackageCollectionList from "../outfit/OutfitPackageCollectionList/OutfitPackageCollectionList.svelte";
 
-  export let open = false;
-  export let label = "Collections";
-  export let items: PagedResponse<OutfitPackageCollectionWithPackageContext>;
-  export let loading = true;
-  export let pageSizes: number[] = [10, 20, 50, 100];
+  interface CollectionsDialogProps extends BaseDialogProps {
+    items: PagedResponse<OutfitPackageCollectionWithPackageContext>;
+    loading?: boolean;
+    pageSizes?: number[];
+    onoptionsChanged?: (event?: any) => void;
+    onselect?: (event?: any) => void;
+    onunselect?: (event?: any) => void;
+  }
+
+  let {
+    open = $bindable(false),
+    label = "Collections",
+    items,
+    loading = true,
+    pageSizes = [10, 20, 50, 100],
+    onoptionsChanged = null,
+    onselect = null,
+    onunselect = null
+  }: CollectionsDialogProps = $props();
 </script>
 
-<Dialog bind:open {label} let:isMobile>
-  <div id="collection-dialog" class:mobile={isMobile}>
-    <PagedList
-      on:optionsChanged
-      {items}
-      {loading}
-      {pageSizes}
-      let:items={pagedItems}
-      let:pageSize={pagedPageSize}
-      let:loading={pagedLoading}
-    >
-      <OutfitPackageCollectionList
-        selectable
-        items={pagedItems}
-        pageSize={pagedPageSize}
-        loading={pagedLoading}
-        on:select
-        on:unselect
-      />
-    </PagedList>
-  </div>
+<Dialog bind:open {label} >
+  {#snippet children({ isMobile })}
+    <div id="collection-dialog" class:mobile={isMobile}>
+      <PagedList
+        {onoptionsChanged}
+        bind:items={items}
+        {loading}
+        {pageSizes}
+        
+        
+        
+      >
+        {#snippet children({ items: pagedItems, pageSize: pagedPageSize, loading: pagedLoading })}
+            <OutfitPackageCollectionList
+            selectable
+            items={pagedItems}
+            pageSize={pagedPageSize}
+            loading={pagedLoading}
+            {onselect}
+            {onunselect}
+          />
+                  {/snippet}
+        </PagedList>
+    </div>
+  {/snippet}
 </Dialog>
 
 <style lang="scss">

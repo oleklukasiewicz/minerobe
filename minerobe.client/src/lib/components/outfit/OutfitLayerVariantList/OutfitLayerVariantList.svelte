@@ -1,29 +1,39 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
-  //model
-  import type { OutfitLayer } from "$data/models/package";
+  //consts
   import type { MODEL_TYPE } from "$src/data/enums/model";
-  //components
+
+  //models
+  import type { OutfitLayer } from "$data/models/package";
+
   import OutfitLayerVariantListItem from "../OutfitLayerVariantListItem/OutfitLayerVariantListItem.svelte";
 
-  const dispatch = createEventDispatcher();
+  interface OutfitLayerVariantListProps {
+    items: OutfitLayer[];
+    model: MODEL_TYPE;
+    selectedLayerId?: string;
+    selectable?: boolean;
+    onselect?: (event?: any) => void;
+  }
 
-  export let items: OutfitLayer[];
-  export let model: MODEL_TYPE;
-  export let selectedLayerId: string = "";
-  export let selectable: boolean = true;
+  let {
+    items,
+    model,
+    selectedLayerId = "",
+    selectable = true
+  ,
+    onselect = null
+  }: OutfitLayerVariantListProps = $props();
 
-  const onSelect = function (layer: OutfitLayer) {
+  const onSelect= function (layer: OutfitLayer) {
     if (!selectable) return;
-    dispatch("select", { item: layer });
+     onselect?.({ item: layer });
   };
 </script>
 
 <div class="outfit-layer-variant-list">
   {#each items as item (item.id)}
     <OutfitLayerVariantListItem
-      on:click={() => onSelect(item)}
+      onclick={() => onSelect(item)}
       {item}
       {model}
       selected={item.id == selectedLayerId}

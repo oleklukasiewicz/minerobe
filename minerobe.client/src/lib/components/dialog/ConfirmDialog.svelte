@@ -1,27 +1,40 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
-  //components
+  //icons
+  import CancelIcon from "$icons/close.svg?raw";
+  import type { BaseDialogProps } from "$src/data/components";
+
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   //icons
-  import CancelIcon from "$icons/close.svg?raw";
 
-  const dispatch = createEventDispatcher();
+  interface ConfirmDialogProps  extends BaseDialogProps {
+    message?: string;
+    confirmLabel?: string;
+    confirmIcon?: any;
+    cancelLabel?: string;
+    cancelIcon?: any;
+    onconfirm?: (event?: any) => void;
+    onclose?: (event?: any) => void;
+  }
 
-  export let open = false;
-  export let message = "Are you sure?";
-  export let label = "Confirm";
-  export let confirmLabel = "Yes";
-  export let confirmIcon = null;
-  export let cancelLabel = "Cancel";
-  export let cancelIcon = CancelIcon;
+  let {
+    open = $bindable(false),
+    message = "Are you sure?",
+    label = "Confirm",
+    confirmLabel = "Yes",
+    confirmIcon = null,
+    cancelLabel = "Cancel",
+    cancelIcon = CancelIcon
+  ,
+    onconfirm = null,
+    onclose = null
+  }: ConfirmDialogProps = $props();
 
-  const onConfirm = () => {
-    dispatch("confirm");
+  const onConfirm= () => {
+    onconfirm?.();
   };
-  const onCancel = () => {
-    dispatch("close");
+  const onCancel= () => {
+    onclose?.();
   };
 </script>
 
@@ -29,12 +42,12 @@
   <div id="confirm-dialog">
     <div class="mc-font-simple dialog-message">{message}</div>
     <div class="actions">
-      <Button label={confirmLabel} icon={confirmIcon} on:click={onConfirm} />
+      <Button label={confirmLabel} icon={confirmIcon} onclick={onConfirm} />
       <Button
         label={cancelLabel}
         icon={cancelIcon}
         type={"tertiary"}
-        on:click={onCancel}
+        onclick={onCancel}
       />
     </div>
   </div>

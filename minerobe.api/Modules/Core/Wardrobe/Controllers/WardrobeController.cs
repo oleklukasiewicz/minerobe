@@ -133,9 +133,9 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
             var user = await _userService.GetFromExternalUser(User);
 
             var res = await _wardrobeService.GetWardrobeOutfitsSingleLayer(user.WardrobeId, options.Filter);
+            
             var paged = res.ToPagedResponse(options);
-
-            var items = paged.ToOutfitPackageSingleLayer(true);
+            var items = paged.ToOutfitPackageListItem();
 
             return Ok(paged.MapResponseOptions(items));
         }

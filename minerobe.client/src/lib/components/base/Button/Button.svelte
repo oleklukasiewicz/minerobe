@@ -1,56 +1,83 @@
 <script lang="ts">
   //main imports
+  import type { BaseButtonProps } from "$data/components";
   import { onMount } from "svelte";
 
-  export let href: string = null;
-  export let label: string = null;
-  export let icon: string = null;
-  export let disabled: boolean = false;
-  export let onlyIcon: boolean = false;
-  export let noBorder = false;
-  export let style = null;
-  export let whiteText = false;
-  export let flat = false;
-  export let focused = false;
-  export let type: "primary" | "secondary" | "tertiary" | "quaternary" =
-    "primary";
-  export let size: "small" | "medium" | "large" | "auto" = "medium";
-  export let iconSize: "small" | "medium" | "large" | "auto" = size;
-  export let textAlign: "left" | "center" | "right" = "center";
-  export let target: "_blank" | "_self" = null;
-  export let fab: "static" | "dynamic" | "expanded" | null = null;
+  interface ButtonProps extends BaseButtonProps {
+    onlyIcon?: boolean;
+    noBorder?: boolean;
+    style?: any;
+    whiteText?: boolean;
+    flat?: boolean;
+    focused?: boolean;
+    type?: "primary" | "secondary" | "tertiary" | "quaternary";
+    size?: "small" | "medium" | "large" | "auto";
+    iconSize?: "small" | "medium" | "large" | "auto";
+    textAlign?: "left" | "center" | "right";
+    target?: "_blank" | "_self";
+    fab?: "static" | "dynamic" | "expanded" | null;
+    oncontextmenu?: (event: MouseEvent) => void;
+    onmouseenter?: (event: MouseEvent) => void;
+    onmouseleave?: (event: MouseEvent) => void;
+    children?: import("svelte").Snippet;
+  }
 
-  let component = null;
-  let componentLabel = null;
+  let {
+    href = null,
+    label = null,
+    icon = null,
+    disabled = false,
+    onlyIcon = false,
+    noBorder = false,
+    style = null,
+    whiteText = false,
+    flat = false,
+    focused = false,
+    type = "primary",
+    size = "medium",
+    iconSize = size,
+    textAlign = "center",
+    target = null,
+    fab = null,
+    onclick = null,
+    oncontextmenu = null,
+    onmouseenter = null,
+    onmouseleave = null,
+    children,
+  }: ButtonProps = $props();
+
+  let componentLabel = $state(null);
+
   const onHoverOut = function () {
-    if (componentLabel && fab === "dynamic") {
-      const labelWidth = componentLabel.offsetWidth;
-      const marginRight = size === "small" ? 6 : size === "medium" ? 12 : 14;
-      componentLabel.style.marginRight = `-${labelWidth + marginRight}px`;
-    }
+    if (componentLabel == null || fab !== "dynamic") return;
+    const labelWidth = componentLabel.offsetWidth;
+    const marginRight = size === "small" ? 6 : size === "medium" ? 12 : 14;
+    componentLabel.style.marginRight = `-${labelWidth + marginRight}px`;
   };
   const onHover = function () {
-    if (componentLabel && fab === "dynamic") {
-      componentLabel.style.marginRight = null;
-    }
+    if (componentLabel == null || fab !== "dynamic") return;
+    componentLabel.style.marginRight = null;
   };
-  onMount(() => {
-    setTimeout(onHoverOut, 1000);
-  });
+  onMount(() => setTimeout(onHoverOut, 1000));
 </script>
 
 <a
-  bind:this={component}
-  on:click
-  on:contextmenu
-  on:mouseenter={onHover}
-  on:mouseleave={onHoverOut}
+  {onclick}
+  {oncontextmenu}
+  onmouseenter={(event) => {
+    onHover();
+    onmouseenter?.(event);
+  }}
+  onmouseleave={(event) => {
+    onHoverOut();
+    onmouseleave?.(event);
+  }}
   class="button"
   title={label}
   {style}
   {href}
   {target}
-  class:focused={focused}
+  class:focused
   class:flat
   class:white-text={whiteText}
   class:link={href != null}
@@ -87,7 +114,7 @@
   {/if}
   {#if !onlyIcon}
     <div class="slot-container">
-      <slot />
+      {@render children?.()}
     </div>
   {/if}
   {#if label != null && !onlyIcon}

@@ -30,18 +30,6 @@ namespace minerobe.api.Helpers.Model
             }
             return items;
         }
-        public static List<OutfitPackageListItemResponseModel> ToOutfitPackageSingleLayer(this PagedResponse<OutfitPackage> page, bool isInWardrobe = false)
-        {
-            var items = new List<OutfitPackageListItemResponseModel>();
-            foreach (var item in page.Items)
-            {
-                if (item.Type == PackageType.Set)
-                    items.Add(item.ToListItemResponseModel(-1, -1, isInWardrobe));
-                else
-                    items.Add(item.ToListItemResponseModel(1, 1, isInWardrobe));
-            }
-            return items;
-        }
 
     }
 }

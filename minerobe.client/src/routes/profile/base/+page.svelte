@@ -1,24 +1,19 @@
 <script lang="ts">
-  //main imports
-  import { onDestroy, onMount } from "svelte";
-  import { writable, type Writable } from "svelte/store";
-
   //api
   import { FetchSettings, UpdateBaseTexture } from "$src/api/settings";
+
   //services
   import { ImportImages, ImportImagesFromFiles } from "$src/data/import";
   import { ExportImage } from "$src/data/export";
   import { ShowToast } from "$src/data/toast";
+
   //consts
-  import {
-    BASE_TEXTURE,
-    CURRENT_APP_STATE,
-    IS_MOBILE_VIEW,
-  } from "$src/data/static";
   import { DEFAULT_PACKAGE } from "$src/data/consts/outfit";
-  //models
   import { APP_STATE } from "$src/data/enums/app";
+
+  //models
   import type { MinerobeUserSettings } from "$src/data/models/user";
+
   //components
   import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
@@ -28,9 +23,25 @@
   import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
+
   //icons
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import DownloadIcon from "$icons/download.svg?raw";
+
+  import { onDestroy, onMount } from "svelte";
+  import { writable, type Writable } from "svelte/store";
+
+  //api
+  //services
+  //consts
+  import {
+    BASE_TEXTURE,
+    CURRENT_APP_STATE,
+    IS_MOBILE_VIEW,
+  } from "$src/data/static";
+  //models
+  //components
+  //icons
   import { THREE } from "$lib/three";
 
   const userSettings: Writable<MinerobeUserSettings> = writable(null);
@@ -53,15 +64,15 @@
     if (stateSub) stateSub();
   });
 
-  let loaded = false;
-  let dynamicRenderer = null;
+  let loaded = $state(false);
+  let dynamicRenderer = $state(null);
 
   //base texture dialogs
-  let isBaseTextureEditDialogOpen = false;
+  let isBaseTextureEditDialogOpen = $state(false);
 
   //base texture
   const DropBaseTexture = async function (e) {
-    const files = e.detail.items;
+    const files = e.items;
     const textures = await ImportImagesFromFiles(files);
     $userSettings.baseTexture.layers = [textures[0]];
     await UpdateBaseTexture($userSettings.baseTexture);
@@ -75,7 +86,7 @@
     ShowToast("Base texture updated");
   };
   const EditBaseTexture = async function (e) {
-    const layer = e.detail.item;
+    const layer = e.item;
     $userSettings.baseTexture.layers[0] = layer;
     await UpdateBaseTexture($userSettings.baseTexture);
     ShowToast("Base texture updated");
@@ -101,7 +112,7 @@
 <div id="profile-base" class:mobile={$IS_MOBILE_VIEW}>
   <div class="render">
     <Placeholder {loaded}>
-      <DragAndDrop on:drop={DropBaseTexture}>
+      <DragAndDrop ondrop={DropBaseTexture}>
         <OutfitPackageRender
           pauseOnIntersection
           baseTexture={$BASE_TEXTURE}
@@ -125,8 +136,8 @@
             movable={false}
             labels={false}
             removable={true}
-            on:edit={OpenEditBaseTextureDialog}
-            on:delete={RemoveBaseTexture}
+            onedit={OpenEditBaseTextureDialog}
+            ondelete={RemoveBaseTexture}
           /></Placeholder
         >
       </div>
@@ -146,7 +157,7 @@
       <Button
         label="Import base texture"
         size="large"
-        on:click={ImportBaseTexture}
+        onclick={ImportBaseTexture}
         icon={ImportPackageIcon}
       />
     </Placeholder>
@@ -156,14 +167,14 @@
         size="large"
         type="secondary"
         icon={DownloadIcon}
-        on:click={DownloadBaseTexture}
+        onclick={DownloadBaseTexture}
       />
     </Placeholder>
   </div>
   <!-- Dialogs -->
   <EditLayerDialog
     onlyTextures
-    on:edit={EditBaseTexture}
+    onedit={EditBaseTexture}
     bind:open={isBaseTextureEditDialogOpen}
     item={$userSettings?.baseTexture?.layers[0]}
   />

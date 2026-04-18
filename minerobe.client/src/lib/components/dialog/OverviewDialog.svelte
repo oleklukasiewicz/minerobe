@@ -1,36 +1,49 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
   //models
   import type { OutfitPackage } from "$data/models/package";
-  //components
-  import Button from "../base/Button/Button.svelte";
-  import Dialog from "../base/Dialog/Dialog.svelte";
-  import Label from "../base/Label/Label.svelte";
-  import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
-  import SocialInfo from "../social/SocialInfo.svelte";
+
   //icons
   import CloudIcon from "$icons/cloud.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
   import SpotlightIcon from "$icons/spotlight.svg?raw";
 
-  const dispatch = createEventDispatcher();
+  import Button from "../base/Button/Button.svelte";
+  import Dialog from "../base/Dialog/Dialog.svelte";
+  import Label from "../base/Label/Label.svelte";
+  import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
+  import SocialInfo from "../social/SocialInfo.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
+  //icons
 
-  export let open: boolean;
-  export let item: OutfitPackage;
+  interface OverviewDialogProps extends BaseDialogProps {
+    open: boolean;
+    item: OutfitPackage;
+    onunshare?: (event?: any) => void;
+    onshare?: (event?: any) => void;
+    onpage?: (event?: any) => void;
+  }
+
+  let {
+    open = $bindable(),
+    item,
+    label = "Overview",
+    onunshare = null,
+    onshare = null,
+    onpage = null,
+  }: OverviewDialogProps = $props();
 
   const onUnshare = () => {
-    dispatch("unshare");
+    onunshare?.();
   };
   const onShare = () => {
-    dispatch("share");
+    onshare?.();
   };
   const onItemPage = () => {
-    dispatch("page");
+    onpage?.();
   };
 </script>
 
-<Dialog bind:open label="Overview">
+<Dialog bind:open {label}>
   <div id="overview-dialog">
     <div class="item-data">
       <div class="title-section">
@@ -47,15 +60,15 @@
     <SectionTitle label="Actions" />
     <div class="item-actions">
       {#if item.social.isShared}
-        <Button label="item page" icon={SpotlightIcon} on:click={onItemPage} />
+        <Button label="item page" icon={SpotlightIcon} onclick={onItemPage} />
         <Button
           label="Unshare"
           type="tertiary"
           icon={CloseIcon}
-          on:click={onUnshare}
+          onclick={onUnshare}
         />
       {:else}
-        <Button label="Share" icon={CloudIcon} on:click={onShare} />
+        <Button label="Share" icon={CloudIcon} onclick={onShare} />
       {/if}
     </div>
   </div>

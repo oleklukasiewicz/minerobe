@@ -1,22 +1,33 @@
 <script lang="ts">
   //services
   import { normalizeNumber } from "$src/helpers/data/dataHelper";
-  //model
+
+  //models
   import type { PackageSocialData } from "$data/models/package";
+
   //icons
   import HeartSmallIcon from "$icons/small/heart.svg?raw";
   import DownloadSmallIcon from "$icons/small/download.svg?raw";
+  interface SocialInfoProps {
+    data: PackageSocialData;
+    dense?: boolean;
+    style?: string;
+    showLikes?: boolean;
+    showDownloads?: boolean;
+  }
 
-  export let data: PackageSocialData;
-  export let dense = false;
-  export let style = "";
-  export let showLikes = true;
-  export let showDownloads = true;
+  let {
+    data,
+    dense = false,
+    style = "",
+    showLikes = true,
+    showDownloads = true
+  }: SocialInfoProps = $props();
 
-  let normalizedLikes: string = "";
-  let normalizedDownloads: string = "";
+  let normalizedLikes: string = $state("");
+  let normalizedDownloads: string = $state("");
 
-  $: {
+  $effect(() => {
     if (data) {
       if (data.likes != null) {
         normalizedLikes = normalizeNumber(data.likes);
@@ -25,7 +36,7 @@
         normalizedDownloads = normalizeNumber(data.downloads);
       }
     }
-  }
+  });
 </script>
 
 <div class="social-info" class:dense {style}>

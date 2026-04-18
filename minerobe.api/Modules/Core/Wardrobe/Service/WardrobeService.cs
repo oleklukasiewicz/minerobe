@@ -205,6 +205,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
         {
             var agregation = _packageAgregationService.GetAgregation(collectionId);
             var outfits = agregation.Where(x => x.WardrobeId == wardrobeId);
+
             if (filter != null)
             {
                 outfits = filter.Filter(outfits);
@@ -214,20 +215,19 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             if (collectionId != null)
                 outfitsResponse = _packageAgregationService.FromAgregationWithCollectionContext(outfits, collectionId.Value);
             else
-                outfitsResponse = _packageAgregationService.FromAgregationWithNoContext(outfits);
-
-            var list = outfitsResponse.ToList();
+                outfitsResponse = _packageAgregationService.FromAgregationWithUserContext(outfits, wardrobeId);
             return outfitsResponse;
         }
-        public async Task<IQueryable<OutfitPackage>> GetWardrobeOutfitsSingleLayer(Guid wardrobeId, OutfitFilter filter)
+        public async Task<IQueryable<OutfitPackageAgregationResponse>> GetWardrobeOutfitsSingleLayer(Guid wardrobeId, OutfitFilter filter)
         {
             var outfits = _packageAgregationService.GetAgregation();
             outfits = outfits.Where(x => x.WardrobeId == wardrobeId);
+
             if (filter != null)
             {
                 outfits = filter.Filter(outfits);
             }
-            var packages = _packageAgregationService.FromAgregationSingleLayer(outfits);
+            var packages = _packageAgregationService.FromAgregationWithUserContext(outfits, wardrobeId);
             return packages;
         }
         public async Task<bool> RemovePackageFromAllWadrobes(Guid packageId)

@@ -1,42 +1,64 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
-  //models
-  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
-  //components
-  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
-  import OutfitPackageSingleLayerListItem from "../OutfitPackageSingleLayerListItem/OutfitPackageSingleLayerListItem.svelte";
+  //consts
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
 
-  const dispatch = createEventDispatcher();
+  //models
+  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
 
-  export let items: OutfitPackage[];
-  export let pageSize: number = 25;
-  export let disableContext: any = null;
-  export let disableFunction = function (context, item) {
+  //components
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+
+  import OutfitPackageSingleLayerListItem from "../OutfitPackageSingleLayerListItem/OutfitPackageSingleLayerListItem.svelte";
+
+  interface OutfitPackagePickerListProps {
+    items: OutfitPackage[];
+    pageSize?: number;
+    disableContext?: any;
+    disableFunction?: any;
+    loading?: boolean;
+    selectable?: boolean;
+    selectedItems?: OutfitPackage[];
+    baseTexture?: OutfitLayer;
+    onselectClick?: (event?: any) => void;
+    onunselect?: (event?: any) => void;
+    onselectionUpdate?: (event?: any) => void;
+    onselect?: (event?: any) => void;
+  }
+
+  let {
+    items,
+    pageSize = 25,
+    disableContext = null,
+    disableFunction = function (context, item) {
     return (
       context?.layers.find((layer) => layer.id === item.layers[0]?.id) != null
     );
-  };
-  export let loading = true;
-  export let selectable = false;
-  export let selectedItems: OutfitPackage[] = [];
-  export let baseTexture: OutfitLayer = null;
+  },
+    loading = true,
+    selectable = false,
+    selectedItems = $bindable([]),
+    baseTexture = null
+  ,
+    onselectClick = null,
+    onunselect = null,
+    onselectionUpdate = null,
+    onselect = null
+  }: OutfitPackagePickerListProps = $props();
 
-  const onSelect = (item: OutfitPackage) => {
-    dispatch("selectClick", { items: [item] });
+  const onSelect= (item: OutfitPackage) => {
+    onselectClick?.({ items: [item] });
   };
-  const onRemoveFromSelected = (item: OutfitPackage) => {
+  const onRemoveFromSelected= (item: OutfitPackage) => {
     selectedItems = selectedItems.filter(
       (i) => i.id !== item.id || i.layers[0]?.id !== item.layers[0]?.id
     );
-    dispatch("unselect", { items: [item] });
-    dispatch("selectionUpdate", { items: selectedItems });
+    onunselect?.({ items: [item] });
+    onselectionUpdate?.({ items: selectedItems });
   };
-  const onAddToSelected = (item: OutfitPackage) => {
+  const onAddToSelected= (item: OutfitPackage) => {
     selectedItems = [...selectedItems, item];
-    dispatch("select", { items: [item] });
-    dispatch("selectionUpdate", { items: selectedItems });
+    onselect?.({ items: [item] });
+    onselectionUpdate?.({ items: selectedItems });
   };
 </script>
 
@@ -46,18 +68,18 @@
       <Placeholder width="100%" height="68px" />
     {/each}
   {:else}
-    {#each items as item (item.id + item.layers[0].id)}
+    {#each items as item (item.id + item.layers[0]?.id)}
       <OutfitPackageSingleLayerListItem
         {selectable}
         baseTexture={item.type === PACKAGE_TYPE.OUTFIT_SET ? baseTexture : null}
         selected={selectedItems.find(
-          (i) => i.id === item.id && i.layers[0].id == item.layers[0].id
+          (i) => i.id === item.id && i.layers[0]?.id == item.layers[0]?.id
         ) != null && selectable}
         disabled={disableFunction(disableContext, item)}
         {item}
-        on:click={() => onSelect(item)}
-        on:unselect={() => onRemoveFromSelected(item)}
-        on:select={() => onAddToSelected(item)}
+        onclick={() => onSelect(item)}
+        onunselect={() => onRemoveFromSelected(item)}
+        onselect={() => onAddToSelected(item)}
       />
     {/each}
   {/if}

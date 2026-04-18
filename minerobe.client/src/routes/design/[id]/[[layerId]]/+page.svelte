@@ -1,48 +1,28 @@
 <script lang="ts">
-  //main imports
-  import { _ } from "svelte-i18n";
-  import { writable, type Writable } from "svelte/store";
-  import { onDestroy, onMount } from "svelte";
-  import { propertyStore } from "svelte-writable-derived";
   //api
   import { GetPackage } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
   import { GetAccount } from "$src/api/integration/minecraft.js";
   import { GetWadrobeCollectionsWithPackageContext } from "$src/api/wardrobe.js";
-  import {
-    AddPackageToCollection,
-    RemovePackageFromCollection,
-  } from "$src/api/collection.js";
+
   //services
   import { ExportImage } from "$src/data/export.js";
   import { OutfitPackageToTextureConverter } from "$src/data/render.js";
   import { ShowToast } from "$src/data/toast.js";
-  import { SetMinecraftSkin } from "$src/data/integration.js";
-  import { replaceState } from "$app/navigation";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
+  import type { RenderAnimation } from "$src/data/animation.js";
+
   //consts
-  import {
-    BASE_TEXTURE,
-    CURRENT_APP_STATE,
-    CURRENT_USER,
-    IS_MOBILE_VIEW,
-  } from "$src/data/static.js";
-  //models
   import { APP_STATE } from "$src/data/enums/app.js";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit.js";
-  import type { RenderAnimation } from "$src/data/animation.js";
-  import type {
-    Cape,
-    MinecraftAccount,
-  } from "$data/models/integration/minecraft";
+  import type { MODEL_TYPE } from "$src/data/enums/model.js";
+
+  //models
   import type { PagedResponse, PageOptions } from "$data/models/base";
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
-  import { OutfitLayer, type OutfitPackage } from "$model/package";
-  import DefaultAnimation from "$src/animation/default.js";
   import { OutfitPackageRenderConfig } from "$data/models/render";
   import { MinerobeUserSettings } from "$data/models/user";
-  import HandsUpAnimation from "$src/animation/handsup";
-  import type { MODEL_TYPE } from "$src/data/enums/model.js";
+
   //components
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
@@ -55,16 +35,51 @@
   import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
   import CollectionsDialog from "$lib/components/dialog/CollectionsDialog.svelte";
   import SocialInfo from "$lib/components/social/SocialInfo.svelte";
+  import MenuButton from "$lib/components/other/MenuButton/MenuButton.svelte";
+
   //icons
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
   import DownloadIcon from "$icons/download.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import EditIcon from "$src/icons/edit.svg?raw";
-  import { THREE } from "$lib/three.js";
-  import MenuButton from "$lib/components/other/MenuButton/MenuButton.svelte";
 
-  export let data;
+  import { _ } from "svelte-i18n";
+  import { writable, type Writable } from "svelte/store";
+  import { onDestroy, onMount } from "svelte";
+  import { propertyStore } from "svelte-writable-derived";
+  //api
+  import {
+    AddPackageToCollection,
+    RemovePackageFromCollection,
+  } from "$src/api/collection.js";
+  //services
+  import { SetMinecraftSkin } from "$src/data/integration.js";
+  import { replaceState } from "$app/navigation";
+  //consts
+  import {
+    BASE_TEXTURE,
+    CURRENT_APP_STATE,
+    CURRENT_USER,
+    IS_MOBILE_VIEW,
+  } from "$src/data/static.js";
+  //models
+  import type {
+    Cape,
+    MinecraftAccount,
+  } from "$data/models/integration/minecraft";
+  import { OutfitLayer, type OutfitPackage } from "$model/package";
+  import DefaultAnimation from "$src/animation/default.js";
+  import HandsUpAnimation from "$src/animation/handsup";
+  //components
+  //icons
+  import { THREE } from "$lib/three.js";
+
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   const renderConfiguration: Writable<OutfitPackageRenderConfig> = writable(
     new OutfitPackageRenderConfig()
@@ -77,25 +92,21 @@
     itemPackage,
     "layers"
   );
-  let loaded = false;
-  let isOutfitSet = false;
-  let isMinecraftIntegrated = false;
-  let userSettings: MinerobeUserSettings = null;
-  let integrationSettings: MinecraftAccount = null;
-  let renderer: any = null;
+  let loaded = $state(false);
+  let isOutfitSet = $state(false);
+  let isMinecraftIntegrated = $state(false);
+  let userSettings: MinerobeUserSettings = $state(null);
+  let integrationSettings: MinecraftAccount = $state(null);
+  let renderer: any = $state(null);
 
   // dialog data
   let dialogCollections: PagedResponse<OutfitPackageCollectionWithPackageContext> =
-    null;
-  let isCollectionsDialogOpen = false;
+    $state(null);
+  let isCollectionsDialogOpen = $state(false);
 
   //others
-  let isSkinSetting = false;
-
-  let __addAnimation = function (
-    animation: RenderAnimation,
-    force: boolean = false
-  ) {};
+  let isSkinSetting = $state(false);
+  let outfitRender = $state(null);
 
   let stateSub = null;
   onMount(async () => {
@@ -145,7 +156,7 @@
 
   //layers
   const setSelectedLayer = (e) => {
-    const layerId = e.detail.item.id;
+    const layerId = e.item.id;
     renderConfiguration.update((config) => {
       config.selectedLayerId = layerId;
       return config;
@@ -180,8 +191,8 @@
 
   //animations
   const addAnimation = (animation: RenderAnimation) => {
-    if (animation) __addAnimation(animation, false);
-    __addAnimation(DefaultAnimation, true);
+    if (animation) outfitRender?.addAnimation?.(animation, false);
+    outfitRender?.addAnimation?.(DefaultAnimation, true);
   };
 
   //dialogs
@@ -204,7 +215,7 @@
 
   //actions
   const addToCollection = async function (e) {
-    const collection = e.detail.item;
+    const collection = e.item;
     await AddPackageToCollection(collection.id, $itemPackage.id);
     ShowToast("Item added to collection");
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
@@ -215,7 +226,7 @@
     );
   };
   const removeFromCollection = async function (e) {
-    const collection = e.detail.item;
+    const collection = e.item;
     await RemovePackageFromCollection(collection.id, $itemPackage.id);
     ShowToast("Item removed from collection", "info");
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
@@ -234,7 +245,7 @@
     isSkinSetting = false;
   };
   const setCape = function (e) {
-    const item = e.detail.item as Cape;
+    const item = e.item as Cape;
     $renderConfiguration.cape = item;
   };
 </script>
@@ -245,8 +256,8 @@
       <Placeholder {loaded}>
         <div id="render-node">
           <OutfitPackageRender
+            bind:this={outfitRender}
             pauseOnIntersection
-            bind:addAnimation={__addAnimation}
             source={$renderConfiguration.item}
             isDynamic
             cape={$renderConfiguration?.cape?.texture}
@@ -301,7 +312,7 @@
           movable={false}
           removable={false}
           editable={false}
-          on:select={setSelectedLayer}
+          onselect={setSelectedLayer}
           model={$itemPackage.model}
         ></OutfitLayerList>
       {/if}
@@ -312,7 +323,7 @@
         <CapeList
           items={integrationSettings?.capes}
           selectedCapeId={$renderConfiguration.cape?.id}
-          on:select={setCape}
+          onselect={setCape}
         />
       </div>
     {/if}
@@ -346,14 +357,14 @@
             type="primary"
             icon={isSkinSetting ? LoaderIcon : HumanHandsUpIcon}
             size="large"
-            on:click={setSkin}
+            onclick={setSkin}
             disabled={isSkinSetting}
           />
         {/if}
         <MenuButton
           hideMenuButton={!isOutfitSet}
           containerStyle={isMinecraftIntegrated && isOutfitSet ? "" : "flex:1"}
-          on:click={exportPackage}
+          onclick={exportPackage}
           label="Download"
           type="primary"
           size="large"
@@ -365,7 +376,7 @@
             type="quaternary"
             size="medium"
             icon={DownloadIcon}
-            on:click={exportPackageWithoutBaseTexture}
+            onclick={exportPackageWithoutBaseTexture}
           />
         </MenuButton>
        {#if $CURRENT_USER?.id != null}
@@ -375,7 +386,7 @@
             size="large"
             onlyIcon={!$IS_MOBILE_VIEW}
             icon={ListIcon}
-            on:click={openCollectionsDialog}
+            onclick={openCollectionsDialog}
           />
         {/if}
         {#if $CURRENT_USER?.id == $itemPackage.publisher.id}
@@ -385,7 +396,7 @@
             size="large"
             onlyIcon={!$IS_MOBILE_VIEW}
             icon={EditIcon}
-            on:click={() =>
+            onclick={() =>
               navigateToOutfitPackage($itemPackage, undefined, true)}
           />
         {/if}
@@ -401,9 +412,9 @@
     bind:open={isCollectionsDialogOpen}
     items={dialogCollections}
     pageSizes={[6, 12, 24]}
-    on:unselect={removeFromCollection}
-    on:select={addToCollection}
-    on:optionsChanged={openCollectionsDialog}
+    onunselect={removeFromCollection}
+    onselect={addToCollection}
+    onoptionsChanged={openCollectionsDialog}
   />
 </div>
 

@@ -2,68 +2,83 @@
   //components
   import Button from "$lib/components/base/Button/Button.svelte";
   import Select from "$lib/components/base/Select/Select.svelte";
+
   //icons
   import CheckBoxIcon from "$icons/checkbox.svg?raw";
   import CheckBoxOffIcon from "$icons/checkbox-off.svg?raw";
-  import ColorBadge from "../ColorBadge/ColorBadge.svelte";
 
-  export let items: any[] = [];
-  export let placeholder: string = "Select";
-  export let selectedItem = null;
-  export let opened = false;
-  export let itemText = "label";
-  export let itemValue = "value";
-  export let clearable = false;
-  export let dropDownStyle = null;
-  export let disabled = false;
-  export let multiple = false;
-  export let autocomplete = false;
+  import ColorBadge from "../ColorBadge/ColorBadge.svelte";
+  import type { BaseSelectProps } from "$src/data/components";
+
+  interface ColorSelectProps extends BaseSelectProps {
+    multiple?: boolean;
+    onselect?: (event?: any) => void;
+    onclear?: (event?: any) => void;
+  }
+
+  let {
+    items = $bindable([]),
+    placeholder = $bindable("Select"),
+    value = $bindable(null),
+    opened = $bindable(false),
+    itemText = $bindable("label"),
+    itemValue = $bindable("value"),
+    clearable = $bindable(false),
+    dropDownStyle = $bindable(null),
+    disabled = $bindable(false),
+    multiple = $bindable(false),
+    autocomplete = $bindable(false),
+    onselect = null,
+    onclear = null,
+  }: ColorSelectProps = $props();
 </script>
 
 <Select
-  on:select
-  on:clear
-  bind:items
-  bind:placeholder
-  bind:selectedItem
+  {onselect}
+  {onclear}
+  {items}
+  {placeholder}
+  bind:value
   bind:opened
-  bind:itemText
-  bind:itemValue
-  bind:clearable
-  bind:dropDownStyle
-  bind:disabled
-  bind:autocomplete
-  bind:multiple
-  let:item
-  let:selectedItemValue
-  let:comparer
-  let:multiple
-  let:index
-  let:focusedIndex
+  {itemText}
+  {itemValue}
+  {clearable}
+  {dropDownStyle}
+  {disabled}
+  {autocomplete}
+  {multiple}
 >
-  <Button
-    size="medium"
-    flat
-    noBorder
-    style="height: 40px;"
-    focused={index === focusedIndex}
-    type={comparer(selectedItemValue, item, multiple)
-      ? "primary"
-      : "quaternary"}
-    icon={multiple
-      ? comparer(selectedItemValue, item, multiple)
-        ? CheckBoxIcon
-        : CheckBoxOffIcon
-      : null}
-    label={itemText == null ? item : item[itemText]}
-    textAlign="left"
-  >
-    <div>
-      <ColorBadge
-        color={item.name}
-        colorName={item.name}
-        style={"margin-right:4px;"}
-      />
-    </div>
-  </Button>
+  {#snippet children({
+    item,
+    selectedItems,
+    comparer,
+    multiple,
+    index,
+    focusedIndex,
+  })}
+    <Button
+      size="medium"
+      flat
+      noBorder
+      style="height: 40px;"
+      focused={index === focusedIndex}
+      type={comparer(selectedItems, item, multiple) ? "primary" : "quaternary"}
+      icon={multiple
+        ? comparer(selectedItems, item, multiple)
+          ? CheckBoxIcon
+          : CheckBoxOffIcon
+        : null}
+      label={itemText == null ? item : item[itemText]}
+      textAlign="left"
+    >
+      <div>
+        <ColorBadge
+          selectable={false}
+          color={item.name}
+          colorName={item.name}
+          style={"margin-right:4px;"}
+        />
+      </div>
+    </Button>
+  {/snippet}
 </Select>

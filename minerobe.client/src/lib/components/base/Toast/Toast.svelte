@@ -1,20 +1,33 @@
 <script lang="ts">
+  //icons
+  import CloseIcon from "$icons/close.svg?raw";
   //main imports
-  import { createEventDispatcher } from "svelte";
   import { cubicOut } from "svelte/easing";
   //components
   import Button from "../Button/Button.svelte";
   //icons
-  import CloseIcon from "$icons/close.svg?raw";
 
-  export let message: string;
-  export let type: "success" | "error" | "warning" | "info" = "info";
-  export let mobile = false;
-  export let show: boolean = false;
-  export let icon: string = "";
-  export let closeable: boolean = true;
+  interface ToastProps {
+    message: string;
+    type?: "success" | "error" | "warning" | "info";
+    mobile?: boolean;
+    show?: boolean;
+    icon?: string;
+    closeable?: boolean;
+    onclose?: (event?: any) => void;
+    onclick?: (event?: any) => void;
+  }
 
-  const dispatch = createEventDispatcher();
+  let {
+    message,
+    type = "info",
+    mobile = false,
+    show = false,
+    icon = "",
+    closeable = true,
+    onclose = null,
+    onclick = null,
+  }: ToastProps = $props();
 
   function fadeInScale(node, { duration }) {
     return {
@@ -24,12 +37,12 @@
     };
   }
   const onClose = () => {
-    dispatch("close");
+    onclose?.();
   };
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="toast"
   class:success={type === "success"}
@@ -37,7 +50,7 @@
   class:warning={type === "warning"}
   class:info={type === "info"}
   class:hidden={!show}
-  on:click
+  {onclick}
   class:mobile
   in:fadeInScale={{ duration: 300 }}
   out:fadeInScale={{ duration: 300 }}
@@ -57,7 +70,7 @@
       <Button
         type="quaternary"
         whiteText
-        on:click={onClose}
+        onclick={onClose}
         icon={CloseIcon}
         onlyIcon
       />

@@ -1,5 +1,59 @@
 <script lang="ts">
-  //main imports
+  //api
+  import { FetchSettings } from "$src/api/settings";
+  import { GetAccount } from "$src/api/integration/minecraft.js";
+  import { SharePackage, UnSharePackage } from "$src/api/social.js";
+
+  //services
+  import { ImportImages, ImportImagesFromFiles } from "$src/data/import.js";
+  import { ExportImage } from "$src/data/export.js";
+  import { OutfitPackageToTextureConverter } from "$src/data/render.js";
+  import { ShowToast } from "$src/data/toast.js";
+  import type { RenderAnimation } from "$src/data/animation.js";
+  import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
+
+  //consts
+  import { APP_STATE, CHANGE_TYPE } from "$src/data/enums/app.js";
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit.js";
+  import { COLORS_ARRAY } from "$src/data/consts/color.js";
+
+  //models
+  import { OutfitFilter } from "$data/models/filter.js";
+  import { PagedModel, PagedResponse, PageOptions } from "$data/models/base";
+  import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
+  import { OutfitPackageRenderConfig } from "$data/models/render";
+  import { MinerobeUserSettings } from "$data/models/user";
+
+  //components
+  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
+  import Label from "$lib/components/base/Label/Label.svelte";
+  import OutfitLayerList from "$lib/components/outfit/OutfitLayerList/OutfitLayerList.svelte";
+  import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
+  import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
+  import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
+  import CollectionsDialog from "$lib/components/dialog/CollectionsDialog.svelte";
+  import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
+  import OutfitPickerDialog from "$lib/components/dialog/OutfitPickerDialog.svelte";
+  import OverviewDialog from "$lib/components/dialog/OverviewDialog.svelte";
+  import ConfirmDialog from "$lib/components/dialog/ConfirmDialog.svelte";
+  import ColorSelect from "$lib/components/other/ColorSelect/ColorSelect.svelte";
+  import MenuButton from "$lib/components/other/MenuButton/MenuButton.svelte";
+
+  //icons
+  import TrashIcon from "$icons/trash.svg?raw";
+  import ImportPackageIcon from "$icons/upload.svg?raw";
+  import AddIcon from "$icons/plus.svg?raw";
+  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
+  import DownloadIcon from "$icons/download.svg?raw";
+  import CloudIcon from "$icons/cloud.svg?raw";
+  import ListIcon from "$icons/list.svg?raw";
+  import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
+  import LoaderIcon from "$icons/loader.svg?raw";
+
   import { _ } from "svelte-i18n";
   import { writable, type Writable } from "svelte/store";
   import { onDestroy, onMount } from "svelte";
@@ -17,8 +71,6 @@
     SetLayerAsPrimary,
     RemovePrimaryLayer,
   } from "$src/api/pack";
-  import { FetchSettings } from "$src/api/settings";
-  import { GetAccount } from "$src/api/integration/minecraft.js";
   import {
     GetWadrobeCollectionsWithPackageContext,
     GetWadrobePackagesSingleLayer,
@@ -27,12 +79,7 @@
     AddPackageToCollection,
     RemovePackageFromCollection,
   } from "$src/api/collection.js";
-  import { SharePackage, UnSharePackage } from "$src/api/social.js";
   //services
-  import { ImportImages, ImportImagesFromFiles } from "$src/data/import.js";
-  import { ExportImage } from "$src/data/export.js";
-  import { OutfitPackageToTextureConverter } from "$src/data/render.js";
-  import { ShowToast } from "$src/data/toast.js";
   import { debounce } from "$src/data/base.js";
   import { SetMinecraftSkin } from "$src/data/integration.js";
   //consts
@@ -43,58 +90,26 @@
     IS_MOBILE_VIEW,
   } from "$src/data/static.js";
   //models
-  import { OutfitFilter } from "$data/models/filter.js";
-  import { APP_STATE, CHANGE_TYPE } from "$src/data/enums/app.js";
-  import { PACKAGE_TYPE } from "$src/data/enums/outfit.js";
-  import type { RenderAnimation } from "$src/data/animation.js";
   import type {
     Cape,
     MinecraftAccount,
   } from "$data/models/integration/minecraft";
-  import { PagedModel, PagedResponse, PageOptions } from "$data/models/base";
-  import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
   import { OutfitLayer, type OutfitPackage } from "$model/package";
   import DefaultAnimation from "$src/animation/default.js";
-  import { OutfitPackageRenderConfig } from "$data/models/render";
-  import { MinerobeUserSettings } from "$data/models/user";
   import HandsUpAnimation from "$src/animation/handsup";
   import {
     navigateToOutfitPackage,
     navigateToWardrobe,
   } from "$src/helpers/other/navigationHelper.js";
   //components
-  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
-  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
-  import Label from "$lib/components/base/Label/Label.svelte";
-  import OutfitLayerList from "$lib/components/outfit/OutfitLayerList/OutfitLayerList.svelte";
-  import DragAndDrop from "$lib/components/draganddrop/DragAndDrop/DragAndDrop.svelte";
-  import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
-  import Button from "$lib/components/base/Button/Button.svelte";
-  import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
-  import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
-  import CollectionsDialog from "$lib/components/dialog/CollectionsDialog.svelte";
-  import EditLayerDialog from "$lib/components/dialog/EditLayerDialog.svelte";
-  import OutfitPickerDialog from "$lib/components/dialog/OutfitPickerDialog.svelte";
-  import OverviewDialog from "$lib/components/dialog/OverviewDialog.svelte";
-  import ConfirmDialog from "$lib/components/dialog/ConfirmDialog.svelte";
   //icons
-  import TrashIcon from "$icons/trash.svg?raw";
-  import ImportPackageIcon from "$icons/upload.svg?raw";
-  import AddIcon from "$icons/plus.svg?raw";
-  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
-  import DownloadIcon from "$icons/download.svg?raw";
-  import CloudIcon from "$icons/cloud.svg?raw";
-  import ListIcon from "$icons/list.svg?raw";
-  import MoreHorizontalIcon from "$icons/more-horizontal.svg?raw";
-  import LoaderIcon from "$icons/loader.svg?raw";
-  import { GetAnimationForPackageChange } from "$src/helpers/render/animationHelper.js";
-  import ColorSelect from "$lib/components/other/ColorSelect/ColorSelect.svelte";
-  import { COLORS_ARRAY } from "$src/data/consts/color.js";
   import { THREE } from "$lib/three.js";
-  import MenuButton from "$lib/components/other/MenuButton/MenuButton.svelte";
 
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   const renderConfiguration: Writable<OutfitPackageRenderConfig> = writable(
     new OutfitPackageRenderConfig()
@@ -107,29 +122,30 @@
     itemPackage,
     "layers"
   );
-  let loaded = false;
-  let isOutfitSet = false;
-  let isMinecraftIntegrated = false;
-  let userSettings: MinerobeUserSettings = null;
-  let integrationSettings: MinecraftAccount = null;
-  let renderer: any = null;
+  let loaded = $state(false);
+  let isOutfitSet = $state(false);
+  let isMinecraftIntegrated = $state(false);
+  let userSettings: MinerobeUserSettings = $state(null);
+  let integrationSettings: MinecraftAccount = $state(null);
+  let renderer: any = $state(null);
 
   // dialog data
-  let dialogSelectedLayer: OutfitLayer = null;
+  let dialogSelectedLayer: OutfitLayer = $state(null);
   let dialogCollections: PagedResponse<OutfitPackageCollectionWithPackageContext> =
-    null;
+    $state(null);
   let dialogOutfitPickerItems: PagedResponse<OutfitPackage> =
-    new PagedResponse<OutfitPackage>();
+    $state(new PagedResponse<OutfitPackage>());
   let dialogOutfitsPickerOptions: PagedModel<OutfitFilter> =
-    new PagedModel<OutfitFilter>();
-  let isLayerEditDialogOpen = false;
-  let isOverviewDialogOpen = false;
-  let isRemoveDialogOpen = false;
-  let isCollectionsDialogOpen = false;
-  let isOutfitPickerDialogOpen = false;
+    $state(new PagedModel<OutfitFilter>());
+  let isLayerEditDialogOpen = $state(false);
+  let isOverviewDialogOpen = $state(false);
+  let isRemoveDialogOpen = $state(false);
+  let isCollectionsDialogOpen = $state(false);
+  let isOutfitPickerDialogOpen = $state(false);
 
   //others
-  let isSkinSetting = false;
+  let isSkinSetting = $state(false);
+  let outfitRender = $state(null);
 
   //api helpers
   const UpdatePackageDebounced = debounce(async () => {
@@ -143,11 +159,6 @@
       layers.map((x) => x.id)
     );
   }, 500);
-
-  let __addAnimation = function (
-    animation: RenderAnimation,
-    force: boolean = false
-  ) {};
 
   let stateSub = null;
   onMount(async () => {
@@ -191,38 +202,46 @@
 
   //layers
   const setSelectedLayer = (e) => {
-    const layerId = e.detail.item.id;
+    const layerId = e.item.id;
     renderConfiguration.update((config) => {
       config.selectedLayerId = layerId;
       return config;
     });
   };
   const moveLayerDown = async (e) => {
-    const layer = e.detail.item;
+    const layer = e.item;
     const index = e.detail.index;
     itemPackage.update((item) => {
-      item.layers.splice(index, 1);
-      item.layers.splice(index - 1, 0, layer);
-      return item;
+      const layers = [...item.layers];
+      layers.splice(index, 1);
+      layers.splice(index - 1, 0, layer);
+      return {
+        ...item,
+        layers,
+      };
     });
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_DOWN, layer.outfitType)
     );
   };
   const moveLayerUp = (e) => {
-    const layer = e.detail.item;
+    const layer = e.item;
     const index = e.detail.index;
     itemPackage.update((item) => {
-      item.layers.splice(index, 1);
-      item.layers.splice(index + 1, 0, layer);
-      return item;
+      const layers = [...item.layers];
+      layers.splice(index, 1);
+      layers.splice(index + 1, 0, layer);
+      return {
+        ...item,
+        layers,
+      };
     });
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_UP, layer.outfitType)
     );
   };
   const removeLayer = async (e) => {
-    const layer = e.detail.item;
+    const layer = e.item;
     await RemovePackageLayerWithPackageContext(layer, $itemPackage.id);
     itemPackage.update((item) => {
       item.layers = item.layers.filter((l) => l.id !== layer.id);
@@ -235,7 +254,7 @@
     );
   };
   const editLayer = async function (e) {
-    const item = e.detail.item;
+    const item = e.item;
     itemPackageLayers.update((layers) => {
       const index = layers.findIndex((x) => x.id == item.id);
       layers[index] = item;
@@ -248,7 +267,7 @@
     );
   };
   const changeLayerPrimary = async function (e) {
-    const item = e.detail.item;
+    const item = e.item;
     const isPrimary = e.detail.isPrimary;
 
     if (isPrimary) await SetLayerAsPrimary($itemPackage.id, item.id);
@@ -264,7 +283,7 @@
     });
   };
   const dropLayer = async (e) => {
-    const layer = e.detail.item;
+    const layer = e.item;
     const option = e.detail.option;
     const file = e.detail.file;
 
@@ -291,17 +310,24 @@
         return await AddPackageLayer(layer);
       })
     );
-    renderConfiguration.update((config) => {
-      config.item.layers.push(...addedlayers);
-      if (!isOutfitSet) config.selectedLayerId = addedlayers[0]?.id;
-      return config;
+    itemPackage.update((item) => {
+      return {
+        ...item,
+        layers: [...item.layers, ...addedlayers],
+      };
     });
+    if (!isOutfitSet) {
+      renderConfiguration.update((config) => {
+        config.selectedLayerId = addedlayers[0]?.id;
+        return config;
+      });
+    }
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layers[0].outfitType)
     );
   };
   const importLayerFromDrop = async (e) => {
-    const files = e.detail.items;
+    const files = e.items;
     const layers = await ImportImagesFromFiles(files);
     const addedlayers = await Promise.all(
       layers.map(async (layer) => {
@@ -310,11 +336,18 @@
         return await AddPackageLayer(layer);
       })
     );
-    renderConfiguration.update((config) => {
-      config.item.layers.push(...addedlayers);
-      if (!isOutfitSet) config.selectedLayerId = addedlayers[0]?.id;
-      return config;
+    itemPackage.update((item) => {
+      return {
+        ...item,
+        layers: [...item.layers, ...addedlayers],
+      };
     });
+    if (!isOutfitSet) {
+      renderConfiguration.update((config) => {
+        config.selectedLayerId = addedlayers[0]?.id;
+        return config;
+      });
+    }
     addAnimation(
       GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layers[0].outfitType)
     );
@@ -347,25 +380,25 @@
 
   //animations
   const addAnimation = (animation: RenderAnimation) => {
-    if (animation) __addAnimation(animation, false);
-    __addAnimation(DefaultAnimation, true);
+    if (animation) outfitRender?.addAnimation?.(animation, false);
+    outfitRender?.addAnimation?.(DefaultAnimation, true);
   };
 
   //dialogs
   const openLayerEditDialog = (e) => {
-    const layer = e.detail.item;
+    const layer = e.item;
     dialogSelectedLayer = structuredClone(layer);
     isLayerEditDialogOpen = true;
   };
   const openOverviewDialog = () => (isOverviewDialogOpen = true);
   const openRemoveDialog = () => (isRemoveDialogOpen = true);
   const openCollectionsDialog = async (e) => {
-    let options = e?.detail?.options?.options;
+    let options = e?.options?.options;
     if (!options) options = { page: 0, pageSize: 6, total: 0 };
 
     dialogCollections =
       new PagedResponse<OutfitPackageCollectionWithPackageContext>();
-    dialogCollections.options = options.page;
+    dialogCollections.options = options;
     dialogCollections.items = null;
     dialogCollections.sort = [];
 
@@ -378,7 +411,8 @@
     );
   };
   const openOutfitPickerDialog = async (e) => {
-    let options = e?.detail?.options;
+    let options = e?.options;
+    if (options?.options) options = options.options;
     if (!options) {
       options = new PagedModel<OutfitFilter>();
       options.page = 0;
@@ -400,7 +434,7 @@
     navigateToWardrobe();
   };
   const addToCollection = async function (e) {
-    const collection = e.detail.item;
+    const collection = e.item;
     await AddPackageToCollection(collection.id, $itemPackage.id);
     ShowToast("Item added to collection");
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
@@ -411,7 +445,7 @@
     );
   };
   const removeFromCollection = async function (e) {
-    const collection = e.detail.item;
+    const collection = e.item;
     await RemovePackageFromCollection(collection.id, $itemPackage.id);
     ShowToast("Item removed from collection", "info");
     dialogCollections = await GetWadrobeCollectionsWithPackageContext(
@@ -441,7 +475,7 @@
     navigateToOutfitPackage($itemPackage);
   };
   const addPackageLayer = async function (e) {
-    const packs = e.detail.items;
+    const packs = e.items;
     for (let pack of packs) {
       const newPack = pack;
       const layer = newPack.layers[0];
@@ -465,7 +499,7 @@
     isSkinSetting = false;
   };
   const setCape = function (e) {
-    const item = e.detail.item as Cape;
+    const item = e.item as Cape;
     $renderConfiguration.cape = item;
   };
 </script>
@@ -475,11 +509,11 @@
     <div id="render">
       <Placeholder {loaded}>
         <div id="render-node">
-          <DragAndDrop on:drop={importLayerFromDrop}>
+          <DragAndDrop ondrop={importLayerFromDrop}>
             <OutfitPackageRender
+              bind:this={outfitRender}
               pauseOnIntersection
-              on:textureUpdate={UpdatePackageLayersOrder}
-              bind:addAnimation={__addAnimation}
+              ontextureUpdate={UpdatePackageLayersOrder}
               source={$renderConfiguration.item}
               isDynamic
               cape={$renderConfiguration?.cape?.texture}
@@ -505,7 +539,7 @@
           icon={TrashIcon}
           label={"Delete item"}
           type={"tertiary"}
-          on:click={openRemoveDialog}
+          onclick={openRemoveDialog}
         />
       </div>
     </Placeholder>
@@ -538,12 +572,12 @@
           movable={isOutfitSet}
           primaryLayerId={$itemPackageLayers.find((l) => l.isPrimary)?.id}
           dropable
-          on:edit={openLayerEditDialog}
-          on:moveUp={moveLayerUp}
-          on:moveDown={moveLayerDown}
-          on:select={setSelectedLayer}
-          on:delete={removeLayer}
-          on:drop={dropLayer}
+          onedit={openLayerEditDialog}
+          onmoveUp={moveLayerUp}
+          onmoveDown={moveLayerDown}
+          onselect={setSelectedLayer}
+          ondelete={removeLayer}
+          ondrop={dropLayer}
           model={$itemPackage.model}
         ></OutfitLayerList>
       {/if}
@@ -556,7 +590,7 @@
                 icon={AddIcon}
                 iconSize="medium"
                 type={"tertiary"}
-                on:click={openOutfitPickerDialog}
+                onclick={openOutfitPickerDialog}
               />
             {/if}
           </Placeholder>
@@ -567,7 +601,7 @@
             label={isOutfitSet ? "Import image" : "Import variant"}
             icon={ImportPackageIcon}
             type={"tertiary"}
-            on:click={importImage}
+            onclick={importImage}
           />
         {/if}
       </div>
@@ -578,7 +612,7 @@
         <CapeList
           items={integrationSettings?.capes}
           selectedCapeId={$renderConfiguration?.cape?.id}
-          on:select={setCape}
+          onselect={setCape}
         />
       </div>
     {/if}
@@ -594,7 +628,7 @@
       {#if loaded && isOutfitSet}
         <SectionTitle label="Color" />
         <ColorSelect
-          bind:selectedItem={$itemPackage.colorName}
+          bind:value={$itemPackage.colorName}
           placeholder="Select color"
           items={COLORS_ARRAY}
           autocomplete
@@ -626,14 +660,14 @@
             type="primary"
             icon={isSkinSetting ? LoaderIcon : HumanHandsUpIcon}
             size="large"
-            on:click={setSkin}
+            onclick={setSkin}
             disabled={isSkinSetting}
           />
         {/if}
         <MenuButton
           hideMenuButton={!isOutfitSet}
           containerStyle={isMinecraftIntegrated && isOutfitSet ? "" : "flex:1"}
-          on:click={exportPackage}
+          onclick={exportPackage}
           label="Download"
           type="primary"
           size="large"
@@ -645,7 +679,7 @@
             type="quaternary"
             size="medium"
             icon={DownloadIcon}
-            on:click={exportPackageWithoutBaseTexture}
+            onclick={exportPackageWithoutBaseTexture}
           />
         </MenuButton>
         {#if $CURRENT_USER?.id != null}
@@ -655,7 +689,7 @@
             size="large"
             onlyIcon={!$IS_MOBILE_VIEW}
             icon={ListIcon}
-            on:click={openCollectionsDialog}
+            onclick={openCollectionsDialog}
           />
         {/if}
         {#if !$itemPackage?.social?.isShared}
@@ -666,11 +700,11 @@
             onlyIcon={!$IS_MOBILE_VIEW}
             size={"large"}
             type={"tertiary"}
-            on:click={sharePackage}
+            onclick={sharePackage}
           />
         {:else}
           <Button
-            on:click={openOverviewDialog}
+            onclick={openOverviewDialog}
             label="Overview"
             icon={MoreHorizontalIcon}
             onlyIcon={!$IS_MOBILE_VIEW}
@@ -686,17 +720,18 @@
   </div>
   <!-- Dialogs -->
   <EditLayerDialog
-    on:edit={editLayer}
-    on:primaryChange={changeLayerPrimary}
+    onedit={editLayer}
+    onlyTextures={isOutfitSet}
+    onprimaryChange={changeLayerPrimary}
     bind:open={isLayerEditDialogOpen}
-    item={dialogSelectedLayer}
+    bind:item={dialogSelectedLayer}
   />
   <OverviewDialog
     bind:open={isOverviewDialogOpen}
     item={$itemPackage}
-    on:unshare={unsharePackage}
-    on:share={sharePackage}
-    on:page={goToPackagePage}
+    onunshare={unsharePackage}
+    onshare={sharePackage}
+    onpage={goToPackagePage}
   />
   <ConfirmDialog
     bind:open={isRemoveDialogOpen}
@@ -704,16 +739,16 @@
     label={"Delete item"}
     cancelIcon={null}
     confirmLabel={"Delete"}
-    on:confirm={deletePackage}
+    onconfirm={deletePackage}
   />
   <CollectionsDialog
     loading={dialogCollections?.items == null}
     bind:open={isCollectionsDialogOpen}
     items={dialogCollections}
     pageSizes={[6, 12, 24]}
-    on:unselect={removeFromCollection}
-    on:select={addToCollection}
-    on:optionsChanged={openCollectionsDialog}
+    onunselect={removeFromCollection}
+    onselect={addToCollection}
+    onoptionsChanged={openCollectionsDialog}
   />
   <OutfitPickerDialog
     items={dialogOutfitPickerItems}
@@ -722,9 +757,9 @@
     pageSizes={[6, 12, 24]}
     bind:open={isOutfitPickerDialogOpen}
     loading={dialogOutfitPickerItems?.items == null}
-    on:optionsChanged={openOutfitPickerDialog}
-    on:select={addPackageLayer}
-    on:filter={openOutfitPickerDialog}
+    onoptionsChanged={openOutfitPickerDialog}
+    onselect={addPackageLayer}
+    onfilter={openOutfitPickerDialog}
   />
 </div>
 

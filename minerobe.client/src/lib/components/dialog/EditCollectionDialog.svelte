@@ -1,20 +1,53 @@
 <script lang="ts">
+  //models
   import type { OutfitPackageCollection } from "$src/data/models/collection";
-  import { createEventDispatcher } from "svelte";
+
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
   import TextBox from "../base/TextBox/TextBox.svelte";
   import Checkbox from "../base/Checkbox/Checkbox.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
 
-  export let open = false;
-  export let label = "Edit Collection";
-  export let collection: OutfitPackageCollection = null;
+  interface EditCollectionDialogProps extends BaseDialogProps {
+    collection?: OutfitPackageCollection;
+    onsave?: (event?: any) => void;
+  }
 
-  const dispatch = createEventDispatcher();
+  let {
+    open = $bindable(false),
+    label = "Edit Collection",
+    collection = $bindable(null),
+    onsave = null,
+  }: EditCollectionDialogProps = $props();
+
+  let name = $state("");
+  let description = $state("");
+  let isShared = $state(false);
+
+  const syncFormFromCollection = () => {
+    name = collection?.name ?? "";
+    description = collection?.description ?? "";
+    isShared = collection?.social?.isShared ?? false;
+  };
+
+  $effect(() => {
+    syncFormFromCollection();
+  });
 
   const handleSave = () => {
-    dispatch("save", { collection });
+    const nextCollection = {
+      ...collection,
+      name,
+      description,
+      social: {
+        ...(collection?.social ?? {}),
+        isShared,
+      },
+    } as OutfitPackageCollection;
+
+    collection = nextCollection;
+    onsave?.({ collection: nextCollection });
     open = false;
   };
 </script>
@@ -23,16 +56,15 @@
   <div id="edit-collection-dialog">
     <div>
       <SectionTitle label="name" />
-      <TextBox placeholder="Collection Name" bind:value={collection.name} />
+      <TextBox placeholder="Collection Name" bind:value={name} />
     </div>
     <div>
       <SectionTitle label="description" />
-      <textarea placeholder="Description" bind:value={collection.description}
-      ></textarea>
+      <textarea placeholder="Description" bind:value={description}></textarea>
     </div>
-    <Checkbox label="Is Shared" bind:value={collection.social.isShared} />
+    <Checkbox label="Is Shared" bind:value={isShared} />
     <div id="actions">
-      <Button label="Save" on:click={handleSave} />
+      <Button label="Save" onclick={handleSave} />
     </div>
   </div>
 </Dialog>

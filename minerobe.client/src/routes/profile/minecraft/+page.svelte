@@ -1,5 +1,24 @@
 <script lang="ts">
-  //main imports
+  //services
+  import { ShowToast } from "$src/data/toast";
+
+  //consts
+  import { APP_STATE } from "$src/data/enums/app";
+
+  //components
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
+  import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import LinkToMinecraftDialog from "$lib/components/dialog/LinkToMinecraftDialog/LinkToMinecraftDialog.svelte";
+  import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
+
+  //icons
+  import SyncIcon from "$icons/sync.svg?raw";
+  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
+  import CloseIcon from "$icons/close.svg?raw";
+
   import { onDestroy, onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
   //api
@@ -15,7 +34,6 @@
     UnLinkAccount,
   } from "$src/api/integration/minecraft";
   //services
-  import { ShowToast } from "$src/data/toast";
   import { goto } from "$app/navigation";
   //consts
   import {
@@ -25,25 +43,14 @@
     WS_CONNECTION,
   } from "$src/data/static";
   //models
-  import { APP_STATE } from "$src/data/enums/app";
   import type {
     Cape,
     MinecraftAccount,
     MinecraftSkin,
   } from "$src/data/models/integration/minecraft";
   //components
-  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
-  import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
-  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
-  import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
-  import Button from "$lib/components/base/Button/Button.svelte";
-  import LinkToMinecraftDialog from "$lib/components/dialog/LinkToMinecraftDialog/LinkToMinecraftDialog.svelte";
   //icons
-  import SyncIcon from "$icons/sync.svg?raw";
-  import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
-  import CloseIcon from "$icons/close.svg?raw";
   import { THREE } from "$lib/three";
-  import InfoLabel from "$lib/components/base/InfoLabel/InfoLabel.svelte";
 
   const minecraftAccount: Writable<MinecraftAccount> = writable(null);
 
@@ -83,20 +90,20 @@
     if (stateSub) stateSub();
   });
 
-  let loaded = false;
-  let dynamicRenderer = null;
-  let currentCape: Cape = null;
-  let currentMinecraftSkin: MinecraftSkin = null;
-  let accountInProgress = false;
-  let isAccountLinked = true;
-  let skinIsSyncing = false;
+  let loaded = $state(false);
+  let dynamicRenderer = $state(null);
+  let currentCape: Cape = $state(null);
+  let currentMinecraftSkin: MinecraftSkin = $state(null);
+  let accountInProgress = $state(false);
+  let isAccountLinked = $state(true);
+  let skinIsSyncing = $state(false);
 
   //linking account data
-  let isLinkToMcDialogOpen = false;
-  let linkingStatus = "";
+  let isLinkToMcDialogOpen = $state(false);
+  let linkingStatus = $state("");
   let linkingAbordController = null;
-  let linkingCode = "";
-  let linkingUrl = "";
+  let linkingCode = $state("");
+  let linkingUrl = $state("");
 
   const UnlinkMinecraftAccount = async () => {
     accountInProgress = true;
@@ -197,7 +204,7 @@
               type="primary"
               disabled={skinIsSyncing}
               icon={SyncIcon}
-              on:click={SyncCurrentSkin}
+              onclick={SyncCurrentSkin}
             />
           </Placeholder>
           <br />
@@ -209,7 +216,7 @@
               type="primary"
               disabled={skinIsSyncing}
               icon={SyncIcon}
-              on:click={RelinkAccount}
+              onclick={RelinkAccount}
             />
           </Placeholder>
           <br />
@@ -221,7 +228,7 @@
             size="large"
             type="secondary"
             disabled={accountInProgress}
-            on:click={UnlinkMinecraftAccount}
+            onclick={UnlinkMinecraftAccount}
             icon={CloseIcon}
           />
         </Placeholder>
@@ -239,14 +246,14 @@
         size="large"
         type="primary"
         disabled={accountInProgress}
-        on:click={StartLinkMinecraftAccount}
+        onclick={StartLinkMinecraftAccount}
         icon={HumanHandsUpIcon}
       />
     </div>
   {/if}
   <!-- Dialogs -->
   <LinkToMinecraftDialog
-    on:close={CancelLinkToMinecraft}
+    onclose={CancelLinkToMinecraft}
     bind:open={isLinkToMcDialogOpen}
     authStatus={linkingStatus}
     authCode={linkingCode}

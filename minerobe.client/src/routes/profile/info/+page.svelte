@@ -1,35 +1,44 @@
 <script lang="ts">
-  //main imports
-  import { writable, type Writable } from "svelte/store";
-  import { onDestroy, onMount } from "svelte";
   //api
   import { GetMinerobeUser } from "$src/api/auth";
   import { FetchSettings } from "$src/api/settings";
   import { GetMergedPackage } from "$src/api/pack";
+  import { ResetUserAvatar, UpdateUser } from "$src/api/user";
+
   //services
   import { ImportImages } from "$src/data/import";
   import { ExportImage } from "$src/data/export";
   import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
-  import { ResetUserAvatar, UpdateUser } from "$src/api/user";
   import { ShowToast } from "$src/data/toast";
+
   //consts
   import { CURRENT_APP_STATE, CURRENT_USER } from "$src/data/static";
-  //models
-  import type {
-    MinerobeUser,
-    MinerobeUserSettings,
-  } from "$src/data/models/user";
   import { APP_STATE } from "$src/data/enums/app";
+
   //components
   import Button from "$lib/components/base/Button/Button.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
   import TextBox from "$lib/components/base/TextBox/TextBox.svelte";
+
   //icons
   import ImportPackageIcon from "$icons/upload.svg?raw";
   import DownloadIcon from "$icons/download.svg?raw";
   import AvatarIcon from "$icons/avatar.svg?raw";
+
+  import { writable, type Writable } from "svelte/store";
+  import { onDestroy, onMount } from "svelte";
+  //api
+  //services
+  //consts
+  //models
+  import type {
+    MinerobeUser,
+    MinerobeUserSettings,
+  } from "$src/data/models/user";
+  //components
+  //icons
 
   const profileUser: Writable<MinerobeUser> = writable(null);
   const userSettings: Writable<MinerobeUserSettings> = writable(null);
@@ -48,8 +57,8 @@
     if (stateSub) stateSub();
   });
 
-  let loaded = false;
-  let inputProfileUsername = "";
+  let loaded = $state(false);
+  let inputProfileUsername = $state("");
 
   const DownloadAvatar = async () => {
     await ExportImage($profileUser.avatar, "avatar.png");
@@ -104,7 +113,7 @@
             <Button
               icon={ImportPackageIcon}
               label={"Upload"}
-              on:click={UploadAvatar}
+              onclick={UploadAvatar}
             />
           </Placeholder>
           <Placeholder
@@ -113,7 +122,7 @@
             width="100%"
             loadedStyle={"flex:1;"}
           >
-            <Button label="Reset" type="tertiary" on:click={ResetAvatar} />
+            <Button label="Reset" type="tertiary" onclick={ResetAvatar} />
           </Placeholder>
         </div>
         <Placeholder {loaded} height="36px" width="100%">
@@ -121,7 +130,7 @@
             icon={DownloadIcon}
             type={"secondary"}
             label={"Download"}
-            on:click={DownloadAvatar}
+            onclick={DownloadAvatar}
           />
         </Placeholder>
       </div>
@@ -144,7 +153,7 @@
         >
           <Button
             label={"Change username"}
-            on:click={UpdateUsername}
+            onclick={UpdateUsername}
             disabled={$profileUser.name == inputProfileUsername ||
               inputProfileUsername.length == 0}
           />
@@ -160,7 +169,7 @@
           icon={AvatarIcon}
           disabled={$userSettings?.currentTexture?.packageId==null}
           label={"Generate from current skin"}
-          on:click={GenerateAvatarFromCurrentSkin}
+          onclick={GenerateAvatarFromCurrentSkin}
         />
       </Placeholder>
       <Placeholder {loaded} height="30px" width="100%">

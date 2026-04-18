@@ -1,49 +1,82 @@
 <script lang="ts">
-  import Resize from "$lib/components/other/Resize/Resize.svelte";
-  import { IS_MOBILE_VIEW } from "$src/data/static";
-
   //services
   import { clickOutside } from "$src/helpers/data/componentHelper";
-  import { fly } from "svelte/transition";
 
-  export let opened = false;
-  export let caller = null;
-  export let position: "top" | "left" | "right" | "bottom" | "auto" = "auto";
-  export let align: "left" | "right" | "center" = "right";
-  export let preventClickOutsideClose = false;
-  export let autoWidth = true;
-  export let resizable = false;
+  //consts
+  import { IS_MOBILE_VIEW } from "$src/data/static";
 
-  let actualPosition = position;
+  //components
+  import Resize from "$lib/components/other/Resize/Resize.svelte";
 
-  let component = null;
-  let componentContent = null;
+  //services
+
+  interface FlyoutProps {
+    opened?: boolean;
+    caller?: any;
+    position?: "top" | "left" | "right" | "bottom" | "auto";
+    align?: "left" | "right" | "center";
+    preventClickOutsideClose?: boolean;
+    autoWidth?: boolean;
+    resizable?: boolean;
+    children?: import("svelte").Snippet<[any]>;
+  }
+
+  let {
+    opened = $bindable(false),
+    caller = null,
+    position = "auto",
+    align = "right",
+    preventClickOutsideClose = false,
+    autoWidth = true,
+    resizable = false,
+    children,
+  }: FlyoutProps = $props();
+
+  let actualPosition = $state("auto");
+  let isPositioned = $state(false);
+
+  let component = $state(null);
+  let componentContent = $state(null);
 
   const onClose = () => {
     if (opened && !preventClickOutsideClose) opened = false;
   };
-  const onStateChanged = (v) => {
-    let parentNode = document.body;
-    if (!component || !parentNode) return;
-    if (caller) {
-      parentNode = caller;
+  const schedulePosition = () => {
+    if (!component) return;
+    isPositioned = false;
+
+    if ($IS_MOBILE_VIEW) {
+      actualPosition = position;
+      isPositioned = true;
+      return;
     }
+
+    requestAnimationFrame(() => {
+      if (!opened || !component) return;
+      calculatePosition();
+      isPositioned = true;
+    });
   };
   const calculatePosition = () => {
+    if (!component) return;
     const flyoutRect = component.getBoundingClientRect();
     const callerRect = caller?.getBoundingClientRect();
-    if (autoWidth && !$IS_MOBILE_VIEW)
-      component.style.minWidth = callerRect?.width + "px";
-    else component.style.minWidth = null;
-    //component.style.maxWidth = callerRect?.width + "px";
+
+    // Clear stale inline values from previous viewport mode before recalculating.
+    component.style.minWidth = null;
+    component.style.maxWidth = null;
     component.style.left = null;
     component.style.right = null;
     component.style.top = null;
     component.style.bottom = null;
     component.style.maxHeight = null;
-    if ($IS_MOBILE_VIEW) {
-      return;
-    }
+
+    if (autoWidth && !$IS_MOBILE_VIEW)
+      component.style.minWidth = callerRect?.width + "px";
+    else component.style.minWidth = null;
+
+    if ($IS_MOBILE_VIEW) return;
+
     //calculate needed space
     if (position == "auto") {
       if (
@@ -95,36 +128,46 @@
   };
   const onComponentResize = () => {
     if (!opened) return;
-    requestAnimationFrame(() => {
-      calculatePosition();
-    });
+    requestAnimationFrame(() => calculatePosition());
   };
-  $: onStateChanged(opened);
+
+  $effect(() => {
+    if (!opened) {
+      isPositioned = false;
+      return;
+    }
+
+    schedulePosition();
+  });
 </script>
 
 <div
   bind:this={component}
-  use:clickOutside
+  use:clickOutside={onClose}
   class:opened
+  class:positioned={isPositioned || $IS_MOBILE_VIEW}
   class="flyout"
   class:closed={!opened}
   class:mobile={$IS_MOBILE_VIEW}
-  on:click_outside={onClose}
 >
-  <Resize targetNode={caller} on:resize={onResize} debounce={100}></Resize>
-  <Resize targetNode={componentContent} on:resize={onComponentResize}></Resize>
+  <Resize targetNode={caller} onresize={onResize} debounce={0}></Resize>
+  <Resize targetNode={componentContent} onresize={onComponentResize}></Resize>
   <div bind:this={componentContent} class="flyout-content">
-    <slot position={actualPosition} />
+    {@render children?.({ position: actualPosition })}
   </div>
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="flyout-mobile-bg" on:click={() => (opened = false)}></div>
+  <div class="flyout-mobile-bg" onclick={() => (opened = false)}></div>
 </div>
 
 <style lang="scss">
   .flyout {
     position: absolute;
     z-index: 20;
+    &:not(.positioned) {
+      visibility: hidden;
+      pointer-events: none;
+    }
     &.opened {
       display: flex;
     }
@@ -144,24 +187,23 @@
       justify-content: center;
       box-sizing: border-box;
       align-items: flex-end;
-      height: 100vh;
+      height: 100dvh;
+      min-height: 100dvh;
       .flyout-content {
         position: relative;
+        z-index: 1;
         width: 100%;
         max-width: 100%;
-        max-height: 75vh;
-        overflow: auto;
+        max-height: none;
+        overflow: visible;
       }
       &.opened .flyout-mobile-bg {
         display: block;
       }
       .flyout-mobile-bg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
+        position: fixed;
+        inset: 0;
+        z-index: 0;
         display: none;
         background-color: var(--color-dialog);
       }

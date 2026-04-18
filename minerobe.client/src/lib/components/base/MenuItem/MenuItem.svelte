@@ -1,12 +1,25 @@
 <script lang="ts">
-  export let label: string;
-  export let icon: string = null;
-  export let href: string = null;
-  export let disabled: boolean = false;
-  export let badgelabel: string = null;
-  export let selected: boolean = false;
-  export let opened = true;
-  export let top = false;
+  import type { BaseButtonProps } from "$src/data/components";
+
+  interface MenuItemProps extends BaseButtonProps {
+    disabled?: boolean;
+    badgelabel?: string;
+    selected?: boolean;
+    opened?: boolean;
+    top?: boolean;
+  }
+
+  let {
+    label,
+    icon = null,
+    href = null,
+    disabled = false,
+    badgelabel = null,
+    selected = false,
+    opened = $bindable(true),
+    top = false,
+    onclick = null,
+  }: MenuItemProps = $props();
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
@@ -16,7 +29,7 @@
   {href}
   class:selected
   class:opened
-  on:click
+  {onclick}
   class:top
   title={label}
 >

@@ -1,26 +1,37 @@
 <script lang="ts">
-  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
+  //api
   import { FetchSettings } from "$src/api/settings";
+
+  //services
+  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
+
+  //consts
+  import { APP_STATE } from "$src/data/enums/app";
+  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
+
+  //models
+  import type { OutfitLayer } from "$data/models/package";
+  import type { MinerobeUserSettings } from "$data/models/user";
+
+  //components
+  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
+
   import {
     GetMostLiked,
     GetMostRecent,
     GetMostDownloaded,
   } from "$src/api/view/landing";
-  import { APP_STATE } from "$src/data/enums/app";
-  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
-  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
-  import type { OutfitLayer } from "$data/models/package";
-  import type { MinerobeUserSettings } from "$data/models/user";
   import { onDestroy, onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
 
   const userSettings: Writable<MinerobeUserSettings> = writable(null);
 
-  let mostLiked = [];
-  let mostRecent = [];
-  let mostDownloaded = [];
-  let listsLoaded = false;
+  let mostLiked = $state([]);
+  let mostRecent = $state([]);
+  let mostDownloaded = $state([]);
+  let listsLoaded = $state(false);
   let loaded = false;
+  let lastAppState = $state(null);
 
   let stateSub;
   onMount(async () => {
@@ -33,10 +44,13 @@
         userSettings.set(settings);
       }
 
-      if (!listsLoaded)
+      // Reload lists only if auth state changed (login/logout), not on every emit
+      const stateChanged = lastAppState !== state;
+      if (stateChanged || !listsLoaded) {
+        lastAppState = state;
         await Promise.all([getRecent(), getLiked(), getDownloaded()]);
-
-      listsLoaded = true;
+        listsLoaded = true;
+      }
 
       loaded = true;
     });
@@ -59,9 +73,8 @@
   };
 
   const goToItemPage = (e) => {
-    const item = e.detail.item;
-    console.log("goToItemPage", e.detail);
-    const variant = e.detail?.layer as OutfitLayer;
+    const item = e.item;
+    const variant = e.layer as OutfitLayer;
     navigateToOutfitPackage(item, variant?.id);
   };
 </script>
@@ -78,19 +91,19 @@
     <h2 class="list-title">Most Recent</h2>
     <OutfitPackageList
       items={mostRecent}
-      on:select={goToItemPage}
+      onselect={goToItemPage}
       baseTexture={$userSettings?.baseTexture?.layers[0]}
     />
     <h2 class="list-title">Most Liked</h2>
     <OutfitPackageList
       items={mostLiked}
-      on:select={goToItemPage}
+      onselect={goToItemPage}
       baseTexture={$userSettings?.baseTexture?.layers[0]}
     />
     <h2 class="list-title">Most Downloaded</h2>
     <OutfitPackageList
       items={mostDownloaded}
-      on:select={goToItemPage}
+      onselect={goToItemPage}
       baseTexture={$userSettings?.baseTexture?.layers[0]}
     />
   {:else}

@@ -1,51 +1,66 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
-  //model
+  //models
   import type { OutfitLayer, OutfitPackage } from "$data/models/package";
+
   //components
   import Label from "$lib/components/base/Label/Label.svelte";
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+
   //icons
   import CheckIcon from "$icons/check.svg?raw";
 
-  const dispatch = createEventDispatcher();
+  interface OutfitPackageSingleLayerListItemProps {
+    item: OutfitPackage;
+    disabled?: boolean;
+    selected?: boolean;
+    selectable?: boolean;
+    baseTexture?: OutfitLayer;
+    onselect?: (event?: any) => void;
+    onclick?: (event?: any) => void;
+    onunselect?: (event?: any) => void;
+  }
 
-  export let item: OutfitPackage;
-  export let disabled = false;
-  export let selected = false;
-  export let selectable = false;
-  export let baseTexture: OutfitLayer = null;
+  let {
+    item,
+    disabled = false,
+    selected = $bindable(false),
+    selectable = false,
+    baseTexture = null
+  ,
+    onselect = null,
+    onclick = null,
+    onunselect = null
+  }: OutfitPackageSingleLayerListItemProps = $props();
 
-  const onClick = function (e) {
+  const onClick= function (e) {
     if (selectable) {
-      dispatch("select", { item: item });
+      onselect?.({ item: item });
       selected = true;
       return;
     }
-    dispatch("click", { item: item });
+    onclick?.({ item: item });
   };
-  const onUnSelect = function (e) {
+  const onUnSelect= function (e) {
     e.stopPropagation();
     e.preventDefault();
-    dispatch("unselect", { item: item });
+    onunselect?.({ item: item });
     selected = false;
   };
 </script>
 
 <!-- svelte-ignore a11y_consider_explicit_label -->
 <!-- svelte-ignore a11y_missing_attribute -->
-<!-- svelte-ignore a11y-missing-attribute -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_missing_attribute -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <a
   class="outfit-package-single-layer-list-item"
-  on:click={onClick}
+  onclick={onClick}
   class:disabled
 >
   {#if selectable && selected}
-    <div class="item-selected" on:click={onUnSelect}>
+    <div class="item-selected" onclick={onUnSelect}>
       <div>{@html CheckIcon}</div>
     </div>
   {/if}
@@ -56,9 +71,9 @@
     <span>{item.name}</span>
     <div>
       <ColorBadge
-        color={item.layers[0].colorName}
+        color={item.layers[0]?.colorName}
         selectable={false}
-        colorName={item.layers[0].colorName}
+        colorName={item.layers[0]?.colorName}
       />
       <Label dense>{item.outfitType}</Label>
     </div>

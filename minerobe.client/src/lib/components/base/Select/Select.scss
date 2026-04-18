@@ -89,6 +89,9 @@
       border-bottom: 0px;
       border-left: 0px;
       border-right: 0px;
+      max-height: min(75dvh, calc(100dvh - 64px));
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
   }
 }

@@ -1,14 +1,16 @@
 <script lang="ts">
-  //components
   import Placeholder from "$component/base/Placeholder/Placeholder.svelte";
 
-  export let label: string;
-  export let placeholder: boolean = false;
+  interface SectionTitleProps {
+    label: string;
+    placeholder?: boolean;
+  }
+
+  let { label, placeholder = false }: SectionTitleProps = $props();
 </script>
 
 <span class="section-title">
   {#if placeholder}
-    <!-- svelte-ignore missing-declaration -->
     <Placeholder height="14px" width="64px" />
   {:else}
     {label}

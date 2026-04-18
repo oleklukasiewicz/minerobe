@@ -1,64 +1,107 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
   //models
   import type { PagedResponse } from "$data/models/base";
-  //components
-  import Button from "../../base/Button/Button.svelte";
-  import Select from "../../base/Select/Select.svelte";
+
   //icons
   import ChevronLeftIcon from "$icons/chevron-left.svg?raw";
   import ChevronRightIcon from "$icons/chevron-right.svg?raw";
 
-  const dispatch = createEventDispatcher();
+  //main imports
+    //models
+  //components
+  import Button from "../../base/Button/Button.svelte";
+  import Select from "../../base/Select/Select.svelte";
+  //icons
 
-  export let items: PagedResponse<any>;
-  export let pageSize = null;
-  export let loading: boolean = false;
-  export let pageSizes: number[] = [10, 20, 50, 100];
+  interface PagedListProps {
+    items: PagedResponse<any>;
+    pageSize?: any;
+    loading?: boolean;
+    pageSizes?: number[];
+    children?: import('svelte').Snippet<[any]>;
+    footer?: import('svelte').Snippet;
+    onoptionsChanged?: (event?: any) => void;
+  }
 
-  let totalPages = 0;
-  $: totalPages = Math.ceil(
-    items?.options.total / (pageSize ?? items?.options.pageSize)
-  );
+  let {
+    items = $bindable(),
+    pageSize = null,
+    loading = false,
+    pageSizes = [10, 20, 50, 100],
+    children,
+    footer
+  ,
+    onoptionsChanged = null
+  }: PagedListProps = $props();
 
-  const onOptionsChanged = function () {
-    dispatch("optionsChanged", { options: items });
-  };
-  const onPrevious = function (event) {
-    items.options.page--;
-    onOptionsChanged();
-  };
-  const onNext = function (event) {
-    items.options.page++;
-    onOptionsChanged();
-  };
-  const onPageSizeChanged = function (event) {
-    const pageSize = event.detail.item;
-    items.options.pageSize = pageSize;
-    //check if the current page is valid
-    if (
-      items.options.page >=
-      Math.ceil(items?.options.total / (pageSize ?? items?.options.pageSize))
-    ) {
-      items.options.page = 0;
+  let selectedPageSize = $state(0);
+  const totalPages = $derived.by(() => {
+    const total = items?.options.total ?? 0;
+    return selectedPageSize > 0 ? Math.ceil(total / selectedPageSize) : 0;
+  });
+
+  $effect(() => {
+    if (selectedPageSize !== 0) return;
+    selectedPageSize = pageSize ?? items?.options.pageSize ?? 0;
+  });
+
+  $effect(() => {
+    if (items?.options.pageSize != null && items.options.pageSize !== selectedPageSize) {
+      selectedPageSize = items.options.pageSize;
     }
+  });
+
+  const onOptionsChanged= function () {
+    onoptionsChanged?.({ options: items });
+  };
+  const onPrevious= function (event) {
+    items = {
+      ...items,
+      options: {
+        ...items.options,
+        page: Math.max(0, (items?.options.page ?? 0) - 1),
+      },
+    };
+    onOptionsChanged();
+  };
+  const onNext= function (event) {
+    items = {
+      ...items,
+      options: {
+        ...items.options,
+        page: (items?.options.page ?? 0) + 1,
+      },
+    };
+    onOptionsChanged();
+  };
+  const onPageSizeChanged= function (event) {
+    const pageSize = event.item;
+    selectedPageSize = pageSize;
+    const nextPage =
+      (items?.options.page ?? 0) >=
+      Math.ceil((items?.options.total ?? 0) / (pageSize || 1))
+        ? 0
+        : items?.options.page ?? 0;
+
+    items = {
+      ...items,
+      options: {
+        ...items.options,
+        pageSize,
+        page: nextPage,
+      },
+    };
     onOptionsChanged();
   };
 </script>
 
 <div class="paged-list">
   <div class="list-items">
-    <slot
-      items={items?.items}
-      pageSize={pageSize ?? items?.options.pageSize}
-      page={items.options.page}
-      {loading}
-    ></slot>
+    {@render children?.({ items: items?.items, pageSize: selectedPageSize, page: items.options.page, loading, })}
   </div>
   <div class="list-actions">
     <div>
-      <slot name="footer"></slot>
+      {@render footer?.()}
     </div>
     <div class="footer-actions">
       <Button
@@ -67,7 +110,7 @@
         iconSize="large"
         icon={ChevronLeftIcon}
         disabled={items?.options.page == 0 || items == null || loading}
-        on:click={onPrevious}
+        onclick={onPrevious}
       />
       <div class="page">
         {items?.options.page + 1 || 0} of {totalPages || 0}
@@ -80,14 +123,14 @@
         disabled={items?.options.page >= totalPages - 1 ||
           items == null ||
           loading}
-        on:click={onNext}
+        onclick={onNext}
       />
       <div>
         <Select
           disabled={loading}
           items={pageSizes}
-          selectedItem={pageSize ?? items?.options.pageSize}
-          on:select={onPageSizeChanged}
+          value={selectedPageSize}
+          onselect={onPageSizeChanged}
         />
       </div>
     </div>

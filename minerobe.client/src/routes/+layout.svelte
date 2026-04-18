@@ -1,19 +1,30 @@
 <script lang="ts">
+  //api
+  import { getCurrentUser } from "$src/api/auth";
+
+  //services
+  import { TOAST_LIST } from "$src/data/toast";
+
+  //components
+  import Navigation from "$lib/components/other/Navigation/Navigation.svelte";
+
   import { browser } from "$app/environment";
   import "$locales/locales";
   import { locale, waitLocale, isLoading, _ } from "svelte-i18n";
 
   import { onMount } from "svelte";
-  import { getCurrentUser } from "$src/api/auth";
-  import Navigation from "$lib/components/other/Navigation/Navigation.svelte";
   import {
     Initialize,
     InitializeLayout,
     IS_MOBILE_VIEW,
   } from "$src/data/static";
-  import { TOAST_LIST } from "$src/data/toast";
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
 
-  let ToastController;
+  let { children }: Props = $props();
+
+  let ToastController: any = $state(null);
 
   export const load = async () => {
     if (browser) {
@@ -38,11 +49,11 @@
 
 <div id="app">
   {#if ToastController}
-    <svelte:component this={ToastController} items={$TOAST_LIST} />
+    <ToastController items={$TOAST_LIST} />
   {/if}
   <Navigation />
   <div id="view" class:mobile={$IS_MOBILE_VIEW}>
-    <slot />
+    {@render children?.()}
   </div>
 </div>
 

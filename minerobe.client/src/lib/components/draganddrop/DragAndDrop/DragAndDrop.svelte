@@ -1,17 +1,15 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
+  interface DragAndDropProps {
+    children?: import("svelte").Snippet;
+    ondrop?: (event?: any) => void;
+  }
 
-  const dispatch = createEventDispatcher();
+  let { children, ondrop = null }: DragAndDropProps = $props();
 
-  let isDragging = false;
+  let isDragging = $state(false);
 
-  const handleDragEnter = function () {
-    isDragging = true;
-  };
-  const handleDragLeave = function () {
-    isDragging = false;
-  };
+  const handleDragEnter = () => (isDragging = true);
+  const handleDragLeave = () => (isDragging = false);
   const handleDragOver = function (e) {
     e.preventDefault();
   };
@@ -21,21 +19,21 @@
       .filter((item) => item.kind === "file")
       .map((item) => item.getAsFile());
 
-    dispatch("drop", { items: items });
+    ondrop?.({ items: items });
     isDragging = false;
   };
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="drag-and-drop"
   class:isDragging
-  on:drop={handleDrop}
-  on:dragover={handleDragOver}
-  on:dragenter={handleDragEnter}
-  on:dragleave={handleDragLeave}
+  ondrop={handleDrop}
+  ondragover={handleDragOver}
+  ondragenter={handleDragEnter}
+  ondragleave={handleDragLeave}
 >
-  <slot></slot>
+  {@render children?.()}
 </div>
 
 <style lang="scss">

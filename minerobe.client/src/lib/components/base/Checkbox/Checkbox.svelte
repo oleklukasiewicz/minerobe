@@ -1,29 +1,38 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
   //icons
   import CheckIcon from "$icons/check.svg?raw";
+  import type { BaseProps } from "$src/data/components";
 
-  const dispatch = createEventDispatcher();
+  interface CheckBoxProps extends BaseProps {
+    style?: string;
+    value?: boolean;
+    label?: string;
+    onchange?: (event?: any) => void;
+    onselect?: (event?: any) => void;
+    onunselect?: (event?: any) => void;
+  }
 
-  export let style = "";
-  export let value: boolean = false;
-  export let label: string = null;
-  
+  let {
+    style = "",
+    value = $bindable(false),
+    label = null,
+    disabled = false,
+    onchange = null,
+    onselect = null,
+    onunselect = null,
+  }: CheckBoxProps = $props();
+
   const toggleValue = () => {
     value = !value;
-    dispatch("change", { value });
-    if (value) {
-      dispatch("select");
-    } else {
-      dispatch("unselect");
-    }
+    onchange?.({ value });
+    if (value) onselect?.();
+    else onunselect?.();
   };
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="checkbox-container" {style} on:click={toggleValue}>
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div class="checkbox-container" {style} onclick={toggleValue} class:disabled>
   <div class="checkbox" class:selected={value}>
     {#if value}
       {@html CheckIcon}

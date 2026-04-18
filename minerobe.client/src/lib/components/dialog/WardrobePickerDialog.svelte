@@ -1,46 +1,69 @@
 <script lang="ts">
+  //consts
+  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+
+  //models
+  import { OutfitLayer, OutfitPackage } from "$src/data/models/package";
+  import { PagedModel, PagedResponse, SortOption } from "$src/data/models/base";
+  import { OutfitFilter } from "$src/data/models/filter";
+
+  //icons
+  import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
+  import AnimationIcon from "$icons/animation.svg?raw";
+
   //api
   import {
     GetWardrobeItemsWithCollectionContext,
     GetWardrobePackages,
   } from "$src/api/wardrobe";
   //model
-  import { OutfitLayer, OutfitPackage } from "$src/data/models/package";
-  import { PACKAGE_TYPE } from "$src/data/enums/outfit";
-  import { PagedResponse, SortOption } from "$src/data/models/base";
-  import { OutfitFilter } from "$src/data/models/filter";
   //icons
-  import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
-  import AnimationIcon from "$icons/animation.svg?raw";
   //components
   import MenuItem from "../base/MenuItem/MenuItem.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import Menu from "../base/Menu/Menu.svelte";
   import PagedList from "../list/PagedList/PagedList.svelte";
   import OutfitPackagePickerList from "../outfit/OutfitPackagePickerList/OutfitPackagePickerList.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
 
-  export let open = false;
-  export let label = "Wardrobe";
-  export let collectionId: string = null;
-  export let baseTexture: OutfitLayer = null;
+  interface WardrobePickerDialogProps extends BaseDialogProps {
+    open?: boolean;
+    label?: string;
+    collectionId?: string;
+    baseTexture?: OutfitLayer;
+    onselect?: (event?: any) => void;
+  }
 
-  let items = new PagedResponse<OutfitPackage>();
-  let filter: OutfitFilter = new OutfitFilter();
+  let {
+    open = $bindable(false),
+    label = "Wardrobe",
+    collectionId = null,
+    baseTexture = null,
+    onselect = null,
+  }: WardrobePickerDialogProps = $props();
+
+  let items = $state(new PagedResponse<OutfitPackage>());
+  let filter: OutfitFilter = $state(new OutfitFilter());
   let sortOption: SortOption[] = [];
   filter.type = PACKAGE_TYPE.OUTFIT_SET;
   let abortController = new AbortController();
 
   const fetchItems = async (e) => {
-    const options: PagedResponse<OutfitPackage> = e?.detail?.options;
+    const options: PagedResponse<OutfitPackage> = e?.options;
     items.items = null;
-    const pagedItems = await GetWardrobeItemsWithCollectionContext(
-      collectionId,
-      filter,
-      options?.options.page || 0,
-      options?.options.pageSize || 12,
-      sortOption,
-      abortController
-    );
+    const pagedModel = new PagedModel<OutfitFilter>();
+    pagedModel.page = options?.options.page || 0;
+    pagedModel.pageSize = options?.options.pageSize || 12;
+    pagedModel.filter = filter;
+    pagedModel.sort = sortOption;
+
+    const pagedItems = collectionId
+      ? await GetWardrobeItemsWithCollectionContext(
+          collectionId,
+          pagedModel,
+          abortController,
+        )
+      : await GetWardrobePackages(pagedModel, abortController);
     items = pagedItems;
   };
   const setFilterType = async function (type) {
@@ -51,54 +74,61 @@
   const onOpen = async (v) => {
     if (v) await fetchItems(null);
   };
-  $: onOpen(open);
+  $effect(() => {
+    onOpen(open);
+  });
 </script>
 
 <Dialog bind:open {label}>
   <div id="wardrobe-picker-dialog">
     <div id="wardrobe-picker-navigation">
-      <Menu let:opened let:top>
-        <MenuItem
-          label="Sets"
-          icon={AnimationIcon}
-          {opened}
-          {top}
-          on:click={() => setFilterType(PACKAGE_TYPE.OUTFIT_SET)}
-          selected={filter.type == PACKAGE_TYPE.OUTFIT_SET}
-        />
-        <MenuItem
-          {opened}
-          {top}
-          label="Outfits"
-          icon={ShoppingBagIcon}
-          on:click={() => setFilterType(PACKAGE_TYPE.OUTFIT)}
-          selected={filter.type == PACKAGE_TYPE.OUTFIT}
-        />
+      <Menu>
+        {#snippet children({ opened, top })}
+          <MenuItem
+            label="Sets"
+            icon={AnimationIcon}
+            {opened}
+            {top}
+            onclick={() => setFilterType(PACKAGE_TYPE.OUTFIT_SET)}
+            selected={filter.type == PACKAGE_TYPE.OUTFIT_SET}
+          />
+          <MenuItem
+            {opened}
+            {top}
+            label="Outfits"
+            icon={ShoppingBagIcon}
+            onclick={() => setFilterType(PACKAGE_TYPE.OUTFIT)}
+            selected={filter.type == PACKAGE_TYPE.OUTFIT}
+          />
+        {/snippet}
       </Menu>
     </div>
     <div id="wardrobe-picker-items">
       <PagedList
-        {items}
+        bind:items
         pageSize={items?.options.pageSize ?? 12}
         loading={items?.items == null}
         pageSizes={[6, 12, 24]}
-        on:optionsChanged={fetchItems}
-        let:items={pagedItems}
-        let:pageSize={pagedPageSize}
-        let:loading={pagedLoading}
+        onoptionsChanged={fetchItems}
       >
-        <OutfitPackagePickerList
-          baseTexture={filter.type == PACKAGE_TYPE.OUTFIT_SET
-            ? baseTexture
-            : null}
-          selectable
-          disableContext={collectionId}
-          disableFunction={(context, item) => item.isInCollection}
-          items={pagedItems}
-          pageSize={pagedPageSize}
-          loading={pagedLoading}
-          on:select
-        />
+        {#snippet children({
+          items: pagedItems,
+          pageSize: pagedPageSize,
+          loading: pagedLoading,
+        })}
+          <OutfitPackagePickerList
+            baseTexture={filter.type == PACKAGE_TYPE.OUTFIT_SET
+              ? baseTexture
+              : null}
+            selectable
+            disableContext={collectionId}
+            disableFunction={(context, item) => item.isInCollection}
+            items={pagedItems}
+            pageSize={pagedPageSize}
+            loading={pagedLoading}
+            {onselect}
+          />
+        {/snippet}
       </PagedList>
     </div>
   </div>

@@ -1,45 +1,53 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
-  //model
+  //consts
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
-  //components
-  import Dialog from "../base/Dialog/Dialog.svelte";
+
   //icons
   import ShoppingBagIcon from "$icons/shopping-bag.svg?raw";
   import AnimationIcon from "$icons/animation.svg?raw";
   import ListIcon from "$icons/list.svg?raw";
 
-  const dispatch = createEventDispatcher();
+  import Dialog from "../base/Dialog/Dialog.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
+  //icons
 
-  export let open = false;
+  interface OutfitPackageTypePickerDialogProps extends BaseDialogProps {
+    open?: boolean;
+    onselect?: (event?: any) => void;
+  }
+
+  let {
+    open = $bindable(false),
+    label = "Select type",
+    onselect = null,
+  }: OutfitPackageTypePickerDialogProps = $props();
   const onSelect = function (item) {
-    dispatch("select", { type: item });
+    onselect?.({ type: item });
   };
 </script>
 
-<Dialog bind:open label="Select type">
+<Dialog bind:open {label}>
   <div id="outfit-type-dialog">
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-missing-attribute -->
-    <a class="type-item" on:click={() => onSelect(PACKAGE_TYPE.OUTFIT_SET)}>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_missing_attribute -->
+    <a class="type-item" onclick={() => onSelect(PACKAGE_TYPE.OUTFIT_SET)}>
       <div class="icon-big">{@html AnimationIcon}</div>
       <b>Set</b>
     </a>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-missing-attribute -->
-    <a class="type-item" on:click={() => onSelect(PACKAGE_TYPE.OUTFIT)}>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_missing_attribute -->
+    <a class="type-item" onclick={() => onSelect(PACKAGE_TYPE.OUTFIT)}>
       <div class="icon-big">{@html ShoppingBagIcon}</div>
       <b>Outfit</b>
     </a>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-missing-attribute -->
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_missing_attribute -->
     <a
       class="type-item"
-      on:click={() => onSelect(PACKAGE_TYPE.OUTFIT_COLLECTION)}
+      onclick={() => onSelect(PACKAGE_TYPE.OUTFIT_COLLECTION)}
     >
       <div class="icon-big">{@html ListIcon}</div>
       <b>Collection</b>

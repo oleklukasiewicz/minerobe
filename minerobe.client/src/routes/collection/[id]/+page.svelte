@@ -1,15 +1,28 @@
 <script lang="ts">
-  import Button from "$lib/components/base/Button/Button.svelte";
-  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
-  import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
-  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
+  //api
   import { GetCollection, GetCollectionsItems } from "$src/api/collection";
   import { FetchSettings } from "$src/api/settings.js";
+
+  //consts
   import { APP_STATE } from "$src/data/enums/app";
+
+  //models
   import { PagedResponse } from "$src/data/models/base.js";
   import type { OutfitPackageCollection } from "$src/data/models/collection";
   import { OutfitPackage } from "$src/data/models/package.js";
   import type { MinerobeUserSettings } from "$src/data/models/user.js";
+
+  //components
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+  import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
+  import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
+  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
+  import Label from "$lib/components/base/Label/Label.svelte";
+
+  //icons
+  import EditIcon from "$src/icons/edit.svg?raw";
+
   import {
     CURRENT_APP_STATE,
     CURRENT_USER,
@@ -17,24 +30,25 @@
   } from "$src/data/static";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
-  import EditIcon from "$src/icons/edit.svg?raw";
-  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
-  import Label from "$lib/components/base/Label/Label.svelte";
   import {
     navigateToCollection,
     navigateToOutfitPackage,
   } from "$src/helpers/other/navigationHelper.js";
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   const itemCollection: Writable<OutfitPackageCollection> = writable(null);
   const collectionItems: Writable<PagedResponse<OutfitPackage>[]> = writable(
     []
   );
 
-  let userSettings: MinerobeUserSettings = null;
+  let userSettings: MinerobeUserSettings = $state(null);
   let stateSub = null;
-  let itemsLoaded = false;
-  let loaded = false;
+  let itemsLoaded = $state(false);
+  let loaded = $state(false);
   let collectionLoaded = false;
 
   onMount(async () => {
@@ -59,7 +73,7 @@
 
   const fetchItems = async (e) => {
     itemsLoaded = false;
-    const options: PagedResponse<OutfitPackage> = e?.detail?.options;
+      const options: PagedResponse<OutfitPackage> = e?.options;
     const pagedItems = await GetCollectionsItems(
       $itemCollection.id,
       null,
@@ -71,8 +85,8 @@
     itemsLoaded = true;
   };
   const goToItemPage = (e) => {
-    const item = e.detail.item;
-    const layer = e.detail.layer;
+    const item = e.item;
+      const layer = e.layer;
     navigateToOutfitPackage(item, layer?.id);
   };
 </script>
@@ -90,7 +104,7 @@
             icon={EditIcon}
             type="tertiary"
             size="large"
-            on:click={editCollection}
+            onclick={editCollection}
           />
         {/if}
       </h1>
@@ -110,27 +124,30 @@
   </div>
   <div id="collection-items">
       <LazyList
-        let:items={pagedItems}
-        on:loading={fetchItems}
+        
+        onloading={fetchItems}
         itemsPages={$collectionItems}
         rootMargin={"100px"}
         loading={!itemsLoaded}
       >
-        <OutfitPackageList
-          columns={$IS_MOBILE_VIEW ? 3 : 6}
-          resizable
-          items={pagedItems}
-          currentPackageId={userSettings?.currentTexture?.packageId}
-          baseTexture={userSettings?.baseTexture.layers[0]}
-          on:select={goToItemPage}
-        />
-        <OutfitPackageList
-          loading
-          items={[]}
-          pageSize={36}
-          slot="loading"
-          columns={$IS_MOBILE_VIEW ? 3 : 6}
-        />
+        {#snippet children({ items })}
+          <OutfitPackageList
+            columns={$IS_MOBILE_VIEW ? 3 : 6}
+            resizable
+            items={items}
+            currentPackageId={userSettings?.currentTexture?.packageId}
+            baseTexture={userSettings?.baseTexture.layers[0]}
+            onselect={goToItemPage}
+          />
+        {/snippet}
+        {#snippet loadingContent()}
+          <OutfitPackageList
+            loading
+            items={[]}
+            pageSize={36}
+            columns={$IS_MOBILE_VIEW ? 3 : 6}
+          />
+        {/snippet}
       </LazyList>
   </div>
 </div>

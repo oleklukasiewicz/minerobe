@@ -1,12 +1,18 @@
 <script lang="ts">
   //services
   import { HideToast } from "$src/data/toast";
+
   //consts
   import { IS_MOBILE_VIEW } from "$src/data/static";
+
   //components
   import Toast from "$lib/components/base/Toast/Toast.svelte";
 
-  export let items = [];
+  interface ToastControllerProps {
+    items?: any;
+  }
+
+  let { items = [] }: ToastControllerProps = $props();
 </script>
 
 <div>
@@ -18,8 +24,8 @@
       show={true}
       closeable={toast.closeable}
       type={toast.type}
-      on:click={toast.action}
-      on:close={() => HideToast(toast)}
+      onclick={toast.action}
+      onclose={() => HideToast(toast)}
     />
   {/each}
 </div>

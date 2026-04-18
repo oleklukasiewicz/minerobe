@@ -1,8 +1,37 @@
 <script lang="ts">
+  //api
+  import { FetchSettings } from "$src/api/settings.js";
+  import { SharePackage, UnSharePackage } from "$src/api/social.js";
+  import { GetWardrobeItemsWithCollectionContext } from "$src/api/wardrobe";
+
+  //services
+  import { ShowToast } from "$src/data/toast.js";
+  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper.js";
+
+  //consts
+  import { APP_STATE } from "$src/data/enums/app";
+  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
+
+  //models
+  import { PagedModel, PagedResponse } from "$src/data/models/base.js";
+  import type { OutfitPackageCollection } from "$src/data/models/collection";
+  import { OutfitPackage } from "$src/data/models/package.js";
+  import type { MinerobeUserSettings } from "$src/data/models/user.js";
+  import type { OutfitFilter } from "$src/data/models/filter";
+
+  //components
   import Button from "$lib/components/base/Button/Button.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
   import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
+  import EditCollectionDialog from "$lib/components/dialog/EditCollectionDialog.svelte";
+  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
+  import Label from "$lib/components/base/Label/Label.svelte";
+  import CollectionsItemPickerDialog from "$lib/components/dialog/CollectionItemsPickerDialog.svelte";
+
+  //icons
+  import EditIcon from "$src/icons/edit.svg?raw";
+
   import {
     AddPackageToCollection,
     GetCollection,
@@ -10,43 +39,32 @@
     RemovePackageFromCollection,
     UpdateCollection,
   } from "$src/api/collection";
-  import { FetchSettings } from "$src/api/settings.js";
-  import { APP_STATE } from "$src/data/enums/app";
-  import { PagedModel, PagedResponse } from "$src/data/models/base.js";
-  import type { OutfitPackageCollection } from "$src/data/models/collection";
-  import { OutfitPackage } from "$src/data/models/package.js";
-  import type { MinerobeUserSettings } from "$src/data/models/user.js";
-  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
-  import EditIcon from "$src/icons/edit.svg?raw";
-  import EditCollectionDialog from "$lib/components/dialog/EditCollectionDialog.svelte";
-  import { SharePackage, UnSharePackage } from "$src/api/social.js";
-  import { ShowToast } from "$src/data/toast.js";
-  import SectionTitle from "$lib/components/base/SectionTitle/SectionTitle.svelte";
-  import Label from "$lib/components/base/Label/Label.svelte";
-  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper.js";
-  import type { OutfitFilter } from "$src/data/models/filter";
-  import { GetWardrobeItemsWithCollectionContext } from "$src/api/wardrobe";
-  import CollectionsItemPickerDialog from "$lib/components/dialog/CollectionItemsPickerDialog.svelte";
-  export let data;
+  interface Props {
+    data: any;
+  }
+
+  let { data }: Props = $props();
 
   const itemCollection: Writable<OutfitPackageCollection> = writable(null);
   const collectionItems: Writable<PagedResponse<OutfitPackage>[]> = writable(
-    []
+    [],
   );
 
-  let userSettings: MinerobeUserSettings = null;
+  let userSettings: MinerobeUserSettings = $state(null);
   let stateSub = null;
-  let itemsLoaded = false;
-  let loaded = false;
+  let itemsLoaded = $state(false);
+  let loaded = $state(false);
   let collectionLoaded = false;
-  let isEditDialogOpen = false;
-  let isEditItemsDialogOpen = false;
-  let dialogOutfitsPickerOptions: PagedModel<OutfitFilter> =
-    new PagedModel<OutfitFilter>();
-  let dialogOutfitPickerItems: PagedResponse<OutfitPackage> =
-    new PagedResponse<OutfitPackage>();
+  let isEditDialogOpen = $state(false);
+  let isEditItemsDialogOpen = $state(false);
+  let dialogOutfitsPickerOptions: PagedModel<OutfitFilter> = $state(
+    new PagedModel<OutfitFilter>(),
+  );
+  let dialogOutfitPickerItems: PagedResponse<OutfitPackage> = $state(
+    new PagedResponse<OutfitPackage>(),
+  );
 
   onMount(async () => {
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
@@ -65,13 +83,13 @@
 
   const fetchItems = async (e) => {
     itemsLoaded = false;
-    const options: PagedResponse<OutfitPackage> = e?.detail?.options;
+    const options: PagedResponse<OutfitPackage> = e?.options;
     const pagedItems = await GetCollectionsItems(
       $itemCollection.id,
       null,
       options?.options.page || 0,
       options?.options.pageSize || 36,
-      null
+      null,
     );
     collectionItems.update((items) => [...items, pagedItems]);
     itemsLoaded = true;
@@ -81,7 +99,7 @@
     await fetchItems(null);
   };
   const saveCollection = async (e) => {
-    const collection = e.detail.collection;
+    const collection = e.collection;
     itemCollection.set(collection);
     await UpdateCollection(collection);
     if (collection.social.isShared) {
@@ -93,12 +111,12 @@
     }
   };
   const goToItemPage = (e) => {
-    const item = e.detail.item;
-    const layer = e.detail.layer;
+    const item = e.item;
+    const layer = e.layer;
     navigateToOutfitPackage(item, layer?.id);
   };
   const openOutfitPicker = async (e) => {
-    let options = e?.detail?.options;
+    let options = e?.options;
     if (!options) {
       options = new PagedModel<OutfitFilter>();
       options.filter.type = null;
@@ -110,15 +128,17 @@
     dialogOutfitPickerItems.items = null;
     isEditItemsDialogOpen = true;
 
-    dialogOutfitPickerItems = await GetWardrobeItemsWithCollectionContext(
+    const items = await GetWardrobeItemsWithCollectionContext(
       $itemCollection.id,
-      dialogOutfitsPickerOptions
+      dialogOutfitsPickerOptions,
     );
+    items.items = items.items.filter((i) => i.layers.length > 0);
+    dialogOutfitPickerItems = items;
     dialogOutfitPickerItems.items.forEach((item) => {
       if (item.isInCollection) {
         if (
           flatCollectionItems.find(
-            (i) => i.id === item.id && i.layers[0]?.id === item.layers[0]?.id
+            (i) => i.id === item.id && i.layers[0]?.id === item.layers[0]?.id,
           ) == null
         ) {
           flatCollectionItems.push(item);
@@ -127,11 +147,11 @@
     });
   };
   const addItemToCollection = async (e) => {
-    const item = e.detail.items[0];
+    const item = e.items[0];
     await AddPackageToCollection($itemCollection.id, item.id);
   };
   const removeItemFromCollection = async (e) => {
-    const item = e.detail.items[0];
+    const item = e.items[0];
     await RemovePackageFromCollection($itemCollection.id, item.id);
   };
   let flatCollectionItems: OutfitPackage[] = [];
@@ -140,7 +160,7 @@
 <div id="collection-view" class:mobile={$IS_MOBILE_VIEW}>
   <div id="collection-header">
     <SectionTitle label="Collection" placeholder={!loaded} />
-    <Placeholder {loaded}  style="min-height: 46px; max-width:50%;"
+    <Placeholder {loaded} style="min-height: 46px; max-width:50%;"
       ><h1>
         {$itemCollection.name}
         <Button
@@ -149,7 +169,7 @@
           icon={EditIcon}
           type="tertiary"
           size="large"
-          on:click={() => (isEditDialogOpen = true)}
+          onclick={() => (isEditDialogOpen = true)}
         />
       </h1>
     </Placeholder>
@@ -161,36 +181,39 @@
         <Label variant={"rare"}>Shared</Label>
       {/if}
     </div>
-    <Placeholder {loaded} style="min-height: 42px;"><p>{$itemCollection.description}</p></Placeholder>
+    <Placeholder {loaded} style="min-height: 42px;"
+      ><p>{$itemCollection.description}</p></Placeholder
+    >
   </div>
   <div id="collection-actions">
-    <Button label="Edit items" icon={EditIcon} on:click={openOutfitPicker} />
+    <Button label="Edit items" icon={EditIcon} onclick={openOutfitPicker} />
     <div></div>
   </div>
   <div id="collection-items">
     {#if loaded}
       <LazyList
-        let:items={pagedItems}
-        on:loading={fetchItems}
+        onloading={fetchItems}
         itemsPages={$collectionItems}
         rootMargin={"100px"}
         loading={!itemsLoaded}
       >
-        <OutfitPackageList
-          columns={$IS_MOBILE_VIEW ? 3 : 6}
-          resizable
-          items={pagedItems}
-          currentPackageId={userSettings?.currentTexture?.packageId}
-          baseTexture={userSettings?.baseTexture.layers[0]}
-          on:select={goToItemPage}
-        /></LazyList
-      >
+        {#snippet children({ items: pagedItems })}
+          <OutfitPackageList
+            columns={$IS_MOBILE_VIEW ? 3 : 6}
+            resizable
+            items={pagedItems}
+            currentPackageId={userSettings?.currentTexture?.packageId}
+            baseTexture={userSettings?.baseTexture.layers[0]}
+            onselect={goToItemPage}
+          />
+        {/snippet}
+      </LazyList>
     {/if}
   </div>
   <EditCollectionDialog
     bind:open={isEditDialogOpen}
     collection={$itemCollection}
-    on:save={saveCollection}
+    onsave={saveCollection}
   />
   <CollectionsItemPickerDialog
     pageSizes={[6, 12, 24]}
@@ -200,11 +223,11 @@
     selectedItems={flatCollectionItems}
     loading={dialogOutfitPickerItems?.items == null}
     baseTexture={userSettings?.baseTexture.layers[0]}
-    on:optionsChanged={openOutfitPicker}
-    on:select={addItemToCollection}
-    on:unselect={removeItemFromCollection}
-    on:filter={openOutfitPicker}
-    on:close={refreshItems}
+    onoptionsChanged={openOutfitPicker}
+    onselect={addItemToCollection}
+    onunselect={removeItemFromCollection}
+    onfilter={openOutfitPicker}
+    onclose={refreshItems}
   />
 </div>
 

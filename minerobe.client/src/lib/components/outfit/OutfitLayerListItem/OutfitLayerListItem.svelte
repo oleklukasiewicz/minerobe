@@ -1,14 +1,16 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
-  //models
-  import type { OutfitLayer } from "$data/models/package";
+  //consts
   import type { MODEL_TYPE } from "$src/data/enums/model";
   import type { OUTFIT_TYPE } from "$src/data/enums/outfit";
+
+  //models
+  import type { OutfitLayer } from "$data/models/package";
+
   //components
   import Button from "$lib/components/base/Button/Button.svelte";
   import Label from "$lib/components/base/Label/Label.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
+
   //icons
   import UpIcon from "$src/icons/chevron-up.svg?raw";
   import DownIcon from "$src/icons/chevron-down.svg?raw";
@@ -17,59 +19,88 @@
   import ExternalLinkIcon from "$src/icons/external-link.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
 
-  const dispatch = createEventDispatcher();
+  interface OutfitLayerListItemProps {
+    item: OutfitLayer;
+    outfitType?: OUTFIT_TYPE;
+    model: MODEL_TYPE;
+    readonly?: boolean;
+    movable?: boolean;
+    canUp?: boolean;
+    canDown?: boolean;
+    editable?: boolean;
+    removable?: boolean;
+    link?: any;
+    selected?: boolean;
+    packageId?: string;
+    isPrimary?: boolean;
+    dense?: boolean;
+    labels?: boolean;
+    onmoveUp?: (event?: any) => void;
+    onmoveDown?: (event?: any) => void;
+    onedit?: (event?: any) => void;
+    ondelete?: (event?: any) => void;
+    onselect?: (event?: any) => void;
+  }
 
-  export let item: OutfitLayer;
-  export let outfitType: OUTFIT_TYPE = null;
-  export let model: MODEL_TYPE;
-  export let readonly = false;
-  export let movable = true;
-  export let canUp = true;
-  export let canDown = true;
-  export let editable = true;
-  export let removable = false;
-  export let link = null;
-  export let selected = false;
-  export let packageId: string = null;
-  export let isPrimary: boolean = false;
-  export let dense = false;
-  export let labels = true;
+  let {
+    item,
+    outfitType = null,
+    model,
+    readonly = false,
+    movable = true,
+    canUp = true,
+    canDown = true,
+    editable = true,
+    removable = false,
+    link = null,
+    selected = false,
+    packageId = null,
+    isPrimary = false,
+    dense = false,
+    labels = true
+  ,
+    onmoveUp = null,
+    onmoveDown = null,
+    onedit = null,
+    ondelete = null,
+    onselect = null
+  }: OutfitLayerListItemProps = $props();
 
-  const onMoveUp = function (e) {
+  const onMoveUp= function (e) {
     e.stopPropagation();
-    dispatch("moveUp", { item: item });
+    onmoveUp?.({ item: item });
   };
-  const onMoveDown = function (e) {
+  const onMoveDown= function (e) {
     e.stopPropagation();
-    dispatch("moveDown", { item: item });
+    onmoveDown?.({ item: item });
   };
-  const onEdit = function (e) {
+  const onEdit= function (e) {
     e.stopPropagation();
-    dispatch("edit", { item: item });
+    onedit?.({ item: item });
   };
-  const onDelete = function (e) {
+  const onDelete= function (e) {
     e.stopPropagation();
-    dispatch("delete", { item: item });
+    ondelete?.({ item: item });
   };
-  const onSelect = function (e) {
+  const onSelect= function (e) {
     e.stopPropagation();
-    dispatch("select", { item: item });
+    onselect?.({ item: item });
   };
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-missing-attribute -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_missing_attribute -->
 <a
   class="outfit-layer-list-item"
   class:selected
   class:readonly
   class:dense
   title={item.name}
-  on:click={onSelect}
+  onclick={onSelect}
 >
   <div class="render">
     {#if isPrimary}
@@ -102,7 +133,7 @@
             size="large"
             type="quaternary"
             label="Edit"
-            on:click={onEdit}
+            onclick={onEdit}
           />
         {/if}
         {#if editable && (movable || removable || link)}
@@ -117,7 +148,7 @@
             type="quaternary"
             disabled={!canUp}
             whiteText={selected}
-            on:click={onMoveUp}
+            onclick={onMoveUp}
           />
           <Button
             onlyIcon
@@ -127,7 +158,7 @@
             type="quaternary"
             disabled={!canDown}
             whiteText={selected}
-            on:click={onMoveDown}
+            onclick={onMoveDown}
           />
         {/if}
         {#if movable && (removable || link)}
@@ -141,7 +172,7 @@
             size="large"
             label="Delete"
             type="quaternary"
-            on:click={onDelete}
+            onclick={onDelete}
           />
         {/if}
         {#if removable && link}

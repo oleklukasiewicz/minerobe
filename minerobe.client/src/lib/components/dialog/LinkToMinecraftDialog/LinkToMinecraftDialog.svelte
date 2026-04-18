@@ -2,27 +2,47 @@
   //services
   import { ShowToast } from "$src/data/toast";
   import { GetImageFaceArea } from "$src/helpers/image/imageDataHelpers";
+
+  //components
+  import Label from "$lib/components/base/Label/Label.svelte";
+  import Button from "$lib/components/base/Button/Button.svelte";
+  import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
+
+  //icons
+  import ArticleMultipleIcon from "$icons/article-multiple.svg?raw";
+
+  //services
   //models
   import type {
     MinecraftAccount,
     MinecraftSkin,
   } from "$src/data/models/integration/minecraft";
+  import type { BaseDialogProps } from "$src/data/components";
   //components
-  import Label from "$lib/components/base/Label/Label.svelte";
-  import Button from "$lib/components/base/Button/Button.svelte";
-  import Dialog from "$lib/components/base/Dialog/Dialog.svelte";
   //icons
-  import ArticleMultipleIcon from "$icons/article-multiple.svg?raw";
 
-  export let open = false;
-  export let authUrl = "";
-  export let authCode = "";
-  export let authStatus = "";
-  export let profile: MinecraftAccount = null;
-  export let skin: MinecraftSkin = null;
+  interface LinkToMinecraftDialogProps extends BaseDialogProps {
+    authUrl?: string;
+    authCode?: string;
+    authStatus?: string;
+    profile?: MinecraftAccount;
+    skin?: MinecraftSkin;
+    onclose?: (event?: any) => void;
+  }
 
-  let linkButtonLabel = "Link";
-  let isLinkingButtonDisabled = false;
+  let {
+    open = $bindable(false),
+    label = "Link to Minecraft",
+    authUrl = "",
+    authCode = "",
+    authStatus = "",
+    profile = null,
+    skin = null,
+    onclose = null,
+  }: LinkToMinecraftDialogProps = $props();
+
+  let linkButtonLabel = $state("Link");
+  let isLinkingButtonDisabled = $state(false);
 
   const GetLinkButtonLabel = function (status) {
     switch (authStatus) {
@@ -56,10 +76,12 @@
     ShowToast("Code copied to clipboard");
   };
 
-  $: GetLinkButtonLabel(authStatus);
+  $effect(() => {
+    GetLinkButtonLabel(authStatus);
+  });
 </script>
 
-<Dialog {open} label="Link to Minecraft" on:close>
+<Dialog {open} {label} {onclose}>
   <div id="link-to-mc-dialog">
     {#if authStatus != "Ready"}
       <div class="description">
@@ -72,7 +94,7 @@
           label={"Copy code"}
           type="tertiary"
           icon={ArticleMultipleIcon}
-          on:click={CopyCode}
+          onclick={CopyCode}
         />
       </div>
       <div>
@@ -89,7 +111,7 @@
         <div>
           {#if skin?.texture != null}
             {#await GetImageFaceArea(skin?.texture) then skin}
-              <!-- svelte-ignore a11y-missing-attribute -->
+              <!-- svelte-ignore a11y_missing_attribute -->
               <img src={skin} style="width:100%;image-rendering: pixelated; " />
             {/await}
           {/if}

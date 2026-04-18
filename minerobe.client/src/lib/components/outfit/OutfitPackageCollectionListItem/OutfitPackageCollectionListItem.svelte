@@ -1,43 +1,53 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
   //models
   import type { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
+
   //components
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
 
-  const dispatch = createEventDispatcher();
+  interface OutfitPackageCollectionListItemProps {
+    item: OutfitPackageCollectionWithPackageContext;
+    selectable?: boolean;
+    dense?: boolean;
+    onselect?: (event?: any) => void;
+    onunselect?: (event?: any) => void;
+    onclick?: (event?: any) => void;
+  }
 
-  export let item: OutfitPackageCollectionWithPackageContext;
-  export let selectable = false;
-  export let dense = true;
+  let {
+    item,
+    selectable = false,
+    dense = true,
+    onselect = null,
+    onunselect = null,
+    onclick = null,
+  }: OutfitPackageCollectionListItemProps = $props();
 
-  const onSelect = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dispatch("select", item);
+  const onSelect = (e?: Event) => {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    onselect?.({ item });
   };
-  const onUnselect = () => {
-    dispatch("unselect", item);
-  };
+  const onUnselect = () => onunselect?.({ item });
+
   const onClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (selectable) return;
-    dispatch("click", item);
+    onclick?.({ item });
   };
 </script>
 
 <!-- svelte-ignore a11y_missing_attribute -->
-<!-- svelte-ignore a11y-missing-attribute -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<a class="outfit-package-collection-list-item" class:dense on:click={onClick}>
+<!-- svelte-ignore a11y_missing_attribute -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<a class="outfit-package-collection-list-item" class:dense onclick={onClick}>
   {#if selectable}
     <div class="items-actions">
       <Checkbox
-        on:select={onSelect}
-        on:unselect={onUnselect}
+        onselect={onSelect}
+        onunselect={onUnselect}
         value={item?.isInCollection}
       />
     </div>

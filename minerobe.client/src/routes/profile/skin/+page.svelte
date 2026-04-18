@@ -1,31 +1,23 @@
 <script lang="ts">
-  //main imports
-  import { onDestroy, onMount } from "svelte";
-  import { writable, type Writable } from "svelte/store";
   //api
   import { GetPackage } from "$src/api/pack";
   import { FetchSettings, SetCurrentTexture } from "$src/api/settings";
   import { GetAccount } from "$src/api/integration/minecraft";
+
   //services
   import { ShowToast } from "$src/data/toast";
   import { ExportImage } from "$src/data/export";
   import { OutfitPackageToTextureConverter } from "$src/data/render";
-  //consts
-  import DefaultAnimation from "$src/animation/default";
-  import {
-    BASE_TEXTURE,
-    CURRENT_APP_STATE,
-    IS_MOBILE_VIEW,
-  } from "$src/data/static";
-  //models
-  import { APP_STATE } from "$src/data/enums/app";
-  import type { MinerobeUserSettings } from "$src/data/models/user";
   import type { RenderAnimation } from "$src/data/animation";
+  import { IsEmptyGuid } from "$src/helpers/data/dataHelper";
+
+  //consts
+  import { APP_STATE } from "$src/data/enums/app";
+
+  //models
+  import type { MinerobeUserSettings } from "$src/data/models/user";
   import { OutfitPackageRenderConfig } from "$src/data/models/render";
-  import type {
-    Cape,
-    MinecraftAccount,
-  } from "$src/data/models/integration/minecraft";
+
   //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
@@ -34,11 +26,30 @@
   import ModelRadioGroup from "$lib/components/outfit/ModelRadioGroup/ModelRadioGroup.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import CapeList from "$lib/components/outfit/CapeList/CapeList.svelte";
+
   //icons
   import DownloadIcon from "$icons/download.svg?raw";
   import HumanHandsUpIcon from "$icons/human-handsup.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
-  import { IsEmptyGuid } from "$src/helpers/data/dataHelper";
+
+  import { onDestroy, onMount } from "svelte";
+  import { writable, type Writable } from "svelte/store";
+  //api
+  //services
+  //consts
+  import DefaultAnimation from "$src/animation/default";
+  import {
+    BASE_TEXTURE,
+    CURRENT_APP_STATE,
+    IS_MOBILE_VIEW,
+  } from "$src/data/static";
+  //models
+  import type {
+    Cape,
+    MinecraftAccount,
+  } from "$src/data/models/integration/minecraft";
+  //components
+  //icons
   import { THREE } from "$lib/three";
 
   const userSettings: Writable<MinerobeUserSettings> = writable(null);
@@ -46,10 +57,10 @@
     new OutfitPackageRenderConfig()
   );
 
-  let loaded = false;
-  let dynamicRenderer = null;
-  let integrationSettings: MinecraftAccount = null;
-  let isSkinSetting = false;
+  let loaded = $state(false);
+  let dynamicRenderer = $state(null);
+  let integrationSettings: MinecraftAccount = $state(null);
+  let isSkinSetting = $state(false);
 
   let stateSub = null;
   onMount(async () => {
@@ -90,14 +101,11 @@
     if (stateSub) stateSub();
   });
 
-  let __addAnimation = function (
-    animation: RenderAnimation,
-    force: boolean = false
-  ) {};
+  let outfitRender = $state(null);
 
   const addAnimation = (animation: RenderAnimation) => {
-    if (animation) __addAnimation(animation, false);
-    __addAnimation(DefaultAnimation, true);
+    if (animation) outfitRender?.addAnimation?.(animation, false);
+    outfitRender?.addAnimation?.(DefaultAnimation, true);
   };
 
   const DownloadSkin = async function () {
@@ -115,7 +123,7 @@
   };
 
   const setCape = function (e) {
-    const item = e.detail.item as Cape;
+    const item = e.item as Cape;
     $renderConfiguration.cape = item;
   };
 </script>
@@ -124,8 +132,8 @@
   <div class="render">
     <Placeholder {loaded}>
       <OutfitPackageRender
+        bind:this={outfitRender}
         pauseOnIntersection
-        bind:addAnimation={__addAnimation}
         baseTexture={$userSettings?.baseTexture.layers[0] || $BASE_TEXTURE}
         source={$renderConfiguration.item}
         isFlatten={$renderConfiguration.isFlatten}
@@ -144,7 +152,7 @@
         <CapeList
           items={integrationSettings.capes}
           selectedCapeId={$renderConfiguration.cape?.id}
-          on:select={setCape}
+          onselect={setCape}
         />
       {/if}
     </div>
@@ -172,7 +180,7 @@
         disabled={isSkinSetting}
         icon={isSkinSetting ? LoaderIcon : HumanHandsUpIcon}
         size="large"
-        on:click={UpdateSkin}
+        onclick={UpdateSkin}
       />
     </Placeholder>
     <Placeholder {loaded} height="46px">
@@ -181,7 +189,7 @@
         size="large"
         type="secondary"
         icon={DownloadIcon}
-        on:click={DownloadSkin}
+        onclick={DownloadSkin}
       />
     </Placeholder>
   </div>

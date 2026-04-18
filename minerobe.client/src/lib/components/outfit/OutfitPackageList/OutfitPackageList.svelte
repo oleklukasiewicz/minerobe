@@ -1,38 +1,54 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
   //api
   import { GetLayer } from "$src/api/pack";
-  //model
-  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
+
+  //consts
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
+
+  //models
+  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
+
   //components
   import Resize from "$lib/components/other/Resize/Resize.svelte";
-  import OutfitPackageListItem from "../OutfitPackageListItem/OutfitPackageListItem.svelte";
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
 
-  const dispatch = createEventDispatcher();
+  import OutfitPackageListItem from "../OutfitPackageListItem/OutfitPackageListItem.svelte";
 
-  export let items: OutfitPackage[];
-  export let baseTexture: OutfitLayer | string = null;
-  export let columns: number = -1;
-  export let resizable = true;
-  export let resizeDebounce = 300;
-  export let currentPackageId: string = null;
-  export let loading = false;
-  export let pageSize: number = 10;
-  export let selectable = false;
+  interface OutfitPackageListProps {
+    items: OutfitPackage[];
+    baseTexture?: OutfitLayer | string;
+    columns?: number;
+    resizable?: boolean;
+    resizeDebounce?: number;
+    currentPackageId?: string;
+    loading?: boolean;
+    pageSize?: number;
+    selectable?: boolean;
+    onselect?: (event?: any) => void;
+  }
 
-  let _component: any = null;
+  let {
+    items,
+    baseTexture = null,
+    columns = -1,
+    resizable = true,
+    resizeDebounce = 300,
+    currentPackageId = null,
+    loading = false,
+    pageSize = 10,
+    selectable = false,
+    onselect = null,
+  }: OutfitPackageListProps = $props();
+
+  let _component: any = $state(null);
   const selectOutfit = function (e) {
-    const item = e.detail.item;
-    const layer = e.detail.layer;
-    dispatch("select", { item: item, layer: layer });
+    const item = e.item;
+    const layer = e.layer;
+    onselect?.({ item: item, layer: layer });
   };
-  const fetchLayer = async function (id, item): Promise<OutfitLayer> {
-    return await GetLayer(id);
-  };
-  let renderList: any[] = [];
+  const fetchLayer = async (id, item): Promise<OutfitLayer> =>
+    await GetLayer(id);
+  let renderList: any[] = $state([]);
 
   const onResize = async function () {
     for (let i = 0; i < items.length; i++) {
@@ -48,7 +64,12 @@
   >
     {#if loading}
       {#each Array(pageSize || 10) as _}
-        <Placeholder width="100%" aspectRatio={"0.73"} height="100%" />
+        <Placeholder
+          width="auto"
+          aspectRatio={"0.72"}
+          height="auto"
+          style={"margin:2px;"}
+        />
       {/each}
     {:else}
       {#each items as item, index (item.id + item?.layers[0]?.id)}
@@ -58,7 +79,7 @@
           currentItem={currentPackageId == item.id}
           {item}
           {fetchLayer}
-          on:click={selectOutfit}
+          onclick={selectOutfit}
           baseTexture={item.type == PACKAGE_TYPE.OUTFIT_SET
             ? baseTexture
             : null}
@@ -69,7 +90,7 @@
   {#if resizable}
     <Resize
       debounce={resizeDebounce}
-      on:resize={onResize}
+      onresize={onResize}
       targetNode={_component}
     />
   {/if}

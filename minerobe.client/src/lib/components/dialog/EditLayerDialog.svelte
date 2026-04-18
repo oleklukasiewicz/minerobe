@@ -1,15 +1,18 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
+  //services
+  import { ConvertFileToFileData, ImportImages } from "$src/data/import";
+
   //consts
   import { OUTFIT_TYPE_ARRAY } from "$src/data/consts/outfit";
   import { COLORS_ARRAY } from "$src/data/consts/color";
   import { MODEL_TYPE } from "$src/data/enums/model";
-  //services
-  import { ConvertFileToFileData, ImportImages } from "$src/data/import";
+
   //models
   import type { OutfitLayer } from "$data/models/package";
-  //components
+
+  //icons
+  import ImportPackageIcon from "$icons/upload.svg?raw";
+
   import Button from "../base/Button/Button.svelte";
   import Dialog from "../base/Dialog/Dialog.svelte";
   import SectionTitle from "../base/SectionTitle/SectionTitle.svelte";
@@ -19,25 +22,35 @@
   import OutfitPackageRender from "../render/OutfitPackageRender.svelte";
   import ColorSelect from "../other/ColorSelect/ColorSelect.svelte";
   //icons
-  import ImportPackageIcon from "$icons/upload.svg?raw";
   import Checkbox from "../base/Checkbox/Checkbox.svelte";
+  import type { BaseDialogProps } from "$src/data/components";
 
-  const dispatch = createEventDispatcher();
+  interface EditLayerDialogProps extends BaseDialogProps {
+    item: OutfitLayer;
+    onlyTextures?: boolean;
+    onedit?: (event?: any) => void;
+    onprimaryChange?: (event?: any) => void;
+  }
 
-  export let open = false;
-  export let item: OutfitLayer;
-  export let onlyTextures = false;
+  let {
+    open = $bindable(false),
+    item = $bindable(),
+    onlyTextures = false,
+    onedit = null,
+    onprimaryChange = null,
+    label = "Edit layer",
+  }: EditLayerDialogProps = $props();
 
   const onEdit = () => {
-    dispatch("edit", { item: item });
+    onedit?.({ item: item });
   };
   const onPrimaryChange = (e) => {
-    const value = e.detail.value;
-    dispatch("primaryChange", { item: item, isPrimary: value });
+    const value = e.value;
+    onprimaryChange?.({ item: item, isPrimary: value });
   };
 
   const onDrop = async function (e, model) {
-    const droppped = e.detail.items[0];
+    const droppped = e.items[0];
     item[model] = await ConvertFileToFileData(droppped);
     onEdit();
   };
@@ -48,78 +61,80 @@
   };
 </script>
 
-<Dialog bind:open label="Edit layer" let:isMobile>
-  <div class="editItemDialog" class:mobile={isMobile}>
-    {#if !onlyTextures}
-      <SectionTitle label="Name" />
-      <TextBox bind:value={item.name} on:input={onEdit} />
-      <SectionTitle label="Outfit type" />
-      <Select
-        items={OUTFIT_TYPE_ARRAY}
-        bind:selectedItem={item.outfitType}
-        itemText="normalizedName"
-        itemValue="name"
-        on:select={onEdit}
-      />
-      <SectionTitle label="color" />
-      <ColorSelect
-        items={COLORS_ARRAY}
-        bind:selectedItem={item.colorName}
-        itemText="normalizedName"
-        itemValue="name"
-        dropDownStyle="max-height: 275px"
-        on:select={onEdit}
-      />
-      <br />
-      <Checkbox
-        label="Is primary"
-        bind:value={item.isPrimary}
-        on:change={onPrimaryChange}
-      />
-    {/if}
-    <div class="textures">
-      <div class="model-selection">
-        <SectionTitle label="Classic" />
-        <div class="render">
-          <DragAndDrop on:drop={(e) => onDrop(e, MODEL_TYPE.STEVE)}>
-            <OutfitPackageRender
-              resizable
-              source={item.steve.content}
-              outfitType={item.outfitType}
-              model={MODEL_TYPE.STEVE}
+<Dialog bind:open {label}>
+  {#snippet children({ isMobile })}
+    <div class="editItemDialog" class:mobile={isMobile}>
+      {#if !onlyTextures}
+        <SectionTitle label="Name" />
+        <TextBox bind:value={item.name} oninput={onEdit} />
+        <SectionTitle label="Outfit type" />
+        <Select
+          items={OUTFIT_TYPE_ARRAY}
+          bind:value={item.outfitType}
+          itemText="normalizedName"
+          itemValue="name"
+          onselect={onEdit}
+        />
+        <SectionTitle label="color" />
+        <ColorSelect
+          items={COLORS_ARRAY}
+          bind:value={item.colorName}
+          itemText="normalizedName"
+          itemValue="name"
+          dropDownStyle="max-height: 275px"
+          onselect={onEdit}
+        />
+        <br />
+        <Checkbox
+          label="Is primary layer"
+          bind:value={item.isPrimary}
+          onchange={onPrimaryChange}
+        />
+      {/if}
+      <div class="textures">
+        <div class="model-selection">
+          <SectionTitle label="Classic" />
+          <div class="render">
+            <DragAndDrop ondrop={(e) => onDrop(e, MODEL_TYPE.STEVE)}>
+              <OutfitPackageRender
+                resizable
+                source={item.steve.content}
+                outfitType={item.outfitType}
+                model={MODEL_TYPE.STEVE}
+              />
+            </DragAndDrop>
+          </div>
+          <div>
+            <Button
+              icon={ImportPackageIcon}
+              label="Upload image"
+              onclick={(e) => onUpload(e, MODEL_TYPE.STEVE)}
             />
-          </DragAndDrop>
+          </div>
         </div>
-        <div>
-          <Button
-            icon={ImportPackageIcon}
-            label="Upload image"
-            on:click={(e) => onUpload(e, MODEL_TYPE.STEVE)}
-          />
-        </div>
-      </div>
-      <div class="model-selection">
-        <SectionTitle label="Slim" />
-        <div class="render">
-          <DragAndDrop on:drop={(e) => onDrop(e, MODEL_TYPE.ALEX)}>
-            <OutfitPackageRender
-              resizable
-              source={item.alex.content}
-              outfitType={item.outfitType}
-              model={MODEL_TYPE.ALEX}
+        <div class="model-selection">
+          <SectionTitle label="Slim" />
+          <div class="render">
+            <DragAndDrop ondrop={(e) => onDrop(e, MODEL_TYPE.ALEX)}>
+              <OutfitPackageRender
+                resizable
+                source={item.alex.content}
+                outfitType={item.outfitType}
+                model={MODEL_TYPE.ALEX}
+              />
+            </DragAndDrop>
+          </div>
+          <div>
+            <Button
+              icon={ImportPackageIcon}
+              label="Upload image"
+              onclick={(e) => onUpload(e, MODEL_TYPE.ALEX)}
             />
-          </DragAndDrop>
-        </div>
-        <div>
-          <Button
-            icon={ImportPackageIcon}
-            label="Upload image"
-            on:click={(e) => onUpload(e, MODEL_TYPE.ALEX)}
-          />
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  {/snippet}
 </Dialog>
 
 <style lang="scss">

@@ -1,79 +1,98 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
   //models
   import { SortOption } from "$src/data/models/base";
-  //components
-  import Button from "../Button/Button.svelte";
-  import Select from "../Select/Select.svelte";
+
   //icons
   import ArrowUpIcon from "$icons/arrow-up.svg?raw";
   import ArrowDownIcon from "$icons/arrow-down.svg?raw";
 
-  const dispatch = createEventDispatcher();
+  //main imports
+    //models
+  //components
+  import Button from "../Button/Button.svelte";
+  import Select from "../Select/Select.svelte";
+  import type { BaseSelectProps } from "$src/data/components";
+  //icons
 
-  export let items: any[] = [];
-  export let placeholder: string = "Sort by";
-  export let selectedItem = null;
-  export let opened = false;
-  export let itemText = "label";
-  export let itemValue = "value";
-  export let clearable = false;
-  export let dropDownStyle = null;
-  export let disabled = false;
-  export let autocomplete = false;
-  export let isDescending = false;
+  interface SortSelectProps extends BaseSelectProps{
+    disabled?: boolean;
+    autocomplete?: boolean;
+    isDescending?: boolean;
+    onselect?: (event?: any) => void;
+    onclear?: (event?: any) => void;
+  }
 
-  const onSelect = (e) => {
+  let {
+    items = $bindable([]),
+    placeholder = $bindable("Sort by"),
+    value = $bindable(),
+    opened = $bindable(false),
+    itemText = $bindable("label"),
+    itemValue = $bindable("value"),
+    clearable = $bindable(false),
+    dropDownStyle = $bindable(null),
+    disabled = $bindable(false),
+    autocomplete = $bindable(false),
+    isDescending = $bindable(false),
+    onselect = null,
+    onclear = null
+  }: SortSelectProps = $props();
+
+  const onSelect= (e) => {
+    const selectedValue = e?.item;
     var sortOption: SortOption = new SortOption();
-    sortOption.value = e.detail?.item?.value;
+    sortOption.value = selectedValue?.value ?? selectedValue;
     sortOption.isDesc = isDescending;
-    selectedItem = sortOption;
-    dispatch("select", { option: sortOption });
+    value = sortOption;
+    onselect?.({ option: sortOption });
   };
-  const onDirectionClick = () => {
+  const onDirectionClick= () => {
     isDescending = !isDescending;
     var sortOption: SortOption = new SortOption();
-    sortOption.value = selectedItem.value;
+    sortOption.value = value?.value;
     sortOption.isDesc = isDescending;
-    selectedItem = sortOption;
-    dispatch("select", { option: sortOption });
+    value = sortOption;
+    onselect?.({ option: sortOption });
   };
 
-  const onSelectedUpdate = (v) => {
+  const onSelectedUpdate= (v) => {
     isDescending = v?.isDesc;
   };
 
-  $: onSelectedUpdate(selectedItem);
+  $effect(() => {
+    onSelectedUpdate(value);
+  });
 </script>
 
 <div class="sort-select">
   <div class="select-container">
     <Select
-      on:clear
-      on:select={onSelect}
-      bind:items
-      bind:placeholder
-      bind:selectedItem
+      onclear={onclear}
+      onselect={onSelect}
+      {items}
+      {placeholder}
+      bind:value
       bind:opened
-      bind:itemText
-      bind:itemValue
-      bind:clearable
-      bind:dropDownStyle
-      bind:disabled
-      bind:autocomplete
+      {itemText}
+      {itemValue}
+      {clearable}
+      {dropDownStyle}
+      {disabled}
+      {autocomplete}
       defaultValue={new SortOption()}
     >
-      <div class="direction" slot="actions">
-        <Button
-          disabled={!selectedItem?.value}
-          onlyIcon
-          size="auto"
-          noBorder
-          icon={isDescending ? ArrowDownIcon : ArrowUpIcon}
-          on:click={onDirectionClick}
-        ></Button>
-      </div>
+      {#snippet actions()}
+            <div class="direction" >
+          <Button
+            disabled={!value?.value}
+            onlyIcon
+            size="auto"
+            noBorder
+            icon={isDescending ? ArrowDownIcon : ArrowUpIcon}
+            onclick={onDirectionClick}
+          ></Button>
+        </div>
+          {/snippet}
     </Select>
   </div>
 </div>

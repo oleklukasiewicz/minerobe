@@ -1,30 +1,42 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
   //models
   import { OutfitPackageCollectionWithPackageContext } from "$data/models/collection";
+
   //components
   import Placeholder from "$lib/components/base/Placeholder/Placeholder.svelte";
+
   import OutfitPackageCollectionListItem from "../OutfitPackageCollectionListItem/OutfitPackageCollectionListItem.svelte";
 
-  const dispatch = createEventDispatcher();
+  interface OutfitPackageCollectionListProps {
+    items: OutfitPackageCollectionWithPackageContext[];
+    pageSize?: number;
+    selectable?: boolean;
+    loading?: boolean;
+    dense?: boolean;
+    columns?: number;
+    onselect?: (event?: any) => void;
+    onunselect?: (event?: any) => void;
+    onclick?: (event?: any) => void;
+  }
 
-  export let items: OutfitPackageCollectionWithPackageContext[];
-  export let pageSize: number = 10;
-  export let selectable: boolean = false;
-  export let loading = true;
-  export let dense = true;
-  export let columns: number = -1;
+  let {
+    items,
+    pageSize = 10,
+    selectable = false,
+    loading = true,
+    dense = true,
+    columns = -1,
+    onselect = null,
+    onunselect = null,
+    onclick = null,
+  }: OutfitPackageCollectionListProps = $props();
 
-  const onSelect = (item: OutfitPackageCollectionWithPackageContext) => {
-    dispatch("select", { item: item });
-  };
-  const onUnselect = (item: OutfitPackageCollectionWithPackageContext) => {
-    dispatch("unselect", { item: item });
-  };
-  const onClick = (item: OutfitPackageCollectionWithPackageContext) => {
-    dispatch("click", { item: item });
-  };
+  const onSelect = (item: OutfitPackageCollectionWithPackageContext) =>
+    onselect?.({ item: item });
+  const onUnselect = (item: OutfitPackageCollectionWithPackageContext) =>
+    onunselect?.({ item: item });
+  const onClick = (item: OutfitPackageCollectionWithPackageContext) =>
+    onclick?.({ item: item });
 </script>
 
 <div
@@ -41,9 +53,9 @@
         {item}
         {dense}
         {selectable}
-        on:click={() => onClick(item)}
-        on:select={() => onSelect(item)}
-        on:unselect={() => onUnselect(item)}
+        onclick={() => onClick(item)}
+        onselect={() => onSelect(item)}
+        onunselect={() => onUnselect(item)}
       />
     {/each}
   {/if}

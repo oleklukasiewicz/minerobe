@@ -1,14 +1,25 @@
 <script lang="ts">
-  export let opened = true;
-  export let top = false;
+  interface MenuProps {
+    opened?: boolean;
+    top?: boolean;
+    children?: import('svelte').Snippet<[any]>;
+    footer?: import('svelte').Snippet<[any]>;
+  }
+
+  let {
+    opened = $bindable(false),
+    top = false,
+    children,
+    footer
+  }: MenuProps = $props();
 </script>
 
 <div class="menu" class:opened class:top class:left={!top}>
   <div class="menu-items">
-    <slot {opened} {top} />
+    {@render children?.({ opened, top, })}
   </div>
   <div class="menu-footer">
-    <slot name="footer" {opened} {top} />
+    {@render footer?.({ opened, top, })}
   </div>
 </div>
 
@@ -20,7 +31,7 @@
     .menu-items {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 8px;
     }
     .menu-footer {
       margin-top: auto;

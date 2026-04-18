@@ -1,14 +1,24 @@
 <script lang="ts">
-  export let variant: "unique" | "rare" | "common" | "legendary" | "ancient" =
-    "common";
-  export let dense: boolean = false;
-  export let text: string = "";
-  export let style: string = "";
+  interface LabelProps {
+    variant?: "unique" | "rare" | "common" | "legendary" | "ancient";
+    dense?: boolean;
+    text?: string;
+    style?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    variant = "common",
+    dense = false,
+    text = "",
+    style = "",
+    children
+  }: LabelProps = $props();
 </script>
 
 <div class="label {variant}" class:dense {style}>
   {text}
-  <slot></slot>
+  {@render children?.()}
 </div>
 
 <style lang="scss">

@@ -1,27 +1,39 @@
 <script lang="ts">
   //main imports
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
+  import type { BaseButtonProps } from "$src/data/components";
 
-  export let label = "";
-  export let icon = "";
-  export let iconImage = "";
-  export let href = "";
-  export let viewId = "";
-  export let disabled = false;
-  export let onlyIcon = false;
+  interface NavigationItemProps extends BaseButtonProps {
+    iconImage?: string;
+    viewId?: string;
+    onlyIcon?: boolean;
+    children?: import("svelte").Snippet;
+  }
+
+  let {
+    label = "",
+    icon = "",
+    iconImage = "",
+    href = "",
+    viewId = "",
+    disabled = false,
+    onlyIcon = false,
+    onclick = null,
+    children,
+  }: NavigationItemProps = $props();
 </script>
 
 <a
   {href}
   class:onlyIcon
   class:selected={viewId?.length > 0
-    ? $page.route?.id?.startsWith("/" + viewId)
-    : $page.route?.id == "/"}
+    ? page.route?.id?.startsWith("/" + viewId)
+    : page.route?.id == "/"}
   class:disabled
-  on:click
+  onclick={(event) => onclick?.(event)}
   title={label}
 >
-  <!-- svelte-ignore a11y-missing-attribute -->
+  <!-- svelte-ignore a11y_missing_attribute -->
   {#if iconImage}
     <img src={iconImage} />
   {/if}
@@ -31,7 +43,7 @@
   {#if label && !onlyIcon}
     <span class="item-label">{label}</span>
   {/if}
-  <slot />
+  {@render children?.()}
 </a>
 
 <style lang="scss">

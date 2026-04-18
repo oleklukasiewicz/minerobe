@@ -1,50 +1,64 @@
 <script lang="ts">
-  //main imports
-  import { onDestroy, onMount } from "svelte";
-  import { writable, type Writable } from "svelte/store";
   //api
   import { FetchSettings } from "$src/api/settings";
   import { GetWardrobePackages } from "$src/api/wardrobe";
+
   //services
   import { navigateToOutfitPackage} from "$src/helpers/other/navigationHelper";
+
   //consts
   import { APP_STATE } from "$src/data/enums/app";
   import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
   import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
+
   //models
-  import {
-    PagedModel,
-    type PagedResponse,
-    type SortOption,
-  } from "$src/data/models/base";
   import { OutfitPackage } from "$src/data/models/package";
   import { OutfitFilter } from "$src/data/models/filter";
   import type { MinerobeUserSettings } from "$src/data/models/user";
+
   //components
   import LazyList from "$lib/components/list/LazyList/LazyList.svelte";
   import OutfitPackageList from "$lib/components/outfit/OutfitPackageList/OutfitPackageList.svelte";
   import Search from "$lib/components/base/Search/Search.svelte";
   import Button from "$lib/components/base/Button/Button.svelte";
   import OutfitFiltersDialog from "$lib/components/dialog/OutfitFiltersDialog.svelte";
+
   //icons
   import Sliders2Icon from "$icons/sliders-2.svg?raw";
 
+  import { onDestroy, onMount } from "svelte";
+  import { writable, type Writable } from "svelte/store";
+  //api
+  //services
+  //consts
+  //models
+  import {
+    PagedModel,
+    type PagedResponse,
+    type SortOption,
+  } from "$src/data/models/base";
+  //components
+  //icons
+
   const pageItems: Writable<PagedResponse<OutfitPackage>[]> = writable([]);
 
-  let userSettings: MinerobeUserSettings = null;
+  let userSettings: MinerobeUserSettings = $state(null);
   let loaded = false;
-  let itemsLoaded = false;
-  let isFilterDialogOpen = false;
+  let itemsLoaded = $state(false);
+  let isFilterDialogOpen = $state(false);
   let stateSub = null;
 
-  let filter: OutfitFilter = new OutfitFilter();
-  let sortOption: SortOption[] = [];
-  filter.type = PACKAGE_TYPE.OUTFIT;
+  const createInitialFilter = (): OutfitFilter => ({
+    ...new OutfitFilter(),
+    type: PACKAGE_TYPE.OUTFIT,
+    phrase: "",
+  });
+  let filter: OutfitFilter = $state(createInitialFilter());
+  let sortOption: SortOption[] = $state([]);
   let abortController = new AbortController();
 
   onMount(async () => {
-    filter.type = PACKAGE_TYPE.OUTFIT;
     stateSub = CURRENT_APP_STATE.subscribe(async (state) => {
       if (state != APP_STATE.READY) return;
 
@@ -59,11 +73,11 @@
   });
 
   const goToEdit = function (e) {
-    const item = e.detail.item;
+    const item = e.item;
     navigateToOutfitPackage(item, undefined, true);
   };
   const fetchItems = async (e) => {
-    const options: PagedResponse<OutfitPackage> = e?.detail?.options;
+    const options: PagedResponse<OutfitPackage> = e?.options;
     const pagedModel = new PagedModel<OutfitFilter>();
     pagedModel.page = options?.options.page || 0;
     pagedModel.pageSize = options?.options.pageSize || 36;
@@ -77,11 +91,14 @@
       abortController.abort();
       abortController = new AbortController();
       isFilterDialogOpen = false;
-      const newFilter = e?.detail?.filter;
+      const newFilter = e?.filter;
       if (newFilter) {
-        filter = newFilter;
+        filter = {
+          ...newFilter,
+          phrase: newFilter.phrase ?? filter.phrase ?? "",
+        };
       }
-      const newSort = e?.detail?.sort;
+      const newSort = e?.sort;
       if (newSort) {
         sortOption = newSort;
       }
@@ -107,39 +124,42 @@
         label="Sort & Filters"
         type="primary"
         icon={Sliders2Icon}
-        on:click={openFilterDialog}
+        onclick={openFilterDialog}
       />
     </div>
     <Search
       bind:value={filter.phrase}
-      on:search={updateFilter}
-      on:clear={updateFilter}
+      onsearch={updateFilter}
+      onclear={updateFilter}
     />
   </div>
   <div id="content-list">
     <LazyList
-      let:items={pagedItems}
-      on:loading={fetchItems}
+      
+      onloading={fetchItems}
       itemsPages={$pageItems}
       rootMargin={"100px"}
       loading={!itemsLoaded}
     >
-      <OutfitPackageList
-        resizable
-        on:select={goToEdit}
-        resizeDebounce={500}
-        currentPackageId={userSettings.currentTexture?.packageId}
-        baseTexture={userSettings?.baseTexture.layers[0]}
-        items={pagedItems}
-        columns={$IS_MOBILE_VIEW ? 3 : 6}
-      />
-      <OutfitPackageList
-        loading
-        items={[]}
-        pageSize={36}
-        slot="loading"
-        columns={$IS_MOBILE_VIEW ? 3 : 6}
-      />
+      {#snippet children({ items })}
+        <OutfitPackageList
+          resizable
+          onselect={goToEdit}
+          resizeDebounce={500}
+          currentPackageId={userSettings.currentTexture?.packageId}
+          baseTexture={userSettings?.baseTexture.layers[0]}
+          items={items}
+          columns={$IS_MOBILE_VIEW ? 3 : 6}
+        />
+      {/snippet}
+      {#snippet loadingContent()}
+        <OutfitPackageList
+          loading
+          items={[]}
+          pageSize={36}
+          columns={$IS_MOBILE_VIEW ? 3 : 6}
+        />
+      {/snippet}
     </LazyList>
   </div>
   <!--Dialogs-->
@@ -148,8 +168,8 @@
     sortItems={OUTFIT_PACKAGE_SORT_OPTIONS}
     sortOptions={sortOption[0]}
     hideType
-    {filter}
-    on:filter={updateFilter}
+    bind:filter={filter}
+    onfilter={updateFilter}
   />
 </div>
 

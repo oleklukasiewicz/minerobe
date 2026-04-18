@@ -1,53 +1,121 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher, onMount } from "svelte";
-  //api
   //services
   import { normalizeNumber } from "$src/helpers/data/dataHelper";
+
   //consts
-  //model
-  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
   import { OUTFIT_TYPE, PACKAGE_TYPE } from "$src/data/enums/outfit";
+
+  //models
+  import type { OutfitLayer, OutfitPackage } from "$data/models/package";
+
   //components
   import ColorBadge from "$lib/components/other/ColorBadge/ColorBadge.svelte";
   import OutfitPackageRender from "$lib/components/render/OutfitPackageRender.svelte";
   import Checkbox from "$lib/components/base/Checkbox/Checkbox.svelte";
+
   //icons
   import HeartSmallIcon from "$icons/small/heart-micro.svg?raw";
   import DownloadSmallIcon from "$icons/small/download-micro.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
 
-  const dispatch = createEventDispatcher();
+  import { onMount } from "svelte";
 
-  export let item: OutfitPackage;
-  export let layerId: string = null;
-  export let baseTexture: OutfitLayer | string = null;
-  export let layerCount = 2;
-  export let style = "";
-  export let currentItem = false;
-  export let moreLayersIndicator = true;
-  export let selectable = false;
-  export let selected = false;
+  interface OutfitPackageListItemProps {
+    item: OutfitPackage;
+    layerId?: string;
+    baseTexture?: OutfitLayer | string;
+    layerCount?: number;
+    style?: string;
+    currentItem?: boolean;
+    moreLayersIndicator?: boolean;
+    selectable?: boolean;
+    selected?: boolean;
+    fetchLayer?: any;
+    resize?: any;
+    onselect?: (event?: any) => void;
+    onclick?: (event?: any) => void;
+  }
 
-  export let fetchLayer = async function (id, item): Promise<OutfitLayer> {
+  let {
+    item = $bindable(),
+    layerId = $bindable(null),
+    baseTexture = null,
+    layerCount = 2,
+    style = "",
+    currentItem = false,
+    moreLayersIndicator = true,
+    selectable = false,
+    selected = $bindable(false),
+    fetchLayer = async function (id, item): Promise<OutfitLayer> {
     return null;
-  };
-  export let resize = async () => {};
+  },
+    resize = $bindable()
+  ,
+    onselect = null,
+    onclick = null
+  }: OutfitPackageListItemProps = $props();
 
-  let initialized = false;
-  let currentLayer: OutfitLayer;
+  let initialized = $state(false);
+  let currentLayer: OutfitLayer = $state();
+  let renderComponent = $state(null);
+  let loadedLayersById = $state({});
+
+  const renderedItem = $derived(
+    item
+      ? {
+          ...item,
+          layers: item.layers.map((layer) => loadedLayersById[layer.id] ?? layer),
+        }
+      : null
+  );
+
+  $effect(() => {
+    resize = async () => {
+      await renderComponent?.resize?.();
+    };
+  });
+
+  const hasLayerTexture = (layer?: OutfitLayer) => {
+    return !!(layer?.alex?.content || layer?.steve?.content);
+  };
+
+  const shouldFetchLayer = (layer?: OutfitLayer) => {
+    return layer == null || layer?.isLoaded === false || !hasLayerTexture(layer);
+  };
 
   const setCurrentLayer = async function (v) {
     const targetId = layerId || item?.layers[0]?.id;
-    let targetLayer = item.layers.find((x) => x.id == targetId);
-    if (targetLayer?.isLoaded == false) {
-      targetLayer = await fetchLayer(targetId, item);
-      //update in item
-      item.layers = item.layers.map((x) =>
-        x.id == targetId ? targetLayer : x
-      );
+    if (!renderedItem) return;
+
+    if (!targetId) {
+      currentLayer = renderedItem.layers?.[0];
+      return;
     }
-    currentLayer = targetLayer;
+
+    let targetLayer = renderedItem.layers.find((x) => x.id == targetId);
+    if (shouldFetchLayer(targetLayer)) {
+      try {
+        // Add timeout to fetch to prevent infinite hanging
+        const fetchPromise = fetchLayer(targetId, item);
+        const timeoutPromise = new Promise((resolve) =>
+          setTimeout(() => resolve(null), 5000)
+        );
+        const fetchedLayer = await Promise.race([
+          fetchPromise,
+          timeoutPromise,
+        ]);
+        if (fetchedLayer != null) {
+          loadedLayersById = {
+            ...loadedLayersById,
+            [targetId]: fetchedLayer,
+          };
+          targetLayer = fetchedLayer;
+        }
+      } catch (error) {
+        console.warn("Failed to fetch layer:", targetId, error);
+      }
+    }
+    currentLayer = targetLayer ?? renderedItem.layers?.[0];
   };
   const updateLayerId = async function (id) {
     layerId = id;
@@ -56,34 +124,35 @@
 
   onMount(async () => {
     await setCurrentLayer(item);
+    // Ensure fetch completes before rendering to avoid blank textures
     initialized = true;
   });
 
-  const onSelectionChange = async function (e) {
+  const onSelectionChange= async function (e) {
     e.preventDefault();
     e.stopPropagation();
-    dispatch("select", { value: selected });
+    onselect?.({ value: selected });
   };
-  const onClick = async function (e) {
+  const onClick= async function (e) {
     e.preventDefault();
     e.stopPropagation();
-    dispatch("click", { item: item, layer: currentLayer });
+    onclick?.({ item: item, layer: currentLayer });
   };
 </script>
 
-<!-- svelte-ignore a11y-missing-attribute -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_missing_attribute -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <a
   {style}
   class="outfit-package-list-item"
-  on:click={onClick}
+  onclick={onClick}
   class:selected={selectable && selected}
 >
   <div class="render">
     <div class="render-flags">
       {#if selectable}
-        <Checkbox bind:value={selected} on:change={onSelectionChange} />
+        <Checkbox bind:value={selected} onchange={onSelectionChange} />
       {/if}
       {#if currentItem}
         <span class="current-item icon">{@html LoaderIcon}</span>
@@ -91,55 +160,57 @@
     </div>
     {#if initialized}
       <OutfitPackageRender
-        bind:resize
-        source={item}
-        outfitType={item.type == PACKAGE_TYPE.OUTFIT_SET
+        bind:this={renderComponent}
+        source={renderedItem}
+        outfitType={renderedItem.type == PACKAGE_TYPE.OUTFIT_SET
           ? OUTFIT_TYPE.OUTFIT_SET
           : currentLayer?.outfitType || item.outfitType}
-        layerId={item.type == PACKAGE_TYPE.OUTFIT_SET ? null : currentLayer?.id}
+        layerId={renderedItem.type == PACKAGE_TYPE.OUTFIT_SET
+          ? null
+          : currentLayer?.id}
         isDynamic={false}
         {baseTexture}
       />
     {/if}
     <div class="colors">
-      {#if item.type == PACKAGE_TYPE.OUTFIT_SET}
+      {#if renderedItem.type == PACKAGE_TYPE.OUTFIT_SET}
         <ColorBadge
           selected
-          color={item.colorName || item.layers[0]?.colorName}
-          colorName={item.colorName || item.layers[0]?.colorName}
+          color={renderedItem.colorName || renderedItem.layers[0]?.colorName}
+          colorName={renderedItem.colorName || renderedItem.layers[0]?.colorName}
         />
       {:else}
-        {#each item.layers.slice(0, layerCount) as layer}
+        {#each renderedItem.layers.slice(0, layerCount) as layer}
           <ColorBadge
             selected={currentLayer?.id == layer.id}
             color={layer.colorName}
             colorName={layer.colorName}
-            on:click={async () => await updateLayerId(layer.id)}
+            onclick={async () => await updateLayerId(layer.id)}
           />
         {/each}
       {/if}
-      {#if item.totalLayersCount > layerCount && moreLayersIndicator && item.type != PACKAGE_TYPE.OUTFIT_SET}
-        <span class="more">+{item.totalLayersCount - layerCount}</span>
+      {#if renderedItem.totalLayersCount > layerCount && moreLayersIndicator && renderedItem.type != PACKAGE_TYPE.OUTFIT_SET}
+        <span class="more">+{renderedItem.totalLayersCount - layerCount}</span>
       {/if}
     </div>
   </div>
   <div class="data">
-    <span class="title">{item.name}</span>
+    <span class="title">{renderedItem.name}</span>
     <div class="social">
-      {#if item.social?.likes > 0 && item.social?.isShared}
+      {#if renderedItem.social?.likes > 0 && renderedItem.social?.isShared}
         <div>
           <span class="icon">
             {@html HeartSmallIcon}
           </span>
-          {normalizeNumber(item.social.likes)}
+          {normalizeNumber(renderedItem.social.likes)}
         </div>
       {/if}
-      {#if item.social?.downloads > 0 && item.social?.isShared}
+      {#if renderedItem.social?.downloads > 0 && renderedItem.social?.isShared}
         <div>
           <span class="icon">
             {@html DownloadSmallIcon}
           </span>
-          {normalizeNumber(item.social.downloads)}
+          {normalizeNumber(renderedItem.social.downloads)}
         </div>
       {/if}
     </div>

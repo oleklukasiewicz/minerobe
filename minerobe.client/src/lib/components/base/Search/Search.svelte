@@ -1,48 +1,58 @@
 <script lang="ts">
-  //main imports
-  import { createEventDispatcher } from "svelte";
-  //components
-  import Button from "../Button/Button.svelte";
   //icons
   import SearchIcon from "$icons/search.svg?raw";
   import CloseIcon from "$icons/close.svg?raw";
 
-  export let value = null;
-  export let dense = true;
-  export let style = "";
-  export let clearable = true;
-  export let placeholder = "Search";
-  export let dark = false;
+  import Button from "../Button/Button.svelte";
+  import type { BaseProps } from "$src/data/components";
+  //icons
 
-  const dispatch = createEventDispatcher();
+  interface SearchProps extends BaseProps {
+    value?: any;
+    dense?: boolean;
+    style?: string;
+    clearable?: boolean;
+    placeholder?: string;
+    dark?: boolean;
+    onclear?: (event?: any) => void;
+    oninput?: (event?: any) => void;
+    onsearch?: (event?: any) => void;
+  }
+
+  let {
+    value = $bindable(),
+    dense = true,
+    disabled = false,
+    style = "",
+    clearable = true,
+    placeholder = "Search",
+    dark = false,
+    onclear = null,
+    oninput = null,
+    onsearch = null,
+  }: SearchProps = $props();
 
   const onKeyDown = (e) => {
-    if (e.key === "Enter") {
-      onSearch(e);
-    }
+    if (e.key === "Enter") onSearch(e);
   };
 
   const onClear = () => {
     value = "";
-    dispatch("clear", value);
+    onclear?.({ value });
   };
 
-  const onInput = (e) => {
-    dispatch("input", value);
-  };
-  const onSearch = (e) => {
-    dispatch("search", value);
-  };
+  const onInput = (e) => oninput?.({ value });
+  const onSearch = (e) => onsearch?.({ value });
 </script>
 
-<div class="search" class:dense {style} class:dark>
+<div class="search" class:dense {style} class:dark class:disabled>
   <input
     type="text"
     {placeholder}
     bind:value
     class="search-input"
-    on:input={onInput}
-    on:keydown={onKeyDown}
+    oninput={onInput}
+    onkeydown={onKeyDown}
   />
   {#if clearable && value}
     <Button
@@ -52,11 +62,11 @@
       size="auto"
       noBorder
       label="Clear"
-      on:click={onClear}
+      onclick={onClear}
     />
   {/if}
   <Button
-    on:click={onSearch}
+    onclick={onSearch}
     onlyIcon
     size="auto"
     icon={SearchIcon}

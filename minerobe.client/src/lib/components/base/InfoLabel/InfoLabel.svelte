@@ -1,15 +1,25 @@
 <script lang="ts">
-  //components
-  import Button from "../Button/Button.svelte";
   //icons
   import DeleteIcon from "$src/icons/close.svg?raw";
 
-  export let label = "";
-  export let type: "warning" | "info" = "info";
-  export let description = "";
-  export let closeable = true;
+  import Button from "../Button/Button.svelte";
+  //icons
 
-  let isClosed = false;
+  interface InfoLabelProps {
+    label?: string;
+    type?: "warning" | "info";
+    isClosed?: boolean;
+    description?: string;
+    closeable?: boolean;
+  }
+
+  let {
+    label = "",
+    type = "info",
+    description = "",
+    closeable = true,
+    isClosed = $bindable(false),
+  }: InfoLabelProps = $props();
 </script>
 
 <div
@@ -23,7 +33,7 @@
     {#if closeable}
       <Button
         type="quaternary"
-        on:click={() => {
+        onclick={() => {
           isClosed = true;
         }}
         icon={DeleteIcon}
