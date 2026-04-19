@@ -52,43 +52,6 @@ export class TextureRender {
   //for dynamic render
   private animationEngine: RenderAnimationEngine = null;
   private orbitalControls: any = null;
-  private lastRenderWidth: number = -1;
-  private lastRenderHeight: number = -1;
-  private lastPixelRatio: number = -1;
-  private lastCameraOptionsKey: string = "";
-  private _toVector3 = async function (value) {
-    const threeModule = await THREE.getThree();
-    return new threeModule.Vector3(value.x, value.y, value.z);
-  };
-  private _ensureRendererAttached = function (targetNode: any) {
-    if (this.renderer?.domElement?.parentNode !== targetNode) {
-      targetNode.appendChild(this.renderer.domElement);
-    }
-  };
-  private _ensureAnimationEngine = async function () {
-    if (this.animationEngine != null) return this.animationEngine;
-    this.animationEngine = new RenderAnimationEngine();
-    await this.animationEngine.Create();
-    return this.animationEngine;
-  };
-  private _renderAnimationFrame = async function () {
-    const animationEngine = await this._ensureAnimationEngine();
-    await animationEngine.PrepareAnimation(
-      this.modelScene.renderScene,
-      this.modelScene.name
-    );
-    await animationEngine.RenderAnimationFrame();
-  };
-  private _removeSceneObject = function (obj: any) {
-    if (obj != null) this.modelScene.scene.remove(obj);
-  };
-  private _refreshAnimationDataIfRendering = async function () {
-    if (!this.renderingActive || this.animationEngine == null) return;
-    await this.animationEngine.RefreshAnimationData(
-      this.modelScene.renderScene,
-      this.modelScene.name
-    );
-  };
 
   private _loadTexture = async function (targetTexture: string = null, flipY) {
     return new Promise(async (resolve) => {
@@ -112,7 +75,7 @@ export class TextureRender {
       );
     });
   };
-  private _attachCapeToModel = async function () {
+  private _attachCapeToModel = async function (oldCape) {
     const bodyPart = this.modelScene.renderScene.getObjectByName("Body");
     if (this.capePivot != null) {
       bodyPart.remove(this.capePivot);
@@ -168,48 +131,48 @@ export class TextureRender {
         75
       );
     }
-
-    options.position = await this._toVector3(options.position);
-    options.lookAt = await this._toVector3(options.lookAt);
-    options.rotation = await this._toVector3(options.rotation);
-
-    const cameraOptionsKey = [
+    options.position = new threeModule.Vector3(
       options.position.x,
       options.position.y,
-      options.position.z,
-      options.rotation.x,
-      options.rotation.y,
-      options.rotation.z,
+      options.position.z
+    );
+    options.lookAt = new threeModule.Vector3(
       options.lookAt.x,
       options.lookAt.y,
-      options.lookAt.z,
-      options.fov,
-      options.zoom,
-    ].join("|");
-
-    if (cameraOptionsKey === this.lastCameraOptionsKey) return;
-
-    this.modelScene.camera.position.copy(options.position);
-    this.modelScene.camera.rotation.set(
+      options.lookAt.z
+    );
+    options.rotation = new threeModule.Vector3(
       options.rotation.x,
       options.rotation.y,
       options.rotation.z
     );
+    this.modelScene.camera.position.x = options.position.x;
+    this.modelScene.camera.position.y = options.position.y;
+    this.modelScene.camera.position.z = options.position.z;
+    this.modelScene.camera.rotation.x = options.rotation.x;
+    this.modelScene.camera.rotation.y = options.rotation.y;
+    this.modelScene.camera.rotation.z = options.rotation.z;
     this.modelScene.camera.lookAt(options.lookAt);
     this.modelScene.camera.fov = options.fov;
     this.modelScene.camera.zoom = options.zoom;
-    this.lastCameraOptionsKey = cameraOptionsKey;
   };
   private _render = async function (_self = this) {
     if (!_self.renderingActive) return;
-
-    if (!this.renderingPaused) {
-      await this._renderAnimationFrame();
-
-      this._ensureRendererAttached(this.node);
-      this.renderer.render(this.modelScene.scene, this.modelScene.camera);
+    if (this.animationEngine == null) {
+      this.animationEngine = new RenderAnimationEngine();
+      await this.animationEngine.Create();
     }
+    if (!this.renderingPaused) {
+      //frame rendering
+      await this.animationEngine.PrepareAnimation(
+        this.modelScene.renderScene,
+        this.modelScene.name
+      );
+      await this.animationEngine.RenderAnimationFrame();
 
+      this.renderer.render(this.modelScene.scene, this.modelScene.camera);
+      this.node.appendChild(this.renderer.domElement);
+    }
     requestAnimationFrame(async () => await this._render(this));
   };
   private _updateRenderSize = function () {
@@ -221,26 +184,11 @@ export class TextureRender {
     const fov = 1;
     if (this.renderer == null) return;
 
-    const nextWidth = width * fov * canvasSizeMultiplier;
-    const nextHeight = height * fov * canvasSizeMultiplier;
-    const nextPixelRatio = window.devicePixelRatio;
-    const sizeChanged =
-      this.lastRenderWidth !== nextWidth || this.lastRenderHeight !== nextHeight;
-    const pixelRatioChanged = this.lastPixelRatio !== nextPixelRatio;
-
-    if (!sizeChanged && !pixelRatioChanged) return;
-
-    if (pixelRatioChanged) {
-      this.renderer.setPixelRatio(nextPixelRatio);
-      this.lastPixelRatio = nextPixelRatio;
-    }
-
-    if (sizeChanged) {
-      this.renderer.setSize(nextWidth, nextHeight);
-      this.lastRenderWidth = nextWidth;
-      this.lastRenderHeight = nextHeight;
-    }
-
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setSize(
+      width * fov * canvasSizeMultiplier,
+      height * fov * canvasSizeMultiplier
+    );
     this.modelScene.camera.aspect = width / height;
     this.modelScene.camera.updateProjectionMatrix();
   };
@@ -277,12 +225,15 @@ export class TextureRender {
       this.modelScene.renderScene = newRenderScene;
     }
     this.modelScene.name = targetSceneModel.name;
-    this.lastCameraOptionsKey = "";
     if (this.renderingActive) await this._applyTextureToModel();
     if (this.capeTexture != null) {
       await this._attachCapeToModel();
     }
-    await this._refreshAnimationDataIfRendering();
+    if (this.renderingActive)
+      await this.animationEngine.RefreshAnimationData(
+        this.modelScene.renderScene,
+        this.modelScene.name
+      );
     return this;
   };
   PauseRendering = function (): TextureRender {
@@ -330,8 +281,17 @@ export class TextureRender {
     cameraOptions: CameraConfig | string
   ): Promise<TextureRender> {
     if (typeof cameraOptions != "string") {
-      cameraOptions.position = await this._toVector3(cameraOptions.position);
-      cameraOptions.lookAt = await this._toVector3(cameraOptions.lookAt);
+      const threeModule = await THREE.getThree();
+      cameraOptions.position = new threeModule.Vector3(
+        cameraOptions.position.x,
+        cameraOptions.position.y,
+        cameraOptions.position.z
+      );
+      cameraOptions.lookAt = new threeModule.Vector3(
+        cameraOptions.lookAt.x,
+        cameraOptions.lookAt.y,
+        cameraOptions.lookAt.z
+      );
     }
     this.cameraOptions = cameraOptions;
     return this;
@@ -369,7 +329,6 @@ export class TextureRender {
     //initial configuration
     const threeModule = await THREE.getThree();
     this.modelScene.camera = new threeModule.PerspectiveCamera();
-    this.lastCameraOptionsKey = "";
 
     this.renderingActive = true;
 
@@ -391,6 +350,7 @@ export class TextureRender {
   };
   StopRendering = function (): TextureRender {
     this.renderingActive = false;
+    this.clock = null;
     return this;
   };
   AddShadow = async function (): Promise<TextureRender> {
@@ -426,7 +386,8 @@ export class TextureRender {
   };
   RemoveShadow = function (): TextureRender {
     this.shadowsEnabled = false;
-    this._removeSceneObject(this.shadowScene);
+    if (this.shadowScene != null)
+      this.modelScene.scene.remove(this.shadowScene);
     this.shadowScene = null;
     return this;
   };
@@ -450,7 +411,7 @@ export class TextureRender {
     return this;
   };
   RemoveFloor = function (): TextureRender {
-    this._removeSceneObject(this.floorScene);
+    if (this.floorScene != null) this.modelScene.scene.remove(this.floorScene);
     this.floorScene = null;
     return this;
   };
@@ -468,7 +429,7 @@ export class TextureRender {
   };
   SetCapeAsync = async function (capeTexture: string): Promise<TextureRender> {
     this.capeTexture = capeTexture;
-    this._removeSceneObject(this.capeScene);
+    if (this.capeScene != null) this.modelScene.scene.remove(this.capeScene);
     const threeModule = await THREE.getThree();
     const loaderPromise: Promise<any> = new Promise((resolve) => {
       const capeLoader = new threeModule.ImageBitmapLoader();
@@ -501,7 +462,11 @@ export class TextureRender {
     });
     this.capeScene = capeModel;
     await this._attachCapeToModel();
-    await this._refreshAnimationDataIfRendering();
+    if (this.renderingActive)
+      await this.animationEngine.RefreshAnimationData(
+        this.modelScene.renderScene,
+        this.modelScene.name
+      );
 
     return this;
   };
@@ -536,12 +501,14 @@ export class TextureRender {
     return this;
   };
   RemoveDirectionalLight = function () {
-    this._removeSceneObject(this.directionalLight);
+    if (this.directionalLight != null)
+      this.modelScene.scene.remove(this.directionalLight);
     this.directionalLight = null;
     return this;
   };
   RemoveAmbientLight = function () {
-    this._removeSceneObject(this.ambientLight);
+    if (this.ambientLight != null)
+      this.modelScene.scene.remove(this.ambientLight);
     this.ambientLight = null;
     return this;
   };
@@ -625,33 +592,12 @@ export class RenderAnimationEngine {
 
   private animationQueueLimit: number = 2;
 
-  private timer: any = null;
-  private _mergeAnimationData = function (localAnimationData: any) {
-    this.animationData = Object.assign(
-      this.animationData || {},
-      localAnimationData
-    );
-  };
-  private _dequeueAnimation = function () {
-    this.currentAnimation = this.animationsList.shift() ?? null;
-  };
-  private _resetCurrentAnimation = function () {
-    this.isAnimationQuiting = false;
-    this.isAnimationPrepared = false;
-    this.animationData = null;
-    this.currentAnimation = null;
-  };
-  private _getFrameTiming = function () {
-    this.timer.update();
-    const delta = Math.min(this.timer.getDelta(), 1);
-    const elapsed = this.timer.getElapsed();
-    return { delta, elapsed };
-  };
+  private clock: any = null;
 
   constructor() {}
   Create = async function () {
     const threeModule = await THREE.getThree();
-    this.timer = new threeModule.Timer();
+    this.clock = new threeModule.Clock();
     return this;
   };
   PrepareAnimation = async function (
@@ -662,7 +608,12 @@ export class RenderAnimationEngine {
   ) {
     if (this.isAnimationPrepared && !force) return this;
 
-    if (this.currentAnimation == null) this._dequeueAnimation();
+    if (this.currentAnimation == null) {
+      if (this.animationsList.length > 0) {
+        this.currentAnimation = this.animationsList[0];
+        this.animationsList.splice(0, 1);
+      }
+    }
     if (this.currentAnimation == null) return this;
 
     const localAnimationData = await this.currentAnimation.prepare(
@@ -672,26 +623,26 @@ export class RenderAnimationEngine {
     );
 
     this.animationDataModelName = modelName;
-    this._mergeAnimationData(localAnimationData);
+    this.animationData = Object.assign(
+      this.animationData || {},
+      localAnimationData
+    );
 
     this.isAnimationPrepared = true;
     return this;
   };
   AddAnimation = function (animation: RenderAnimation, force = false) {
-    if (this.animationsList.length >= this.animationQueueLimit && !force) {
-      return this;
-    }
-
     if (this.animationsList.length >= this.animationQueueLimit) {
-      this.animationsList[this.animationsList.length - 1] = animation;
-      return this;
+      if (!force) return this;
+      this.animationsList.splice(this.animationsList.length - 1, 1, animation);
     }
-
     this.animationsList.push(animation);
     return this;
   };
   RenderAnimationFrame = async function () {
-    const { delta, elapsed } = this._getFrameTiming();
+    const _clockActualDelta = this.clock.getDelta();
+    const _clockDelta = _clockActualDelta > 1 ? 1 : _clockActualDelta;
+    const _clockElapsedTime = this.clock.getElapsedTime();
 
     if (!this.isAnimationPrepared) {
       await this.PrepareAnimation(
@@ -700,48 +651,45 @@ export class RenderAnimationEngine {
         this.animationDataModelName
       );
     }
-
-    const activeAnimation = this.currentAnimation;
-    if (activeAnimation == null) return this;
+    if (this.currentAnimation == null) return this;
 
     if (this.animationsList.length > 0) this.isAnimationQuiting = true;
-
     if (this.isAnimationQuiting) {
-      const isAnimationFinishedQuiting = activeAnimation.stop(
+      const isAnimationFinishedQuiting = this.currentAnimation.stop(
         this.animationData,
         null,
-        delta,
+        _clockDelta,
         this.animationDataModelName,
-        elapsed
+        _clockElapsedTime
       );
-
-      if (isAnimationFinishedQuiting) this._resetCurrentAnimation();
-      return this;
+      if (isAnimationFinishedQuiting) {
+        this.isAnimationQuiting = false;
+        this.isAnimationPrepared = false;
+        this.animationData = null;
+        this.currentAnimation = null;
+      }
+    } else {
+      this.currentAnimation.render(
+        this.animationData,
+        null,
+        _clockDelta,
+        this.animationDataModelName,
+        _clockElapsedTime
+      );
     }
-
-    activeAnimation.render(
-      this.animationData,
-      null,
-      delta,
-      this.animationDataModelName,
-      elapsed
-    );
-
-    return this;
   };
   RefreshAnimationData = async function (sceneData: any, modelName) {
     if (this.currentAnimation == null) return this;
-
     const localAnimationData = await this.currentAnimation.prepare(
       sceneData,
       true,
       modelName
     );
-
-    this._mergeAnimationData(localAnimationData);
+    this.animationData = Object.assign(
+      this.animationData || {},
+      localAnimationData
+    );
     this.animationDataModelName = modelName;
-
-    return this;
   };
 }
 export class OutfitPackageToTextureConverter {
@@ -754,38 +702,6 @@ export class OutfitPackageToTextureConverter {
   private texture: string;
   private basetexture: string;
   private excludedPartsFromFlat: string[] = ["head"];
-  private _getLayerContent = function (layer: OutfitLayer, model: MODEL_TYPE) {
-    const primary = layer?.[model];
-    if (primary?.content != null) return primary.content;
-    if (primary?.contentSnapshot != null) return primary.contentSnapshot;
-
-    const fallbackModel =
-      model == MODEL_TYPE.ALEX ? MODEL_TYPE.STEVE : MODEL_TYPE.ALEX;
-    const fallback = layer?.[fallbackModel];
-    if (fallback?.content != null) return fallback.content;
-    if (fallback?.contentSnapshot != null) return fallback.contentSnapshot;
-
-    return null;
-  };
-  private _collectLayers = function (): string[] {
-    const layers: string[] = [];
-    if (this.basetexture != null) layers.push(this.basetexture);
-
-    const selectedLayer = this.outfitPackage.layers.find((x) => x.id == this.layerId);
-    const targetLayers =
-      this.layerId == null || this.layerId == ""
-        ? this.outfitPackage.layers
-        : selectedLayer
-          ? [selectedLayer]
-          : [];
-
-    for (const layer of targetLayers) {
-      const content = this._getLayerContent(layer, this.model as MODEL_TYPE);
-      if (content != null) layers.push(content);
-    }
-
-    return layers;
-  };
 
   constructor() {}
   SetOutfitPackage = function (
@@ -840,32 +756,43 @@ export class OutfitPackageToTextureConverter {
   };
   AsFlattenAsync = async function (): Promise<string> {
     this.isFlatten = true;
+    const modelMap = this.modelMap;
     const ctx = document.createElement("canvas").getContext("2d", {
       willReadFrequently: true,
     });
     if (this.texture == null) return null;
-
-    const loadedImage = await loadImageSafe(this.texture);
-    if (loadedImage.img == null) {
+    //create image
+    var Image = window.Image;
+    var img = new Image();
+    //await for img to load in promise (handlers must be attached before src)
+    const loadedImg: any = await new Promise((resolve) => {
+      img.onload = () => {
+        resolve({ img: img });
+      };
+      img.onerror = () => {
+        resolve({ img: null });
+      };
+      img.src = this.texture;
+    });
+    if (loadedImg?.img == null) {
       return this.texture;
     }
-
     //get canvas size
-    ctx.canvas.width = loadedImage.img.width;
-    ctx.canvas.height = loadedImage.img.height;
+    ctx.canvas.width = loadedImg.img.width;
+    ctx.canvas.height = loadedImg.img.height;
 
-    ctx.drawImage(loadedImage.img, 0, 0);
-
+    ctx.drawImage(loadedImg.img, 0, 0);
     //flattening
     try {
-      for (const part of Object.values(this.modelMap) as any[]) {
+      const modelMapKeys = Object.keys(modelMap);
+      for (let i = 0; i < modelMapKeys.length; i++) {
+        let part = modelMap[modelMapKeys[i]];
         if (
           part.outerTextureArea != null &&
           part.textureArea != null &&
           !this.excludedPartsFromFlat.includes(part.name)
-        ) {
+        )
           flatPart(ctx, part);
-        }
       }
       this.texture = ctx.canvas.toDataURL();
     } catch {
@@ -893,16 +820,54 @@ export class OutfitPackageToTextureConverter {
     return this.outfitPackage;
   };
   ConvertAsync = async function (): Promise<string> {
-    const layers = this._collectLayers();
+    //set modelMap
+    const modelMap = this.modelMap;
 
+    const getLayerContent = (layer: OutfitLayer, model: MODEL_TYPE) => {
+      const primary = layer?.[model];
+      if (primary?.content != null) return primary.content;
+      if (primary?.contentSnapshot != null) return primary.contentSnapshot;
+
+      const fallbackModel = model == MODEL_TYPE.ALEX
+        ? MODEL_TYPE.STEVE
+        : MODEL_TYPE.ALEX;
+      const fallback = layer?.[fallbackModel];
+      if (fallback?.content != null) return fallback.content;
+      if (fallback?.contentSnapshot != null) return fallback.contentSnapshot;
+
+      return null;
+    };
+
+    //load target layers
+    const layers: string[] = [];
+    if (this.basetexture != null) layers.push(this.basetexture);
+    if (this.layerId == null || this.layerId == "") {
+      //load all layers
+      this.outfitPackage.layers.forEach((layer: OutfitLayer) => {
+        const content = getLayerContent(layer, this.model as MODEL_TYPE);
+        if (content != null) layers.push(content);
+      });
+    } else {
+      //load single
+      const layer: OutfitLayer = this.outfitPackage.layers.find(
+        (x) => x.id == this.layerId
+      );
+      if (layer != null) {
+        const content = getLayerContent(layer, this.model as MODEL_TYPE);
+        if (content != null) layers.push(content);
+      }
+    }
     if (layers.length == 0) {
       this.texture = null;
       return null;
     }
-
-    this.texture =
-      layers.length > 1 ? await mergeTextures(layers, this.modelMap) : layers[0];
-    return this.texture;
+    let texture = layers[0];
+    if (layers.length > 1) {
+      //merge all layers
+      texture = await mergeTextures(layers, modelMap);
+    }
+    this.texture = texture;
+    return texture;
   };
   ConvertAsyncWithFlattenSettingsAsync = async function (): Promise<string> {
     const texture = await this.ConvertAsync();
@@ -918,36 +883,46 @@ export class OutfitPackageToTextureConverter {
     return await this.ConvertAsyncWithFlattenSettingsAsync();
   };
 }
-type LoadedTexture = {
-  textureSrc: string;
-  img: HTMLImageElement | null;
-};
-const loadImageSafe = (textureSrc: string): Promise<LoadedTexture> => {
-  return new Promise<LoadedTexture>((resolve) => {
-    const img = new window.Image();
-    img.onload = () => resolve({ textureSrc, img });
-    img.onerror = () => resolve({ textureSrc, img: null });
-    img.src = textureSrc;
-  });
-};
 const mergeTextures = async function (textures: string[], modelMap) {
+  type LoadedTexture = {
+    textureSrc: string;
+    img: HTMLImageElement | null;
+  };
+
   const canvas = document.createElement("canvas");
+  const windowImage = window.Image;
+
+  //load textures to canvas
+  const layerPromises: Promise<LoadedTexture>[] = textures.map((texture) => {
+    return new Promise<LoadedTexture>((resolve) => {
+      const img = new windowImage();
+      img.onload = () => {
+        return resolve({ textureSrc: texture, img: img });
+      };
+      img.onerror = () => {
+        return resolve({ textureSrc: texture, img: null });
+      };
+      img.src = texture;
+    });
+  });
 
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   const tempCanvas = document.createElement("canvas");
   const tempCtx = tempCanvas.getContext("2d", { willReadFrequently: true });
 
-  const images = await Promise.all(textures.map(loadImageSafe));
-  const validImages = images.filter(
-    (image): image is LoadedTexture & { img: HTMLImageElement } =>
-      image.img != null
-  );
+  const images = await Promise.all(layerPromises);
+  const validImages = images.filter((image): image is LoadedTexture & { img: HTMLImageElement } => image.img != null);
 
   if (validImages.length === 0) return null;
 
   //get canvas size
   const getSize = function (dim: "width" | "height") {
-    return Math.max(...validImages.map((image) => image.img[dim]));
+    return Math.max.apply(
+      Math,
+      validImages.map(function (image) {
+        return image.img[dim];
+      })
+    );
   };
 
   canvas.width = getSize("width");
@@ -957,12 +932,12 @@ const mergeTextures = async function (textures: string[], modelMap) {
   validImages.forEach(function (image) {
     ctx.globalAlpha = 1;
     tempCtx.drawImage(image.img, 0, 0);
-
     //replace lower parts based on modelMap
-    for (const part of Object.values(modelMap) as any[]) {
-      if (part.outerTextureArea != null && part.textureArea != null) {
+    const modelMapKeys = Object.keys(modelMap);
+    for (let i = 0; i < modelMapKeys.length; i++) {
+      let part = modelMap[modelMapKeys[i]];
+      if (part.outerTextureArea != null && part.textureArea != null)
         replaceLowerLayerPart(tempCtx, ctx, part);
-      }
     }
 
     tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
