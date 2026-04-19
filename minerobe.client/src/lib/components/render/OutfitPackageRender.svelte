@@ -75,8 +75,7 @@
     pauseOnIntersection = false,
     useTextureLighting = false,
     resizable = false,
-    resizeDebounce = 300
-  ,
+    resizeDebounce = 300,
     ontextureUpdate = null
   }: OutfitPackageRenderProps = $props();
 
@@ -91,8 +90,7 @@
   let renderReady = $state(false);
   let cachedtexture: string = null;
   let renderNode: any = $state();
-  let merger: OutfitPackageToTextureConverter =
-    new OutfitPackageToTextureConverter();
+  let merger: OutfitPackageToTextureConverter = new OutfitPackageToTextureConverter();
   let textureRenderer: TextureRender;
   let initialized = false;
 
@@ -119,21 +117,25 @@
     _baseTexture = baseTexture;
     _layerId = layerId;
     _cape = cape;
-    textureRenderer = new TextureRender(renderer);
+    const initialRenderer =
+      renderer ?? (await waitForStoreValue(DEFAULT_RENDERER as Readable<any>));
+    textureRenderer = new TextureRender(initialRenderer);
 
     textureRenderer.SetNode(renderNode);
-    
+    if (!isDynamic) textureRenderer.SetTemporaryRenderNode(_component);
+
     await loadInitialParams();
     await setRenderMode(isDynamic);
     initialized = true;
-    renderReady = true;
+    renderReady = isDynamic;
     if (_cape != null) await textureRenderer.SetCapeAsync(_cape);
   });
   onDestroy(() => {
+    textureRenderer.RemoveTemporaryRenderNode();
     textureRenderer.StopRendering();
   });
 
-  const onTextureUpdate= function () {
+  const onTextureUpdate = function () {
     ontextureUpdate?.({ detail: { texture: textureRenderer.GetTexture() } });
   };
 
@@ -145,7 +147,7 @@
       await textureRenderer.AddAmbientLight();
       await textureRenderer.AddDirectionalLight();
     }
-    if (isDynamic) {
+    if (v) {
       await textureRenderer.AddFloor(floorTexture);
       await textureRenderer.AddShadow();
       await textureRenderer.SetBackground(0x202020);
@@ -167,7 +169,7 @@
     }
     if (typeof _source !== "string") {
       merger.SetOutfitPackage(_source);
-      if (layerId != null && layerId != "") merger.SetLayerId(layerId);
+      if (_layerId != null && _layerId != "") merger.SetLayerId(_layerId);
     }
     let targetModel = _model as string;
     if (_model == "source" && typeof _source !== "string")
@@ -302,10 +304,10 @@
     if (v == _layerId) return false;
     _layerId = v;
     if (merger && typeof _source !== "string") {
-      await merger.SetLayerId(layerId);
+      await merger.SetLayerId(_layerId);
       await textureRenderer.SetTextureAsync(cachedtexture);
       if (typeof _source !== "string") {
-        const layer = _source.layers.find((x) => x.id == layerId);
+        const layer = _source.layers.find((x) => x.id == _layerId);
         if (layer != null)
           await textureRenderer.SetCameraOptions(
             CAMERA_CONFIG.getForOutfit(layer.outfitType)
@@ -420,12 +422,12 @@
 
     const modelScene = await resolveModelScene(
       modelToSync as MODEL_TYPE,
-      !useBaseScene
+      useBaseScene
     );
     if (modelScene == null) {
       console.warn("Unable to resolve model scene in syncModel", {
         modelToSync,
-        useBaseScene: !useBaseScene,
+        useBaseScene,
       });
       return;
     }
@@ -509,12 +511,12 @@
     setCameraOptions(cameraOptions);
   });
 
-  const onResize= async function () {
+  const onResize = async function () {
     if (!initialized) return;
     await textureRenderer.Resize();
-    renderReady = true;
+    if (isDynamic) renderReady = true;
   };
-  const onObserve= function (e) {
+  const onObserve = function (e) {
     if (pauseOnIntersection) {
       if (!e.detail.isIntersecting) textureRenderer.PauseRendering();
       else textureRenderer.ResumeRendering();
@@ -528,6 +530,8 @@
     <img
       bind:this={renderNode}
       class:renderReady
+      onload={() => (renderReady = true)}
+      onerror={() => (renderReady = false)}
       draggable="false"
       fetchpriority="low"
       loading="lazy"

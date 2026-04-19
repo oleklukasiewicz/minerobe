@@ -53,7 +53,7 @@ export class TextureRender {
   private animationEngine: RenderAnimationEngine = null;
   private orbitalControls: any = null;
 
-  private _loadTexture = async function (targetTexture: string = null, flipY) {
+  private _loadTexture = async function (targetTexture: string = null) {
     return new Promise(async (resolve) => {
       const threeModule = await THREE.getThree();
       if (this.textureLoader == null) {
@@ -75,7 +75,7 @@ export class TextureRender {
       );
     });
   };
-  private _attachCapeToModel = async function (oldCape) {
+  private _attachCapeToModel = async function () {
     const bodyPart = this.modelScene.renderScene.getObjectByName("Body");
     if (this.capePivot != null) {
       bodyPart.remove(this.capePivot);
@@ -195,14 +195,25 @@ export class TextureRender {
   private _renderInNode = function () {
     if (this.loadedTexture == null) return;
     const renderNode = this.temporaryRenderNode || this.node;
-    renderNode.appendChild(this.renderer.domElement);
+    if (this.renderer == null || this.node == null || renderNode == null) return;
+
+    const canAttachCanvas =
+      renderNode.nodeType === Node.ELEMENT_NODE && renderNode.tagName !== "IMG";
+    const shouldAttach =
+      canAttachCanvas && this.renderer.domElement.parentNode !== renderNode;
+
+    if (shouldAttach) {
+      renderNode.appendChild(this.renderer.domElement);
+    }
 
     this.renderer.render(this.modelScene.scene, this.modelScene.camera);
 
     const dataUrl = this.renderer.domElement.toDataURL();
-    this.node.src = dataUrl;
+    if ("src" in this.node) this.node.src = dataUrl;
 
-    renderNode.removeChild(this.renderer.domElement);
+    if (shouldAttach && this.renderer.domElement.parentNode === renderNode) {
+      renderNode.removeChild(this.renderer.domElement);
+    }
   };
 
   constructor(renderer: any = DEFAULT_RENDERER) {
@@ -386,8 +397,7 @@ export class TextureRender {
   };
   RemoveShadow = function (): TextureRender {
     this.shadowsEnabled = false;
-    if (this.shadowScene != null)
-      this.modelScene.scene.remove(this.shadowScene);
+    if (this.shadowScene != null) this.modelScene.scene.remove(this.shadowScene);
     this.shadowScene = null;
     return this;
   };
@@ -507,8 +517,7 @@ export class TextureRender {
     return this;
   };
   RemoveAmbientLight = function () {
-    if (this.ambientLight != null)
-      this.modelScene.scene.remove(this.ambientLight);
+    if (this.ambientLight != null) this.modelScene.scene.remove(this.ambientLight);
     this.ambientLight = null;
     return this;
   };
@@ -572,7 +581,8 @@ export class ModelScene {
   Clone() {
     const cloned = Object.assign({}, this);
     cloned.scene = this.scene.clone(true);
-    cloned.renderScene.traverse((child: any) => {
+    cloned.renderScene = cloned.scene.children.find((x) => x.name == "model");
+    cloned.renderScene?.traverse((child: any) => {
       if (child.isMesh) {
         const mat = child.material;
         child.material = mat.clone();
