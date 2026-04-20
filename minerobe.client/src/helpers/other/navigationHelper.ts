@@ -31,3 +31,6 @@ export const navigateToCollection = function (
   }
   goto(`/collection/${id}`);
 };
+export const navigateToExplore = function (query: string) {
+  goto(`/explore?q=${encodeURIComponent(query)}`);
+}

@@ -15,6 +15,7 @@
   import AvatarIcon from "$src/icons/avatar.svg?raw";
 
   import NavigationItem from "../NavigationItem/NavigationItem.svelte";
+  import { navigateToExplore } from "$src/helpers/other/navigationHelper";
 
 
   const profileAction = async () => {
@@ -31,6 +32,7 @@
       <Search
         placeholder="Search outfits, collections"
         style="width:100%;max-width:400px;"
+        onsearch={(query) => navigateToExplore(query)}
       />
     </div>
     <div id="nav-actions">
