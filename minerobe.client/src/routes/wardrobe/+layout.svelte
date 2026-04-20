@@ -112,10 +112,10 @@
     }
   };
   const newItem = async function (e) {
-    if (e.detail.type === PACKAGE_TYPE.OUTFIT_COLLECTION) {
+    if (e.type === PACKAGE_TYPE.OUTFIT_COLLECTION) {
       await newCollection();
     } else {
-      await newOutfit(e.detail.type);
+      await newOutfit(e.type);
     }
   };
 </script>
