@@ -142,7 +142,8 @@
 
 <div id="explore-page">
   <div id="navigation" class:opened={menuOpened}>
-    <Menu>
+    <div>
+      <Menu>
       <MenuItemHeader
         icon={MenuIcon}
         label="Explore"
@@ -209,6 +210,7 @@
       />
       <MenuItem icon={ListIcon} label="Collections" opened={menuOpened} />
     </Menu>
+    </div>
   </div>
   <div id="content">
     <LazyList
