@@ -4,7 +4,7 @@
   grid-template-columns: auto 1fr;
   gap: 16px;
   #content {
-    margin: 0px;
+    margin: 2px 0px 0px;
   }
   &.mobile {
     grid-template-columns: 100%;
@@ -36,7 +36,7 @@
     min-width: none;
     div {
       position: sticky;
-      top: 68px;
+      top: 60px;
     }
     &.opened {
       width: 25vw;

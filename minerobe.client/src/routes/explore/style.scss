@@ -1,0 +1,23 @@
+#explore-page {
+  flex: 1;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+}
+#navigation {
+    margin-top: 8px;
+    display: block;
+    max-width: 250px;
+    min-width: none;
+    div {
+      position: sticky;
+      top: 60px;
+    }
+    &.opened {
+      width: 25vw;
+      max-width: 250px;
+    }
+  }
+#content {
+  margin: 6px 0px 0px;
+}

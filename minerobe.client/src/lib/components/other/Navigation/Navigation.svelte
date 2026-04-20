@@ -16,11 +16,19 @@
 
   import NavigationItem from "../NavigationItem/NavigationItem.svelte";
   import { navigateToExplore } from "$src/helpers/other/navigationHelper";
+  import { page } from "$app/state";
 
 
   const profileAction = async () => {
     if (!$CURRENT_USER.id) await loginUser();
   };
+  let searchValue = $state(page.url.searchParams.get("q") ?? "");
+
+  const searchAction = (e: any) => {
+    searchValue = e.value;
+    navigateToExplore(searchValue);
+  };
+
 </script>
 
 <div class="navigation" class:mobile={$IS_MOBILE_VIEW}>
@@ -30,9 +38,11 @@
     </a>
     <div id="nav-search">
       <Search
+        bind:value={searchValue}
         placeholder="Search outfits, collections"
         style="width:100%;max-width:400px;"
-        onsearch={(query) => navigateToExplore(query)}
+        onsearch={searchAction}
+        onclear={searchAction}
       />
     </div>
     <div id="nav-actions">

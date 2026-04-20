@@ -33,7 +33,7 @@
   }: SearchProps = $props();
 
   const onKeyDown = (e) => {
-    if (e.key === "Enter") onSearch(e);
+    if (e.key === "Enter") onSearch();
   };
 
   const onClear = () => {
@@ -41,8 +41,11 @@
     onclear?.({ value });
   };
 
-  const onInput = (e) => oninput?.({ value });
-  const onSearch = (e) => onsearch?.({ value });
+  const onInput = (e) => {
+    const nextValue = e.currentTarget.value;
+    oninput?.({ value: nextValue });
+  };
+  const onSearch = () => onsearch?.({ value });
 </script>
 
 <div class="search" class:dense {style} class:dark class:disabled>

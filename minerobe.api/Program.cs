@@ -24,6 +24,8 @@ using minerobe.api.Modules.Core.Wardrobe.Interface;
 using minerobe.api.Modules.Core.Wardrobe.Service;
 using minerobe.api.Modules.Integration.Minecraft.Interface;
 using minerobe.api.Modules.Integration.Minecraft.Service;
+using minerobe.api.Modules.View.Explore.Interface;
+using minerobe.api.Modules.View.Explore.Service;
 using minerobe.api.Modules.View.Landing.Interface;
 using minerobe.api.Modules.View.Landing.Service;
 using System.IO.Compression;
@@ -44,6 +46,7 @@ builder.Services.AddTransient<IWardrobeService, WardrobeService>();
 builder.Services.AddTransient<IUserSettingsService, UserSettingsService>();
 builder.Services.AddTransient<IOutfitPackageAgregationService, OutfitPackageAgregationService>();
 builder.Services.AddTransient<ILandingViewService, LandingViewService>();
+builder.Services.AddTransient<IExploreViewService, ExploreViewService>();
 
 //default http client
 builder.Services.AddHttpClient();

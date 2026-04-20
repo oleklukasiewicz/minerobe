@@ -1,4 +1,4 @@
-import { goto } from "$app/navigation";
+import { goto, invalidateAll, replaceState } from "$app/navigation";
 import type { OutfitPackage } from "$data/models/package";
 
 export const navigateToWardrobe = function (
@@ -32,5 +32,14 @@ export const navigateToCollection = function (
   goto(`/collection/${id}`);
 };
 export const navigateToExplore = function (query: string) {
-  goto(`/explore?q=${encodeURIComponent(query)}`);
-}
+  const normalizedQuery = query.trim();
+  const target = normalizedQuery
+    ? `/explore?q=${encodeURIComponent(normalizedQuery)}`
+    : `/explore`;
+    
+  goto(target, {
+    replaceState: true,
+    noScroll: true,
+    keepFocus: true,
+  });
+};
