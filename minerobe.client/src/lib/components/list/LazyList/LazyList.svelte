@@ -30,7 +30,7 @@
 
   const onNewPageNeeded = (e) => {
     if (loading) return;
-    if (e.detail.isIntersecting === false) return;
+    if (e.isIntersecting === false) return;
     const lastPage = itemsPages[itemsPages.length - 1];
     if (lastPage != null) {
       lastPage.options.page += 1;

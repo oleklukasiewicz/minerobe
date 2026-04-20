@@ -280,7 +280,7 @@
   };
   const changeLayerPrimary = async function (e) {
     const item = e.item;
-    const isPrimary = e.detail.isPrimary;
+    const isPrimary = e.isPrimary;
 
     if (isPrimary) await SetLayerAsPrimary($itemPackage.id, item.id);
     else await RemovePrimaryLayer($itemPackage.id);
@@ -296,8 +296,8 @@
   };
   const dropLayer = async (e) => {
     const layer = e.item;
-    const option = e.detail.option;
-    const file = e.detail.file;
+    const option = e.option;
+    const file = e.file;
 
     const index = $itemPackageLayers.findIndex((x) => x.id == layer.id);
 

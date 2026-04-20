@@ -10,7 +10,7 @@ export function clickOutside(
   };
 
   document.addEventListener('click', handleClick, true);
-
+  
   return {
     destroy() {
       document.removeEventListener('click', handleClick, true);

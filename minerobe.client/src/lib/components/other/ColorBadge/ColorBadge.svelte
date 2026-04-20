@@ -31,7 +31,7 @@
   const onClick = function (e) {
     if (!selectable) return;
     e.stopPropagation();
-    onclick?.({ detail: { color: color } });
+    onclick?.({ color: color });
   };
 </script>
 

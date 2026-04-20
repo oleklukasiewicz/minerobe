@@ -197,7 +197,7 @@
 
   //dialogs
   const openCollectionsDialog = async (e) => {
-    let options: PageOptions = e?.detail?.options?.options;
+    let options: PageOptions = e?.options?.options;
     if (!options) options = { page: 0, pageSize: 6, total: 0 };
     dialogCollections = {
       items: null,
