@@ -27,7 +27,7 @@
 		"@microsoft/signalr": "^10.0.0",
 		"@sveltejs/adapter-node": "^5.4.0",
 		"@sveltejs/vite-plugin-svelte": "^7.0.0",
-		"axios": "^1.13.5",
+		"axios": "^1.15.1",
 		"color-diff": "^1.4.0",
 		"dotenv": "^17.4.2",
 		"firebase": "^12.12.0",
