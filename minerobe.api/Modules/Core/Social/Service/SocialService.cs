@@ -1,16 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
+using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Social.Entity;
 using minerobe.api.Modules.Core.Social.Interface;
+using minerobe.api.Modules.Core.User.Interface;
 
 namespace minerobe.api.Modules.Core.Social.Service
 {
     public class SocialService : ISocialService
     {
         private readonly BaseDbContext _context;
-        public SocialService(BaseDbContext context)
+        private readonly IUserService _userService;
+        public SocialService(BaseDbContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
         public async Task<SocialData> Share(Guid socialId)
         {
@@ -28,6 +32,7 @@ namespace minerobe.api.Modules.Core.Social.Service
             if (social == null)
                 return null;
             social.IsShared = false;
+            social.Likes = 1;
             _context.SocialDatas.Update(social);
             await _context.SaveChangesAsync();
             return social;
@@ -93,6 +98,51 @@ namespace minerobe.api.Modules.Core.Social.Service
             summary.Likes = socialDatas.Sum(x => x.Likes);
             summary.Downloads = socialDatas.Sum(x => x.Downloads);
             return summary;
+        }
+        public async Task<PackageAccessModel> GetSocialAccess(Guid socialId)
+        {
+            var social = await _context.SocialDatas.Where(x => x.Id == socialId).FirstOrDefaultAsync();
+            var package = await _context.OutfitPackages.Where(x => x.SocialDataId == socialId).FirstOrDefaultAsync();
+
+            var res = new PackageAccessModel
+            {
+                PackageId = socialId,
+                UserId = package.PublisherId,
+                IsShared = social.IsShared
+            };
+            return res;
+        }
+        public async Task<bool> CanAccessSocial(Guid socialId, Guid userId)
+        {
+            var access = await GetSocialAccess(socialId);
+            if (access == null)
+                return false;
+            if (access.IsShared == true)
+                return true;
+            if (access.UserId == userId)
+                return true;
+
+            var user = await _userService.GetById(userId);
+            if (user == null)
+                return false;
+            if (user.IsAdmin)
+                return true;
+            return false;
+        }
+        public async Task<bool> CanEditSocial(Guid socialId, Guid userId)
+        {
+            var access = await GetSocialAccess(socialId);
+            if (access == null)
+                return false;
+            if (access.UserId == userId)
+                return true;
+
+            var user = await _userService.GetById(userId);
+            if (user == null)
+                return false;
+            if (user.IsAdmin)
+                return true;
+            return false;
         }
     }
 }

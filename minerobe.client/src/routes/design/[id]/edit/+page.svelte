@@ -112,15 +112,15 @@
   let { data }: Props = $props();
 
   const renderConfiguration: Writable<OutfitPackageRenderConfig> = writable(
-    new OutfitPackageRenderConfig()
+    new OutfitPackageRenderConfig(),
   );
   const itemPackage: Writable<OutfitPackage> = propertyStore(
     renderConfiguration,
-    "item"
+    "item",
   );
   const itemPackageLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
-    "layers"
+    "layers",
   );
   let loaded = $state(false);
   let isOutfitSet = $state(false);
@@ -133,10 +133,12 @@
   let dialogSelectedLayer: OutfitLayer = $state(null);
   let dialogCollections: PagedResponse<OutfitPackageCollectionWithPackageContext> =
     $state(null);
-  let dialogOutfitPickerItems: PagedResponse<OutfitPackage> =
-    $state(new PagedResponse<OutfitPackage>());
-  let dialogOutfitsPickerOptions: PagedModel<OutfitFilter> =
-    $state(new PagedModel<OutfitFilter>());
+  let dialogOutfitPickerItems: PagedResponse<OutfitPackage> = $state(
+    new PagedResponse<OutfitPackage>(),
+  );
+  let dialogOutfitsPickerOptions: PagedModel<OutfitFilter> = $state(
+    new PagedModel<OutfitFilter>(),
+  );
   let isLayerEditDialogOpen = $state(false);
   let isOverviewDialogOpen = $state(false);
   let isRemoveDialogOpen = $state(false);
@@ -156,7 +158,7 @@
     if (layers.length == 0) return;
     await SetPackageLayerOrder(
       $itemPackage.id,
-      layers.map((x) => x.id)
+      layers.map((x) => x.id),
     );
   }, 500);
 
@@ -186,7 +188,7 @@
       if (isMinecraftIntegrated && isOutfitSet) {
         integrationSettings = await GetAccount(false);
         $renderConfiguration.cape = integrationSettings.capes?.find(
-          (c) => c.id == userSettings?.currentTexture?.capeId
+          (c) => c.id == userSettings?.currentTexture?.capeId,
         );
       }
       itemPackage.subscribe(async (item) => {
@@ -227,7 +229,7 @@
     });
     await UpdatePackageLayersOrder();
     addAnimation(
-      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_DOWN, layer.outfitType)
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_DOWN, layer.outfitType),
     );
   };
   const moveLayerUp = async (e) => {
@@ -249,7 +251,7 @@
     });
     await UpdatePackageLayersOrder();
     addAnimation(
-      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_UP, layer.outfitType)
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_UP, layer.outfitType),
     );
   };
   const removeLayer = async (e) => {
@@ -262,7 +264,7 @@
       return item;
     });
     addAnimation(
-      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_REMOVE, layer.outfitType)
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_REMOVE, layer.outfitType),
     );
   };
   const editLayer = async function (e) {
@@ -275,7 +277,7 @@
 
     await UpdatePackageLayer(item);
     addAnimation(
-      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, item.outfitType)
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, item.outfitType),
     );
   };
   const changeLayerPrimary = async function (e) {
@@ -308,7 +310,7 @@
 
     await UpdatePackageLayer($itemPackageLayers[index]);
     addAnimation(
-      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layer.outfitType)
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layer.outfitType),
     );
   };
 
@@ -320,7 +322,7 @@
         layer.sourcePackageId = $itemPackage.id;
         layer.id = null;
         return await AddPackageLayer(layer);
-      })
+      }),
     );
     itemPackage.update((item) => {
       return {
@@ -335,7 +337,7 @@
       });
     }
     addAnimation(
-      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layers[0].outfitType)
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layers[0].outfitType),
     );
   };
   const importLayerFromDrop = async (e) => {
@@ -346,7 +348,7 @@
         layer.sourcePackageId = $itemPackage.id;
         layer.id = null;
         return await AddPackageLayer(layer);
-      })
+      }),
     );
     itemPackage.update((item) => {
       return {
@@ -361,31 +363,31 @@
       });
     }
     addAnimation(
-      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layers[0].outfitType)
+      GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layers[0].outfitType),
     );
   };
 
   //export
   const exportPackage = async () => {
     const texture = new OutfitPackageToTextureConverter().SetOptions(
-      $renderConfiguration
+      $renderConfiguration,
     );
     if (userSettings?.baseTexture == null || !isOutfitSet)
       texture.SetBaseTexture(null);
     await ExportImage(
       await texture.ConvertAsyncWithFlattenSettingsAsync(),
-      $itemPackage.name
+      $itemPackage.name,
     );
     addAnimation(GetAnimationForPackageChange(CHANGE_TYPE.DOWNLOAD, null));
   };
   const exportPackageWithoutBaseTexture = async () => {
     const texture = new OutfitPackageToTextureConverter().SetOptions(
-      $renderConfiguration
+      $renderConfiguration,
     );
     texture.SetBaseTexture(null);
     await ExportImage(
       await texture.ConvertAsyncWithFlattenSettingsAsync(),
-      $itemPackage.name
+      $itemPackage.name,
     );
     addAnimation(HandsUpAnimation);
   };
@@ -419,7 +421,7 @@
       $itemPackage.id,
       undefined,
       options.page,
-      options.pageSize
+      options.pageSize,
     );
   };
   const openOutfitPickerDialog = async (e) => {
@@ -436,7 +438,7 @@
     isOutfitPickerDialogOpen = true;
 
     dialogOutfitPickerItems = await GetWadrobePackagesSingleLayer(
-      dialogOutfitsPickerOptions
+      dialogOutfitsPickerOptions,
     );
   };
 
@@ -453,7 +455,7 @@
       $itemPackage.id,
       undefined,
       dialogCollections.options.page,
-      dialogCollections.options.pageSize
+      dialogCollections.options.pageSize,
     );
   };
   const removeFromCollection = async function (e) {
@@ -464,7 +466,7 @@
       $itemPackage.id,
       undefined,
       dialogCollections.options.page,
-      dialogCollections.options.pageSize
+      dialogCollections.options.pageSize,
     );
   };
   const sharePackage = async function () {
@@ -496,7 +498,7 @@
       await AddRemoteLayerToPackage(layer.id, $itemPackage.id);
       addedLayers.push(layer);
       addAnimation(
-        GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layer.outfitType)
+        GetAnimationForPackageChange(CHANGE_TYPE.LAYER_ADD, layer.outfitType),
       );
     }
 
@@ -711,7 +713,7 @@
             onclick={openCollectionsDialog}
           />
         {/if}
-        {#if !$itemPackage?.social?.isShared}
+        {#if !$itemPackage?.social?.isShared && $itemPackage.publisherId == $CURRENT_USER?.id}
           <Button
             disabled={$itemPackage?.layers.length == 0}
             label="Share"
@@ -721,7 +723,7 @@
             type={"tertiary"}
             onclick={sharePackage}
           />
-        {:else}
+        {:else if $itemPackage.publisherId == $CURRENT_USER?.id}
           <Button
             onclick={openOverviewDialog}
             label="Overview"

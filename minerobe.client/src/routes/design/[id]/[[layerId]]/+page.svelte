@@ -3,7 +3,11 @@
   import { GetPackage } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
   import { GetAccount } from "$src/api/integration/minecraft.js";
-  import { GetWadrobeCollectionsWithPackageContext } from "$src/api/wardrobe.js";
+  import {
+    AddPackageToWardrobe,
+    GetWadrobeCollectionsWithPackageContext,
+    RemovePackageFromWardrobe,
+  } from "$src/api/wardrobe.js";
 
   //services
   import { ExportImage } from "$src/data/export.js";
@@ -43,6 +47,8 @@
   import ListIcon from "$icons/list.svg?raw";
   import LoaderIcon from "$icons/loader.svg?raw";
   import EditIcon from "$src/icons/edit.svg?raw";
+  import HeartIcon from "$icons/heart.svg?raw";
+  import HeartFilledIcon from "$icons/heart-filled.svg?raw";
 
   import { _ } from "svelte-i18n";
   import { writable, type Writable } from "svelte/store";
@@ -82,15 +88,15 @@
   let { data }: Props = $props();
 
   const renderConfiguration: Writable<OutfitPackageRenderConfig> = writable(
-    new OutfitPackageRenderConfig()
+    new OutfitPackageRenderConfig(),
   );
   const itemPackage: Writable<OutfitPackage> = propertyStore(
     renderConfiguration,
-    "item"
+    "item",
   );
   const itemPackageLayers: Writable<OutfitLayer[]> = propertyStore(
     itemPackage,
-    "layers"
+    "layers",
   );
   let loaded = $state(false);
   let isOutfitSet = $state(false);
@@ -141,7 +147,7 @@
         if (isMinecraftIntegrated && isOutfitSet) {
           integrationSettings = await GetAccount(false);
           $renderConfiguration.cape = integrationSettings.capes?.find(
-            (c) => c.id == userSettings?.currentTexture?.capeId
+            (c) => c.id == userSettings?.currentTexture?.capeId,
           );
         }
       } else $renderConfiguration.baseTexture = $BASE_TEXTURE;
@@ -167,24 +173,24 @@
   //export
   const exportPackage = async () => {
     const texture = new OutfitPackageToTextureConverter().SetOptions(
-      $renderConfiguration
+      $renderConfiguration,
     );
     if (userSettings?.baseTexture == null || !isOutfitSet)
       texture.SetBaseTexture(null);
     await ExportImage(
       await texture.ConvertAsyncWithFlattenSettingsAsync(),
-      $itemPackage.name
+      $itemPackage.name,
     );
     addAnimation(HandsUpAnimation);
   };
   const exportPackageWithoutBaseTexture = async () => {
     const texture = new OutfitPackageToTextureConverter().SetOptions(
-      $renderConfiguration
+      $renderConfiguration,
     );
     texture.SetBaseTexture(null);
     await ExportImage(
       await texture.ConvertAsyncWithFlattenSettingsAsync(),
-      $itemPackage.name
+      $itemPackage.name,
     );
     addAnimation(HandsUpAnimation);
   };
@@ -209,7 +215,7 @@
       $itemPackage.id,
       undefined,
       options.page,
-      options.pageSize
+      options.pageSize,
     );
   };
 
@@ -222,7 +228,7 @@
       $itemPackage.id,
       undefined,
       dialogCollections.options.page,
-      dialogCollections.options.pageSize
+      dialogCollections.options.pageSize,
     );
   };
   const removeFromCollection = async function (e) {
@@ -233,7 +239,7 @@
       $itemPackage.id,
       undefined,
       dialogCollections.options.page,
-      dialogCollections.options.pageSize
+      dialogCollections.options.pageSize,
     );
   };
   const setSkin = async function () {
@@ -247,6 +253,18 @@
   const setCape = function (e) {
     const item = e.item as Cape;
     $renderConfiguration.cape = item;
+  };
+  const likeItem = async function () {
+    await AddPackageToWardrobe($itemPackage.id);
+    ShowToast("Item added to your wardrobe");
+    $itemPackage.isInWardrobe = true;
+    $itemPackage.social.likes += 1;
+  };
+  const unlikeItem = async function () {
+    await RemovePackageFromWardrobe($itemPackage.id);
+    ShowToast("Item removed from your wardrobe", "info");
+    $itemPackage.isInWardrobe = false;
+    $itemPackage.social.likes -= 1;
   };
 </script>
 
@@ -379,7 +397,31 @@
             onclick={exportPackageWithoutBaseTexture}
           />
         </MenuButton>
-       {#if $CURRENT_USER?.id != null}
+        {#if $CURRENT_USER?.id != $itemPackage.publisher.id}
+          {#if $itemPackage.isInWardrobe}
+            <Button
+              label="Unlike item"
+              type="tertiary"
+              size="large"
+              onlyIcon={!$IS_MOBILE_VIEW}
+              icon={HeartFilledIcon}
+              onclick={unlikeItem}
+            />
+          {:else}
+            <Button
+              label="Like item"
+              type="tertiary"
+              size="large"
+              onlyIcon={!$IS_MOBILE_VIEW}
+              icon={HeartIcon}
+              onclick={likeItem}
+            />
+          {/if}
+          {#if !$IS_MOBILE_VIEW}
+            <span class="separator vertical" />
+          {/if}
+        {/if}
+        {#if $CURRENT_USER?.id != null}
           <Button
             label="Manage collections"
             type="tertiary"

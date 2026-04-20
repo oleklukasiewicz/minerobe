@@ -4,11 +4,15 @@
   import { GetWardrobePackages } from "$src/api/wardrobe";
 
   //services
-  import { navigateToOutfitPackage} from "$src/helpers/other/navigationHelper";
+  import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
 
   //consts
   import { APP_STATE } from "$src/data/enums/app";
-  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
+  import {
+    CURRENT_APP_STATE,
+    CURRENT_USER,
+    IS_MOBILE_VIEW,
+  } from "$src/data/static";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
   import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
 
@@ -74,7 +78,11 @@
 
   const goToEdit = function (e) {
     const item = e.item;
-    navigateToOutfitPackage(item, undefined, true);
+    navigateToOutfitPackage(
+      item,
+      undefined,
+      item.publisherId == $CURRENT_USER.id,
+    );
   };
   const fetchItems = async (e) => {
     const options: PagedResponse<OutfitPackage> = e?.options;
@@ -135,7 +143,6 @@
   </div>
   <div id="content-list">
     <LazyList
-      
       onloading={fetchItems}
       itemsPages={$pageItems}
       rootMargin={"100px"}
@@ -148,7 +155,7 @@
           resizeDebounce={500}
           currentPackageId={userSettings.currentTexture?.packageId}
           baseTexture={userSettings?.baseTexture.layers[0]}
-          items={items}
+          {items}
           columns={$IS_MOBILE_VIEW ? 3 : 6}
         />
       {/snippet}
@@ -168,7 +175,7 @@
     sortItems={OUTFIT_PACKAGE_SORT_OPTIONS}
     sortOptions={sortOption[0]}
     hideType
-    bind:filter={filter}
+    bind:filter
     onfilter={updateFilter}
   />
 </div>

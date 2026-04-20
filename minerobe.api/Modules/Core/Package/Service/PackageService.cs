@@ -441,5 +441,12 @@ namespace minerobe.api.Modules.Core.Package.Service
                                select l).FirstOrDefaultAsync();
             return layer;
         }
+        public async Task<Guid> GetIdBySocialId(Guid id)
+        {
+            var package = await _context.OutfitPackages.Where(x => x.SocialDataId == id).FirstOrDefaultAsync();
+            if (package == null)
+                return Guid.Empty;
+            return package.Id;
+        }
     }
 }

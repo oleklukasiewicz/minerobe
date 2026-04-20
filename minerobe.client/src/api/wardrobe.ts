@@ -7,7 +7,6 @@ import type {
 import type { OutfitFilter } from "$data/models/filter";
 import type { OutfitPackage } from "$data/models/package";
 import type { WardrobePackage } from "$data/models/wadrobe";
-import { page } from "$app/state";
 
 export const AddPackageToWardrobe = async function (packageId: string) {
   const resp = await PostRequest("/api/Wardrobe/item/" + packageId, {});

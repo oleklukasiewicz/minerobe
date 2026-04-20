@@ -5,7 +5,7 @@
 
   //consts
   import { APP_STATE } from "$src/data/enums/app";
-  import { CURRENT_APP_STATE, IS_MOBILE_VIEW } from "$src/data/static";
+  import { CURRENT_APP_STATE, CURRENT_USER, IS_MOBILE_VIEW } from "$src/data/static";
   import { PACKAGE_TYPE } from "$src/data/enums/outfit";
   import { OUTFIT_PACKAGE_SORT_OPTIONS } from "$src/data/consts/sort";
 
@@ -75,7 +75,11 @@
 
   const goToEdit = function (e) {
     const item = e.item;
-    navigateToOutfitPackage(item, undefined, true);
+    navigateToOutfitPackage(
+      item,
+      undefined,
+      item.publisherId == $CURRENT_USER.id,
+    );
   };
   const fetchItems = async (e) => {
     const options = e?.options;
