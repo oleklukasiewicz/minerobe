@@ -49,6 +49,7 @@ namespace minerobe.api.Modules.Core.Social.Controllers
 
             var packageId = await _packageService.GetIdBySocialId(id);
             await _wardrobeService.RemovePackageFromAllWadrobes(packageId);
+            await _wardrobeService.AddToWadrobe()
             return Ok(res);
         }
         [HttpPost("Download/{id}")]

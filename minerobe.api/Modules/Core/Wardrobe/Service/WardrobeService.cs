@@ -232,11 +232,28 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> RemovePackageFromExternalWardrobes(Guid packageId)
+        {
+            var package = await _context.OutfitPackages.Where(x => x.Id == packageId).FirstOrDefaultAsync();
+            var user = await _userService.GetById(package.PublisherId);
+
+            await RemovePackageFromAllWadrobes(packageId);
+            await AddToWadrobe(user.WardrobeId, packageId);
+            return true;
+        }
         public async Task<bool> RemoveCollectionFromAllWadrobes(Guid collectionId)
         {
             var matchings = await _context.WardrobeCollectionMatchings.Where(x => x.OutfitPackageCollectionId == collectionId).ToListAsync();
             _context.WardrobeCollectionMatchings.RemoveRange(matchings);
             await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> RemoveCollectionFromExternalWardrobes(Guid collectionId)
+        {
+            var collection = await _context.OutfitPackageCollections.Where(x => x.Id == collectionId).FirstOrDefaultAsync();
+            var user = await _userService.GetById(collection.PublisherId);
+            await RemoveCollectionFromAllWadrobes(collectionId);
+            await AddCollectionToWadrobe(user.WardrobeId, collectionId);
             return true;
         }
     }

@@ -77,7 +77,7 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
                 return Unauthorized();
 
             var result = await _service.Delete(id);
-            await _wardrobeService.RemoveCollectionFromAllWadrobes(id);
+            await _wardrobeService.RemoveCollectionFromExternalWardrobes(id);
             if (!result)
                 return NotFound();
 

@@ -19,5 +19,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Interface
 
         Task<bool> RemovePackageFromAllWadrobes(Guid packageId);
         Task<bool> RemoveCollectionFromAllWadrobes(Guid collectionId);
+        Task<bool> RemoveCollectionFromExternalWardrobes(Guid collectionId);
+        Task<bool> RemovePackageFromExternalWardrobes(Guid packageId);
     }
 }
