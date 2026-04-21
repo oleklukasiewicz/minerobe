@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.Permits.Interface;
 using minerobe.api.Modules.Core.Social.Interface;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Core.Wardrobe.Interface;
@@ -15,17 +17,19 @@ namespace minerobe.api.Modules.Core.Social.Controllers
         private readonly IUserService _userService;
         private readonly IWardrobeService _wardrobeService;
         private readonly IPackageService _packageService;
-        public SocialController(ISocialService socialService, IUserService userService, IWardrobeService wardrobeService, IPackageService packageService)
+        private readonly IPermitsService _permitsService;
+        public SocialController(ISocialService socialService, IUserService userService, IWardrobeService wardrobeService, IPackageService packageService, IPermitsService permitsService)
         {
             _socialService = socialService;
             _userService = userService;
             _wardrobeService = wardrobeService;
             _packageService = packageService;
+            _permitsService = permitsService;
         }
         [HttpPost("Share/{id}")]
         public async Task<IActionResult> Share(Guid id)
         {
-            var canEdit = await _socialService.CanEditSocial(id, (await _userService.GetFromExternalUser(User)).Id);
+            var canEdit = await _permitsService.CanEdit((await _userService.GetFromExternalUser(User)).Id, id, EntityType.SOCIAL_DATA);
             if (!canEdit)
                 return Unauthorized();
             var res = await _socialService.Share(id);
@@ -37,7 +41,7 @@ namespace minerobe.api.Modules.Core.Social.Controllers
         public async Task<IActionResult> Unshare(Guid id)
         {
             var res = await _socialService.Unshare(id);
-            var canEdit = await _socialService.CanEditSocial(id, (await _userService.GetFromExternalUser(User)).Id);
+            var canEdit = await _permitsService.CanEdit((await _userService.GetFromExternalUser(User)).Id, id, EntityType.SOCIAL_DATA);
             if (!canEdit)
                 return Unauthorized();
             if (res == null)
@@ -51,8 +55,8 @@ namespace minerobe.api.Modules.Core.Social.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Download(Guid id)
         {
-            var canEdit = await _socialService.CanAccessSocial(id, (await _userService.GetFromExternalUser(User)).Id);
-            if (!canEdit)
+            var canView = await _permitsService.CanView((await _userService.GetFromExternalUser(User)).Id, id, EntityType.SOCIAL_DATA);
+            if (!canView)
                 return Unauthorized();
 
             var res = await _socialService.Download(id);

@@ -14,7 +14,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
             var ids = agregations.GroupBy(x => x.Id).Select(x => x.Key);
             return FromIdList(ids);
         }
-        
+
         public OutfitPackageAgregationService(BaseDbContext context)
         {
             _context = context;
@@ -43,7 +43,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                               OutfitType = p.Type == PackageType.Set ? OutfitType.Set : l.OutfitType,
                               Downloads = s.Downloads,
                               IsFeatured = s.IsFeatured,
-                              Likes = s.Likes,
+                              Likes = _context.WardrobeMatchings.Count(w => w.OutfitPackageId == p.Id),
                               IsShared = s.IsShared,
                               LayerId = l.Id,
                               LayerSourcePackageId = l.SourcePackageId,
@@ -97,7 +97,13 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                                PublisherId = p.PublisherId,
                                Description = p.Description,
                                SocialDataId = p.SocialDataId,
-                               Social = s,
+                               Social = new Social.Entity.SocialData()
+                               {
+                                   Downloads = s.Downloads,
+                                   IsFeatured = s.IsFeatured,
+                                   IsShared = s.IsShared,
+                                   Likes = _context.WardrobeMatchings.Count(w => w.OutfitPackageId == p.Id)
+                               },
                                OutfitType = p.OutfitType,
                                CreatedAt = p.CreatedAt,
                                ModifiedAt = p.ModifiedAt,
@@ -119,7 +125,6 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                            join s in _context.SocialDatas on p.SocialDataId equals s.Id
                            join u in _context.MinerobeUsers on p.PublisherId equals u.Id
                            join l in _context.OutfitLayers on a.LayerId equals l.Id
-                           join w in _context.WardrobeMatchings on p.Id equals w.OutfitPackageId into wmGroup
                            where a.Id == a.LayerSourcePackageId
                            select new OutfitPackageAgregationResponse
                            {
@@ -133,7 +138,13 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                                    PublisherId = p.PublisherId,
                                    Description = p.Description,
                                    SocialDataId = p.SocialDataId,
-                                   Social = s,
+                                   Social = new Social.Entity.SocialData()
+                                   {
+                                       IsShared = s.IsShared,
+                                       Downloads = s.Downloads,
+                                       IsFeatured = s.IsFeatured,
+                                       Likes = _context.WardrobeMatchings.Count(w => w.OutfitPackageId == p.Id)
+                                   },
                                    OutfitType = p.OutfitType,
                                    CreatedAt = p.CreatedAt,
                                    ModifiedAt = p.ModifiedAt,
@@ -141,7 +152,7 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
                                    Publisher = u
                                },
                                Id = p.Id,
-                               IsInWardrobe = wmGroup.Any(w => w.WardrobeId == wardobeId),
+                               IsInWardrobe = _context.WardrobeMatchings.Any(w => w.OutfitPackageId == p.Id && w.WardrobeId == wardobeId),
                                IsInCollection = false
                            };
             return packages;
@@ -150,12 +161,11 @@ namespace minerobe.api.Modules.Core.PackageAgregation.Service
         {
             var fromAggr = _FromAgregation(agregations);
             var aggrWithUserContext = from p in fromAggr
-                                      join w in _context.WardrobeMatchings on p.Id equals w.OutfitPackageId into wmGroup
                                       select new OutfitPackageAgregationResponse
                                       {
                                           Package = p,
                                           Id = p.Id,
-                                          IsInWardrobe = wmGroup.Any(w => w.WardrobeId == wardobeId),
+                                          IsInWardrobe = _context.WardrobeMatchings.Any(w => w.OutfitPackageId == p.Id && w.WardrobeId == wardobeId),
                                           IsInCollection = false
                                       };
             return aggrWithUserContext;

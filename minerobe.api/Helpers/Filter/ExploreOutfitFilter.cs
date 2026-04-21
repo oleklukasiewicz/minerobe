@@ -15,7 +15,7 @@ namespace minerobe.api.Helpers.Filter
         public IQueryable<OutfitPackageAgregation> Filter(IQueryable<OutfitPackageAgregation> outfits)
         {
             outfits = outfits.Where(x => x.IsShared == true);
-            
+
             if (this.IsPopular)
             {
                 var avgDownloads = outfits.Any() ? outfits.Average(x => x.Downloads) : 0;

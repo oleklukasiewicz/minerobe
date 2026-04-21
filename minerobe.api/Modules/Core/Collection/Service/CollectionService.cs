@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
-using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Collection.Entity;
 using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Package.Entity;
@@ -150,53 +149,6 @@ namespace minerobe.api.Modules.Core.Collection.Service
             var packages = _agregationService.FromIdList(packagesMatches);
 
             return packages;
-        }
-
-        //access
-        public async Task<PackageAccessModel> GetAccess(Guid collectionId)
-        {
-            var package = await _context.OutfitPackageCollections.FindAsync(collectionId);
-            var social = await _context.SocialDatas.Where(x => x.Id == package.SocialDataId).FirstOrDefaultAsync();
-
-            var res = new PackageAccessModel
-            {
-                PackageId = collectionId,
-                UserId = package.PublisherId,
-                IsShared = social.IsShared
-            };
-            return res;
-        }
-        public async Task<bool> CanAccess(Guid packageId, Guid userId)
-        {
-            var access = await GetAccess(packageId);
-            if (access == null)
-                return false;
-            if (access.IsShared == true)
-                return true;
-            if (access.UserId == userId)
-                return true;
-
-            var user = await _userService.GetById(userId);
-            if (user == null)
-                return false;
-            if (user.IsAdmin)
-                return true;
-            return false;
-        }
-        public async Task<bool> CanEdit(Guid packageId, Guid userId)
-        {
-            var access = await GetAccess(packageId);
-            if (access == null)
-                return false;
-            if (access.UserId == userId)
-                return true;
-
-            var user = await _userService.GetById(userId);
-            if (user == null)
-                return false;
-            if (user.IsAdmin)
-                return true;
-            return false;
         }
     }
 }

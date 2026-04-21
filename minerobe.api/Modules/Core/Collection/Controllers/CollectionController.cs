@@ -6,6 +6,7 @@ using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Collection.Model;
 using minerobe.api.Modules.Core.Collection.ResponseModel;
+using minerobe.api.Modules.Core.Permits.Interface;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Core.Wardrobe.Interface;
 
@@ -18,11 +19,13 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
         private readonly ICollectionService _service;
         private readonly IUserService _userService;
         private readonly IWardrobeService _wardrobeService;
-        public CollectionController(ICollectionService service, IUserService userService, IWardrobeService wardrobeService)
+        private readonly IPermitsService _permitsService;
+        public CollectionController(ICollectionService service, IUserService userService, IWardrobeService wardrobeService, IPermitsService permitsService)
         {
             _service = service;
             _userService = userService;
             _wardrobeService = wardrobeService;
+            _permitsService = permitsService;
         }
         [HttpPost("")]
         public async Task<IActionResult> Add([FromBody] OutfitPackageCollectionModel collection)
@@ -37,7 +40,7 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
         public async Task<IActionResult> GetById(Guid id)
         {
             var user = await _userService.GetFromExternalUser(User);
-            var canAccess = await _service.CanAccess(id, user.Id);
+            var canAccess = await _permitsService.CanView(user.Id, id, EntityType.OUTFIT_COLLECTION);
             if (!canAccess)
                 return Unauthorized();
 
@@ -52,7 +55,7 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
         public async Task<IActionResult> GetItems(Guid id, [FromBody] PagedModel<SimpleFilter> options)
         {
             var user = await _userService.GetFromExternalUser(User);
-            var canAccess = await _service.CanAccess(id, user.Id);
+            var canAccess = await _permitsService.CanView(user.Id, id, EntityType.OUTFIT_COLLECTION);
             if (!canAccess)
                 return Unauthorized();
             var query = _service.GetPackagesOfCollection(id);
@@ -69,8 +72,8 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var user = await _userService.GetFromExternalUser(User);
-            var canAccess = await _service.CanEdit(id, user.Id);
-            if (!canAccess)
+            var canEdit = await _permitsService.CanEdit(user.Id, id, EntityType.OUTFIT_COLLECTION);
+            if (!canEdit)
                 return Unauthorized();
 
             var result = await _service.Delete(id);
@@ -87,7 +90,7 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
             ent.Id = id;
 
             var user = await _userService.GetFromExternalUser(User);
-            var canEdit = await _service.CanEdit(id, user.Id);
+            var canEdit = await _permitsService.CanEdit(user.Id, id, EntityType.OUTFIT_COLLECTION);
             if (!canEdit)
                 return Unauthorized();
 
@@ -100,7 +103,7 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
         public async Task<IActionResult> AddPackage(Guid id, Guid packageId)
         {
             var user = await _userService.GetFromExternalUser(User);
-            var canEdit = await _service.CanEdit(id, user.Id);
+            var canEdit = await _permitsService.CanEdit(user.Id, id, EntityType.OUTFIT_COLLECTION);
             if (!canEdit)
                 return Unauthorized();
 
@@ -113,7 +116,7 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
         public async Task<IActionResult> RemovePackage(Guid id, Guid packageId)
         {
             var user = await _userService.GetFromExternalUser(User);
-            var canEdit = await _service.CanEdit(id, user.Id);
+            var canEdit = await _permitsService.CanEdit(user.Id, id, EntityType.OUTFIT_COLLECTION);
             if (!canEdit)
                 return Unauthorized();
 

@@ -1,5 +1,4 @@
-﻿using minerobe.api.Helpers.Model;
-using minerobe.api.Modules.Core.Package.Entity;
+﻿using minerobe.api.Modules.Core.Package.Entity;
 
 namespace minerobe.api.Modules.Core.Package.Interface
 {
@@ -15,9 +14,6 @@ namespace minerobe.api.Modules.Core.Package.Interface
         Task<bool> RemoveLayerFromPackage(Guid layerId, Guid packageId);
         Task<OutfitPackage> Update(OutfitPackage package);
         Task<OutfitLayer> UpdateLayer(OutfitLayer layer);
-        Task<PackageAccessModel> GetPackageAccess(Guid packageId);
-        Task<bool> CanEditPackage(Guid packageId, Guid userId);
-        Task<bool> CanAccessPackage(Guid packageId, Guid userId);
         Task<bool> UpdateLayerOrder(Guid packageId, List<Guid> layersInOrder);
         Task<bool> UpdatePrimaryLayer(Guid packageId, Guid layerId);
         Task<bool> RemovePrimaryLayer(Guid packageId);

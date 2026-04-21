@@ -8,12 +8,14 @@ using minerobe.api.Configuration;
 using minerobe.api.Database;
 using minerobe.api.Hubs;
 using minerobe.api.Jobs;
+using minerobe.api.Modules.Core.Auth.Service;
 using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Collection.Service;
 using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.Package.Service;
 using minerobe.api.Modules.Core.PackageAgregation.Interface;
 using minerobe.api.Modules.Core.PackageAgregation.Service;
+using minerobe.api.Modules.Core.Permits.Interface;
 using minerobe.api.Modules.Core.Settings.Interface;
 using minerobe.api.Modules.Core.Settings.Service;
 using minerobe.api.Modules.Core.Social.Interface;
@@ -40,6 +42,7 @@ builder.Services.Configure<MicrosoftAuthConfig>(builder.Configuration.GetSection
 //entities and services
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<ISocialService, SocialService>();
+builder.Services.AddTransient<IPermitsService, PermitsService>();
 builder.Services.AddTransient<IPackageService, PackageService>();
 builder.Services.AddTransient<ICollectionService, CollectionService>();
 builder.Services.AddTransient<IWardrobeService, WardrobeService>();

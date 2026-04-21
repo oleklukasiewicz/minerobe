@@ -17,7 +17,7 @@ namespace minerobe.api.Modules.Core.Social.Entity
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedOnAdd().HasDefaultValueSql("newsequentialid()");
-            builder.Property(x => x.Likes).HasDefaultValue(0);
+            builder.Ignore(x => x.Likes);
             builder.Property(x => x.Downloads).HasDefaultValue(0);
             builder.Property(x => x.IsFeatured).HasDefaultValue(false);
             builder.Property(x => x.IsShared).HasDefaultValue(false);

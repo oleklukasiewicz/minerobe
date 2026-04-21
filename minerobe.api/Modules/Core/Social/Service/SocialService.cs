@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
-using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Social.Entity;
 using minerobe.api.Modules.Core.Social.Interface;
 using minerobe.api.Modules.Core.User.Interface;
@@ -32,29 +31,6 @@ namespace minerobe.api.Modules.Core.Social.Service
             if (social == null)
                 return null;
             social.IsShared = false;
-            social.Likes = 1;
-            _context.SocialDatas.Update(social);
-            await _context.SaveChangesAsync();
-            return social;
-        }
-        public async Task<SocialData> Like(Guid socialId)
-        {
-            var social = await _context.SocialDatas.Where(x => x.Id == socialId).FirstOrDefaultAsync();
-            if (social == null)
-                return null;
-            social.Likes++;
-            _context.SocialDatas.Update(social);
-            await _context.SaveChangesAsync();
-            return social;
-        }
-        public async Task<SocialData> Unlike(Guid socialId)
-        {
-            var social = await _context.SocialDatas.Where(x => x.Id == socialId).FirstOrDefaultAsync();
-            if (social == null)
-                return null;
-
-            if (social.Likes > 0)
-                social.Likes--;
             _context.SocialDatas.Update(social);
             await _context.SaveChangesAsync();
             return social;
@@ -79,7 +55,23 @@ namespace minerobe.api.Modules.Core.Social.Service
         }
         public async Task<SocialData> GetById(Guid socialId)
         {
-            return await _context.SocialDatas.Where(x => x.Id == socialId).FirstOrDefaultAsync();
+            var socialEntry = await _context.SocialDatas.Where(x => x.Id == socialId).FirstOrDefaultAsync();
+            var package = await _context.OutfitPackages.Where(x => x.SocialDataId == socialId).FirstOrDefaultAsync();
+            if (package != null)
+            {
+                var likes = await _context.WardrobeMatchings.Where(x => x.OutfitPackageId == package.Id).CountAsync();
+                socialEntry.Likes = likes;
+                return socialEntry;
+            }
+            var collection = await _context.OutfitPackageCollections.Where(x => x.SocialDataId == socialId).FirstOrDefaultAsync();
+            if (collection != null)
+            {
+                var likes = await _context.WardrobeCollectionMatchings.Where(x => x.OutfitPackageCollectionId == collection.Id).CountAsync();
+                socialEntry.Likes = likes;
+                return socialEntry;
+            }
+            return socialEntry;
+
         }
         public async Task<SocialData> GetUserSummary(Guid userId)
         {
@@ -98,51 +90,6 @@ namespace minerobe.api.Modules.Core.Social.Service
             summary.Likes = socialDatas.Sum(x => x.Likes);
             summary.Downloads = socialDatas.Sum(x => x.Downloads);
             return summary;
-        }
-        public async Task<PackageAccessModel> GetSocialAccess(Guid socialId)
-        {
-            var social = await _context.SocialDatas.Where(x => x.Id == socialId).FirstOrDefaultAsync();
-            var package = await _context.OutfitPackages.Where(x => x.SocialDataId == socialId).FirstOrDefaultAsync();
-
-            var res = new PackageAccessModel
-            {
-                PackageId = socialId,
-                UserId = package.PublisherId,
-                IsShared = social.IsShared
-            };
-            return res;
-        }
-        public async Task<bool> CanAccessSocial(Guid socialId, Guid userId)
-        {
-            var access = await GetSocialAccess(socialId);
-            if (access == null)
-                return false;
-            if (access.IsShared == true)
-                return true;
-            if (access.UserId == userId)
-                return true;
-
-            var user = await _userService.GetById(userId);
-            if (user == null)
-                return false;
-            if (user.IsAdmin)
-                return true;
-            return false;
-        }
-        public async Task<bool> CanEditSocial(Guid socialId, Guid userId)
-        {
-            var access = await GetSocialAccess(socialId);
-            if (access == null)
-                return false;
-            if (access.UserId == userId)
-                return true;
-
-            var user = await _userService.GetById(userId);
-            if (user == null)
-                return false;
-            if (user.IsAdmin)
-                return true;
-            return false;
         }
     }
 }

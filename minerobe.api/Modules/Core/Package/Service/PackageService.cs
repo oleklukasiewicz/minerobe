@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using minerobe.api.Database;
 using minerobe.api.Helpers;
-using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.Social.Interface;
@@ -260,53 +259,6 @@ namespace minerobe.api.Modules.Core.Package.Service
             await _context.SaveChangesAsync();
             await FillLayerOrder(packageId);
             return true;
-        }
-
-        //access
-        public async Task<PackageAccessModel> GetPackageAccess(Guid packageId)
-        {
-            var package = await _context.OutfitPackages.FindAsync(packageId);
-            var social = await _context.SocialDatas.Where(x => x.Id == package.SocialDataId).FirstOrDefaultAsync();
-
-            var res = new PackageAccessModel
-            {
-                PackageId = packageId,
-                UserId = package.PublisherId,
-                IsShared = social.IsShared
-            };
-            return res;
-        }
-        public async Task<bool> CanAccessPackage(Guid packageId, Guid userId)
-        {
-            var access = await GetPackageAccess(packageId);
-            if (access == null)
-                return false;
-            if (access.IsShared == true)
-                return true;
-            if (access.UserId == userId)
-                return true;
-
-            var user = await _userService.GetById(userId);
-            if (user == null)
-                return false;
-            if (user.IsAdmin)
-                return true;
-            return false;
-        }
-        public async Task<bool> CanEditPackage(Guid packageId, Guid userId)
-        {
-            var access = await GetPackageAccess(packageId);
-            if (access == null)
-                return false;
-            if (access.UserId == userId)
-                return true;
-
-            var user = await _userService.GetById(userId);
-            if (user == null)
-                return false;
-            if (user.IsAdmin)
-                return true;
-            return false;
         }
 
         // update layers order

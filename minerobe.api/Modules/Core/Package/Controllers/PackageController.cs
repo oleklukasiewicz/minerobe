@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.Package.Model;
 using minerobe.api.Modules.Core.Package.ResponseModel;
+using minerobe.api.Modules.Core.Permits.Interface;
 using minerobe.api.Modules.Core.Settings.Interface;
 using minerobe.api.Modules.Core.Settings.Model;
 using minerobe.api.Modules.Core.User.Interface;
@@ -19,19 +21,21 @@ namespace minerobe.api.Modules.Core.Package.Controllers
         private readonly IUserService _userService;
         private readonly IWardrobeService _wardrobeService;
         private readonly IUserSettingsService _userSettingsService;
-        public PackageController(IPackageService packageService, IUserService userService, IWardrobeService wardrobeService, IUserSettingsService userSettingsService)
+        private readonly IPermitsService _permitsService;
+        public PackageController(IPackageService packageService, IUserService userService, IWardrobeService wardrobeService, IUserSettingsService userSettingsService, IPermitsService permitsService)
         {
             _packageService = packageService;
             _userService = userService;
             _wardrobeService = wardrobeService;
             _userSettingsService = userSettingsService;
+            _permitsService = permitsService;
         }
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> Get(Guid id)
         {
             var user = await _userService.GetFromExternalUser(User);
-            var canAccess = await _packageService.CanAccessPackage(id, user.Id);
+            var canAccess = await _permitsService.CanView(user.Id, id, EntityType.OUTFIT_PACKAGE);
             if (!canAccess)
                 return Unauthorized();
 
@@ -49,7 +53,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
         public async Task<IActionResult> GetMerged(Guid id, bool isFlatten = false, bool useBaseTexture = false)
         {
             var user = await _userService.GetFromExternalUser(User);
-            var canAccess = await _packageService.CanAccessPackage(id, user.Id);
+            var canAccess = await _permitsService.CanView(user.Id, id, EntityType.OUTFIT_PACKAGE);
             if (!canAccess)
                 return Unauthorized();
 
@@ -80,7 +84,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
             ent.Id = id;
 
             var user = await _userService.GetFromExternalUser(User);
-            var canEdit = await _packageService.CanEditPackage(id, user.Id);
+            var canEdit = await _permitsService.CanEdit(user.Id, id, EntityType.OUTFIT_PACKAGE);
             if (!canEdit)
                 return Unauthorized();
 
@@ -98,7 +102,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var user = await _userService.GetFromExternalUser(User);
-            var canEdit = await _packageService.CanEditPackage(id, user.Id);
+            var canEdit = await _permitsService.CanEdit(user.Id, id, EntityType.OUTFIT_PACKAGE);
             if (!canEdit)
                 return Unauthorized();
 

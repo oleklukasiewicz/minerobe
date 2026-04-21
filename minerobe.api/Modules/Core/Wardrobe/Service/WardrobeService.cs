@@ -92,10 +92,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             };
             await _context.WardrobeMatchings.AddAsync(metching);
             await _context.SaveChangesAsync();
-            //add like
-
-            var resp = await _socialService.Like(outfitref.Social.Id);
-
+            var resp = await _socialService.GetById(outfitref.SocialDataId);
             return resp;
         }
         public async Task<SocialData> RemoveFromWardrobe(Guid wardrobeId, Guid outfitId)
@@ -106,10 +103,8 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             _context.WardrobeMatchings.Remove(matching);
             await _context.SaveChangesAsync();
             var outfit = await _context.OutfitPackages.Where(x => x.Id == outfitId).FirstOrDefaultAsync();
-            //remove like
 
-            var resp = await _socialService.Unlike(outfit.Social.Id);
-
+            var resp = await _socialService.GetById(outfit.SocialDataId);
             return resp;
         }
 
@@ -145,7 +140,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             await _context.SaveChangesAsync();
 
             //add like
-            var resp = await _socialService.Like(collection.Social.Id);
+            var resp = await _socialService.GetById(collection.SocialDataId);
 
             return resp;
 
@@ -160,7 +155,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             var collection = await _context.OutfitPackageCollections.Where(x => x.Id == collectionId).FirstOrDefaultAsync();
             //remove like
 
-            var resp = await _socialService.Unlike(collection.Social.Id);
+            var resp = await _socialService.GetById(collection.SocialDataId);
 
             return resp;
         }

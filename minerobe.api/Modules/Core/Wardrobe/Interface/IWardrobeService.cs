@@ -1,6 +1,5 @@
 ﻿using minerobe.api.Helpers.Filter;
 using minerobe.api.Modules.Core.Collection.Entity;
-using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.PackageAgregation.Entity;
 using minerobe.api.Modules.Core.Social.Entity;
 

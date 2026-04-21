@@ -77,6 +77,10 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
         {
             var user = await _userService.GetFromExternalUser(User);
 
+            var package = await _collectionService.GetById(id);
+            if (package.PublisherId == user.Id)
+                return BadRequest("You can't remove your own package from your wardrobe");
+
             var res = await _wardrobeService.RemoveCollectionFromWardrobe(user.WardrobeId, id);
             if (res == null)
                 return NotFound();
@@ -133,7 +137,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
             var user = await _userService.GetFromExternalUser(User);
 
             var res = await _wardrobeService.GetWardrobeOutfitsSingleLayer(user.WardrobeId, options.Filter);
-            
+
             var paged = res.ToPagedResponse(options);
             var items = paged.ToOutfitPackageListItem();
 

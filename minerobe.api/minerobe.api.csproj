@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Modules\Core\PackageAgregation\Model\**" />
+    <Content Remove="Modules\Core\PackageAgregation\Model\**" />
+    <EmbeddedResource Remove="Modules\Core\PackageAgregation\Model\**" />
+    <None Remove="Modules\Core\PackageAgregation\Model\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.22" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.22" />
     <PackageReference Include="jQuery" Version="3.7.1" />
@@ -31,7 +38,6 @@
     <Folder Include="Modules\Core\Collection\Model\" />
     <Folder Include="Modules\Core\Collection\Entity\" />
     <Folder Include="Modules\Core\Collection\ResponseModel\" />
-    <Folder Include="Modules\Core\PackageAgregation\Model\" />
     <Folder Include="ServicesHelpers\Interface\" />
   </ItemGroup>
 

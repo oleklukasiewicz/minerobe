@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.Package.Model;
 using minerobe.api.Modules.Core.Package.ResponseModel;
+using minerobe.api.Modules.Core.Permits.Interface;
 using minerobe.api.Modules.Core.User.Interface;
 
 namespace minerobe.api.Modules.Core.Package.Controllers
@@ -13,10 +15,12 @@ namespace minerobe.api.Modules.Core.Package.Controllers
     {
         private readonly IPackageService _packageService;
         private readonly IUserService _userService;
-        public LayerController(IPackageService packageService, IUserService userService)
+        private readonly IPermitsService _permitsService;
+        public LayerController(IPackageService packageService, IUserService userService, IPermitsService permitsService)
         {
             _packageService = packageService;
             _userService = userService;
+            _permitsService = permitsService;
         }
         [HttpGet("{id}")]
         [AllowAnonymous]
@@ -29,8 +33,8 @@ namespace minerobe.api.Modules.Core.Package.Controllers
                 return NotFound();
 
 
-            var canAccess = await _packageService.CanAccessPackage(layer.SourcePackageId.Value, user.Id);
-            if (canAccess == false)
+            var canAccess = await _permitsService.CanView(user.Id, layer.SourcePackageId.Value, EntityType.OUTFIT_PACKAGE);
+            if (!canAccess)
                 return Unauthorized();
 
             return Ok(layer.ToResponseModel(layer.SourcePackageId.Value, true));
@@ -41,8 +45,8 @@ namespace minerobe.api.Modules.Core.Package.Controllers
             if (layer.SourcePackageId == null)
                 return BadRequest();
 
-            var canEdit = await _packageService.CanEditPackage(layer.SourcePackageId.Value, (await _userService.GetFromExternalUser(User)).Id);
-            if (canEdit == false)
+            var canEdit = await _permitsService.CanEdit((await _userService.GetFromExternalUser(User)).Id, layer.SourcePackageId.Value, EntityType.OUTFIT_PACKAGE);
+            if (!canEdit)
                 return Unauthorized();
 
             var res = await _packageService.AddLayer(layer.ToEntity(), layer.SourcePackageId.Value);
@@ -54,8 +58,8 @@ namespace minerobe.api.Modules.Core.Package.Controllers
 
             var layerInDb = await _packageService.GetLayerById(id);
 
-            var canEdit = await _packageService.CanEditPackage(layerInDb.SourcePackageId.Value, (await _userService.GetFromExternalUser(User)).Id);
-            if (canEdit == false)
+            var canEdit = await _permitsService.CanEdit((await _userService.GetFromExternalUser(User)).Id, layerInDb.SourcePackageId.Value, EntityType.OUTFIT_PACKAGE);
+            if (!canEdit)
                 return Unauthorized();
 
             var res = await _packageService.UpdateLayer(layer.ToEntity());
@@ -71,8 +75,8 @@ namespace minerobe.api.Modules.Core.Package.Controllers
             if (layer == null)
                 return NotFound();
 
-            var canEdit = await _packageService.CanEditPackage(layer.SourcePackageId.Value, (await _userService.GetFromExternalUser(User)).Id);
-            if (canEdit == false)
+            var canEdit = await _permitsService.CanEdit((await _userService.GetFromExternalUser(User)).Id, layer.SourcePackageId.Value, EntityType.OUTFIT_PACKAGE);
+            if (!canEdit)
                 return Unauthorized();
 
             var res = await _packageService.DeleteLayer(id);
@@ -84,8 +88,8 @@ namespace minerobe.api.Modules.Core.Package.Controllers
         [HttpPost("{packageId}/add/{id}")]
         public async Task<IActionResult> AddLayerToPackage(Guid id, Guid packageId)
         {
-            var canEdit = await _packageService.CanEditPackage(packageId, (await _userService.GetFromExternalUser(User)).Id);
-            if (canEdit == false)
+            var canEdit = await _permitsService.CanEdit((await _userService.GetFromExternalUser(User)).Id, packageId, EntityType.OUTFIT_PACKAGE);
+            if (!canEdit)
                 return Unauthorized();
 
             var res = await _packageService.AddLayerToPackage(id, packageId);
@@ -96,12 +100,12 @@ namespace minerobe.api.Modules.Core.Package.Controllers
         [HttpDelete("{packageId}/remove/{id}")]
         public async Task<IActionResult> RemoveLayerFromPackage(Guid id, Guid packageId)
         {
-            var canEdit = await _packageService.CanEditPackage(packageId, (await _userService.GetFromExternalUser(User)).Id);
-            if (canEdit == false)
+            var canEdit = await _permitsService.CanEdit((await _userService.GetFromExternalUser(User)).Id, packageId, EntityType.OUTFIT_PACKAGE);
+            if (!canEdit)
                 return Unauthorized();
 
             var res = await _packageService.RemoveLayerFromPackage(id, packageId);
-            if (res == false)
+            if (!res)
                 return NotFound();
             return Ok(res);
         }
@@ -109,34 +113,34 @@ namespace minerobe.api.Modules.Core.Package.Controllers
         [HttpPost("Order/{id}")]
         public async Task<IActionResult> UpdateLayerOrder(Guid id, [FromBody] List<Guid> layersInOrder)
         {
-            var canEdit = await _packageService.CanEditPackage(id, (await _userService.GetFromExternalUser(User)).Id);
-            if (canEdit == false)
+            var canEdit = await _permitsService.CanEdit((await _userService.GetFromExternalUser(User)).Id, id, EntityType.OUTFIT_PACKAGE);
+            if (!canEdit)
                 return Unauthorized();
 
             var res = await _packageService.UpdateLayerOrder(id, layersInOrder);
-            if (res == false)
+            if (!res)
                 return NotFound();
             return Ok(res);
         }
         [HttpPost("Primary/{packageId}/{layerId}")]
         public async Task<IActionResult> UpdatePrimaryLayer(Guid packageId, Guid layerId)
         {
-            var canEdit = await _packageService.CanEditPackage(packageId, (await _userService.GetFromExternalUser(User)).Id);
-            if (canEdit == false)
+            var canEdit = await _permitsService.CanEdit((await _userService.GetFromExternalUser(User)).Id, packageId, EntityType.OUTFIT_PACKAGE);
+            if (!canEdit)
                 return Unauthorized();
             var res = await _packageService.UpdatePrimaryLayer(packageId, layerId);
-            if (res == false)
+            if (!res)
                 return NotFound();
             return Ok(res);
         }
         [HttpDelete("Primary/{packageId}")]
         public async Task<IActionResult> RemovePrimaryLayer(Guid packageId)
         {
-            var canEdit = await _packageService.CanEditPackage(packageId, (await _userService.GetFromExternalUser(User)).Id);
-            if (canEdit == false)
+            var canEdit = await _permitsService.CanEdit((await _userService.GetFromExternalUser(User)).Id, packageId, EntityType.OUTFIT_PACKAGE);
+            if (!canEdit)
                 return Unauthorized();
             var res = await _packageService.RemovePrimaryLayer(packageId);
-            if (res == false) return NotFound();
+            if (!res) return NotFound();
             return Ok(res);
         }
 
