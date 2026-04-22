@@ -238,16 +238,16 @@
     $renderConfiguration.cape = item;
   };
   const likeItem = async function () {
-    await AddPackageToWardrobe($itemPackage.id);
+    const socialdata = await AddPackageToWardrobe($itemPackage.id);
     ShowToast("Item added to your wardrobe");
     $itemPackage.isInWardrobe = true;
-    $itemPackage.social.likes += 1;
+    $itemPackage.social.likes = socialdata.likes;
   };
   const unlikeItem = async function () {
-    await RemovePackageFromWardrobe($itemPackage.id);
+    const socialdata = await RemovePackageFromWardrobe($itemPackage.id);
     ShowToast("Item removed from your wardrobe", "info");
     $itemPackage.isInWardrobe = false;
-    $itemPackage.social.likes -= 1;
+    $itemPackage.social.likes = socialdata.likes;
   };
 </script>
 

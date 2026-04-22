@@ -35,7 +35,9 @@ namespace minerobe.api.Modules.Core.Social.Controllers
             var res = await _socialService.Share(id);
             if (res == null)
                 return NotFound();
-            return Ok(res);
+
+            var socialData = await _socialService.GetById(id);
+            return Ok(socialData);
         }
         [HttpPost("Unshare/{id}")]
         public async Task<IActionResult> Unshare(Guid id)
@@ -49,7 +51,9 @@ namespace minerobe.api.Modules.Core.Social.Controllers
 
             var packageId = await _packageService.GetIdBySocialId(id);
             await _wardrobeService.RemovePackageFromExternalWardrobes(packageId);
-            return Ok(res);
+
+            var socialData = await _socialService.GetById(id);
+            return Ok(socialData);
         }
         [HttpGet("User/{userId}")]
         public async Task<IActionResult> GetUserSummary(Guid userId)
