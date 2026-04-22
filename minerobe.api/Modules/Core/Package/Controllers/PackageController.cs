@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using minerobe.api.Helpers;
 using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Package.Interface;
@@ -8,8 +9,11 @@ using minerobe.api.Modules.Core.Package.ResponseModel;
 using minerobe.api.Modules.Core.Permits.Interface;
 using minerobe.api.Modules.Core.Settings.Interface;
 using minerobe.api.Modules.Core.Settings.Model;
+using minerobe.api.Modules.Core.Social.Entity;
+using minerobe.api.Modules.Core.Social.Interface;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Core.Wardrobe.Interface;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace minerobe.api.Modules.Core.Package.Controllers
 {
@@ -22,13 +26,15 @@ namespace minerobe.api.Modules.Core.Package.Controllers
         private readonly IWardrobeService _wardrobeService;
         private readonly IUserSettingsService _userSettingsService;
         private readonly IPermitsService _permitsService;
-        public PackageController(IPackageService packageService, IUserService userService, IWardrobeService wardrobeService, IUserSettingsService userSettingsService, IPermitsService permitsService)
+        private readonly ISocialService _socialService;
+        public PackageController(IPackageService packageService, IUserService userService, IWardrobeService wardrobeService, IUserSettingsService userSettingsService, IPermitsService permitsService, ISocialService socialService)
         {
             _packageService = packageService;
             _userService = userService;
             _wardrobeService = wardrobeService;
             _userSettingsService = userSettingsService;
             _permitsService = permitsService;
+            _socialService = socialService;
         }
         [HttpGet("{id}")]
         [AllowAnonymous]
@@ -59,7 +65,7 @@ namespace minerobe.api.Modules.Core.Package.Controllers
 
             OutfitLayer baseTexture = null;
 
-            if (useBaseTexture)
+            if (useBaseTexture && user != null)
             {
                 var settings = await _userSettingsService.GetSettings(user.Id);
                 if (settings.BaseTexture != null)
@@ -113,5 +119,41 @@ namespace minerobe.api.Modules.Core.Package.Controllers
             return Ok(res);
         }
 
+        [HttpPost("downloadTexture")]
+        [AllowAnonymous]
+        public async Task<IActionResult> DownloadTexture([FromBody] OutfitPackageRenderConfigModel config)
+        {
+            var user = await _userService.GetFromExternalUser(User);
+            var canAccess = await _permitsService.CanView(user.Id, config.PackageId, EntityType.OUTFIT_PACKAGE);
+            if (!canAccess)
+                return Unauthorized();
+
+            OutfitLayer baseTexture = null;
+
+            if (config.UseBaseTexture && user != null)
+            {
+                var settings = await _userSettingsService.GetSettings(user.Id);
+                if (settings.BaseTexture != null)
+                {
+                    baseTexture = settings.BaseTexture.Layers.FirstOrDefault();
+                }
+            }
+            var mergedtetxure = await _packageService.MergePackageLayers(config.PackageId, config.IsFlatten, baseTexture, config.LayerId);
+            var mergedLayer = mergedtetxure.Layers[0];
+
+
+            if (mergedtetxure.PublisherId != user?.Id)
+                await _socialService.Download(mergedtetxure.SocialDataId);
+
+            var social = await _socialService.GetById(mergedtetxure.SocialDataId);
+            var texture = Enum.Parse<ModelType>(config.Model.ToFirstCapitalLetter()) == ModelType.Steve ? mergedLayer.Steve : mergedLayer.Alex;
+            texture.FileName = mergedtetxure.Name.Trim();
+            return Ok(
+                new
+                {
+                    Texture = texture.ToResponseModel(),
+                    Downloads = social.Downloads
+                });
+        }
     }
 }

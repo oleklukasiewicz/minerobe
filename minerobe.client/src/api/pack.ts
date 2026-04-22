@@ -4,7 +4,15 @@ import {
   PostRequest,
   PutRequest,
 } from "$src/data/api";
-import type { OutfitLayer, OutfitPackage } from "$data/models/package";
+import type {
+  FileData,
+  OutfitLayer,
+  OutfitPackage,
+} from "$data/models/package";
+import type {
+  OutfitPackageExportConfig,
+  OutfitPackageRenderConfig,
+} from "$src/data/models/render";
 //packages
 export const GetPackage = async function (id: string) {
   const res = await GetRequest("/api/Package/" + id);
@@ -13,10 +21,10 @@ export const GetPackage = async function (id: string) {
 export const GetMergedPackage = async function (
   packageId: string,
   isFlatten: Boolean = false,
-  useBasetexture: Boolean = false
+  useBasetexture: Boolean = false,
 ): Promise<OutfitPackage> {
   const res = await GetRequest(
-    "/api/Package/" + packageId + "/merged/" + isFlatten + "/" + useBasetexture
+    "/api/Package/" + packageId + "/merged/" + isFlatten + "/" + useBasetexture,
   );
   return res;
 };
@@ -37,7 +45,7 @@ export const RemovePackageLayer = async function (layerId: string) {
 };
 export const RemovePackageLayerWithPackageContext = async function (
   layer: OutfitLayer,
-  packageId: string
+  packageId: string,
 ) {
   if (layer.sourcePackageId === packageId) await RemovePackageLayer(layer.id);
   else await RemoveRemoteLayerFromPackage(layer.id, packageId);
@@ -48,7 +56,7 @@ export const UpdatePackageLayer = async function (layer: OutfitLayer) {
 };
 export const SetPackageLayerOrder = async function (
   packageId: string,
-  layersIds: string[]
+  layersIds: string[],
 ) {
   const res = await PostRequest("/api/Layers/Order/" + packageId, layersIds);
   return res;
@@ -64,11 +72,11 @@ export const RemovePackage = async function (packageId: string) {
 };
 export const AddRemoteLayerToPackage = async function (
   layerId: string,
-  packageId: string
+  packageId: string,
 ) {
   const res = await PostRequest(
     "/api/Layers/" + packageId + "/add/" + layerId,
-    {}
+    {},
   );
   return res;
 };
@@ -78,24 +86,37 @@ export const GetLayer = async function (id: string) {
 };
 export const RemoveRemoteLayerFromPackage = async function (
   layerId: string,
-  packageId: string
+  packageId: string,
 ) {
   const res = await DeleteRequest(
-    "/api/Layers/" + packageId + "/remove/" + layerId
+    "/api/Layers/" + packageId + "/remove/" + layerId,
   );
   return res;
 };
 export const SetLayerAsPrimary = async function (
   packageId: string,
-  layerId: string
+  layerId: string,
 ) {
   const res = await PostRequest(
     "/api/Layers/Primary/" + packageId + "/" + layerId,
-    {}
+    {},
   );
   return res;
 };
 export const RemovePrimaryLayer = async function (packageId: string) {
   const res = await DeleteRequest("/api/Layers/Primary/" + packageId);
+  return res;
+};
+export const DownloadTexture = async function (
+  config: OutfitPackageRenderConfig,
+  withBaseTexture: boolean = false,
+) {
+  const res = await PostRequest("/api/Package/downloadTexture", {
+    packageId: config.item.id,
+    isFlatten: config.isFlatten,
+    model: config.item.model,
+    layerId: config.selectedLayerId,
+    useBaseTexture: withBaseTexture,
+  });
   return res;
 };

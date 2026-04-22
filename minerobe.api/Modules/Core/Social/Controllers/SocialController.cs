@@ -51,19 +51,6 @@ namespace minerobe.api.Modules.Core.Social.Controllers
             await _wardrobeService.RemovePackageFromExternalWardrobes(packageId);
             return Ok(res);
         }
-        [HttpPost("Download/{id}")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Download(Guid id)
-        {
-            var canView = await _permitsService.CanView((await _userService.GetFromExternalUser(User)).Id, id, EntityType.SOCIAL_DATA);
-            if (!canView)
-                return Unauthorized();
-
-            var res = await _socialService.Download(id);
-            if (res == null)
-                return NotFound();
-            return Ok(res);
-        }
         [HttpGet("User/{userId}")]
         public async Task<IActionResult> GetUserSummary(Guid userId)
         {

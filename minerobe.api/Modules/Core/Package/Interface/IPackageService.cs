@@ -17,7 +17,7 @@ namespace minerobe.api.Modules.Core.Package.Interface
         Task<bool> UpdateLayerOrder(Guid packageId, List<Guid> layersInOrder);
         Task<bool> UpdatePrimaryLayer(Guid packageId, Guid layerId);
         Task<bool> RemovePrimaryLayer(Guid packageId);
-        Task<OutfitPackage> MergePackageLayers(Guid packageId, bool isFlatten = false, OutfitLayer basetexture = null);
+        Task<OutfitPackage> MergePackageLayers(Guid packageId, bool isFlatten = false, OutfitLayer basetexture = null, Guid? layerId = null);
         Task<OutfitLayer> GetPrimaryLayer(Guid packageId);
         Task<Guid> GetIdBySocialId(Guid id);
     }

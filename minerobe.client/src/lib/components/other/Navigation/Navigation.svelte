@@ -20,7 +20,7 @@
 
 
   const profileAction = async () => {
-    if (!$CURRENT_USER.id) await loginUser();
+    if (!$CURRENT_USER?.id) await loginUser();
   };
   let searchValue = $state(page.url.searchParams.get("q") ?? "");
 

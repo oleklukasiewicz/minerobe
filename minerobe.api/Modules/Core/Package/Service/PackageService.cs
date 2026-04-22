@@ -7,6 +7,8 @@ using minerobe.api.Modules.Core.Social.Interface;
 using minerobe.api.Modules.Core.User.Interface;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Tga;
+using SixLabors.ImageSharp.PixelFormats;
 using System.Text;
 
 namespace minerobe.api.Modules.Core.Package.Service
@@ -310,15 +312,26 @@ namespace minerobe.api.Modules.Core.Package.Service
 
         //merger
 
-        public async Task<OutfitPackage> MergePackageLayers(Guid packageId, bool isFlatten = false, OutfitLayer basetexture = null)
+        public async Task<OutfitPackage> MergePackageLayers(Guid packageId, bool isFlatten = false, OutfitLayer basetexture = null, Guid? layerId = null)
         {
             var layers = await GetLayersOfPackage(packageId).ToListAsync();
             if (basetexture != null)
             {
                 layers.Insert(0, basetexture);
             }
-            var steveMerged = await ImageMerger.Merge(layers.Select(x => x.Steve.Content).ToList(), ModelType.Steve, isFlatten);
-            var alexMerged = await ImageMerger.Merge(layers.Select(x => x.Alex.Content).ToList(), ModelType.Alex, isFlatten);
+            Image<Rgba32> steveMerged;
+            Image<Rgba32> alexMerged;
+            if (layerId != null)
+            {
+                steveMerged = await ImageMerger.Merge(layers.Where(x => x.Id == layerId.Value).Select(x => x.Steve.Content).ToList(), ModelType.Steve, isFlatten);
+                alexMerged = await ImageMerger.Merge(layers.Where(x => x.Id == layerId.Value).Select(x => x.Alex.Content).ToList(), ModelType.Alex, isFlatten);
+            }
+            else
+            {
+                steveMerged = await ImageMerger.Merge(layers.Select(x => x.Steve.Content).ToList(), ModelType.Steve, isFlatten);
+                alexMerged = await ImageMerger.Merge(layers.Select(x => x.Alex.Content).ToList(), ModelType.Alex, isFlatten);
+            }
+
 
             var package = await _context.OutfitPackages.FindAsync(packageId);
             if (package == null)

@@ -1,6 +1,6 @@
 <script lang="ts">
   //api
-  import { GetPackage } from "$src/api/pack";
+  import { DownloadTexture, GetPackage } from "$src/api/pack";
   import { FetchSettings } from "$src/api/settings";
   import { GetAccount } from "$src/api/integration/minecraft.js";
   import {
@@ -11,7 +11,6 @@
 
   //services
   import { ExportImage } from "$src/data/export.js";
-  import { OutfitPackageToTextureConverter } from "$src/data/render.js";
   import { ShowToast } from "$src/data/toast.js";
   import { navigateToOutfitPackage } from "$src/helpers/other/navigationHelper";
   import type { RenderAnimation } from "$src/data/animation.js";
@@ -171,27 +170,11 @@
   };
 
   //export
-  const exportPackage = async () => {
-    const texture = new OutfitPackageToTextureConverter().SetOptions(
-      $renderConfiguration,
-    );
-    if (userSettings?.baseTexture == null || !isOutfitSet)
-      texture.SetBaseTexture(null);
-    await ExportImage(
-      await texture.ConvertAsyncWithFlattenSettingsAsync(),
-      $itemPackage.name,
-    );
-    addAnimation(HandsUpAnimation);
-  };
-  const exportPackageWithoutBaseTexture = async () => {
-    const texture = new OutfitPackageToTextureConverter().SetOptions(
-      $renderConfiguration,
-    );
-    texture.SetBaseTexture(null);
-    await ExportImage(
-      await texture.ConvertAsyncWithFlattenSettingsAsync(),
-      $itemPackage.name,
-    );
+  const exportPackage = async (usebaseTexture: boolean) => {
+    var data = await DownloadTexture($renderConfiguration, usebaseTexture);
+
+    await ExportImage(data.texture.content, data.texture.fileName);
+    $itemPackage.social.downloads = data.downloads;
     addAnimation(HandsUpAnimation);
   };
 
@@ -382,7 +365,7 @@
         <MenuButton
           hideMenuButton={!isOutfitSet}
           containerStyle={isMinecraftIntegrated && isOutfitSet ? "" : "flex:1"}
-          onclick={exportPackage}
+          onclick={() => exportPackage(true)}
           label="Download"
           type="primary"
           size="large"
@@ -394,10 +377,10 @@
             type="quaternary"
             size="medium"
             icon={DownloadIcon}
-            onclick={exportPackageWithoutBaseTexture}
+            onclick={() => exportPackage(false)}
           />
         </MenuButton>
-        {#if $CURRENT_USER?.id != $itemPackage.publisher.id}
+        {#if $CURRENT_USER?.id != $itemPackage.publisher.id && $CURRENT_USER?.id != null}
           {#if $itemPackage.isInWardrobe}
             <Button
               label="Unlike item"
@@ -418,7 +401,7 @@
             />
           {/if}
           {#if !$IS_MOBILE_VIEW}
-            <span class="separator vertical" />
+            <span class="separator vertical"></span>
           {/if}
         {/if}
         {#if $CURRENT_USER?.id != null}
