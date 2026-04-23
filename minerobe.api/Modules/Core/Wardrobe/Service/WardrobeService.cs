@@ -183,7 +183,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             {
                 outfits = filter.Filter(outfits);
             }
-            var packages = _packageAgregationService.FromAgregationWithUserContext(outfits, wardrobeId);
+            var packages = _packageAgregationService.FromAgregationSingleLayer(outfits, wardrobeId);
             return packages;
         }
         public async Task<bool> RemovePackageFromAllWadrobes(Guid packageId)
