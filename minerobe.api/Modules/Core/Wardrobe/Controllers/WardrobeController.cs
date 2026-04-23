@@ -8,6 +8,7 @@ using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Collection.ResponseModel;
 using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.Permits.Interface;
+using minerobe.api.Modules.Core.Social.Interface;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Core.Wardrobe.Interface;
 using minerobe.api.Modules.Core.Wardrobe.ResponseModel;
@@ -23,13 +24,15 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
         private readonly IPackageService _packageService;
         private readonly ICollectionService _collectionService;
         private readonly IPermitsService _permitsService;
-        public WardrobeController(IWardrobeService wardrobeService, IUserService userService, IPackageService packageService, ICollectionService collectionService, IPermitsService permitsService)
+        private readonly ISocialService _socialService;
+        public WardrobeController(IWardrobeService wardrobeService, IUserService userService, IPackageService packageService, ICollectionService collectionService, IPermitsService permitsService, ISocialService socialService)
         {
             _wardrobeService = wardrobeService;
             _userService = userService;
             _packageService = packageService;
             _collectionService = collectionService;
             _permitsService = permitsService;
+            _socialService = socialService;
         }
         [HttpGet("")]
         public async Task<IActionResult> Get()
@@ -73,7 +76,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
             if (res != true)
                 return BadRequest();
 
-            var social = await _packageService.GetById(outfitPackage.SocialDataId);
+            var social = await _socialService.GetById(outfitPackage.SocialDataId);
 
             return Ok(social);
         }
@@ -90,7 +93,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
             if (res != true)
                 return BadRequest();
 
-            var social = await _packageService.GetById(package.SocialDataId);
+            var social = await _socialService.GetById(package.SocialDataId);
 
             return Ok(social);
         }
@@ -112,7 +115,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
             if (res != true)
                 return BadRequest();
 
-            var social = await _collectionService.GetById(collection.SocialDataId);
+            var social = await _socialService.GetById(collection.SocialDataId);
 
             return Ok(social);
         }
@@ -129,7 +132,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
             if (res != true)
                 return BadRequest();
 
-            var social = await _collectionService.GetById(collection.SocialDataId);
+            var social = await _socialService.GetById(collection.SocialDataId);
             return Ok(social);
         }
         [HttpPost("items")]
