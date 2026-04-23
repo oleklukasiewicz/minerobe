@@ -12,7 +12,7 @@ namespace minerobe.api.Modules.Core.Auth.Service
         {
             _context = context;
         }
-        private async Task<EntityPermitModel> GetEntityPermits(Guid entity, EntityType type)
+        public async Task<EntityPermitModel> GetEntityPermits(Guid entity, EntityType type)
         {
             if (type == EntityType.OUTFIT_PACKAGE)
             {

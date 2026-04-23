@@ -2,18 +2,15 @@
 using minerobe.api.Database;
 using minerobe.api.Modules.Core.Social.Entity;
 using minerobe.api.Modules.Core.Social.Interface;
-using minerobe.api.Modules.Core.User.Interface;
 
 namespace minerobe.api.Modules.Core.Social.Service
 {
     public class SocialService : ISocialService
     {
         private readonly BaseDbContext _context;
-        private readonly IUserService _userService;
-        public SocialService(BaseDbContext context, IUserService userService)
+        public SocialService(BaseDbContext context)
         {
             _context = context;
-            _userService = userService;
         }
         public async Task<SocialData> Share(Guid socialId)
         {

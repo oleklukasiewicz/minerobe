@@ -7,6 +7,7 @@ using minerobe.api.Modules.Core.Collection.Entity;
 using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Collection.ResponseModel;
 using minerobe.api.Modules.Core.Package.Interface;
+using minerobe.api.Modules.Core.Permits.Interface;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Core.Wardrobe.Interface;
 using minerobe.api.Modules.Core.Wardrobe.ResponseModel;
@@ -21,12 +22,14 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
         private readonly IUserService _userService;
         private readonly IPackageService _packageService;
         private readonly ICollectionService _collectionService;
-        public WardrobeController(IWardrobeService wardrobeService, IUserService userService, IPackageService packageService, ICollectionService collectionService)
+        private readonly IPermitsService _permitsService;
+        public WardrobeController(IWardrobeService wardrobeService, IUserService userService, IPackageService packageService, ICollectionService collectionService, IPermitsService permitsService)
         {
             _wardrobeService = wardrobeService;
             _userService = userService;
             _packageService = packageService;
             _collectionService = collectionService;
+            _permitsService = permitsService;
         }
         [HttpGet("")]
         public async Task<IActionResult> Get()
@@ -36,6 +39,21 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
             var wardrobe = await _wardrobeService.Get(user.WardrobeId);
             if (wardrobe == null)
                 return NotFound();
+
+            for (var i = 0; i < wardrobe.Outfits.Count; i++)
+            {
+                var outfit = await _packageService.GetById(wardrobe.Outfits[i].Id);
+                if (outfit != null)
+                    wardrobe.Outfits[i] = outfit;
+            }
+
+            for (var i = 0; i < wardrobe.Collections.Count; i++)
+            {
+                var collection = await _collectionService.GetById(wardrobe.Collections[i].Id);
+                if (collection != null)
+                    wardrobe.Collections[i] = collection;
+            }
+
             return Ok(wardrobe.ToResponseModel());
         }
         [HttpPost("item/{id}")]
@@ -43,10 +61,21 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
         {
             var user = await _userService.GetFromExternalUser(User);
 
-            var res = await _wardrobeService.AddToWadrobe(user.WardrobeId, id);
-            if (res == null)
+            var permits = await _permitsService.GetEntityPermits(id, EntityType.OUTFIT_PACKAGE);
+            if (permits == null || (!permits.IsShared && permits.PublisherId != user.Id))
+                return Forbid();
+
+            var outfitPackage = await _packageService.GetById(id);
+            if (outfitPackage == null)
                 return NotFound();
-            return Ok(res);
+
+            var res = await _wardrobeService.AddToWadrobe(user.WardrobeId, id);
+            if (res != true)
+                return BadRequest();
+
+            var social = await _packageService.GetById(outfitPackage.SocialDataId);
+
+            return Ok(social);
         }
         [HttpDelete("item/{id}")]
         public async Task<IActionResult> RemoveFromWardrobe(Guid id)
@@ -58,33 +87,50 @@ namespace minerobe.api.Modules.Core.Wardrobe.Controllers
                 return BadRequest("You can't remove your own package from your wardrobe");
 
             var res = await _wardrobeService.RemoveFromWardrobe(user.WardrobeId, id);
-            if (res == null)
-                return NotFound();
-            return Ok(res);
+            if (res != true)
+                return BadRequest();
+
+            var social = await _packageService.GetById(package.SocialDataId);
+
+            return Ok(social);
         }
         [HttpPost("collection/{id}")]
         public async Task<IActionResult> AddCollection(Guid id)
         {
             var user = await _userService.GetFromExternalUser(User);
 
-            var res = await _wardrobeService.AddCollectionToWadrobe(user.WardrobeId, id);
-            if (res == null)
+            var permits = await _permitsService.GetEntityPermits(id, EntityType.OUTFIT_COLLECTION);
+            if (permits == null || (!permits.IsShared && permits.PublisherId != user.Id))
+                return Forbid();
+
+            var collection = await _collectionService.GetById(id);
+            if (collection == null)
                 return NotFound();
-            return Ok(res);
+
+            var res = await _wardrobeService.AddCollectionToWadrobe(user.WardrobeId, id);
+
+            if (res != true)
+                return BadRequest();
+
+            var social = await _collectionService.GetById(collection.SocialDataId);
+
+            return Ok(social);
         }
         [HttpDelete("collection/{id}")]
         public async Task<IActionResult> RemoveCollection(Guid id)
         {
             var user = await _userService.GetFromExternalUser(User);
 
-            var package = await _collectionService.GetById(id);
-            if (package.PublisherId == user.Id)
-                return BadRequest("You can't remove your own package from your wardrobe");
+            var collection = await _collectionService.GetById(id);
+            if (collection.PublisherId == user.Id)
+                return BadRequest("You can't remove your own collection from your wardrobe");
 
             var res = await _wardrobeService.RemoveCollectionFromWardrobe(user.WardrobeId, id);
-            if (res == null)
-                return NotFound();
-            return Ok(res);
+            if (res != true)
+                return BadRequest();
+
+            var social = await _collectionService.GetById(collection.SocialDataId);
+            return Ok(social);
         }
         [HttpPost("items")]
         public async Task<IActionResult> GetItems([FromBody] PagedModel<OutfitFilter> options)

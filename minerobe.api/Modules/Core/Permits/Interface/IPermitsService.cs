@@ -6,5 +6,6 @@ namespace minerobe.api.Modules.Core.Permits.Interface
     {
         Task<bool> CanEdit(Guid userId, Guid entity, EntityType type);
         Task<bool> CanView(Guid userId, Guid entity, EntityType type);
+        Task<EntityPermitModel> GetEntityPermits(Guid entity, EntityType type);
     }
 }

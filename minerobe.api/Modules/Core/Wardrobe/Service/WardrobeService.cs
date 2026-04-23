@@ -2,13 +2,9 @@
 using minerobe.api.Database;
 using minerobe.api.Helpers.Filter;
 using minerobe.api.Modules.Core.Collection.Entity;
-using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Package.Entity;
-using minerobe.api.Modules.Core.Package.Interface;
 using minerobe.api.Modules.Core.PackageAgregation.Entity;
 using minerobe.api.Modules.Core.PackageAgregation.Interface;
-using minerobe.api.Modules.Core.Social.Entity;
-using minerobe.api.Modules.Core.Social.Interface;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Core.Wardrobe.Entity;
 using minerobe.api.Modules.Core.Wardrobe.Interface;
@@ -18,17 +14,11 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
     public class WardrobeService : IWardrobeService
     {
         private readonly BaseDbContext _context;
-        private readonly IPackageService _packageService;
-        private readonly ISocialService _socialService;
-        private readonly ICollectionService _collectionService;
         private readonly IUserService _userService;
         private readonly IOutfitPackageAgregationService _packageAgregationService;
-        public WardrobeService(BaseDbContext context, IPackageService packageService, ISocialService socialService, ICollectionService collectionService, IUserService userService, IOutfitPackageAgregationService packageAgregationService)
+        public WardrobeService(BaseDbContext context, IUserService userService, IOutfitPackageAgregationService packageAgregationService)
         {
             _context = context;
-            _packageService = packageService;
-            _socialService = socialService;
-            _collectionService = collectionService;
             _userService = userService;
             _packageAgregationService = packageAgregationService;
         }
@@ -47,7 +37,7 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             var matchings = await _context.WardrobeMatchings.Where(x => x.WardrobeId == wardrobe.Id).ToListAsync();
             foreach (var matching in matchings)
             {
-                var outfit = await _packageService.GetById(matching.OutfitPackageId);
+                var outfit = new OutfitPackage() { Id = matching.OutfitPackageId };
                 if (outfit != null)
                     wardrobe.Outfits.Add(outfit);
             }
@@ -55,79 +45,57 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             var collcetionMatchings = await _context.WardrobeCollectionMatchings.Where(x => x.WardrobeId == wardrobe.Id).ToListAsync();
             foreach (var matching in collcetionMatchings)
             {
-                var collection = await _collectionService.GetById(matching.OutfitPackageCollectionId);
+                var collection = new OutfitPackageCollection() { Id = matching.OutfitPackageCollectionId };
                 if (collection != null)
                     wardrobe.Collections.Add(collection);
             }
 
             return wardrobe;
         }
-        public async Task<SocialData> AddToWadrobe(Guid wardrobeId, Guid outfitId)
+        public async Task<bool> AddToWadrobe(Guid wardrobeId, Guid outfitId)
         {
             var user = await _userService.GetUserOfWardrobe(wardrobeId);
             if (user == null)
-                return null;
-            var outfitref = await _context.OutfitPackages.Where(x => x.Id == outfitId).FirstOrDefaultAsync();
-
-            if (outfitref == null)
-                return null;
-            //getcsocialdata
-            outfitref.Social = await _socialService.GetById(outfitref.SocialDataId);
-
-            //credentials
-            if (outfitref.PublisherId != user.Id && outfitref.Social.IsShared == false)
-                return null;
+                return false;
 
             //check if not already added
-            var matching = await _context.WardrobeMatchings.Where(x => x.OutfitPackageId == outfitref.Id && x.WardrobeId == wardrobeId).FirstOrDefaultAsync();
+            var matching = await _context.WardrobeMatchings.Where(x => x.OutfitPackageId == outfitId && x.WardrobeId == wardrobeId).FirstOrDefaultAsync();
             if (matching != null)
-                return null;
+                return false;
 
             //add matching
 
             var metching = new Entity.WardrobeMatching()
             {
-                OutfitPackageId = outfitref.Id,
+                OutfitPackageId = outfitId,
                 WardrobeId = wardrobeId
             };
             await _context.WardrobeMatchings.AddAsync(metching);
             await _context.SaveChangesAsync();
-            var resp = await _socialService.GetById(outfitref.SocialDataId);
-            return resp;
+
+            return true;
         }
-        public async Task<SocialData> RemoveFromWardrobe(Guid wardrobeId, Guid outfitId)
+        public async Task<bool> RemoveFromWardrobe(Guid wardrobeId, Guid outfitId)
         {
             var matching = await _context.WardrobeMatchings.Where(x => x.OutfitPackageId == outfitId && x.WardrobeId == wardrobeId).FirstOrDefaultAsync();
             if (matching == null)
-                return null;
+                return false;
             _context.WardrobeMatchings.Remove(matching);
             await _context.SaveChangesAsync();
-            var outfit = await _context.OutfitPackages.Where(x => x.Id == outfitId).FirstOrDefaultAsync();
 
-            var resp = await _socialService.GetById(outfit.SocialDataId);
-            return resp;
+            return true;
         }
 
-        public async Task<SocialData> AddCollectionToWadrobe(Guid wardrobeId, Guid collectionId)
+        public async Task<bool> AddCollectionToWadrobe(Guid wardrobeId, Guid collectionId)
         {
             var user = await _userService.GetUserOfWardrobe(wardrobeId);
             if (user == null)
-                return null;
-
-            var collection = await _context.OutfitPackageCollections.Where(x => x.Id == collectionId).FirstOrDefaultAsync();
-            if (collection == null)
-                return null;
-
-
-            if (collection.PublisherId != user.Id && collection.Social.IsShared == false)
-                return null;
-
-            collection.Social = await _socialService.GetById(collection.SocialDataId);
+                return false;
 
             //check if matching exists
             var matching = await _context.WardrobeCollectionMatchings.Where(x => x.OutfitPackageCollectionId == collectionId && x.WardrobeId == wardrobeId).FirstOrDefaultAsync();
             if (matching != null)
-                return null;
+                return false;
 
             //add matching
             var metching = new WadrobeCollectionMatching()
@@ -139,25 +107,18 @@ namespace minerobe.api.Modules.Core.Wardrobe.Service
             await _context.WardrobeCollectionMatchings.AddAsync(metching);
             await _context.SaveChangesAsync();
 
-            //add like
-            var resp = await _socialService.GetById(collection.SocialDataId);
-
-            return resp;
+            return true;
 
         }
-        public async Task<SocialData> RemoveCollectionFromWardrobe(Guid wardrobeId, Guid collectionId)
+        public async Task<bool> RemoveCollectionFromWardrobe(Guid wardrobeId, Guid collectionId)
         {
             var matching = await _context.WardrobeCollectionMatchings.Where(x => x.OutfitPackageCollectionId == collectionId && x.WardrobeId == wardrobeId).FirstOrDefaultAsync();
             if (matching == null)
-                return null;
+                return false;
             _context.WardrobeCollectionMatchings.Remove(matching);
             await _context.SaveChangesAsync();
-            var collection = await _context.OutfitPackageCollections.Where(x => x.Id == collectionId).FirstOrDefaultAsync();
-            //remove like
 
-            var resp = await _socialService.GetById(collection.SocialDataId);
-
-            return resp;
+            return true;
         }
         public async Task<IQueryable<OutfitPackageCollection>> GetWardrobeCollections(Guid wardrobeId, SimpleFilter filter)
         {

@@ -9,11 +9,9 @@ using minerobe.api.Modules.Core.Package.ResponseModel;
 using minerobe.api.Modules.Core.Permits.Interface;
 using minerobe.api.Modules.Core.Settings.Interface;
 using minerobe.api.Modules.Core.Settings.Model;
-using minerobe.api.Modules.Core.Social.Entity;
 using minerobe.api.Modules.Core.Social.Interface;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Core.Wardrobe.Interface;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace minerobe.api.Modules.Core.Package.Controllers
 {
@@ -49,6 +47,9 @@ namespace minerobe.api.Modules.Core.Package.Controllers
             if (package == null)
                 return NotFound();
 
+            package.Social = await _socialService.GetById(package.SocialDataId);
+            package.Publisher = await _userService.GetById(package.PublisherId);
+
             var isInWardrobe = await _wardrobeService.IsPackageInWardrobe(user.WardrobeId, id);
             var primaryLayer = await _packageService.GetPrimaryLayer(id);
 
@@ -80,7 +81,11 @@ namespace minerobe.api.Modules.Core.Package.Controllers
         [HttpPost("")]
         public async Task<IActionResult> Add([FromBody] OutfitPackageModel package)
         {
-            var res = await _packageService.Add(package.ToEntity());
+            var entity = package.ToEntity();
+            entity.SocialDataId = await _socialService.Add();
+
+            var res = await _packageService.Add(entity);
+
             return Ok(res.ToResponseModel());
         }
         [HttpPut("{id}")]

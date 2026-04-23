@@ -1,19 +1,18 @@
 ﻿using minerobe.api.Helpers.Filter;
 using minerobe.api.Modules.Core.Collection.Entity;
 using minerobe.api.Modules.Core.PackageAgregation.Entity;
-using minerobe.api.Modules.Core.Social.Entity;
 
 namespace minerobe.api.Modules.Core.Wardrobe.Interface
 {
     public interface IWardrobeService
     {
-        Task<SocialData> AddToWadrobe(Guid wardrobeId, Guid outfitId);
+        Task<bool> AddToWadrobe(Guid wardrobeId, Guid outfitId);
         Task<Helpers.Wardrobe> Get(Guid id);
-        Task<SocialData> RemoveFromWardrobe(Guid wardrobeId, Guid outfitId);
+        Task<bool> RemoveFromWardrobe(Guid wardrobeId, Guid outfitId);
         Task<bool> IsPackageInWardrobe(Guid wardrobeId, Guid outfitId);
         Task<IQueryable<OutfitPackageAgregationResponse>> GetWardrobeOutfits(Guid wardrobeId, OutfitFilter filter, Guid? collectionId = null);
-        Task<SocialData> AddCollectionToWadrobe(Guid wardrobeId, Guid collectionId);
-        Task<SocialData> RemoveCollectionFromWardrobe(Guid wardrobeId, Guid collectionId);
+        Task<bool> AddCollectionToWadrobe(Guid wardrobeId, Guid collectionId);
+        Task<bool> RemoveCollectionFromWardrobe(Guid wardrobeId, Guid collectionId);
         Task<IQueryable<OutfitPackageCollection>> GetWardrobeCollections(Guid wardrobeId, SimpleFilter filter);
         Task<IQueryable<OutfitPackageAgregationResponse>> GetWardrobeOutfitsSingleLayer(Guid wardrobeId, OutfitFilter filter);
 

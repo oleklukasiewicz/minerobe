@@ -3,11 +3,8 @@ using minerobe.api.Database;
 using minerobe.api.Helpers;
 using minerobe.api.Modules.Core.Package.Entity;
 using minerobe.api.Modules.Core.Package.Interface;
-using minerobe.api.Modules.Core.Social.Interface;
-using minerobe.api.Modules.Core.User.Interface;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Formats.Tga;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Text;
 
@@ -16,13 +13,9 @@ namespace minerobe.api.Modules.Core.Package.Service
     public class PackageService : IPackageService
     {
         private readonly BaseDbContext _context;
-        private readonly IUserService _userService;
-        private readonly ISocialService _socialService;
-        public PackageService(BaseDbContext context, IUserService userService, ISocialService socialService)
+        public PackageService(BaseDbContext context)
         {
             _context = context;
-            _userService = userService;
-            _socialService = socialService;
         }
 
         //package
@@ -44,19 +37,11 @@ namespace minerobe.api.Modules.Core.Package.Service
             if (package.Type == PackageType.Outfit && package.Layers.Count > 0)
                 package.OutfitType = package.Layers[0].OutfitType;
 
-            //publisher
-            package.Publisher = await _userService.GetById(package.PublisherId);
-
-            //social
-            var social = await _socialService.GetById(package.SocialDataId);
-            package.Social = social;
-
             return package;
         }
         public async Task<OutfitPackage> Add(OutfitPackage package)
         {
             package.Id = Guid.NewGuid();
-            package.SocialDataId = await _socialService.Add();
 
             var res = await _context.OutfitPackages.AddAsync(package);
             var packageId = res.Entity.Id;

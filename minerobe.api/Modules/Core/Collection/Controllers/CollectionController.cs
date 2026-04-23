@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using minerobe.api.Helpers;
 using minerobe.api.Helpers.Filter;
 using minerobe.api.Helpers.Model;
 using minerobe.api.Modules.Core.Collection.Interface;
 using minerobe.api.Modules.Core.Collection.Model;
 using minerobe.api.Modules.Core.Collection.ResponseModel;
+using minerobe.api.Modules.Core.PackageAgregation.Interface;
 using minerobe.api.Modules.Core.Permits.Interface;
+using minerobe.api.Modules.Core.Social.Interface;
 using minerobe.api.Modules.Core.User.Interface;
 using minerobe.api.Modules.Core.Wardrobe.Interface;
 
@@ -20,17 +23,23 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
         private readonly IUserService _userService;
         private readonly IWardrobeService _wardrobeService;
         private readonly IPermitsService _permitsService;
-        public CollectionController(ICollectionService service, IUserService userService, IWardrobeService wardrobeService, IPermitsService permitsService)
+        private readonly ISocialService _socialService;
+        private readonly IOutfitPackageAgregationService _outfitPackageAgregationService;
+        public CollectionController(ICollectionService service, IUserService userService, IWardrobeService wardrobeService, IPermitsService permitsService, ISocialService socialService, IOutfitPackageAgregationService outfitPackageAgregationService)
         {
             _service = service;
             _userService = userService;
             _wardrobeService = wardrobeService;
             _permitsService = permitsService;
+            _socialService = socialService;
+            _outfitPackageAgregationService = outfitPackageAgregationService;
         }
         [HttpPost("")]
         public async Task<IActionResult> Add([FromBody] OutfitPackageCollectionModel collection)
         {
-            var result = await _service.Add(collection.ToEntity());
+            var entity = collection.ToEntity();
+            entity.SocialDataId = await _socialService.Add();
+            var result = await _service.Add(entity);
             if (result == null)
                 return BadRequest();
             return Ok(result);
@@ -44,9 +53,16 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
             if (!canAccess)
                 return Unauthorized();
 
-            var result = await _service.GetById(id, false);
+            var result = await _service.GetById(id);
             if (result == null)
                 return NotFound();
+
+            var packageIds = result.Items.Select(x => x.Id).AsQueryable();
+
+            result.Items = await _outfitPackageAgregationService.FromIdList(packageIds).ToListAsync();
+
+            result.Social = await _socialService.GetById(result.SocialDataId);
+            result.Publisher = await _userService.GetById(result.PublisherId);
 
             return Ok(result.ToResponseModel());
         }
@@ -58,7 +74,12 @@ namespace minerobe.api.Modules.Core.Collection.Controllers
             var canAccess = await _permitsService.CanView(user.Id, id, EntityType.OUTFIT_COLLECTION);
             if (!canAccess)
                 return Unauthorized();
-            var query = _service.GetPackagesOfCollection(id);
+            var collection = await _service.GetById(id);
+
+            var packageIds = collection.Items.Select(x => x.Id).AsQueryable();
+
+            var query = _outfitPackageAgregationService.FromIdList(packageIds);
+
             var result = query.ToPagedResponse(options);
             if (result == null)
                 return NotFound();
