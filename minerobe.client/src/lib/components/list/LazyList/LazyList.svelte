@@ -26,17 +26,32 @@
   }: LazyListProps = $props();
 
   let element: HTMLElement | undefined = $state(undefined);
+  let requesting = false;
   const itemsList = $derived(itemsPages.flatMap((page) => page.items ?? []));
 
-  const onNewPageNeeded = (e) => {
-    if (loading) return;
+  const onNewPageNeeded = async (e) => {
+    if (requesting) return;
     if (e.isIntersecting === false) return;
     const lastPage = itemsPages[itemsPages.length - 1];
-    if (lastPage != null) {
-      lastPage.options.page += 1;
+    if (!lastPage) return;
+    if (lastPage?.items?.length < lastPage?.options?.pageSize) return;
+    const nextOptions = {
+      ...(lastPage.options ?? {}),
+      page: (lastPage.options?.page ?? 0) + 1,
+    };
+    requesting = true;
+    try {
+      const nextPage: PagedResponse<any> = {
+        ...lastPage,
+        options: nextOptions,
+      } as any;
+      const res: any = onloading?.({ options: nextPage });
+      if (res && typeof res.then === "function") {
+        await res;
+      }
+    } finally {
+      requesting = false;
     }
-    if (lastPage?.items?.length < lastPage?.options.pageSize) return;
-    onloading?.({ options: lastPage });
   };
 </script>
 
@@ -63,4 +78,6 @@
   </IntersectionObserver>
 </div>
 
-<style lang="scss">/*$$__STYLE_CONTENT__$$*/</style>
+<style lang="scss">
+  /*$$__STYLE_CONTENT__$$*/
+</style>

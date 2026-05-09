@@ -87,8 +87,8 @@
   const fetchItems = async (e) => {
     const options: PagedResponse<OutfitPackage> = e?.options;
     const pagedModel = new PagedModel<OutfitFilter>();
-    pagedModel.page = options?.options.page || 0;
-    pagedModel.pageSize = options?.options.pageSize || 36;
+    pagedModel.page = options?.options?.page || 0;
+    pagedModel.pageSize = options?.options?.pageSize || 36;
     pagedModel.filter = filter;
     pagedModel.sort = sortOption;
     const pagedItems = await GetWardrobePackages(pagedModel, abortController);
